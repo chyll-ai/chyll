@@ -45,6 +45,9 @@ import DataManagement from "./pages/docs/best-practices/DataManagement";
 // Resources Pages
 import ResourcesPage from "./pages/docs/ResourcesPage";
 import WorkflowTemplates from "./pages/docs/resources/WorkflowTemplates";
+import SampleDataSets from "./pages/docs/resources/SampleDataSets";
+import AutomationChecklists from "./pages/docs/resources/AutomationChecklists";
+import IntegrationExamples from "./pages/docs/resources/IntegrationExamples";
 
 // User Management Pages
 import UserManagement from "./pages/docs/UserManagement";
@@ -118,6 +121,9 @@ const App = () => (
           {/* Resources Section */}
           <Route path="/documentation/resources" element={<ResourcesPage />} />
           <Route path="/documentation/resources/workflow-templates" element={<WorkflowTemplates />} />
+          <Route path="/documentation/resources/sample-data" element={<SampleDataSets />} />
+          <Route path="/documentation/resources/automation-checklists" element={<AutomationChecklists />} />
+          <Route path="/documentation/resources/integration-examples" element={<IntegrationExamples />} />
           
           {/* User Management Section */}
           <Route path="/documentation/user-management" element={<UserManagement />} />
