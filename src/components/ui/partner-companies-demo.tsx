@@ -1,7 +1,8 @@
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Building, Building2, Globe, Briefcase, Factory } from "lucide-react";
 import { InfiniteSlider } from "@/components/ui/infinite-slider";
+import { processLogoWithBackgroundRemoval } from "@/utils/imageUtils";
 
 type CompanyLogo = {
   name: string;
@@ -38,6 +39,21 @@ const companies: CompanyLogo[] = [
 ];
 
 export function PartnerCompaniesDemo() {
+  const [processedLogoUrl, setProcessedLogoUrl] = useState<string>("/lovable-uploads/4640bcf9-d7bd-47f0-af20-a0bcf0927858.png");
+
+  useEffect(() => {
+    const processLogo = async () => {
+      try {
+        const result = await processLogoWithBackgroundRemoval(processedLogoUrl);
+        setProcessedLogoUrl(result);
+      } catch (error) {
+        console.error('Logo processing error:', error);
+      }
+    };
+
+    processLogo();
+  }, []);
+
   return (
     <div className="py-12">
       <div className="text-center mb-8">
@@ -67,7 +83,7 @@ export function PartnerCompaniesDemo() {
         {/* PARIS&CO logo */}
         <div className="flex flex-col items-center mx-4 min-w-[180px]">
           <img
-            src="/lovable-uploads/4640bcf9-d7bd-47f0-af20-a0bcf0927858.png"
+            src={processedLogoUrl}
             alt="PARIS&CO logo"
             className="h-16 w-auto"
           />
