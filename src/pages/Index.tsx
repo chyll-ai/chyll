@@ -9,7 +9,7 @@ import Benefits from '@/components/Benefits';
 import { BentoDemo } from '@/components/ui/bento-demo';
 import { TestimonialsSectionDemo } from '@/components/ui/testimonials-section-demo';
 import { PricingBasic } from '@/components/ui/pricing-basic';
-import { FAQSection } from '@/components/ui/faq-section';
+import { DefaultDemo as FaqAccordionDemo } from '@/components/ui/faq-chat-accordion-demo';
 
 const Index = () => {
   return (
@@ -89,7 +89,9 @@ const Index = () => {
               Everything you need to know about botis and how it can transform your business.
             </p>
           </div>
-          <FAQSection />
+          <div className="flex justify-center">
+            <FaqAccordionDemo />
+          </div>
         </div>
       </section>
       
