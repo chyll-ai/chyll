@@ -7,7 +7,7 @@ import { Zap, Mic, TrendingUp, Rocket, Bot, MessageCircle } from "lucide-react";
 const featuresCards = [
   {
     icon: <Zap className="size-4 text-yellow-300" />,
-    title: "AI Automation",
+    title: "R2D2, THE AI AUTOMATION",
     description: "Automate repetitive tasks",
     date: "Save 20+ hours/week",
     iconClassName: "text-yellow-500",
@@ -17,7 +17,7 @@ const featuresCards = [
   },
   {
     icon: <Mic className="size-4 text-blue-300" />,
-    title: "Voice Calls",
+    title: "OBI, THE VOICE CALLS",
     description: "AI-powered voice assistant",
     date: "24/7 availability",
     iconClassName: "text-blue-500",
@@ -27,7 +27,7 @@ const featuresCards = [
   },
   {
     icon: <Rocket className="size-4 text-purple-300" />,
-    title: "Workflow Builder",
+    title: "YODA, THE WORKFLOW BUILDER",
     description: "Create custom workflows",
     date: "No coding required",
     iconClassName: "text-purple-500",
@@ -37,7 +37,7 @@ const featuresCards = [
   },
   {
     icon: <TrendingUp className="size-4 text-green-300" />,
-    title: "Competitive Edge",
+    title: "LUKE, THE COMPETITIVE EDGE",
     description: "Stay ahead of competitors",
     date: "Market advantage",
     iconClassName: "text-green-500",
@@ -47,7 +47,7 @@ const featuresCards = [
   },
   {
     icon: <Bot className="size-4 text-indigo-300" />,
-    title: "Chatbot Integration",
+    title: "C3PO, THE CHATBOT INTEGRATION",
     description: "Custom chatbot solutions",
     date: "Instant response",
     iconClassName: "text-indigo-500",
@@ -57,7 +57,7 @@ const featuresCards = [
   },
   {
     icon: <MessageCircle className="size-4 text-red-300" />,
-    title: "Multi-Channel Support",
+    title: "LEIA, THE MULTI-CHANNEL SUPPORT",
     description: "Support across platforms",
     date: "Seamless integration",
     iconClassName: "text-red-500",
