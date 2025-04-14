@@ -1,6 +1,7 @@
 
 import React from "react";
 import { Building, Building2, Globe, Briefcase, Factory } from "lucide-react";
+import { InfiniteSlider } from "@/components/ui/infinite-slider";
 
 type CompanyLogo = {
   name: string;
@@ -45,11 +46,16 @@ export function PartnerCompaniesDemo() {
         </h3>
       </div>
       
-      <div className="flex flex-wrap justify-center items-center gap-6 md:gap-12">
+      <InfiniteSlider 
+        gap={40} 
+        duration={30} 
+        durationOnHover={80} 
+        className="w-full py-4"
+      >
         {companies.map((company) => (
           <div
             key={company.name}
-            className="flex flex-col items-center"
+            className="flex flex-col items-center mx-4 min-w-[120px]"
           >
             <div className={`p-4 rounded-full ${company.className} mb-2`}>
               {company.icon}
@@ -57,7 +63,7 @@ export function PartnerCompaniesDemo() {
             <span className="text-sm font-medium text-gray-700">{company.name}</span>
           </div>
         ))}
-      </div>
+      </InfiniteSlider>
     </div>
   );
 }
