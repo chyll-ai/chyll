@@ -6,9 +6,9 @@ import DemoForm from '@/components/DemoForm';
 import TestimonialCarousel from '@/components/TestimonialCarousel';
 import PricingCards from '@/components/PricingCards';
 import FeatureCards from '@/components/FeatureCards';
-import Benefits from '@/components/Benefits';
 import HowItWorks from '@/components/HowItWorks';
 import { Hero } from '@/components/ui/hero';
+import { DisplayCardsDemo } from '@/components/ui/display-cards-demo';
 
 const Index = () => {
   return (
@@ -27,7 +27,7 @@ const Index = () => {
               Imagine having an employee that works non-stop, tackles complex tasks, and makes your customers feel like VIPs.
             </p>
           </div>
-          <Benefits />
+          <DisplayCardsDemo />
         </div>
       </section>
       
