@@ -54,7 +54,7 @@ export const initialBlogPosts: BlogPost[] = [
     date: "March 8, 2025",
     readTime: "7 min read",
     category: "Tutorial",
-    imageUrl: "https://images.unsplash.com/photo-1596838132731-3201dda7df18?auto=format&fit=crop&q=80&w=1200",
+    imageUrl: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?auto=format&fit=crop&q=80&w=1200",
   },
 ];
 
