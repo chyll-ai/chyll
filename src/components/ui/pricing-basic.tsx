@@ -67,7 +67,7 @@ function PricingBasic() {
       <Pricing 
         plans={demoPlans}
         title="Pricing"
-        description="Choose a plan that fits your business needs."
+        description="Get AI employees at 1/10 the cost with 5x the ROI."
       />
     </div>
   );

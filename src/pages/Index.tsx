@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import HowItWorks from '@/components/HowItWorks';
@@ -86,7 +87,7 @@ const Index = () => {
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">Pricing</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Flexible plans to power your business growth
+              AI employees at 1/10 the cost with 5x return on investment
             </p>
           </div>
           <PricingBasic />
