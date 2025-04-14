@@ -26,8 +26,8 @@ const Index = () => {
         ></canvas>
       </section>
       
-      {/* Benefits Section */}
-      <section className="section-padding bg-white">
+      {/* Features Section */}
+      <section id="features" className="section-padding bg-white">
         <div className="container-custom">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">AI Employees that Transform Your Business</h2>
@@ -46,8 +46,8 @@ const Index = () => {
         </div>
       </section>
       
-      {/* Features Section */}
-      <section id="features" className="section-padding gradient-bg">
+      {/* Features Details Section */}
+      <section className="section-padding gradient-bg">
         <div className="container-custom">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
@@ -84,6 +84,13 @@ const Index = () => {
       {/* Pricing Section */}
       <section id="pricing" className="section-padding bg-white">
         <div className="container-custom">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Simple, Transparent Pricing</h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Choose the plan that works for your business needs.
+All plans include access to our platform, AI automation tools, and dedicated support.
+            </p>
+          </div>
           <PricingBasic />
         </div>
       </section>

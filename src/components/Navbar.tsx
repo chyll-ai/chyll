@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Menu, X, Home } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
@@ -17,6 +17,21 @@ const Navbar = ({ currentPath = '/' }: NavbarProps) => {
   const getSectionLink = (section: string) => {
     return isHomePage ? `#${section}` : `/${section}`;
   };
+
+  // Handle smooth scrolling when clicking on a link that points to an ID
+  useEffect(() => {
+    // Check if there's a hash in the URL
+    if (location.hash && isHomePage) {
+      const id = location.hash.replace('#', '');
+      const element = document.getElementById(id);
+      if (element) {
+        // Wait a bit for the DOM to fully render
+        setTimeout(() => {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+      }
+    }
+  }, [location.hash, isHomePage]);
 
   return (
     <nav className="bg-white/90 backdrop-blur-sm sticky top-0 z-50 border-b border-gray-100">
