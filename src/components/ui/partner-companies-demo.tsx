@@ -63,6 +63,16 @@ export function PartnerCompaniesDemo() {
             <span className="text-sm font-medium text-gray-700">{company.name}</span>
           </div>
         ))}
+        
+        {/* Paris&Co logo */}
+        <div className="flex flex-col items-center mx-4 min-w-[160px]">
+          <img 
+            src="/lovable-uploads/cd379101-a03b-4431-b940-9afd5da7111b.png" 
+            alt="Paris&Co logo" 
+            className="h-12 w-auto mb-2" 
+          />
+          <span className="text-sm font-medium text-gray-700">Paris&Co</span>
+        </div>
       </InfiniteSlider>
     </div>
   );
