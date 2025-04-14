@@ -9,6 +9,7 @@ import HowItWorks from '@/components/HowItWorks';
 import { Hero } from '@/components/ui/hero';
 import { DisplayCardsDemo } from '@/components/ui/display-cards-demo';
 import Benefits from '@/components/Benefits';
+import { BentoDemo } from '@/components/ui/bento-demo';
 
 const Index = () => {
   return (
@@ -42,7 +43,7 @@ const Index = () => {
               botis isn't just automation — it's your business's competitive advantage.
             </p>
           </div>
-          <DisplayCardsDemo />
+          <BentoDemo />
         </div>
       </section>
       
