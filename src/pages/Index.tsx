@@ -84,9 +84,9 @@ const Index = () => {
       <section id="pricing" className="section-padding bg-white">
         <div className="container-custom">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Simple, Transparent Pricing</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Pricing</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Flexible plans to power your business growth with AI automation tools.
+              Flexible plans to power your business growth
             </p>
           </div>
           <PricingBasic />

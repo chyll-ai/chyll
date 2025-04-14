@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Pricing } from "@/components/ui/pricing";
@@ -65,7 +66,7 @@ function PricingBasic() {
     <div className="overflow-y-auto">
       <Pricing 
         plans={demoPlans}
-        title="Simple, Transparent Pricing"
+        title="Pricing"
         description="Choose a plan that fits your business needs."
       />
     </div>
