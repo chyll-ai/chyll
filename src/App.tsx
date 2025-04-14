@@ -19,6 +19,13 @@ import Support from "./pages/Support";
 import Documentation from "./pages/Documentation";
 import NotFound from "./pages/NotFound";
 
+// Documentation Pages
+import GettingStarted from "./pages/docs/GettingStarted";
+import QuickStart from "./pages/docs/QuickStart";
+import PlatformOverview from "./pages/docs/PlatformOverview";
+import ApiDocumentation from "./pages/docs/ApiDocumentation";
+import VideoTutorials from "./pages/docs/VideoTutorials";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -46,7 +53,15 @@ const App = () => (
           <Route path="/blog" element={<Blog />} />
           <Route path="/faq" element={<FAQ />} />
           <Route path="/support" element={<Support />} />
+          
+          {/* Documentation Pages */}
           <Route path="/documentation" element={<Documentation />} />
+          <Route path="/documentation/getting-started" element={<GettingStarted />} />
+          <Route path="/documentation/getting-started/quick-start" element={<QuickStart />} />
+          <Route path="/documentation/getting-started/platform-overview" element={<PlatformOverview />} />
+          <Route path="/documentation/api" element={<ApiDocumentation />} />
+          <Route path="/documentation/videos" element={<VideoTutorials />} />
+          
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

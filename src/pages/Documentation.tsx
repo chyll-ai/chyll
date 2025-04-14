@@ -3,11 +3,13 @@ import React from 'react';
 import Navbar from '@/components/Navbar';
 import { Footer2Demo } from '@/components/ui/footer2-demo';
 import { Search, Book, Code, Video, DownloadCloud, Coffee, Users, AlertCircle } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 interface DocCategory {
   icon: React.ReactNode;
   title: string;
   description: string;
+  path: string;
   articles: { title: string; url: string }[];
 }
 
@@ -16,66 +18,72 @@ const docCategories: DocCategory[] = [
     icon: <Book className="w-6 h-6 text-indigo-600" />,
     title: "Getting Started",
     description: "Learn the basics of using GenerativSchool",
+    path: "/documentation/getting-started",
     articles: [
-      { title: "Quick Start Guide", url: "#" },
-      { title: "Platform Overview", url: "#" },
-      { title: "Setting Up Your Account", url: "#" },
-      { title: "Creating Your First Automation", url: "#" },
+      { title: "Quick Start Guide", url: "/documentation/getting-started/quick-start" },
+      { title: "Platform Overview", url: "/documentation/getting-started/platform-overview" },
+      { title: "Setting Up Your Account", url: "/documentation/getting-started/account-setup" },
+      { title: "Creating Your First Automation", url: "/documentation/getting-started/first-automation" },
     ]
   },
   {
     icon: <Code className="w-6 h-6 text-indigo-600" />,
     title: "API Documentation",
     description: "Integrate with our API",
+    path: "/documentation/api",
     articles: [
-      { title: "API Reference", url: "#" },
-      { title: "Authentication", url: "#" },
-      { title: "Rate Limits", url: "#" },
-      { title: "Webhooks", url: "#" },
+      { title: "API Reference", url: "/documentation/api/reference" },
+      { title: "Authentication", url: "/documentation/api/authentication" },
+      { title: "Rate Limits", url: "/documentation/api/rate-limits" },
+      { title: "Webhooks", url: "/documentation/api/webhooks" },
     ]
   },
   {
     icon: <Video className="w-6 h-6 text-indigo-600" />,
     title: "Video Tutorials",
     description: "Visual guides to platform features",
+    path: "/documentation/videos",
     articles: [
-      { title: "Building AI Workflows", url: "#" },
-      { title: "Advanced Automation Techniques", url: "#" },
-      { title: "Custom Integrations", url: "#" },
-      { title: "Data Analysis Features", url: "#" },
+      { title: "Building AI Workflows", url: "/documentation/videos/ai-workflows" },
+      { title: "Advanced Automation Techniques", url: "/documentation/videos/advanced-automation" },
+      { title: "Custom Integrations", url: "/documentation/videos/custom-integrations" },
+      { title: "Data Analysis Features", url: "/documentation/videos/data-analysis" },
     ]
   },
   {
     icon: <DownloadCloud className="w-6 h-6 text-indigo-600" />,
     title: "Resources",
     description: "Templates, samples, and downloads",
+    path: "/documentation/resources",
     articles: [
-      { title: "Workflow Templates", url: "#" },
-      { title: "Sample Data Sets", url: "#" },
-      { title: "Automation Checklists", url: "#" },
-      { title: "Integration Examples", url: "#" },
+      { title: "Workflow Templates", url: "/documentation/resources/workflow-templates" },
+      { title: "Sample Data Sets", url: "/documentation/resources/sample-data" },
+      { title: "Automation Checklists", url: "/documentation/resources/automation-checklists" },
+      { title: "Integration Examples", url: "/documentation/resources/integration-examples" },
     ]
   },
   {
     icon: <Coffee className="w-6 h-6 text-indigo-600" />,
     title: "Best Practices",
     description: "Optimize your use of the platform",
+    path: "/documentation/best-practices",
     articles: [
-      { title: "Performance Optimization", url: "#" },
-      { title: "Security Guidelines", url: "#" },
-      { title: "Scalability Planning", url: "#" },
-      { title: "Data Management", url: "#" },
+      { title: "Performance Optimization", url: "/documentation/best-practices/performance" },
+      { title: "Security Guidelines", url: "/documentation/best-practices/security" },
+      { title: "Scalability Planning", url: "/documentation/best-practices/scalability" },
+      { title: "Data Management", url: "/documentation/best-practices/data-management" },
     ]
   },
   {
     icon: <Users className="w-6 h-6 text-indigo-600" />,
     title: "User Management",
     description: "Control access and permissions",
+    path: "/documentation/user-management",
     articles: [
-      { title: "User Roles and Permissions", url: "#" },
-      { title: "Team Collaboration", url: "#" },
-      { title: "Access Control", url: "#" },
-      { title: "Audit Logs", url: "#" },
+      { title: "User Roles and Permissions", url: "/documentation/user-management/roles" },
+      { title: "Team Collaboration", url: "/documentation/user-management/collaboration" },
+      { title: "Access Control", url: "/documentation/user-management/access-control" },
+      { title: "Audit Logs", url: "/documentation/user-management/audit-logs" },
     ]
   },
 ];
@@ -118,15 +126,26 @@ const Documentation = () => {
                 <ul className="space-y-2">
                   {category.articles.map((article, idx) => (
                     <li key={idx}>
-                      <a 
-                        href={article.url} 
+                      <Link 
+                        to={article.url} 
                         className="text-indigo-600 hover:text-indigo-800 transition-colors"
                       >
                         {article.title}
-                      </a>
+                      </Link>
                     </li>
                   ))}
                 </ul>
+                <div className="mt-4">
+                  <Link
+                    to={category.path}
+                    className="inline-flex items-center text-sm font-medium text-indigo-600 hover:text-indigo-800"
+                  >
+                    View all documentation
+                    <svg className="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                  </Link>
+                </div>
               </div>
             ))}
           </div>
@@ -139,12 +158,12 @@ const Documentation = () => {
                 <p className="text-gray-700 mb-4">
                   If you can't find what you're looking for in our documentation, our support team is ready to help.
                 </p>
-                <a 
-                  href="/support" 
+                <Link 
+                  to="/support" 
                   className="inline-flex items-center px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors"
                 >
                   Contact Support
-                </a>
+                </Link>
               </div>
             </div>
           </div>
