@@ -29,6 +29,18 @@ import ApiDocumentation from "./pages/docs/ApiDocumentation";
 import ApiReference from "./pages/docs/ApiReference";
 import VideoTutorials from "./pages/docs/VideoTutorials";
 
+// Best Practices Pages
+import BestPractices from "./pages/docs/BestPractices";
+import Performance from "./pages/docs/best-practices/Performance";
+
+// Resources Pages
+import ResourcesPage from "./pages/docs/ResourcesPage";
+import WorkflowTemplates from "./pages/docs/resources/WorkflowTemplates";
+
+// User Management Pages
+import UserManagement from "./pages/docs/UserManagement";
+import Roles from "./pages/docs/user-management/Roles";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -59,14 +71,32 @@ const App = () => (
           
           {/* Documentation Pages */}
           <Route path="/documentation" element={<Documentation />} />
+          
+          {/* Getting Started Section */}
           <Route path="/documentation/getting-started" element={<GettingStarted />} />
           <Route path="/documentation/getting-started/quick-start" element={<QuickStart />} />
           <Route path="/documentation/getting-started/platform-overview" element={<PlatformOverview />} />
           <Route path="/documentation/getting-started/account-setup" element={<AccountSetup />} />
           <Route path="/documentation/getting-started/first-automation" element={<FirstAutomation />} />
+          
+          {/* API Documentation Section */}
           <Route path="/documentation/api" element={<ApiDocumentation />} />
           <Route path="/documentation/api/reference" element={<ApiReference />} />
+          
+          {/* Videos Section */}
           <Route path="/documentation/videos" element={<VideoTutorials />} />
+          
+          {/* Best Practices Section */}
+          <Route path="/documentation/best-practices" element={<BestPractices />} />
+          <Route path="/documentation/best-practices/performance" element={<Performance />} />
+          
+          {/* Resources Section */}
+          <Route path="/documentation/resources" element={<ResourcesPage />} />
+          <Route path="/documentation/resources/workflow-templates" element={<WorkflowTemplates />} />
+          
+          {/* User Management Section */}
+          <Route path="/documentation/user-management" element={<UserManagement />} />
+          <Route path="/documentation/user-management/roles" element={<Roles />} />
           
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
