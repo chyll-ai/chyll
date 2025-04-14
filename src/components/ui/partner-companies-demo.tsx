@@ -1,4 +1,3 @@
-
 import React from "react";
 import { InfiniteSlider } from "@/components/ui/infinite-slider";
 
@@ -7,7 +6,7 @@ export function PartnerCompaniesDemo() {
     <div className="py-12">
       <div className="text-center mb-8">
         <h3 className="text-xl md:text-2xl font-semibold text-gray-800">
-          Join 1000+ businesses accelerating growth with our AI solutions
+          Join businesses accelerating growth with our AI solutions
         </h3>
       </div>
       
@@ -17,6 +16,16 @@ export function PartnerCompaniesDemo() {
         durationOnHover={80} 
         className="w-full py-4"
       >
+        {/* La French Tech logo */}
+        <div className="flex flex-col items-center mx-4 min-w-[160px]">
+          <img 
+            src="/lovable-uploads/d483f078-27d2-4526-8e14-82bbb3b89a73.png" 
+            alt="La French Tech logo" 
+            className="h-12 w-auto mb-2" 
+          />
+          <span className="text-sm font-medium text-gray-700">La French Tech</span>
+        </div>
+
         {/* Paris&Co logo */}
         <div className="flex flex-col items-center mx-4 min-w-[160px]">
           <img 
