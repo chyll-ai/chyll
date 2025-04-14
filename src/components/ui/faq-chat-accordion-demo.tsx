@@ -3,33 +3,40 @@ import { FaqAccordion } from "@/components/ui/faq-chat-accordion";
 
 const defaultData = [
   {
-    answer: "The internet doesn't close. It's available 24/7.",
-    icon: "❤️",
+    answer: "Botis is an AI-powered automation platform that helps businesses streamline workflows, handle customer communications, and scale operations. It combines advanced AI with intuitive tools to handle repetitive tasks, engage with customers, and provide data-driven insights.",
+    icon: "🤖",
     iconPosition: "right" as const,
     id: 1,
-    question: "How late does the internet close?",
+    question: "What is botis and how can it help my business?",
   },
   {
-    answer: "No, you don't need a license to browse this website.",
+    answer: "No technical skills required! Botis is designed to be user-friendly with a simple interface. Our onboarding team will help you set up your workflows and automations, and our documentation provides step-by-step guidance.",
     id: 2,
-    question: "Do I need a license to browse this website?",
+    question: "Do I need technical skills to use botis?",
   },
   {
-    answer: "Our cookies are digital, not edible. They're used for website functionality.",
+    answer: "Most businesses can get up and running with botis in just a few days. The exact timeline depends on your specific needs, but our white-glove onboarding ensures a smooth and efficient implementation process.",
     id: 3,
-    question: "What flavour are the cookies?",
+    question: "How long does it take to implement botis?",
   },
   {
-    answer: "Yes, but we do have a return policy",
-    icon: "⭐",
+    answer: "Yes! Botis seamlessly integrates with most popular business tools including CRMs, marketing platforms, payment processors, and communication tools. Our team can assist with custom integrations if needed.",
+    icon: "⚙️",
     iconPosition: "left" as const,
     id: 4,
-    question: "Can I get lost here?",
+    question: "Can botis integrate with my existing tools and systems?",
   },
   {
-    answer: "Don't worry, you can always go back or refresh the page.",
+    answer: "We offer multiple levels of support depending on your plan. All customers receive email support, while our Professional and Expert plans include faster response times, priority support, and scheduled strategy calls.",
     id: 5,
-    question: "What if I click the wrong button?",
+    question: "What kind of support does botis provide?",
+  },
+  {
+    answer: "Absolutely. We take data security very seriously. Botis employs enterprise-grade encryption, regular security audits, and follows best practices for data protection. Our Expert plan includes additional security features like SSO authentication.",
+    icon: "🔒",
+    iconPosition: "right" as const,
+    id: 6,
+    question: "Is my data secure with botis?",
   },
 ];
 
@@ -38,6 +45,7 @@ function DefaultDemo() {
     <FaqAccordion 
       data={defaultData}
       className="max-w-[700px]"
+      timestamp="Last updated: April 2025"
     />
   );
 }
