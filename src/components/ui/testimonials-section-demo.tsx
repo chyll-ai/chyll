@@ -8,7 +8,7 @@ const testimonials = [
       handle: "@sarahj_marketing",
       avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=face"
     },
-    text: "Since implementing botis Voice AI, we've saved 20 hours a week in customer service and doubled our lead response rate.",
+    text: "Since implementing GenerativSchool Voice AI, we've saved 20 hours a week in customer service and doubled our lead response rate.",
     href: "#"
   },
   {
@@ -26,7 +26,7 @@ const testimonials = [
       handle: "@sophiar_founder",
       avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face"
     },
-    text: "As a solo entrepreneur, botis AI has become my most valuable team member. It handles customer inquiries 24/7 without missing a beat!"
+    text: "As a solo entrepreneur, GenerativSchool AI has become my most valuable team member. It handles customer inquiries 24/7 without missing a beat!"
   },
   {
     author: {
@@ -52,7 +52,7 @@ const testimonials = [
       handle: "@danielk_agency",
       avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face"
     },
-    text: "The ROI on botis has been incredible. We've seen a 35% increase in conversions since implementing the Funnel AI on our website.",
+    text: "The ROI on GenerativSchool has been incredible. We've seen a 35% increase in conversions since implementing the Funnel AI on our website.",
     href: "#"
   }
 ]
@@ -61,7 +61,7 @@ export function TestimonialsSectionDemo() {
   return (
     <TestimonialsSection
       title="See What Our Clients Are Saying"
-      description="Businesses of all sizes are transforming their operations with botis AI employees"
+      description="Businesses of all sizes are transforming their operations with GenerativSchool AI employees"
       testimonials={testimonials}
     />
   )

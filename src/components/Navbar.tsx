@@ -11,7 +11,7 @@ const Navbar = () => {
       <div className="container-custom flex justify-between items-center py-4">
         <div className="flex items-center">
           <a href="/" className="text-2xl font-bold text-gray-800">
-            botis
+            GenerativSchool
           </a>
         </div>
 
@@ -76,4 +76,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-
