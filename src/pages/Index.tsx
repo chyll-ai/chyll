@@ -3,13 +3,13 @@ import React from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import DemoForm from '@/components/DemoForm';
-import PricingCards from '@/components/PricingCards';
 import HowItWorks from '@/components/HowItWorks';
 import { Hero } from '@/components/ui/hero';
 import { DisplayCardsDemo } from '@/components/ui/display-cards-demo';
 import Benefits from '@/components/Benefits';
 import { BentoDemo } from '@/components/ui/bento-demo';
 import { TestimonialsSectionDemo } from '@/components/ui/testimonials-section-demo';
+import { PricingBasic } from '@/components/ui/pricing-basic';
 
 const Index = () => {
   return (
@@ -84,7 +84,7 @@ const Index = () => {
               Whether you're just getting started or scaling fast, we've got the AI solution that fits your workflow.
             </p>
           </div>
-          <PricingCards />
+          <PricingBasic />
         </div>
       </section>
       

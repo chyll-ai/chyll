@@ -6,57 +6,56 @@ import { Pricing } from "@/components/ui/pricing";
 const demoPlans = [
   {
     name: "STARTER",
-    price: "50",
-    yearlyPrice: "40",
-    period: "per month",
-    features: [
-      "Up to 10 projects",
-      "Basic analytics",
-      "48-hour support response time",
-      "Limited API access",
-      "Community support",
-    ],
-    description: "Perfect for individuals and small projects",
-    buttonText: "Start Free Trial",
-    href: "/sign-up",
-    isPopular: false,
-  },
-  {
-    name: "PROFESSIONAL",
     price: "99",
     yearlyPrice: "79",
     period: "per month",
     features: [
-      "Unlimited projects",
+      "Reviews AI: Reputation on Auto-Pilot",
+      "Content AI: Cure to Blank Pages",
+      "Funnel AI: High-Converting Pages",
+      "Basic analytics",
+      "48-hour support response time"
+    ],
+    description: "Designed for solo founders and small teams who want to automate the basics without friction.",
+    buttonText: "Book a Demo",
+    href: "/contact",
+    isPopular: false,
+  },
+  {
+    name: "PROFESSIONAL",
+    price: "199",
+    yearlyPrice: "159",
+    period: "per month",
+    features: [
+      "Everything in Starter",
+      "Workflow AI: Your Automation Weapon",
+      "Conversation AI: Natural Live Chat",
       "Advanced analytics",
       "24-hour support response time",
-      "Full API access",
-      "Priority support",
-      "Team collaboration",
-      "Custom integrations",
+      "Team collaboration"
     ],
-    description: "Ideal for growing teams and businesses",
-    buttonText: "Get Started",
-    href: "/sign-up",
+    description: "Built for growing businesses ready to scale customer interactions and marketing efforts with smart automation.",
+    buttonText: "Book a Demo",
+    href: "/contact",
     isPopular: true,
   },
   {
-    name: "ENTERPRISE",
-    price: "299",
-    yearlyPrice: "239",
+    name: "EXPERT",
+    price: "699",
+    yearlyPrice: "559",
     period: "per month",
     features: [
-      "Everything in Professional",
-      "Custom solutions",
-      "Dedicated account manager",
-      "1-hour support response time",
+      "Everything in Pro",
+      "Voice AI: Never Miss a Call",
+      "Custom AI Setup & Strategy",
+      "White-Glove Onboarding + Priority Support",
+      "Monthly Strategy Calls + Performance Reviews",
       "SSO Authentication",
       "Advanced security",
-      "Custom contracts",
-      "SLA agreement",
+      "Custom contracts"
     ],
-    description: "For large organizations with specific needs",
-    buttonText: "Contact Sales",
+    description: "For high-volume teams needing full AI integration, advanced workflows, and always-on voice communication.",
+    buttonText: "Book a Demo",
     href: "/contact",
     isPopular: false,
   },
@@ -64,12 +63,12 @@ const demoPlans = [
 
 function PricingBasic() {
   return (
-    <div className="h-[800px] overflow-y-auto rounded-lg">
+    <div className="overflow-y-auto">
       <Pricing 
         plans={demoPlans}
         title="Simple, Transparent Pricing"
-        description="Choose the plan that works for you
-All plans include access to our platform, lead generation tools, and dedicated support."
+        description="Choose the plan that works for your business needs.
+All plans include access to our platform, AI automation tools, and dedicated support."
       />
     </div>
   );
