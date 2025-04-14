@@ -395,7 +395,7 @@ const AuditLogs = () => {
               <div>
                 <h4 className="font-medium mb-1">Alert Configuration</h4>
                 <ol className="list-decimal pl-5 space-y-1 text-sm">
-                  <li>Navigate to Audit Logs > Alerts</li>
+                  <li>Navigate to Audit Logs {'>'} Alerts</li>
                   <li>Click "Create New Alert"</li>
                   <li>Define your alert conditions</li>
                   <li>Set notification channels</li>
