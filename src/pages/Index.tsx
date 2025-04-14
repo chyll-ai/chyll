@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -8,8 +7,7 @@ import PricingCards from '@/components/PricingCards';
 import FeatureCards from '@/components/FeatureCards';
 import Benefits from '@/components/Benefits';
 import HowItWorks from '@/components/HowItWorks';
-import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
+import { Hero } from '@/components/ui/hero';
 
 const Index = () => {
   return (
@@ -17,37 +15,7 @@ const Index = () => {
       <Navbar />
       
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-50 to-indigo-50 py-20 md:py-28">
-        <div className="container-custom">
-          <div className="flex flex-col md:flex-row items-center">
-            <div className="w-full md:w-1/2 mb-10 md:mb-0 md:pr-8">
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 text-gray-900 animate-fade-in">
-                Your New <span className="text-brand-blue">AI EMPLOYEE</span>
-              </h1>
-              <p className="text-xl md:text-2xl text-gray-700 mb-8 animate-fade-up">
-                Smart Solutions, Big Business Impact
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Button className="btn-primary text-lg px-8 py-6 animate-fade-up" style={{ animationDelay: '0.1s' }}>
-                  Book a Demo <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-                <Button variant="outline" className="text-lg px-8 py-6 animate-fade-up" style={{ animationDelay: '0.2s' }}>
-                  Learn More
-                </Button>
-              </div>
-            </div>
-            <div className="w-full md:w-1/2 animate-fade-in" style={{ animationDelay: '0.3s' }}>
-              <div className="bg-white rounded-xl shadow-xl overflow-hidden border border-gray-100">
-                <img 
-                  src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80" 
-                  alt="AI Workspace" 
-                  className="w-full h-auto" 
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <Hero />
       
       {/* Benefits Section */}
       <section id="benefits" className="section-padding bg-white">
