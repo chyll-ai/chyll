@@ -31,8 +31,8 @@ interface PricingProps {
 
 export function Pricing({
   plans,
-  title = "Simple, Transparent Pricing",
-  description = "Choose the plan that works for you\nAll plans include access to our platform, lead generation tools, and dedicated support.",
+  title = "",
+  description = "",
 }: PricingProps) {
   const [isMonthly, setIsMonthly] = useState(true);
   const isDesktop = useMediaQuery("(min-width: 768px)");
@@ -69,14 +69,20 @@ export function Pricing({
 
   return (
     <div className="container py-20">
-      <div className="text-center space-y-4 mb-12">
-        <h2 className="text-4xl font-bold tracking-tight sm:text-5xl">
-          {title}
-        </h2>
-        <p className="text-muted-foreground text-lg whitespace-pre-line">
-          {description}
-        </p>
-      </div>
+      {(title || description) && (
+        <div className="text-center space-y-4 mb-12">
+          {title && (
+            <h2 className="text-4xl font-bold tracking-tight sm:text-5xl">
+              {title}
+            </h2>
+          )}
+          {description && (
+            <p className="text-muted-foreground text-lg whitespace-pre-line">
+              {description}
+            </p>
+          )}
+        </div>
+      )}
 
       <div className="flex justify-center mb-10">
         <label className="relative inline-flex items-center cursor-pointer">
