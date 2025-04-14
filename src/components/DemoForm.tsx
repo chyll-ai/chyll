@@ -19,15 +19,8 @@ const DemoForm = () => {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Simulate form submission
-    setTimeout(() => {
-      toast({
-        title: "Demo Request Received",
-        description: "We'll contact you shortly to schedule your AI Employee demo!",
-      });
-      setFormData({ name: '', email: '', phone: '', company: '' });
-      setIsSubmitting(false);
-    }, 1000);
+    // Redirect to booking page instead of showing toast
+    window.location.href = "https://api.leadconnectorhq.com/widget/booking/XvUg6399vyVtvCXETgsY";
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -91,7 +84,7 @@ const DemoForm = () => {
         className="w-full bg-brand-blue hover:bg-brand-blue-dark"
         disabled={isSubmitting}
       >
-        {isSubmitting ? "Submitting..." : "Book Your Demo"}
+        {isSubmitting ? "Redirecting..." : "Book Your Demo"}
       </Button>
       
       <p className="text-xs text-gray-500 text-center">

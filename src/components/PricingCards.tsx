@@ -110,8 +110,11 @@ const PricingCards = () => {
                       : 'bg-red-500 hover:bg-red-600 text-white')
                   : ''
               }`}
+              asChild
             >
-              Book a Demo
+              <a href="https://api.leadconnectorhq.com/widget/booking/XvUg6399vyVtvCXETgsY" target="_blank" rel="noopener noreferrer">
+                Book a Demo
+              </a>
             </Button>
           </CardFooter>
         </Card>

@@ -20,8 +20,10 @@ const Navbar = () => {
           <a href="#features" className="text-gray-700 hover:text-brand-blue transition-colors">Features</a>
           <a href="#how-it-works" className="text-gray-700 hover:text-brand-blue transition-colors">How It Works</a>
           <a href="#pricing" className="text-gray-700 hover:text-brand-blue transition-colors">Pricing</a>
-          <Button variant="rainbow">
-            Book a Demo
+          <Button variant="rainbow" asChild>
+            <a href="https://api.leadconnectorhq.com/widget/booking/XvUg6399vyVtvCXETgsY" target="_blank" rel="noopener noreferrer">
+              Book a Demo
+            </a>
           </Button>
         </div>
 
@@ -65,8 +67,11 @@ const Navbar = () => {
               variant="rainbow"
               className="w-full"
               onClick={() => setIsMenuOpen(false)}
+              asChild
             >
-              Book a Demo
+              <a href="https://api.leadconnectorhq.com/widget/booking/XvUg6399vyVtvCXETgsY" target="_blank" rel="noopener noreferrer">
+                Book a Demo
+              </a>
             </Button>
           </div>
         </div>

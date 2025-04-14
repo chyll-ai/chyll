@@ -73,11 +73,15 @@ function Hero() {
             </p>
           </div>
           <div className="flex flex-row gap-3">
-            <Button size="lg" className="gap-4" variant="outline">
-              Book a demo <PhoneCall className="w-4 h-4" />
+            <Button size="lg" className="gap-4" variant="outline" asChild>
+              <a href="https://api.leadconnectorhq.com/widget/booking/XvUg6399vyVtvCXETgsY" target="_blank" rel="noopener noreferrer">
+                Book a demo <PhoneCall className="w-4 h-4" />
+              </a>
             </Button>
-            <Button size="lg" className="gap-4" variant="rainbow">
-              Get started now <MoveRight className="w-4 h-4" />
+            <Button size="lg" className="gap-4" variant="rainbow" asChild>
+              <a href="https://api.leadconnectorhq.com/widget/booking/XvUg6399vyVtvCXETgsY" target="_blank" rel="noopener noreferrer">
+                Get started now <MoveRight className="w-4 h-4" />
+              </a>
             </Button>
           </div>
         </div>

@@ -18,7 +18,7 @@ const demoPlans = [
     ],
     description: "Designed for solo founders and small teams who want to automate the basics without friction.",
     buttonText: "Book a Demo",
-    href: "/contact",
+    href: "https://api.leadconnectorhq.com/widget/booking/XvUg6399vyVtvCXETgsY",
     isPopular: false,
   },
   {
@@ -36,7 +36,7 @@ const demoPlans = [
     ],
     description: "Built for growing businesses ready to scale customer interactions and marketing efforts with smart automation.",
     buttonText: "Book a Demo",
-    href: "/contact",
+    href: "https://api.leadconnectorhq.com/widget/booking/XvUg6399vyVtvCXETgsY",
     isPopular: true,
   },
   {
@@ -56,7 +56,7 @@ const demoPlans = [
     ],
     description: "For high-volume teams needing full AI integration, advanced workflows, and always-on voice communication.",
     buttonText: "Book a Demo",
-    href: "/contact",
+    href: "https://api.leadconnectorhq.com/widget/booking/XvUg6399vyVtvCXETgsY",
     isPopular: false,
   },
 ];

@@ -73,16 +73,16 @@ export function Hero() {
             Streamline your workflows, automate customer interactions, and scale your business operations.
           </p>
           <div className="flex justify-center gap-2">
-            <a href="/dashboard">
-              <Button variant="rainbow" size="lg">
+            <Button variant="rainbow" size="lg" asChild>
+              <a href="https://api.leadconnectorhq.com/widget/booking/XvUg6399vyVtvCXETgsY" target="_blank" rel="noopener noreferrer">
                 Get Started
-              </Button>
-            </a>
-            <a href="#demo">
-              <Button variant="outline" size="lg">
+              </a>
+            </Button>
+            <Button variant="outline" size="lg" asChild>
+              <a href="https://api.leadconnectorhq.com/widget/booking/XvUg6399vyVtvCXETgsY" target="_blank" rel="noopener noreferrer">
                 Book a Demo
-              </Button>
-            </a>
+              </a>
+            </Button>
           </div>
         </div>
       </div>
