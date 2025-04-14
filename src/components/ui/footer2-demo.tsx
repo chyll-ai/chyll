@@ -1,4 +1,3 @@
-
 import { Footer2 } from "@/components/ui/footer2";
 
 const demoData = {
@@ -17,7 +16,6 @@ const demoData = {
       title: "Company",
       links: [
         { text: "About Us", url: "/about-us" },
-        { text: "Team", url: "/team" },
         { text: "Careers", url: "/careers" },
         { text: "Contact", url: "/contact" },
       ],

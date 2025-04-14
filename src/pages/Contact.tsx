@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Navbar from '@/components/Navbar';
 import { Footer2Demo } from '@/components/ui/footer2-demo';
@@ -46,8 +45,6 @@ const Contact = () => {
     setIsSubmitting(true);
 
     try {
-      // This is a simple email sending implementation using formsubmit.co service
-      // It will forward the form data to contact@generativschool.com
       const response = await fetch('https://formsubmit.co/contact@generativschool.com', {
         method: 'POST',
         headers: {
@@ -66,7 +63,6 @@ const Contact = () => {
           title: "Message sent!",
           description: "Thank you for contacting us. We'll get back to you soon.",
         });
-        // Reset form
         setFormData({
           firstName: '',
           lastName: '',
@@ -122,10 +118,10 @@ const Contact = () => {
                   
                   <ContactInfo 
                     icon={<Phone className="w-6 h-6 text-indigo-600" />}
-                    title="Phone Number"
+                    title="Toll-Free Phone Number"
                     details={
-                      <a href="tel:+33123456789" className="hover:text-indigo-600 transition-colors">
-                        +33 1 23 45 67 89
+                      <a href="tel:+18445942399" className="hover:text-indigo-600 transition-colors">
+                        +1 (844) 594-2399 (Toll Free)
                       </a>
                     }
                   />
