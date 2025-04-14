@@ -66,6 +66,16 @@ export function PartnerCompaniesDemo() {
           />
           <span className="text-sm font-medium text-gray-700">Région Île-de-France</span>
         </div>
+
+        {/* Paris Initiative Entreprise logo */}
+        <div className="flex flex-col items-center mx-4 min-w-[160px]">
+          <img 
+            src="/lovable-uploads/cefd3e40-01d5-41ca-9080-ab0c918d7e57.png" 
+            alt="Paris Initiative Entreprise logo" 
+            className="h-12 w-auto mb-2" 
+          />
+          <span className="text-sm font-medium text-gray-700">Paris Initiative Entreprise</span>
+        </div>
       </InfiniteSlider>
     </div>
   );
