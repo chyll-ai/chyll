@@ -13,7 +13,7 @@ import { BentoCard, BentoGrid } from "@/components/ui/bento-grid";
 const features = [
   {
     Icon: Phone,
-    name: "OBI, THE VOICE AI: Never Miss a Call",
+    name: "BASTIEN, THE VOICE AI: Never Miss a Call",
     description: "Automate your phone calls with a virtual receptionist that answers calls 24/7, collects information, manages appointments, and qualifies leads through natural conversation.",
     href: "/",
     cta: "Hire AI Employee",
@@ -22,7 +22,7 @@ const features = [
   },
   {
     Icon: MessageSquare,
-    name: "LEIA, THE CONVERSATION AI: Natural Live Chat",
+    name: "MARIE, THE CONVERSATION AI: Natural Live Chat",
     description: "Automate customer engagement across SMS, Live Chat, Facebook, Instagram with intelligent responses that learn from past interactions to book appointments and provide 24/7 support.",
     href: "/",
     cta: "Hire AI Employee",
@@ -31,7 +31,7 @@ const features = [
   },
   {
     Icon: Star,
-    name: "LUKE, THE REVIEWS AI: Reputation on Auto-Pilot",
+    name: "LOUIS, THE REVIEWS AI: Reputation on Auto-Pilot",
     description: "Take control of your online reputation with automated review responses across Google and Facebook, helping improve SEO and collecting valuable customer insights.",
     href: "/",
     cta: "Hire AI Employee",
@@ -40,7 +40,7 @@ const features = [
   },
   {
     Icon: FileText,
-    name: "YODA, THE CONTENT AI: Cure to Blank Pages",
+    name: "VOLTAIRE, THE CONTENT AI: Cure to Blank Pages",
     description: "Generate high-quality blog posts, social media content, email campaigns, and custom images that match your brand's voice without any design skills needed.",
     href: "/",
     cta: "Hire AI Employee",
@@ -49,7 +49,7 @@ const features = [
   },
   {
     Icon: Workflow,
-    name: "R2D2, THE WORKFLOW AI: Your Automation Weapon",
+    name: "NAPOLEON, THE WORKFLOW AI: Your Automation Weapon",
     description: "Master your business automation with guided workflow creation, from understanding structure to building lead nurture sequences and appointment scheduling systems.",
     href: "/",
     cta: "Hire AI Employee",
@@ -58,7 +58,7 @@ const features = [
   },
   {
     Icon: LineChart,
-    name: "HAN, THE FUNNEL AI: High-Converting Pages",
+    name: "JEAN, THE FUNNEL AI: High-Converting Pages",
     description: "Build effective lead generation, membership, and sales funnels quickly by answering a few prompts about your business to create a conversion-optimized digital presence.",
     href: "/",
     cta: "Hire AI Employee",
