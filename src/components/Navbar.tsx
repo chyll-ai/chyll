@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Menu, X, ChevronDown } from 'lucide-react';
+import { Menu, X, ChevronDown, Home } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import {
   NavigationMenu,
@@ -12,16 +12,29 @@ import {
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
 
-const Navbar = () => {
+interface NavbarProps {
+  currentPath?: string;
+}
+
+const Navbar = ({ currentPath = '/' }: NavbarProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const isHomePage = currentPath === '/';
 
   return (
     <nav className="bg-white/90 backdrop-blur-sm sticky top-0 z-50 border-b border-gray-100">
       <div className="container-custom flex justify-between items-center py-4">
-        <div className="flex items-center">
+        <div className="flex items-center gap-4">
           <Link to="/" className="text-2xl font-bold text-gray-800">
             GenerativSchool
           </Link>
+          
+          {/* Home button - only show when not on home page */}
+          {!isHomePage && (
+            <Link to="/" className="text-gray-700 hover:text-brand-blue transition-colors flex items-center gap-1">
+              <Home size={18} />
+              <span className="hidden sm:inline">Home</span>
+            </Link>
+          )}
         </div>
 
         {/* Desktop Navigation */}
@@ -153,6 +166,17 @@ const Navbar = () => {
       {isMenuOpen && (
         <div className="md:hidden bg-white border-t border-gray-100 animate-fade-in">
           <div className="container-custom py-4 flex flex-col space-y-4">
+            {!isHomePage && (
+              <Link 
+                to="/"
+                className="text-gray-700 hover:text-brand-blue py-2 transition-colors flex items-center gap-1"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <Home size={18} />
+                Home
+              </Link>
+            )}
+            
             <a 
               href="#features" 
               className="text-gray-700 hover:text-brand-blue py-2 transition-colors"

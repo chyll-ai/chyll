@@ -5,11 +5,14 @@ import { Footer2Demo } from '@/components/ui/footer2-demo';
 import { DefaultDemo } from '@/components/ui/faq-chat-accordion-demo';
 import { FAQSection } from '@/components/ui/faq-section';
 import { ArrowRight } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
 
 const FAQ = () => {
+  const location = useLocation();
+  
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar />
+      <Navbar currentPath={location.pathname} />
       
       <section className="bg-indigo-50 py-20">
         <div className="container-custom">
