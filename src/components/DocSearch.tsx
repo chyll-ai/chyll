@@ -5,7 +5,6 @@ import { useNavigate } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
 import { searchDocumentation } from '@/utils/search';
 import { Route } from '@/types/search';
-import { useTranslation } from '@/contexts/TranslationContext';
 import {
   Command,
   CommandDialog,
@@ -21,13 +20,12 @@ interface DocSearchProps {
   placeholder?: string;
 }
 
-const DocSearch = ({ containerClassName = '', placeholder }: DocSearchProps) => {
+const DocSearch = ({ containerClassName = '', placeholder = 'Search documentation...' }: DocSearchProps) => {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<Route[]>([]);
   const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement>(null);
-  const { t } = useTranslation();
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -63,8 +61,6 @@ const DocSearch = ({ containerClassName = '', placeholder }: DocSearchProps) => 
     }
   };
 
-  const defaultPlaceholder = t('search_docs');
-
   return (
     <div className={`relative ${containerClassName}`}>
       <div className="relative" onClick={() => setOpen(true)}>
@@ -75,7 +71,7 @@ const DocSearch = ({ containerClassName = '', placeholder }: DocSearchProps) => 
           ref={inputRef}
           type="text"
           className="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-md bg-white focus:ring-indigo-500 focus:border-indigo-500"
-          placeholder={placeholder || defaultPlaceholder}
+          placeholder={placeholder}
           readOnly
           onClick={() => setOpen(true)}
         />
@@ -84,15 +80,15 @@ const DocSearch = ({ containerClassName = '', placeholder }: DocSearchProps) => 
       <CommandDialog open={open} onOpenChange={handleOpenChange}>
         <Command>
           <CommandInput 
-            placeholder={t('search_documentation')}
+            placeholder="Search documentation..." 
             value={query}
             onValueChange={setQuery}
             autoFocus
           />
           <CommandList>
-            <CommandEmpty>{t('no_results_found')}</CommandEmpty>
+            <CommandEmpty>No results found.</CommandEmpty>
             {results.length > 0 && (
-              <CommandGroup heading={t('documentation')}>
+              <CommandGroup heading="Documentation">
                 {results.map((result, index) => (
                   <CommandItem
                     key={index}

@@ -1,124 +1,126 @@
 
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { useTranslation } from '@/contexts/TranslationContext';
-import { Menu, X } from 'lucide-react';
-import LanguageSwitcher from './LanguageSwitcher';
+import { Button } from '@/components/ui/button';
+import { Menu, X, Home } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
 
 interface NavbarProps {
   currentPath?: string;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ currentPath = '' }) => {
+const Navbar = ({ currentPath = '/' }: NavbarProps) => {
+  const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
-  const { t } = useTranslation();
+  const isHomePage = location.pathname === '/';
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 10) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
+  // Navigate to specific section if on home page, otherwise navigate to home with section hash
+  const getSectionLink = (section: string) => {
+    return isHomePage ? `#${section}` : `/${section}`;
   };
 
-  const navLinks = [
-    { name: t('home'), path: '/' },
-    { name: t('features'), path: '/#features' },
-    { name: t('how_it_works'), path: '/#how-it-works' },
-    { name: t('pricing'), path: '/#pricing' },
-    { name: t('documentation'), path: '/documentation' },
-    { name: t('blog'), path: '/blog' },
-    { name: t('faq'), path: '/faq' },
-    { name: t('about_us'), path: '/about-us' },
-  ];
+  // Handle smooth scrolling when clicking on a link that points to an ID
+  useEffect(() => {
+    // Check if there's a hash in the URL
+    if (location.hash && isHomePage) {
+      const id = location.hash.replace('#', '');
+      const element = document.getElementById(id);
+      if (element) {
+        // Wait a bit for the DOM to fully render
+        setTimeout(() => {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+      }
+    }
+  }, [location.hash, isHomePage]);
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-white shadow-md py-2' : 'bg-transparent py-4'}`}>
-      <div className="container mx-auto px-4">
-        <div className="flex justify-between items-center">
+    <nav className="bg-white/90 backdrop-blur-sm sticky top-0 z-50 border-b border-gray-100">
+      <div className="container-custom flex justify-between items-center py-4">
+        <div className="flex items-center gap-4">
           <Link to="/" className="text-2xl font-bold text-gray-800">
             GenerativSchool
           </Link>
+          
+          {/* Home button - only show when not on home page */}
+          {!isHomePage && (
+            <Link to="/" className="text-gray-700 hover:text-brand-blue transition-colors flex items-center gap-1">
+              <Home size={18} />
+              <span className="hidden sm:inline">Home</span>
+            </Link>
+          )}
+        </div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            <div className="flex space-x-6">
-              {navLinks.map((link, index) => (
-                <Link
-                  key={index}
-                  to={link.path}
-                  className={`text-gray-600 hover:text-gray-900 transition-colors ${
-                    currentPath === link.path || 
-                    (link.path !== '/' && currentPath?.startsWith(link.path)) ? 
-                    'font-medium text-gray-900' : ''
-                  }`}
-                >
-                  {link.name}
-                </Link>
-              ))}
-            </div>
-            
-            <div className="flex items-center gap-4">
-              <LanguageSwitcher />
-              <Link
-                to="https://api.leadconnectorhq.com/widget/booking/XvUg6399vyVtvCXETgsY"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-brand-blue hover:bg-blue-700 text-white py-2 px-4 rounded-md transition-colors"
-              >
-                {t('contact')}
-              </Link>
-            </div>
-          </div>
+        {/* Desktop Navigation */}
+        <div className="hidden md:flex items-center space-x-8">
+          <Link to={getSectionLink("features")} className="text-gray-700 hover:text-brand-blue transition-colors">Features</Link>
+          <Link to={getSectionLink("how-it-works")} className="text-gray-700 hover:text-brand-blue transition-colors">How It Works</Link>
+          <Link to={getSectionLink("pricing")} className="text-gray-700 hover:text-brand-blue transition-colors">Pricing</Link>
+          
+          <Button variant="rainbow" asChild>
+            <a href="https://api.leadconnectorhq.com/widget/booking/XvUg6399vyVtvCXETgsY" target="_blank" rel="noopener noreferrer">
+              Book a Demo
+            </a>
+          </Button>
+        </div>
 
-          {/* Mobile Menu Button */}
-          <div className="md:hidden flex items-center">
-            <LanguageSwitcher />
-            <button
-              onClick={toggleMenu}
-              className="text-gray-500 hover:text-gray-700 focus:outline-none ml-4"
-            >
-              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
-          </div>
+        {/* Mobile Menu Button */}
+        <div className="md:hidden">
+          <button 
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="text-gray-700 hover:text-brand-blue"
+          >
+            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
         </div>
       </div>
 
       {/* Mobile Menu */}
       {isMenuOpen && (
-        <div className="md:hidden bg-white shadow-lg">
-          <div className="container mx-auto px-4 py-3">
-            <div className="flex flex-col space-y-3">
-              {navLinks.map((link, index) => (
-                <Link
-                  key={index}
-                  to={link.path}
-                  className="text-gray-600 hover:text-gray-900 py-2 transition-colors"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  {link.name}
-                </Link>
-              ))}
-              <Link
-                to="https://api.leadconnectorhq.com/widget/booking/XvUg6399vyVtvCXETgsY"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-brand-blue hover:bg-blue-700 text-white py-2 px-4 rounded-md transition-colors text-center mt-2"
+        <div className="md:hidden bg-white border-t border-gray-100 animate-fade-in">
+          <div className="container-custom py-4 flex flex-col space-y-4">
+            {!isHomePage && (
+              <Link 
+                to="/"
+                className="text-gray-700 hover:text-brand-blue py-2 transition-colors flex items-center gap-1"
                 onClick={() => setIsMenuOpen(false)}
               >
-                {t('contact')}
+                <Home size={18} />
+                Home
               </Link>
-            </div>
+            )}
+            
+            <Link 
+              to={getSectionLink("features")}
+              className="text-gray-700 hover:text-brand-blue py-2 transition-colors"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Features
+            </Link>
+            <Link 
+              to={getSectionLink("how-it-works")}
+              className="text-gray-700 hover:text-brand-blue py-2 transition-colors"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              How It Works
+            </Link>
+            <Link 
+              to={getSectionLink("pricing")}
+              className="text-gray-700 hover:text-brand-blue py-2 transition-colors"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Pricing
+            </Link>
+            
+            <Button 
+              variant="rainbow"
+              className="w-full"
+              onClick={() => setIsMenuOpen(false)}
+              asChild
+            >
+              <a href="https://api.leadconnectorhq.com/widget/booking/XvUg6399vyVtvCXETgsY" target="_blank" rel="noopener noreferrer">
+                Book a Demo
+              </a>
+            </Button>
           </div>
         </div>
       )}

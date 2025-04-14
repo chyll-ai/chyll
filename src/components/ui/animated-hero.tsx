@@ -1,16 +1,14 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { MoveRight, PhoneCall } from "lucide-react";
+import { MoveRight, PhoneCall, Bot } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { renderCanvas } from "@/components/ui/canvas";
-import { useTranslation } from "@/contexts/TranslationContext";
 
 function Hero() {
-  const { t } = useTranslation();
   const [titleNumber, setTitleNumber] = useState(0);
   const titles = useMemo(
-    () => ["cost_saving", "customer_converting", "time_saving", "revenue_boosting", "always_on"],
+    () => ["cost-saving", "customer-converting", "time-saving", "revenue-boosting", "always-on"],
     []
   );
 
@@ -36,7 +34,7 @@ function Hero() {
         <div className="flex gap-8 py-20 lg:py-40 items-center justify-center flex-col">
           <div className="flex gap-4 flex-col">
             <h1 className="text-5xl md:text-7xl max-w-2xl tracking-tighter text-center font-regular">
-              <span className="text-brand-blue">{t('scale_business')}</span>
+              <span className="text-brand-blue">Scale your business with</span>
               <span className="relative flex w-full justify-center overflow-hidden text-center md:pb-4 md:pt-1">
                 &nbsp;
                 {titles.map((title, index) => (
@@ -57,25 +55,27 @@ function Hero() {
                           }
                     }
                   >
-                    {t(title)}
+                    {title}
                   </motion.span>
                 ))}
               </span>
             </h1>
 
             <p className="text-lg md:text-xl leading-relaxed tracking-tight text-muted-foreground max-w-2xl text-center">
-              {t('transform_business')}
+              Transform your business with AI employees that never sleep, never take vacations, 
+              and consistently deliver exceptional results. Streamline operations, 
+              reduce costs, and scale your business like never before.
             </p>
           </div>
           <div className="flex flex-row gap-3">
             <Button size="lg" className="gap-4" variant="outline" asChild>
               <a href="https://api.leadconnectorhq.com/widget/booking/XvUg6399vyVtvCXETgsY" target="_blank" rel="noopener noreferrer">
-                {t('book_demo')} <PhoneCall className="w-4 h-4" />
+                Book a demo <PhoneCall className="w-4 h-4" />
               </a>
             </Button>
             <Button size="lg" className="gap-4" variant="rainbow" asChild>
               <a href="https://api.leadconnectorhq.com/widget/booking/XvUg6399vyVtvCXETgsY" target="_blank" rel="noopener noreferrer">
-                {t('get_started_now')} <MoveRight className="w-4 h-4" />
+                Get started now <MoveRight className="w-4 h-4" />
               </a>
             </Button>
           </div>

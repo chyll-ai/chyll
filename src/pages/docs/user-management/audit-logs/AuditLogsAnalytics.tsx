@@ -1,27 +1,25 @@
 
 import React from 'react';
 import { BarChart, AlertCircle } from 'lucide-react';
-import { useTranslation } from '@/contexts/TranslationContext';
 
 const AuditLogsAnalytics = () => {
-  const { t } = useTranslation();
-  
   return (
     <section>
-      <h2 className="text-2xl font-bold mb-6">{t('audit_log_analytics')}</h2>
+      <h2 className="text-2xl font-bold mb-6">Audit Log Analytics</h2>
       
       <p className="mb-6">
-        {t('analytics_description')}
+        GenerativSchool Enterprise provides advanced analytics capabilities to help you derive insights 
+        from your audit logs.
       </p>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
         <div className="bg-white border border-gray-200 rounded-lg p-6">
           <div className="flex items-center mb-4">
             <BarChart className="h-6 w-6 text-indigo-600 mr-3" />
-            <h3 className="text-xl font-semibold">{t('usage_patterns')}</h3>
+            <h3 className="text-xl font-semibold">Usage Patterns</h3>
           </div>
           <p className="mb-4">
-            {t('usage_patterns_description')}
+            Analyze how your team uses GenerativSchool to identify optimization opportunities.
           </p>
           <ul className="list-disc pl-6 space-y-2">
             <li>Most active users and resources</li>
@@ -35,10 +33,10 @@ const AuditLogsAnalytics = () => {
         <div className="bg-white border border-gray-200 rounded-lg p-6">
           <div className="flex items-center mb-4">
             <AlertCircle className="h-6 w-6 text-indigo-600 mr-3" />
-            <h3 className="text-xl font-semibold">{t('security_analytics')}</h3>
+            <h3 className="text-xl font-semibold">Security Analytics</h3>
           </div>
           <p className="mb-4">
-            {t('security_analytics_description')}
+            Identify potential security issues through advanced pattern analysis.
           </p>
           <ul className="list-disc pl-6 space-y-2">
             <li>Anomaly detection in user behavior</li>
@@ -51,13 +49,13 @@ const AuditLogsAnalytics = () => {
       </div>
       
       <div className="bg-blue-50 border border-blue-100 rounded-lg p-6">
-        <h3 className="text-xl font-semibold mb-4">{t('custom_reporting')}</h3>
+        <h3 className="text-xl font-semibold mb-4">Custom Reporting</h3>
         <p className="mb-4">
-          {t('custom_reporting_description')}
+          Create custom reports based on your audit log data to meet specific business or compliance needs.
         </p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <h4 className="font-medium mb-2">{t('report_types')}</h4>
+            <h4 className="font-medium mb-2">Report Types</h4>
             <ul className="list-disc pl-6 space-y-1">
               <li>User activity summaries</li>
               <li>Resource access reports</li>
@@ -67,7 +65,7 @@ const AuditLogsAnalytics = () => {
             </ul>
           </div>
           <div>
-            <h4 className="font-medium mb-2">{t('scheduling_options')}</h4>
+            <h4 className="font-medium mb-2">Scheduling Options</h4>
             <ul className="list-disc pl-6 space-y-1">
               <li>One-time reports</li>
               <li>Daily/weekly/monthly schedules</li>

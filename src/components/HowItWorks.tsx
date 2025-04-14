@@ -1,62 +1,47 @@
 
 import React from 'react';
-import { useTranslation } from '@/contexts/TranslationContext';
+import DisplayCards from '@/components/ui/display-cards';
+import { Bot, Zap, TrendingUp } from 'lucide-react';
 
-interface StepProps {
-  number: string;
-  title: string;
-  description: string;
-  icon: string;
-}
+const stepsCards = [
+  {
+    icon: <Zap className="size-4 text-indigo-300" />,
+    title: "Choose Your AI Employee",
+    description: "",
+    date: "Step 1",
+    iconClassName: "text-indigo-500",
+    titleClassName: "text-indigo-500",
+    className:
+      "[grid-area:stack] hover:-translate-y-10 before:absolute before:w-[100%] before:outline-1 before:rounded-xl before:outline-border before:h-[100%] before:content-[''] before:bg-blend-overlay before:bg-background/50 grayscale-[100%] hover:before:opacity-0 before:transition-opacity before:duration:700 hover:grayscale-0 before:left-0 before:top-0",
+  },
+  {
+    icon: <Bot className="size-4 text-blue-300" />,
+    title: "Plug Into Your Workflow",
+    description: "",
+    date: "Step 2",
+    iconClassName: "text-blue-500",
+    titleClassName: "text-blue-500",
+    className:
+      "[grid-area:stack] translate-x-16 translate-y-10 hover:-translate-y-1 before:absolute before:w-[100%] before:outline-1 before:rounded-xl before:outline-border before:h-[100%] before:content-[''] before:bg-blend-overlay before:bg-background/50 grayscale-[100%] hover:before:opacity-0 before:transition-opacity before:duration:700 hover:grayscale-0 before:left-0 before:top-0",
+  },
+  {
+    icon: <TrendingUp className="size-4 text-green-300" />,
+    title: "Watch Productivity Skyrocket",
+    description: "",
+    date: "Step 3",
+    iconClassName: "text-green-500",
+    titleClassName: "text-green-500",
+    className:
+      "[grid-area:stack] translate-x-32 translate-y-20 hover:translate-y-10",
+  },
+];
 
-const Step: React.FC<StepProps> = ({ number, title, description, icon }) => (
-  <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 transition-all hover:shadow-md hover:border-gray-200">
-    <div className="mb-4 flex justify-between items-center">
-      <span className="bg-brand-blue/10 text-brand-blue font-medium px-3 py-1 rounded-md text-sm">
-        {number}
-      </span>
-      <div className="text-3xl">{icon}</div>
-    </div>
-    <h3 className="text-xl font-semibold mb-3">{title}</h3>
-    <p className="text-gray-600">{description}</p>
-  </div>
-);
-
-const HowItWorks: React.FC = () => {
-  const { t } = useTranslation();
-
-  const steps: StepProps[] = [
-    {
-      number: t('step_1'),
-      title: t('choose_ai_employee'),
-      description: t('choose_ai_employee_desc'),
-      icon: "👥"
-    },
-    {
-      number: t('step_2'),
-      title: t('plug_workflow'),
-      description: t('plug_workflow_desc'),
-      icon: "🔌"
-    },
-    {
-      number: t('step_3'),
-      title: t('productivity_skyrocket'),
-      description: t('productivity_skyrocket_desc'),
-      icon: "🚀"
-    }
-  ];
-
+const HowItWorks = () => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-      {steps.map((step, index) => (
-        <Step 
-          key={index}
-          number={step.number}
-          title={step.title}
-          description={step.description}
-          icon={step.icon}
-        />
-      ))}
+    <div className="flex min-h-[400px] w-full items-center justify-center">
+      <div className="w-full max-w-3xl">
+        <DisplayCards cards={stepsCards} />
+      </div>
     </div>
   );
 };

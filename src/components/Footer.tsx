@@ -1,11 +1,9 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useTranslation } from '@/contexts/TranslationContext';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
-  const { t } = useTranslation();
 
   return (
     <footer className="bg-gray-50 border-t border-gray-100">
@@ -16,34 +14,34 @@ const Footer = () => {
               <span className="text-gray-800">GenerativSchool</span>
             </div>
             <p className="text-gray-600 mb-4 max-w-md">
-              {t('footer_description')}
+              Smart solutions for businesses looking to automate workflows, improve customer experience, and scale with AI.
             </p>
             <p className="text-gray-500 text-sm">
-              © {currentYear} GenerativSchool. {t('copyright_text')}
+              © {currentYear} GenerativSchool. All rights reserved.
             </p>
           </div>
 
           <div>
-            <h3 className="text-gray-800 font-medium mb-4">{t('product')}</h3>
+            <h3 className="text-gray-800 font-medium mb-4">Product</h3>
             <ul className="space-y-2">
-              <li><a href="#features" className="text-gray-600 hover:text-brand-blue transition-colors">{t('features')}</a></li>
-              <li><a href="#how-it-works" className="text-gray-600 hover:text-brand-blue transition-colors">{t('how_it_works')}</a></li>
-              <li><a href="#pricing" className="text-gray-600 hover:text-brand-blue transition-colors">{t('pricing')}</a></li>
+              <li><a href="#features" className="text-gray-600 hover:text-brand-blue transition-colors">Features</a></li>
+              <li><a href="#how-it-works" className="text-gray-600 hover:text-brand-blue transition-colors">How It Works</a></li>
+              <li><a href="#pricing" className="text-gray-600 hover:text-brand-blue transition-colors">Pricing</a></li>
             </ul>
           </div>
 
           <div>
-            <h3 className="text-gray-800 font-medium mb-4">{t('company')}</h3>
+            <h3 className="text-gray-800 font-medium mb-4">Company</h3>
             <ul className="space-y-2">
-              <li><Link to="/about-us" className="text-gray-600 hover:text-brand-blue transition-colors">{t('about_us')}</Link></li>
-              <li><Link to="/careers" className="text-gray-600 hover:text-brand-blue transition-colors">{t('careers')}</Link></li>
-              <li><Link to="/contact" className="text-gray-600 hover:text-brand-blue transition-colors">{t('contact')}</Link></li>
-              <li><Link to="/blog" className="text-gray-600 hover:text-brand-blue transition-colors">{t('blog')}</Link></li>
-              <li><Link to="/faq" className="text-gray-600 hover:text-brand-blue transition-colors">{t('faq')}</Link></li>
-              <li><Link to="/support" className="text-gray-600 hover:text-brand-blue transition-colors">{t('support')}</Link></li>
-              <li><Link to="/documentation" className="text-gray-600 hover:text-brand-blue transition-colors">{t('documentation')}</Link></li>
-              <li><Link to="/privacy" className="text-gray-600 hover:text-brand-blue transition-colors">{t('privacy')}</Link></li>
-              <li><Link to="/terms" className="text-gray-600 hover:text-brand-blue transition-colors">{t('terms')}</Link></li>
+              <li><Link to="/about-us" className="text-gray-600 hover:text-brand-blue transition-colors">About Us</Link></li>
+              <li><Link to="/careers" className="text-gray-600 hover:text-brand-blue transition-colors">Careers</Link></li>
+              <li><Link to="/contact" className="text-gray-600 hover:text-brand-blue transition-colors">Contact</Link></li>
+              <li><Link to="/blog" className="text-gray-600 hover:text-brand-blue transition-colors">Blog</Link></li>
+              <li><Link to="/faq" className="text-gray-600 hover:text-brand-blue transition-colors">FAQ</Link></li>
+              <li><Link to="/support" className="text-gray-600 hover:text-brand-blue transition-colors">Support</Link></li>
+              <li><Link to="/documentation" className="text-gray-600 hover:text-brand-blue transition-colors">Documentation</Link></li>
+              <li><Link to="/privacy" className="text-gray-600 hover:text-brand-blue transition-colors">Privacy</Link></li>
+              <li><Link to="/terms" className="text-gray-600 hover:text-brand-blue transition-colors">Terms</Link></li>
             </ul>
           </div>
         </div>

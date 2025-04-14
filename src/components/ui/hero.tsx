@@ -4,12 +4,10 @@
 import { useEffect } from "react";
 import { renderCanvas } from "@/components/ui/canvas";
 import { ArrowRight, Shapes } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
-import { useTranslation } from "@/contexts/TranslationContext";
 
 export function Hero() {
-  const { t } = useTranslation();
-  
   useEffect(() => {
     renderCanvas();
   }, []);
@@ -26,7 +24,7 @@ export function Hero() {
               className="hover:text-brand-blue ml-1 flex items-center font-semibold"
             >
               <div className="absolute inset-0 flex" aria-hidden="true" />
-              {t('learn_more')}{" "}
+              Learn More{" "}
               <span aria-hidden="true">
                 <ArrowRight className="h-4 w-4" />
               </span>
@@ -54,35 +52,35 @@ export function Hero() {
                   strokeWidth={4}
                   className="text-brand-blue absolute -bottom-5 -right-5 h-10 w-10"
                 />
-                {t('boost_revenue_with_ai')}
+                Boost Revenue with 24/7 AI Automation
               </h1>
               <div className="flex items-center justify-center gap-1">
                 <span className="relative flex h-3 w-3 items-center justify-center">
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-500 opacity-75"></span>
                   <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500"></span>
                 </span>
-                <p className="text-xs text-green-500">{t('available_now')}</p>
+                <p className="text-xs text-green-500">Available Now</p>
               </div>
             </div>
           </div>
 
           <h1 className="mt-8 text-2xl md:text-2xl">
-            {t('work_smarter')}{" "}
+            Work smarter, not harder with{" "}
             <span className="text-brand-blue font-bold">GenerativSchool</span>
           </h1>
 
           <p className="md:text-md mx-auto mb-16 mt-2 max-w-2xl px-6 text-sm text-primary/60 sm:px-6 md:max-w-4xl md:px-20 lg:text-lg">
-            {t('streamline_workflows')}
+            Streamline your workflows, automate customer interactions, and scale your business operations.
           </p>
           <div className="flex justify-center gap-2">
             <Button variant="rainbow" size="lg" asChild>
               <a href="https://api.leadconnectorhq.com/widget/booking/XvUg6399vyVtvCXETgsY" target="_blank" rel="noopener noreferrer">
-                {t('get_started')}
+                Get Started
               </a>
             </Button>
             <Button variant="outline" size="lg" asChild>
               <a href="https://api.leadconnectorhq.com/widget/booking/XvUg6399vyVtvCXETgsY" target="_blank" rel="noopener noreferrer">
-                {t('book_demo')}
+                Book a Demo
               </a>
             </Button>
           </div>
