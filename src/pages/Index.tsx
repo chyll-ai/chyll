@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import HowItWorks from '@/components/HowItWorks';
@@ -29,9 +30,9 @@ const Index = () => {
       <section id="benefits" className="section-padding bg-white">
         <div className="container-custom">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Discover the Benefits of Automating Your Business with botis</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">AI Employees that Transform Your Business</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Imagine having an employee that works non-stop, tackles complex tasks, and makes your customers feel like VIPs.
+              Digital workers that never sleep, solve complex problems, and deliver exceptional customer experiences.
             </p>
           </div>
           <FeaturesSectionWithHoverEffectsDemo />
