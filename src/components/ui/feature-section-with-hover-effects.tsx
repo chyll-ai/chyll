@@ -1,63 +1,62 @@
 
 import { cn } from "@/lib/utils";
 import { 
-  MoveRight,
-  Settings,
-  Cloud,
-  DollarSign,
-  MousePointerClick,
-  LayoutGrid,
-  HelpCircle,
-  Sliders,
-  Heart
+  Zap,
+  Clock,
+  Headphones,
+  ShieldCheck,
+  Users,
+  TrendingUp,
+  Bot,
+  ArrowUpRight
 } from "lucide-react";
 
 export function FeaturesSectionWithHoverEffects() {
   const features = [
     {
-      title: "Built for developers",
+      title: "24/7 Availability",
       description:
-        "Built for engineers, developers, dreamers, thinkers and doers.",
-      icon: <Settings className="w-6 h-6" />,
+        "Your AI employee never sleeps, ensuring round-the-clock service for your customers across all time zones.",
+      icon: <Clock className="w-6 h-6" />,
     },
     {
-      title: "Ease of use",
+      title: "Cost Efficiency",
       description:
-        "It's as easy as using an Apple, and as expensive as buying one.",
-      icon: <MousePointerClick className="w-6 h-6" />,
+        "Reduce operational costs while increasing productivity. No benefits, breaks, or overtime pay required.",
+      icon: <TrendingUp className="w-6 h-6" />,
     },
     {
-      title: "Pricing like no other",
+      title: "Instant Customer Support",
       description:
-        "Our prices are best in the market. No cap, no lock, no credit card required.",
-      icon: <DollarSign className="w-6 h-6" />,
+        "Provide immediate responses to customer inquiries, improving satisfaction and retention rates.",
+      icon: <Headphones className="w-6 h-6" />,
     },
     {
-      title: "100% Uptime guarantee",
-      description: "We just cannot be taken down by anyone.",
-      icon: <Cloud className="w-6 h-6" />,
+      title: "Scalable Solutions",
+      description: "Easily scale your AI workforce up or down based on demand, without hiring or training delays.",
+      icon: <ArrowUpRight className="w-6 h-6" />,
     },
     {
-      title: "Multi-tenant Architecture",
-      description: "You can simply share passwords instead of buying new seats",
-      icon: <LayoutGrid className="w-6 h-6" />,
+      title: "Human-like Interactions",
+      description: "Our AI employees communicate naturally, making your customers feel valued and understood.",
+      icon: <Users className="w-6 h-6" />,
     },
     {
-      title: "24/7 Customer Support",
+      title: "Data Security",
       description:
-        "We are available a 100% of the time. Atleast our AI Agents are.",
-      icon: <HelpCircle className="w-6 h-6" />,
+        "Enterprise-grade security protocols ensure all customer data and interactions remain protected.",
+      icon: <ShieldCheck className="w-6 h-6" />,
     },
     {
-      title: "Money back guarantee",
+      title: "Consistent Performance",
       description:
-        "If you donot like botis, we will convince you to like us.",
-      icon: <Sliders className="w-6 h-6" />,
+        "Eliminate human error and mood swings. Your AI employee delivers consistent quality every time.",
+      icon: <Bot className="w-6 h-6" />,
     },
     {
-      title: "And everything else",
-      description: "I just ran out of copy ideas. Accept my sincere apologies",
-      icon: <Heart className="w-6 h-6" />,
+      title: "Unlimited Potential",
+      description: "As AI technology evolves, your botis employee continuously improves, learning new skills automatically.",
+      icon: <Zap className="w-6 h-6" />,
     },
   ];
   return (
