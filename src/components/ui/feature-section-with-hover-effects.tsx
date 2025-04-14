@@ -55,7 +55,7 @@ export function FeaturesSectionWithHoverEffects() {
     },
     {
       title: "Unlimited Potential",
-      description: "As AI technology evolves, your botis employee continuously improves, learning new skills automatically.",
+      description: "As AI technology evolves, your GenerativSchool employee continuously improves, learning new skills automatically.",
       icon: <Zap className="w-6 h-6" />,
     },
   ];

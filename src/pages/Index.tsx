@@ -54,7 +54,7 @@ const Index = () => {
               Meet Your Team of AI Employees
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              botis isn't just automation — it's your digital workforce ready to transform your business.
+              GenerativSchool isn't just automation — it's your digital workforce ready to transform your business.
             </p>
           </div>
           <BentoDemo />
@@ -67,7 +67,7 @@ const Index = () => {
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">How It Works</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Getting started with botis is simple. Follow these steps to transform your business operations.
+              Getting started with GenerativSchool is simple. Follow these steps to transform your business operations.
             </p>
           </div>
           <HowItWorks />
@@ -94,7 +94,7 @@ const Index = () => {
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">Frequently Asked Questions</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Everything you need to know about botis and how it can transform your business.
+              Everything you need to know about GenerativSchool and how it can transform your business.
             </p>
           </div>
           <div className="flex justify-center">
