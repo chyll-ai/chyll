@@ -1,4 +1,3 @@
-
 "use client";
 
 import { buttonVariants } from "@/components/ui/button";
@@ -154,7 +153,6 @@ export function Pricing({
                       currency: "USD",
                       minimumFractionDigits: 0,
                       maximumFractionDigits: 0,
-                      formatter: (value: number) => `$${value}`
                     }}
                     transformTiming={{
                       duration: 500,
