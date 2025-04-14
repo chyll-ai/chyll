@@ -43,10 +43,10 @@ const Index = () => {
         <div className="container-custom">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Meet Our Team of AI Employees
+              AI-Powered Tools to Streamline Your Workflows, Voice Calls, and More
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              botis isn't just automation — it's like having a specialized team of AI experts working for your business 24/7.
+              botis isn't just automation — it's your business's competitive advantage.
             </p>
           </div>
           <BentoDemo />
@@ -70,9 +70,9 @@ const Index = () => {
       <section className="section-padding gradient-bg">
         <div className="container-custom">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">What Our Clients Say About Our AI Team</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">What Our Clients Say</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Hear how businesses are achieving galactic success with our Star Team of AI employees.
+              Businesses of all sizes are transforming their operations with botis.
             </p>
           </div>
           <TestimonialsSectionDemo />
