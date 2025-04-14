@@ -11,10 +11,43 @@ import { PricingBasic } from '@/components/ui/pricing-basic';
 import { DefaultDemo as FaqAccordionDemo } from '@/components/ui/faq-chat-accordion-demo';
 import { Footer2Demo } from '@/components/ui/footer2-demo';
 import { PartnerCompaniesDemo } from '@/components/ui/partner-companies-demo';
+import SEOMetadata from '@/components/SEOMetadata';
+import { getOrganizationSchema, getFAQSchema } from '@/utils/structuredData';
+import { Suspense, lazy } from 'react';
+
+// Sample FAQ data for structured data
+const faqData = [
+  {
+    question: "What is GenerativSchool?",
+    answer: "GenerativSchool provides AI solutions for businesses, helping automate workflows, improve customer experiences, and scale operations with intelligent AI employees."
+  },
+  {
+    question: "How do I get started with GenerativSchool?",
+    answer: "You can start by booking a demo through our website to see how our AI solutions can work for your specific business needs."
+  },
+  {
+    question: "What industries does GenerativSchool work with?",
+    answer: "We work with businesses across various industries including retail, healthcare, finance, education, and more."
+  }
+];
 
 const Index = () => {
+  // Generate structured data
+  const organizationSchema = getOrganizationSchema();
+  const faqSchema = getFAQSchema(faqData);
+  
   return (
     <div className="min-h-screen flex flex-col">
+      <SEOMetadata 
+        title="Smart Solutions for Your Business"
+        description="GenerativSchool - Intelligent automation for your business. Streamline workflows, provide support, and scale operations with AI."
+        canonicalUrl="/"
+        structuredData={{
+          organization: organizationSchema,
+          faq: faqSchema
+        }}
+      />
+      
       <Navbar />
       
       {/* Hero Section */}

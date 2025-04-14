@@ -7,6 +7,12 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft, CalendarIcon, Clock, Tag } from 'lucide-react';
 import { initialBlogPosts, additionalBlogPosts, finalBlogPosts } from './blog-data';
 import { BlogPost as BlogPostType } from './blog-card';
+import SEOMetadata from '@/components/SEOMetadata';
+import { getArticleSchema, getBreadcrumbSchema } from '@/utils/structuredData';
+import { Suspense, lazy } from 'react';
+
+// Lazy load images for performance
+const LazyImage = lazy(() => import('@/components/common/LazyImage'));
 
 const BlogPostPage = () => {
   const { id } = useParams();
@@ -33,18 +39,53 @@ const BlogPostPage = () => {
     );
   }
   
+  // Format date for structured data
+  const formattedDate = new Date(post.date).toISOString();
+  
+  // Generate article schema
+  const articleSchema = getArticleSchema({
+    title: post.title,
+    description: post.excerpt,
+    url: `https://generativschool.com/blog/${post.id}`,
+    imageUrl: post.imageUrl,
+    publishDate: formattedDate,
+    authorName: 'Soufiane Lemqari'
+  });
+  
+  // Generate breadcrumb schema
+  const breadcrumbSchema = getBreadcrumbSchema([
+    { name: 'Home', url: 'https://generativschool.com' },
+    { name: 'Blog', url: 'https://generativschool.com/blog' },
+    { name: post.title, url: `https://generativschool.com/blog/${post.id}` }
+  ]);
+  
   return (
     <div className="min-h-screen flex flex-col">
+      <SEOMetadata 
+        title={post.title}
+        description={post.excerpt}
+        canonicalUrl={`/blog/${post.id}`}
+        ogType="article"
+        ogImage={post.imageUrl}
+        articlePublishedTime={formattedDate}
+        structuredData={{
+          article: articleSchema,
+          breadcrumb: breadcrumbSchema
+        }}
+      />
+      
       <Navbar currentPath="/blog" />
       
       <article className="flex-1">
         {/* Hero section with image */}
         <div className="w-full h-[400px] relative">
-          <img 
-            src={post.imageUrl} 
-            alt={post.title}
-            className="w-full h-full object-cover"
-          />
+          <Suspense fallback={<div className="w-full h-full bg-gray-200 animate-pulse" />}>
+            <LazyImage 
+              src={post.imageUrl} 
+              alt={post.title}
+              className="w-full h-full object-cover"
+            />
+          </Suspense>
           <div className="absolute inset-0 bg-black bg-opacity-50 flex items-end">
             <div className="container-custom text-white pb-16">
               <h1 className="text-4xl md:text-5xl font-bold mb-4">{post.title}</h1>
