@@ -2,7 +2,7 @@
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import HowItWorks from '@/components/HowItWorks';
-import { Hero } from '@/components/ui/hero';
+import { HeroDemo } from '@/components/ui/animated-hero-demo';
 import { DisplayCardsDemo } from '@/components/ui/display-cards-demo';
 import Benefits from '@/components/Benefits';
 import { BentoDemo } from '@/components/ui/bento-demo';
@@ -17,7 +17,13 @@ const Index = () => {
       <Navbar />
       
       {/* Hero Section */}
-      <Hero />
+      <section id="home">
+        <HeroDemo />
+        <canvas
+          className="bg-skin-base pointer-events-none absolute inset-0 mx-auto -z-10"
+          id="canvas"
+        ></canvas>
+      </section>
       
       {/* Benefits Section */}
       <section id="benefits" className="section-padding bg-white">
