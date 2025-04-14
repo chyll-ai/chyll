@@ -14,48 +14,48 @@ import {
 export function FeaturesSectionWithHoverEffects() {
   const features = [
     {
-      title: "Chrono - Time Management Specialist",
+      title: "24/7 Availability",
       description:
-        "Meet Chrono, your 24/7 AI employee. While human employees sleep, Chrono ensures round-the-clock service across all time zones.",
+        "Your AI employee never sleeps, ensuring round-the-clock service for your customers across all time zones.",
       icon: <Clock className="w-6 h-6" />,
     },
     {
-      title: "Kylo - Efficiency Expert",
+      title: "Cost Efficiency",
       description:
-        "Kylo reduces your operational costs while maximizing productivity. No benefits, breaks, or overtime required—just results.",
+        "Reduce operational costs while increasing productivity. No benefits, breaks, or overtime pay required.",
       icon: <TrendingUp className="w-6 h-6" />,
     },
     {
-      title: "Rey - Customer Relations Specialist",
+      title: "Instant Customer Support",
       description:
-        "Rey provides immediate responses to customer inquiries with human-like empathy, improving satisfaction and retention rates.",
+        "Provide immediate responses to customer inquiries, improving satisfaction and retention rates.",
       icon: <Headphones className="w-6 h-6" />,
     },
     {
-      title: "Lando - Growth Specialist",
-      description: "Lando helps you scale your AI workforce instantly based on demand, without hiring delays or training periods.",
+      title: "Scalable Solutions",
+      description: "Easily scale your AI workforce up or down based on demand, without hiring or training delays.",
       icon: <ArrowUpRight className="w-6 h-6" />,
     },
     {
-      title: "Obi - Communication Expert",
-      description: "Obi communicates with natural language and emotional intelligence, making your customers feel valued and understood.",
+      title: "Human-like Interactions",
+      description: "Our AI employees communicate naturally, making your customers feel valued and understood.",
       icon: <Users className="w-6 h-6" />,
     },
     {
-      title: "Mace - Security Specialist",
+      title: "Data Security",
       description:
-        "Mace enforces enterprise-grade security protocols to ensure all customer data and interactions remain protected at all times.",
+        "Enterprise-grade security protocols ensure all customer data and interactions remain protected.",
       icon: <ShieldCheck className="w-6 h-6" />,
     },
     {
-      title: "Poe - Performance Specialist",
+      title: "Consistent Performance",
       description:
-        "Poe delivers consistent quality every time, eliminating human error and mood-dependent performance variations.",
+        "Eliminate human error and mood swings. Your AI employee delivers consistent quality every time.",
       icon: <Bot className="w-6 h-6" />,
     },
     {
-      title: "Anakin - Evolution Specialist",
-      description: "As AI technology evolves, Anakin continuously improves, learning new skills automatically without expensive retraining.",
+      title: "Unlimited Potential",
+      description: "As AI technology evolves, your botis employee continuously improves, learning new skills automatically.",
       icon: <Zap className="w-6 h-6" />,
     },
   ];
