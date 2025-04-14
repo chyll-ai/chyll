@@ -1,4 +1,3 @@
-
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { MoveRight, PhoneCall, Bot } from "lucide-react";
@@ -8,7 +7,7 @@ import { renderCanvas } from "@/components/ui/canvas";
 function Hero() {
   const [titleNumber, setTitleNumber] = useState(0);
   const titles = useMemo(
-    () => ["cost-saving", "customer-converting", "time-saving", "revenue-boosting", "always-on"],
+    () => ["sell", "designs", "writes", "calls"],
     []
   );
 
