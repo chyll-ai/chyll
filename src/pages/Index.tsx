@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -76,14 +75,6 @@ const Index = () => {
       {/* Pricing Section */}
       <section id="pricing" className="section-padding bg-white">
         <div className="container-custom">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Choose the Right botis for Your Business
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Whether you're just getting started or scaling fast, we've got the AI solution that fits your workflow.
-            </p>
-          </div>
           <PricingBasic />
         </div>
       </section>
