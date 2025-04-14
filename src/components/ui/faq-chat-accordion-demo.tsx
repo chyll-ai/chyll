@@ -5,7 +5,7 @@ const defaultData = [
   {
     answer: "The internet doesn't close. It's available 24/7.",
     icon: "❤️",
-    iconPosition: "right",
+    iconPosition: "right" as const,
     id: 1,
     question: "How late does the internet close?",
   },
@@ -22,7 +22,7 @@ const defaultData = [
   {
     answer: "Yes, but we do have a return policy",
     icon: "⭐",
-    iconPosition: "left",
+    iconPosition: "left" as const,
     id: 4,
     question: "Can I get lost here?",
   },
