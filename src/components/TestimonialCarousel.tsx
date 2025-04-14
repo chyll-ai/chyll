@@ -1,33 +1,41 @@
 
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Star } from 'lucide-react';
-
-const testimonials = [
-  {
-    quote: "Since hiring our AI Employee, we've saved 20 hours a week and doubled our lead response time.",
-    author: "Jane D.",
-    title: "Marketing Lead",
-    company: "Growth Agency",
-    stars: 5
-  },
-  {
-    quote: "The Voice AI feature has transformed our customer service. We're handling twice as many calls with half the staff.",
-    author: "Michael T.",
-    title: "Operations Manager",
-    company: "ServiceTech Inc.",
-    stars: 5
-  },
-  {
-    quote: "As a solo founder, AI Employee has become my most valuable team member. Always on, never complains!",
-    author: "Sarah K.",
-    title: "Founder",
-    company: "Startup Ventures",
-    stars: 5
-  }
-];
+import { useTranslation } from '@/contexts/TranslationContext';
 
 const TestimonialCarousel = () => {
+  const { t, language } = useTranslation();
   const [activeIndex, setActiveIndex] = useState(0);
+
+  const testimonials = [
+    {
+      quote: language === 'en' 
+        ? "Since hiring our AI Employee, we've saved 20 hours a week and doubled our lead response time."
+        : "Depuis l'embauche de notre employé IA, nous avons économisé 20 heures par semaine et doublé notre temps de réponse aux prospects.",
+      author: "Jane D.",
+      title: language === 'en' ? "Marketing Lead" : "Responsable Marketing",
+      company: language === 'en' ? "Growth Agency" : "Agence de Croissance",
+      stars: 5
+    },
+    {
+      quote: language === 'en'
+        ? "The Voice AI feature has transformed our customer service. We're handling twice as many calls with half the staff."
+        : "La fonctionnalité IA vocale a transformé notre service client. Nous gérons deux fois plus d'appels avec la moitié du personnel.",
+      author: "Michael T.",
+      title: language === 'en' ? "Operations Manager" : "Directeur des Opérations",
+      company: language === 'en' ? "ServiceTech Inc." : "ServiceTech Inc.",
+      stars: 5
+    },
+    {
+      quote: language === 'en'
+        ? "As a solo founder, AI Employee has become my most valuable team member. Always on, never complains!"
+        : "En tant que fondateur solo, l'employé IA est devenu mon membre d'équipe le plus précieux. Toujours disponible, ne se plaint jamais !",
+      author: "Sarah K.",
+      title: language === 'en' ? "Founder" : "Fondatrice",
+      company: language === 'en' ? "Startup Ventures" : "Startup Ventures",
+      stars: 5
+    }
+  ];
 
   const nextSlide = () => {
     setActiveIndex((current) => (current === testimonials.length - 1 ? 0 : current + 1));

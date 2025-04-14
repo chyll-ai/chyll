@@ -110,7 +110,53 @@ const translations = {
   "step_3": "Step 3",
   "choose_ai_employee": "Choose Your AI Employee",
   "plug_workflow": "Plug Into Your Workflow",
-  "productivity_skyrocket": "Watch Productivity Skyrocket"
+  "productivity_skyrocket": "Watch Productivity Skyrocket",
+  
+  // Home page
+  "ai_employees_transform": "AI Employees that Transform Your Business",
+  "digital_workers_description": "Digital workers that never sleep, solve complex problems, and deliver exceptional customer experiences.",
+  "meet_ai_employees": "Meet Your Team of AI Employees",
+  "botis_description": "botis isn't just automation — it's your digital workforce ready to transform your business.",
+  "how_it_works_description": "Getting started with botis is simple. Follow these steps to transform your business operations.",
+  
+  // Hero section
+  "scale_business": "Scale your business with",
+  "cost_saving": "cost-saving",
+  "customer_converting": "customer-converting",
+  "time_saving": "time-saving",
+  "revenue_boosting": "revenue-boosting",
+  "always_on": "always-on",
+  "transform_business": "Transform your business with AI employees that never sleep, never take vacations, and consistently deliver exceptional results. Streamline operations, reduce costs, and scale your business like never before.",
+  "book_demo": "Book a demo",
+  "get_started_now": "Get started now",
+  
+  // Pricing
+  "starter": "Starter",
+  "pro": "Pro",
+  "expert": "Expert",
+  "month": "/month",
+  "starter_description": "Designed for solo founders and small teams who want to automate the basics without friction.",
+  "pro_description": "Built for growing businesses ready to scale customer interactions and marketing efforts with smart automation.",
+  "expert_description": "For high-volume teams needing full AI integration, advanced workflows, and always-on voice communication.",
+  "everything_in_starter": "Everything in Starter",
+  "everything_in_pro": "Everything in Pro",
+  "reviews_ai_description": "Reviews AI: Reputation on Auto-Pilot",
+  "content_ai_description": "Content AI: Cure to Blank Pages",
+  "funnel_ai_description": "Funnel AI: High-Converting Pages",
+  "workflow_ai_description": "Workflow AI: Your Automation Weapon",
+  "conversation_ai_description": "Conversation AI: Natural Live Chat",
+  "voice_ai_description": "Voice AI: Never Miss a Call",
+  "custom_ai_setup": "Custom AI Setup & Strategy",
+  "white_glove_onboarding": "White-Glove Onboarding + Priority Support",
+  "monthly_strategy_calls": "Monthly Strategy Calls + Performance Reviews",
+  "most_popular": "Most Popular",
+  
+  // Additional hero content
+  "learn_more": "Learn More",
+  "boost_revenue_with_ai": "Boost Revenue with 24/7 AI Automation",
+  "available_now": "Available Now",
+  "work_smarter": "Work smarter, not harder with",
+  "streamline_workflows": "Streamline your workflows, automate customer interactions, and scale your business operations."
 };
 
 export default translations;

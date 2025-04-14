@@ -110,7 +110,53 @@ const translations = {
   "step_3": "Étape 3",
   "choose_ai_employee": "Choisissez votre employé IA",
   "plug_workflow": "Intégrez-le dans votre flux de travail",
-  "productivity_skyrocket": "Regardez votre productivité décoller"
+  "productivity_skyrocket": "Regardez votre productivité décoller",
+  
+  // Home page
+  "ai_employees_transform": "Des employés IA qui transforment votre entreprise",
+  "digital_workers_description": "Des travailleurs numériques qui ne dorment jamais, résolvent des problèmes complexes et offrent une expérience client exceptionnelle.",
+  "meet_ai_employees": "Rencontrez votre équipe d'employés IA",
+  "botis_description": "botis n'est pas seulement de l'automatisation — c'est votre main-d'œuvre numérique prête à transformer votre entreprise.",
+  "how_it_works_description": "Commencer avec botis est simple. Suivez ces étapes pour transformer les opérations de votre entreprise.",
+  
+  // Hero section
+  "scale_business": "Développez votre entreprise avec",
+  "cost_saving": "économie de coûts",
+  "customer_converting": "conversion de clients",
+  "time_saving": "gain de temps",
+  "revenue_boosting": "augmentation des revenus",
+  "always_on": "disponibilité permanente",
+  "transform_business": "Transformez votre entreprise avec des employés IA qui ne dorment jamais, ne prennent jamais de vacances et fournissent constamment des résultats exceptionnels. Simplifiez les opérations, réduisez les coûts et développez votre entreprise comme jamais auparavant.",
+  "book_demo": "Réserver une démo",
+  "get_started_now": "Commencez maintenant",
+  
+  // Pricing
+  "starter": "Débutant",
+  "pro": "Pro",
+  "expert": "Expert",
+  "month": "/mois",
+  "starter_description": "Conçu pour les entrepreneurs individuels et les petites équipes qui souhaitent automatiser les bases sans friction.",
+  "pro_description": "Destiné aux entreprises en croissance prêtes à développer les interactions avec les clients et les efforts marketing grâce à une automatisation intelligente.",
+  "expert_description": "Pour les équipes à haut volume nécessitant une intégration IA complète, des flux de travail avancés et une communication vocale permanente.",
+  "everything_in_starter": "Tout ce qui est inclus dans Débutant",
+  "everything_in_pro": "Tout ce qui est inclus dans Pro",
+  "reviews_ai_description": "IA d'avis : Réputation en pilote automatique",
+  "content_ai_description": "IA de contenu : Remède aux pages blanches",
+  "funnel_ai_description": "IA d'entonnoir : Pages à forte conversion",
+  "workflow_ai_description": "IA de flux de travail : Votre arme d'automatisation",
+  "conversation_ai_description": "IA conversationnelle : Chat en direct naturel",
+  "voice_ai_description": "IA vocale : Ne manquez jamais un appel",
+  "custom_ai_setup": "Configuration et stratégie IA personnalisées",
+  "white_glove_onboarding": "Intégration premium + Support prioritaire",
+  "monthly_strategy_calls": "Appels stratégiques mensuels + Examens de performance",
+  "most_popular": "Le plus populaire",
+  
+  // Additional hero content
+  "learn_more": "En savoir plus",
+  "boost_revenue_with_ai": "Augmentez vos revenus avec l'automatisation IA 24/7",
+  "available_now": "Disponible maintenant",
+  "work_smarter": "Travaillez plus intelligemment avec",
+  "streamline_workflows": "Simplifiez vos flux de travail, automatisez les interactions avec les clients et développez les opérations de votre entreprise."
 };
 
 export default translations;

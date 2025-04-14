@@ -3,7 +3,6 @@ import React from 'react';
 import Navbar from '@/components/Navbar';
 import HowItWorks from '@/components/HowItWorks';
 import { HeroDemo } from '@/components/ui/animated-hero-demo';
-import { DisplayCardsDemo } from '@/components/ui/display-cards-demo';
 import { FeaturesSectionWithHoverEffectsDemo } from '@/components/ui/feature-section-with-hover-effects-demo';
 import { BentoDemo } from '@/components/ui/bento-demo';
 import { TestimonialsWithMarqueeDemo } from '@/components/ui/testimonials-with-marquee-demo';
@@ -11,8 +10,11 @@ import { PricingBasic } from '@/components/ui/pricing-basic';
 import { DefaultDemo as FaqAccordionDemo } from '@/components/ui/faq-chat-accordion-demo';
 import { Footer2Demo } from '@/components/ui/footer2-demo';
 import { PartnerCompaniesDemo } from '@/components/ui/partner-companies-demo';
+import { useTranslation } from '@/contexts/TranslationContext';
 
 const Index = () => {
+  const { t } = useTranslation();
+  
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -30,9 +32,9 @@ const Index = () => {
       <section id="features" className="section-padding bg-white">
         <div className="container-custom">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">AI Employees that Transform Your Business</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">{t('ai_employees_transform')}</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Digital workers that never sleep, solve complex problems, and deliver exceptional customer experiences.
+              {t('digital_workers_description')}
             </p>
           </div>
           <FeaturesSectionWithHoverEffectsDemo />
@@ -51,10 +53,10 @@ const Index = () => {
         <div className="container-custom">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Meet Your Team of AI Employees
+              {t('meet_ai_employees')}
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              botis isn't just automation — it's your digital workforce ready to transform your business.
+              {t('botis_description')}
             </p>
           </div>
           <BentoDemo />
@@ -65,9 +67,9 @@ const Index = () => {
       <section id="how-it-works" className="section-padding bg-white">
         <div className="container-custom">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">How It Works</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">{t('how_it_works')}</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Getting started with botis is simple. Follow these steps to transform your business operations.
+              {t('how_it_works_description')}
             </p>
           </div>
           <HowItWorks />
@@ -92,9 +94,9 @@ const Index = () => {
       <section id="faq" className="section-padding gradient-bg">
         <div className="container-custom">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Frequently Asked Questions</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">{t('faq_title')}</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Everything you need to know about botis and how it can transform your business.
+              {t('faq_description')}
             </p>
           </div>
           <div className="flex justify-center">
