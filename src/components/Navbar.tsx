@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -5,6 +6,10 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTr
 import { Menu } from "lucide-react";
 import { useTranslation } from '@/contexts/TranslationContext';
 import LanguageSwitcher from './LanguageSwitcher';
+
+interface NavbarProps {
+  currentPath?: string;
+}
 
 interface NavLinkProps {
   to: string;
@@ -21,10 +26,13 @@ const NavLink: React.FC<NavLinkProps> = ({ to, children }) => {
   );
 };
 
-const Navbar = () => {
+const Navbar: React.FC<NavbarProps> = ({ currentPath }) => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const { t } = useTranslation();
+  
+  // Use the currentPath prop if provided, otherwise use the location from the router
+  const activePath = currentPath || location.pathname;
   
   const navLinkClasses = "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 text-gray-700 hover:text-gray-900 px-3 py-2";
 
