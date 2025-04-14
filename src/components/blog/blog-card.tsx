@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { CalendarIcon, Clock, Tag } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export interface BlogPost {
   id: number;
@@ -36,12 +37,12 @@ export const BlogCard = ({ post }: { post: BlogPost }) => (
       </div>
       <h3 className="text-xl font-bold mb-2">{post.title}</h3>
       <p className="text-gray-600 mb-4">{post.excerpt}</p>
-      <a 
-        href="#" 
+      <Link 
+        to={`/blog/${post.id}`}
         className="text-indigo-600 font-medium hover:text-indigo-800 transition-colors"
       >
         Read more →
-      </a>
+      </Link>
     </div>
   </div>
 );
