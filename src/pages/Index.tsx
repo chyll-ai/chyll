@@ -1,7 +1,6 @@
 
 import React from 'react';
 import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
 import HowItWorks from '@/components/HowItWorks';
 import { Hero } from '@/components/ui/hero';
 import { DisplayCardsDemo } from '@/components/ui/display-cards-demo';
@@ -10,6 +9,7 @@ import { BentoDemo } from '@/components/ui/bento-demo';
 import { TestimonialsSectionDemo } from '@/components/ui/testimonials-section-demo';
 import { PricingBasic } from '@/components/ui/pricing-basic';
 import { DefaultDemo as FaqAccordionDemo } from '@/components/ui/faq-chat-accordion-demo';
+import { Footer2Demo } from '@/components/ui/footer2-demo';
 
 const Index = () => {
   return (
@@ -95,7 +95,7 @@ const Index = () => {
         </div>
       </section>
       
-      <Footer />
+      <Footer2Demo />
     </div>
   );
 };
