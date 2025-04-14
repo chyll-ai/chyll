@@ -128,7 +128,7 @@ const ApiDocumentation = () => {
             </p>
             <ol className="list-decimal pl-6 space-y-2">
               <li>Log in to your GenerativSchool account</li>
-              <li>Navigate to Settings > API Keys</li>
+              <li>Navigate to Settings &gt; API Keys</li>
               <li>Click "Create New API Key"</li>
               <li>Name your key and select the appropriate permissions</li>
               <li>Store your API key securely - it won't be shown again</li>
