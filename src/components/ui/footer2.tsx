@@ -1,4 +1,6 @@
 
+import React from 'react';
+
 interface MenuItem {
   title: string;
   links: {
@@ -8,12 +10,6 @@ interface MenuItem {
 }
 
 interface Footer2Props {
-  logo?: {
-    url: string;
-    src: string;
-    alt: string;
-    title: string;
-  };
   tagline?: string;
   menuItems?: MenuItem[];
   copyright?: string;
@@ -24,12 +20,6 @@ interface Footer2Props {
 }
 
 const Footer2 = ({
-  logo = {
-    src: "https://www.shadcnblocks.com/images/block/block-1.svg",
-    alt: "botis logo",
-    title: "botis",
-    url: "/",
-  },
   tagline = "Intelligent automation for your business.",
   menuItems = [
     {
@@ -82,17 +72,7 @@ const Footer2 = ({
         <footer>
           <div className="grid grid-cols-2 gap-8 lg:grid-cols-6">
             <div className="col-span-2 mb-8 lg:mb-0">
-              <div className="flex items-center gap-2 lg:justify-start">
-                <a href={logo.url}>
-                  <img
-                    src={logo.src}
-                    alt={logo.alt}
-                    title={logo.title}
-                    className="h-10"
-                  />
-                </a>
-                <p className="text-xl font-semibold text-white">{logo.title}</p>
-              </div>
+              <p className="text-xl font-semibold text-white">botis</p>
               <p className="mt-4 font-bold text-[#aaadb0]">{tagline}</p>
             </div>
             {menuItems.map((section, sectionIdx) => (

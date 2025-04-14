@@ -2,12 +2,6 @@
 import { Footer2 } from "@/components/ui/footer2";
 
 const demoData = {
-  logo: {
-    src: "https://www.shadcnblocks.com/images/block/block-1.svg",
-    alt: "botis logo",
-    title: "botis",
-    url: "/",
-  },
   tagline: "Intelligent automation for your business.",
   menuItems: [
     {
