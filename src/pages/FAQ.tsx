@@ -8,7 +8,46 @@ import { ArrowRight } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from '@/contexts/TranslationContext';
 
-const FAQ = () => {
+interface FAQSectionProps {
+  title: string;
+  children: React.ReactNode;
+}
+
+const FAQSectionWrapper: React.FC<FAQSectionProps> = ({ title, children }) => (
+  <div className="mt-16">
+    <h2 className="text-2xl font-bold mb-8 text-center">{title}</h2>
+    {children}
+  </div>
+);
+
+const SupportSection: React.FC = () => {
+  const { t } = useTranslation();
+  
+  return (
+    <div className="mt-16 bg-gray-50 p-8 rounded-lg">
+      <h3 className="text-xl font-bold mb-4">{t('still_have_questions')}</h3>
+      <p className="text-gray-600 mb-6">
+        {t('support_description')}
+      </p>
+      <div className="flex flex-wrap gap-4">
+        <a 
+          href="/support" 
+          className="inline-flex items-center px-6 py-3 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors font-medium"
+        >
+          {t('contact_support')} <ArrowRight size={16} className="ml-2" />
+        </a>
+        <a 
+          href="/documentation" 
+          className="inline-flex items-center px-6 py-3 border border-indigo-600 text-indigo-600 rounded-md hover:bg-indigo-50 transition-colors font-medium"
+        >
+          {t('browse_documentation')} <ArrowRight size={16} className="ml-2" />
+        </a>
+      </div>
+    </div>
+  );
+};
+
+const FAQ: React.FC = () => {
   const location = useLocation();
   const { t } = useTranslation();
   
@@ -30,34 +69,15 @@ const FAQ = () => {
       <section className="py-16">
         <div className="container-custom">
           <div className="max-w-4xl mx-auto">
-            <h2 className="text-2xl font-bold mb-8 text-center">{t('general_questions')}</h2>
-            <FAQSection />
+            <FAQSectionWrapper title={t('general_questions')}>
+              <FAQSection />
+            </FAQSectionWrapper>
             
-            <div className="mt-16">
-              <h2 className="text-2xl font-bold mb-8 text-center">{t('ai_employee_questions')}</h2>
+            <FAQSectionWrapper title={t('ai_employee_questions')}>
               <DefaultDemo />
-            </div>
+            </FAQSectionWrapper>
             
-            <div className="mt-16 bg-gray-50 p-8 rounded-lg">
-              <h3 className="text-xl font-bold mb-4">{t('still_have_questions')}</h3>
-              <p className="text-gray-600 mb-6">
-                {t('support_description')}
-              </p>
-              <div className="flex flex-wrap gap-4">
-                <a 
-                  href="/support" 
-                  className="inline-flex items-center px-6 py-3 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors font-medium"
-                >
-                  {t('contact_support')} <ArrowRight size={16} className="ml-2" />
-                </a>
-                <a 
-                  href="/documentation" 
-                  className="inline-flex items-center px-6 py-3 border border-indigo-600 text-indigo-600 rounded-md hover:bg-indigo-50 transition-colors font-medium"
-                >
-                  {t('browse_documentation')} <ArrowRight size={16} className="ml-2" />
-                </a>
-              </div>
-            </div>
+            <SupportSection />
           </div>
         </div>
       </section>

@@ -104,7 +104,7 @@ export default {
         },
         marquee: {
           "0%": { transform: "translateX(0)" },
-          "100%": { transform: "translateX(calc(-100%/3))" },
+          "100%": { transform: "translateX(calc(-50% - var(--gap)/2))" },
         },
         rainbow: {
           "0%": { backgroundPosition: "0% 50%" },
@@ -119,7 +119,7 @@ export default {
         "fade-up": "fade-up 0.5s ease-out",
         "slide-in-right": "slide-in-right 0.5s ease-out",
         pulse: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
-        marquee: "marquee 40s linear infinite",
+        marquee: "marquee var(--duration) linear infinite",
         rainbow: "rainbow 4s linear infinite",
       },
       maxWidth: {
