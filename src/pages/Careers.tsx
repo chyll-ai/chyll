@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import { Footer2Demo } from '@/components/ui/footer2-demo';
@@ -157,7 +156,7 @@ const Careers = () => {
                 We're always looking for talented individuals to join our team. Send your resume to our hiring team.
               </p>
               <a 
-                href="mailto:careers@generativschool.com" 
+                href="mailto:contact@generativschool.com" 
                 className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 transition-colors"
               >
                 Contact Our Hiring Team

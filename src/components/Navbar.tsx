@@ -51,17 +51,6 @@ const Navbar = () => {
                     </NavigationMenuLink>
                     <NavigationMenuLink asChild>
                       <Link 
-                        to="/team"
-                        className="block p-3 space-y-1 rounded-md hover:bg-gray-50"
-                      >
-                        <div className="font-medium">Our Team</div>
-                        <div className="text-sm text-gray-600">
-                          Meet the people behind GenerativSchool
-                        </div>
-                      </Link>
-                    </NavigationMenuLink>
-                    <NavigationMenuLink asChild>
-                      <Link 
                         to="/careers"
                         className="block p-3 space-y-1 rounded-md hover:bg-gray-50"
                       >
@@ -79,6 +68,60 @@ const Navbar = () => {
                         <div className="font-medium">Contact Us</div>
                         <div className="text-sm text-gray-600">
                           Get in touch with our team
+                        </div>
+                      </Link>
+                    </NavigationMenuLink>
+                  </div>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+              
+              <NavigationMenuItem>
+                <NavigationMenuTrigger className="text-gray-700 hover:text-brand-blue transition-colors">
+                  Resources
+                </NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <div className="grid w-[400px] gap-3 p-4">
+                    <NavigationMenuLink asChild>
+                      <Link 
+                        to="/blog"
+                        className="block p-3 space-y-1 rounded-md hover:bg-gray-50"
+                      >
+                        <div className="font-medium">Blog</div>
+                        <div className="text-sm text-gray-600">
+                          Insights and updates from our team
+                        </div>
+                      </Link>
+                    </NavigationMenuLink>
+                    <NavigationMenuLink asChild>
+                      <Link 
+                        to="/faq"
+                        className="block p-3 space-y-1 rounded-md hover:bg-gray-50"
+                      >
+                        <div className="font-medium">FAQ</div>
+                        <div className="text-sm text-gray-600">
+                          Answers to common questions
+                        </div>
+                      </Link>
+                    </NavigationMenuLink>
+                    <NavigationMenuLink asChild>
+                      <Link 
+                        to="/support"
+                        className="block p-3 space-y-1 rounded-md hover:bg-gray-50"
+                      >
+                        <div className="font-medium">Support</div>
+                        <div className="text-sm text-gray-600">
+                          Get help with our platform
+                        </div>
+                      </Link>
+                    </NavigationMenuLink>
+                    <NavigationMenuLink asChild>
+                      <Link 
+                        to="/documentation"
+                        className="block p-3 space-y-1 rounded-md hover:bg-gray-50"
+                      >
+                        <div className="font-medium">Documentation</div>
+                        <div className="text-sm text-gray-600">
+                          Detailed guides and reference materials
                         </div>
                       </Link>
                     </NavigationMenuLink>
@@ -147,13 +190,6 @@ const Navbar = () => {
                   About Us
                 </Link>
                 <Link 
-                  to="/team" 
-                  className="block text-gray-700 hover:text-brand-blue py-1 transition-colors"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Our Team
-                </Link>
-                <Link 
                   to="/careers" 
                   className="block text-gray-700 hover:text-brand-blue py-1 transition-colors"
                   onClick={() => setIsMenuOpen(false)}
@@ -166,6 +202,44 @@ const Navbar = () => {
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Contact Us
+                </Link>
+              </div>
+            </div>
+            
+            {/* Mobile Resources submenu */}
+            <div className="py-2">
+              <div className="flex items-center justify-between">
+                <span className="text-gray-700 font-medium">Resources</span>
+                <ChevronDown size={16} className="text-gray-500" />
+              </div>
+              <div className="pl-4 mt-2 space-y-2 border-l border-gray-200">
+                <Link 
+                  to="/blog" 
+                  className="block text-gray-700 hover:text-brand-blue py-1 transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Blog
+                </Link>
+                <Link 
+                  to="/faq" 
+                  className="block text-gray-700 hover:text-brand-blue py-1 transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  FAQ
+                </Link>
+                <Link 
+                  to="/support" 
+                  className="block text-gray-700 hover:text-brand-blue py-1 transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Support
+                </Link>
+                <Link 
+                  to="/documentation" 
+                  className="block text-gray-700 hover:text-brand-blue py-1 transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Documentation
                 </Link>
               </div>
             </div>

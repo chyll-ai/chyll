@@ -1,3 +1,4 @@
+
 import { Footer2 } from "@/components/ui/footer2";
 
 const demoData = {
@@ -23,10 +24,10 @@ const demoData = {
     {
       title: "Resources",
       links: [
-        { text: "Blog", url: "#" },
-        { text: "FAQ", url: "#faq" },
-        { text: "Support", url: "#" },
-        { text: "Documentation", url: "#" },
+        { text: "Blog", url: "/blog" },
+        { text: "FAQ", url: "/faq" },
+        { text: "Support", url: "/support" },
+        { text: "Documentation", url: "/documentation" },
       ],
     },
     {
