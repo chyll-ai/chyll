@@ -3,7 +3,8 @@ import React from 'react';
 import Navbar from '@/components/Navbar';
 import { Footer2Demo } from '@/components/ui/footer2-demo';
 import { Link } from 'react-router-dom';
-import { ChevronRight, ChevronLeft } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Search } from 'lucide-react';
+import DocSearch from '@/components/DocSearch';
 
 interface DocLayoutProps {
   children: React.ReactNode;
@@ -42,10 +43,17 @@ const DocLayout = ({
             </div>
           )}
           
-          <h1 className="text-3xl md:text-4xl font-bold mb-4">{title}</h1>
-          {description && (
-            <p className="text-lg text-gray-700">{description}</p>
-          )}
+          <div className="flex flex-col md:flex-row items-start justify-between gap-4">
+            <div>
+              <h1 className="text-3xl md:text-4xl font-bold mb-2">{title}</h1>
+              {description && (
+                <p className="text-lg text-gray-700">{description}</p>
+              )}
+            </div>
+            <div className="w-full md:w-64">
+              <DocSearch placeholder="Search docs..." />
+            </div>
+          </div>
         </div>
       </div>
       

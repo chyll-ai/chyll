@@ -1,9 +1,9 @@
-
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import { Footer2Demo } from '@/components/ui/footer2-demo';
-import { Search, Book, Code, Video, DownloadCloud, Coffee, Users, AlertCircle } from 'lucide-react';
+import { Book, Code, Video, DownloadCloud, Coffee, Users, AlertCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import DocSearch from '@/components/DocSearch';
 
 interface DocCategory {
   icon: React.ReactNode;
@@ -102,14 +102,10 @@ const Documentation = () => {
             </p>
             
             <div className="relative max-w-xl mx-auto">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Search className="h-5 w-5 text-gray-400" />
+              <DocSearch containerClassName="max-w-xl mx-auto" />
+              <div className="mt-2 text-sm text-gray-500">
+                Press <kbd className="px-2 py-1 bg-white rounded border border-gray-300 mx-1">⌘</kbd> + <kbd className="px-2 py-1 bg-white rounded border border-gray-300 mx-1">K</kbd> to search
               </div>
-              <input
-                type="text"
-                className="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-md bg-white focus:ring-indigo-500 focus:border-indigo-500"
-                placeholder="Search documentation..."
-              />
             </div>
           </div>
         </div>
