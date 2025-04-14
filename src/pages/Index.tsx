@@ -9,6 +9,7 @@ import Benefits from '@/components/Benefits';
 import { BentoDemo } from '@/components/ui/bento-demo';
 import { TestimonialsSectionDemo } from '@/components/ui/testimonials-section-demo';
 import { PricingBasic } from '@/components/ui/pricing-basic';
+import { FAQSection } from '@/components/ui/faq-section';
 
 const Index = () => {
   return (
@@ -76,6 +77,19 @@ const Index = () => {
       <section id="pricing" className="section-padding bg-white">
         <div className="container-custom">
           <PricingBasic />
+        </div>
+      </section>
+      
+      {/* FAQ Section */}
+      <section id="faq" className="section-padding gradient-bg">
+        <div className="container-custom">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Frequently Asked Questions</h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Everything you need to know about botis and how it can transform your business.
+            </p>
+          </div>
+          <FAQSection />
         </div>
       </section>
       
