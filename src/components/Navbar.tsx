@@ -69,19 +69,22 @@ const Navbar: React.FC<NavbarProps> = ({ currentPath }) => {
           </SheetTrigger>
           <SheetContent side="right" className="w-full sm:w-64">
             <SheetHeader>
-              <SheetTitle>Menu</SheetTitle>
+              <SheetTitle>{t('menu')}</SheetTitle>
               <SheetDescription>
-                Explore the platform and discover new possibilities.
+                {t('menu_description')}
               </SheetDescription>
             </SheetHeader>
             <div className="grid gap-4 py-4">
-              <NavLink to="/#features">Features</NavLink>
-              <NavLink to="/#how-it-works">How It Works</NavLink>
-              <NavLink to="/#pricing">Pricing</NavLink>
-              <NavLink to="/documentation">Documentation</NavLink>
-              <NavLink to="/faq">FAQ</NavLink>
-              <NavLink to="/blog">Blog</NavLink>
-              <NavLink to="/contact">Contact</NavLink>
+              <NavLink to="/#features">{t('features')}</NavLink>
+              <NavLink to="/#how-it-works">{t('how_it_works')}</NavLink>
+              <NavLink to="/#pricing">{t('pricing')}</NavLink>
+              <NavLink to="/documentation">{t('documentation')}</NavLink>
+              <NavLink to="/faq">{t('faq')}</NavLink>
+              <NavLink to="/blog">{t('blog')}</NavLink>
+              <NavLink to="/contact">{t('contact')}</NavLink>
+              <div className="mt-2">
+                <LanguageSwitcher />
+              </div>
             </div>
           </SheetContent>
         </Sheet>

@@ -36,6 +36,81 @@ const translations = {
   "terms": "Conditions",
   "privacy": "Confidentialité",
   "cookies": "Cookies",
+  
+  // Added translations
+  "product": "Produit",
+  "company": "Entreprise",
+  "careers": "Carrières",
+  "support": "Support",
+  "resources": "Ressources",
+  "videos": "Vidéos",
+  "copyright_text": "Tous droits réservés.",
+  
+  // Cookie consent
+  "cookie_consent": "Consentement aux cookies",
+  "cookie_message": "Nous utilisons des cookies pour améliorer votre expérience sur notre site. En cliquant sur \"Accepter tout\", vous acceptez notre utilisation des cookies à des fins d'analyse, de personnalisation et de publicité.",
+  "cookie_learn_more": "Vous pouvez personnaliser vos préférences ou en savoir plus dans notre",
+  "cookie_policy": "Politique de cookies",
+  "essential_only": "Essentiels uniquement",
+  "accept_all": "Accepter tout",
+  "cookies_accepted": "Cookies acceptés",
+  "preferences_saved": "Vos préférences ont été enregistrées.",
+  "essential_cookies_accepted": "Cookies essentiels acceptés",
+  "essential_cookies_message": "Seuls les cookies essentiels seront utilisés.",
+  
+  // FAQ page
+  "faq_title": "Foire Aux Questions",
+  "faq_description": "Trouvez des réponses aux questions fréquentes sur les solutions IA de GenerativSchool, le processus d'implémentation et le support.",
+  "general_questions": "Questions générales",
+  "ai_employee_questions": "Questions sur les employés IA",
+  "still_have_questions": "Vous avez encore des questions ?",
+  "support_description": "Notre équipe de support est là pour vous aider. Contactez-nous pour une assistance personnalisée avec vos questions spécifiques.",
+  "contact_support": "Contacter le support",
+  "browse_documentation": "Parcourir la documentation",
+  
+  // Benefits and Features
+  "cost_efficient": "Économique",
+  "boosted_productivity": "Productivité améliorée",
+  "effortless_automation": "Automatisation facile",
+  "24_7_support": "Support 24/7",
+  "multi_channel_engagement": "Engagement multi-canal",
+  "infinitely_scalable": "Infiniment évolutif",
+  "voice_ai": "IA vocale",
+  "conversation_ai": "IA conversationnelle",
+  "reviews_ai": "IA d'avis",
+  "content_ai": "IA de contenu",
+  "workflow_ai": "Assistant IA de flux de travail",
+  "funnel_ai": "IA d'entonnoir",
+  
+  // Audit logs
+  "comprehensive_activity_tracking": "Suivi complet des activités",
+  "activity_tracking_description": "GenerativSchool enregistre automatiquement tous les événements et actions importantes effectués par les utilisateurs ou les processus système. Ces journaux sont stockés en toute sécurité et facilement accessibles via l'interface des journaux d'audit, avec des politiques de conservation d'entreprise disponibles pour un stockage à long terme.",
+  "audit_logs_intro": "Les journaux d'audit de GenerativSchool fournissent un enregistrement complet des activités des utilisateurs et des événements système, vous permettant de surveiller les problèmes de sécurité, de résoudre les problèmes et de maintenir la conformité aux exigences réglementaires.",
+  "audit_log_analytics": "Analytique des journaux d'audit",
+  "analytics_description": "GenerativSchool Enterprise fournit des capacités d'analyse avancées pour vous aider à tirer des informations de vos journaux d'audit.",
+  "usage_patterns": "Schémas d'utilisation",
+  "usage_patterns_description": "Analysez comment votre équipe utilise GenerativSchool pour identifier les opportunités d'optimisation.",
+  "security_analytics": "Analytique de sécurité",
+  "security_analytics_description": "Identifiez les problèmes de sécurité potentiels grâce à une analyse avancée des modèles.",
+  "custom_reporting": "Rapports personnalisés",
+  "custom_reporting_description": "Créez des rapports personnalisés basés sur vos données de journal d'audit pour répondre à des besoins commerciaux ou de conformité spécifiques.",
+  "report_types": "Types de rapports",
+  "scheduling_options": "Options de planification",
+  
+  // Mobile Menu
+  "menu": "Menu",
+  "menu_description": "Explorez la plateforme et découvrez de nouvelles possibilités.",
+  
+  // Footer
+  "footer_description": "Solutions intelligentes pour les entreprises cherchant à automatiser les flux de travail, améliorer l'expérience client et évoluer avec l'IA.",
+  
+  // Steps
+  "step_1": "Étape 1",
+  "step_2": "Étape 2", 
+  "step_3": "Étape 3",
+  "choose_ai_employee": "Choisissez votre employé IA",
+  "plug_workflow": "Intégrez-le dans votre flux de travail",
+  "productivity_skyrocket": "Regardez votre productivité décoller"
 };
 
 export default translations;

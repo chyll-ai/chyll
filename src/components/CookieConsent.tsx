@@ -5,9 +5,11 @@ import { toast } from '@/components/ui/sonner';
 import { Cookie } from 'lucide-react';
 import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Link } from 'react-router-dom';
+import { useTranslation } from '@/contexts/TranslationContext';
 
 const CookieConsent = () => {
   const [open, setOpen] = useState(false);
+  const { t } = useTranslation();
 
   useEffect(() => {
     // Check if user has already accepted cookies
@@ -24,8 +26,8 @@ const CookieConsent = () => {
   const acceptCookies = () => {
     localStorage.setItem('cookiesAccepted', 'true');
     setOpen(false);
-    toast('Cookies accepted', {
-      description: 'Your preferences have been saved.',
+    toast(t('cookies_accepted'), {
+      description: t('preferences_saved'),
       duration: 3000,
     });
   };
@@ -33,8 +35,8 @@ const CookieConsent = () => {
   const acceptEssentialOnly = () => {
     localStorage.setItem('cookiesAccepted', 'essential');
     setOpen(false);
-    toast('Essential cookies accepted', {
-      description: 'Only essential cookies will be used.',
+    toast(t('essential_cookies_accepted'), {
+      description: t('essential_cookies_message'),
       duration: 3000,
     });
   };
@@ -50,16 +52,16 @@ const CookieConsent = () => {
         <div className="p-6 max-w-5xl mx-auto">
           <SheetHeader className="flex flex-row items-center gap-3 mb-4">
             <Cookie className="h-5 w-5 text-brand-blue" />
-            <SheetTitle className="text-xl">Cookie Consent</SheetTitle>
+            <SheetTitle className="text-xl">{t('cookie_consent')}</SheetTitle>
           </SheetHeader>
           
           <div className="mb-4 text-sm text-gray-600">
-            <p>
-              We use cookies to improve your experience on our site. By clicking "Accept All", you agree to our use of cookies for analytics, personalization, and advertising purposes.
-            </p>
+            <p>{t('cookie_message')}</p>
             <p className="mt-2">
-              You can customize your preferences or learn more in our{' '}
-              <Link to="/cookies" className="text-brand-blue hover:underline" onClick={() => setOpen(false)}>Cookie Policy</Link>.
+              {t('cookie_learn_more')}{' '}
+              <Link to="/cookies" className="text-brand-blue hover:underline" onClick={() => setOpen(false)}>
+                {t('cookie_policy')}
+              </Link>.
             </p>
           </div>
           
@@ -68,10 +70,10 @@ const CookieConsent = () => {
               variant="outline"
               onClick={acceptEssentialOnly}
             >
-              Essential Only
+              {t('essential_only')}
             </Button>
             <Button onClick={acceptCookies}>
-              Accept All
+              {t('accept_all')}
             </Button>
           </SheetFooter>
         </div>
