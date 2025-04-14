@@ -1,4 +1,3 @@
-
 import React from 'react';
 import DocLayout from '@/components/DocLayout';
 import { UserCog, ShieldCheck, Users, AlertTriangle } from 'lucide-react';

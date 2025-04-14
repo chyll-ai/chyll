@@ -1,4 +1,3 @@
-
 import React from 'react';
 import DocLayout from '@/components/DocLayout';
 import { FileDown, Star, Clock, Tag } from 'lucide-react';
@@ -63,7 +62,6 @@ const WorkflowTemplates = () => {
     }
   ];
 
-  // Helper function to render stars based on popularity
   const renderStars = (popularity: number) => {
     const stars = [];
     for (let i = 0; i < 5; i++) {
@@ -103,6 +101,7 @@ const WorkflowTemplates = () => {
             <li>Click the "Download Template" button to download the template file</li>
             <li>In your GenerativSchool workspace, go to Workflows > Import</li>
             <li>Upload the template file and follow the prompts to configure it</li>
+            <li>Create a condition (e.g., "Lead Score &gt; 50")</li>
             <li>Customize the workflow to match your specific processes</li>
           </ol>
         </div>

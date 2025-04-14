@@ -1,4 +1,4 @@
-
+import React from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -32,6 +32,9 @@ import VideoTutorials from "./pages/docs/VideoTutorials";
 // Best Practices Pages
 import BestPractices from "./pages/docs/BestPractices";
 import Performance from "./pages/docs/best-practices/Performance";
+import Security from "./pages/docs/best-practices/Security";
+import Scalability from "./pages/docs/best-practices/Scalability";
+import DataManagement from "./pages/docs/best-practices/DataManagement";
 
 // Resources Pages
 import ResourcesPage from "./pages/docs/ResourcesPage";
@@ -89,6 +92,9 @@ const App = () => (
           {/* Best Practices Section */}
           <Route path="/documentation/best-practices" element={<BestPractices />} />
           <Route path="/documentation/best-practices/performance" element={<Performance />} />
+          <Route path="/documentation/best-practices/security" element={<Security />} />
+          <Route path="/documentation/best-practices/scalability" element={<Scalability />} />
+          <Route path="/documentation/best-practices/data-management" element={<DataManagement />} />
           
           {/* Resources Section */}
           <Route path="/documentation/resources" element={<ResourcesPage />} />
