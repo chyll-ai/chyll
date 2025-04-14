@@ -1,7 +1,7 @@
+
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import DemoForm from '@/components/DemoForm';
 import HowItWorks from '@/components/HowItWorks';
 import { Hero } from '@/components/ui/hero';
 import { DisplayCardsDemo } from '@/components/ui/display-cards-demo';
@@ -76,20 +76,6 @@ const Index = () => {
       <section id="pricing" className="section-padding bg-white">
         <div className="container-custom">
           <PricingBasic />
-        </div>
-      </section>
-      
-      {/* Final CTA Section */}
-      <section className="py-16 bg-brand-blue text-white">
-        <div className="container-custom">
-          <div className="flex flex-col md:flex-row items-center md:items-start justify-between gap-10">
-            <div className="md:w-1/2 max-w-md w-full">
-              <div className="bg-white rounded-xl p-6 shadow-md">
-                <h3 className="text-gray-900 font-bold text-xl mb-4">Schedule Your Demo</h3>
-                <DemoForm />
-              </div>
-            </div>
-          </div>
         </div>
       </section>
       
