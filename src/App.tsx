@@ -52,6 +52,9 @@ import IntegrationExamples from "./pages/docs/resources/IntegrationExamples";
 // User Management Pages
 import UserManagement from "./pages/docs/UserManagement";
 import Roles from "./pages/docs/user-management/Roles";
+import Collaboration from "./pages/docs/user-management/Collaboration";
+import AccessControl from "./pages/docs/user-management/AccessControl";
+import AuditLogs from "./pages/docs/user-management/AuditLogs";
 
 // Video Tutorial Categories Pages
 import AIWorkflows from "./pages/docs/videos/AIWorkflows";
@@ -128,6 +131,9 @@ const App = () => (
           {/* User Management Section */}
           <Route path="/documentation/user-management" element={<UserManagement />} />
           <Route path="/documentation/user-management/roles" element={<Roles />} />
+          <Route path="/documentation/user-management/collaboration" element={<Collaboration />} />
+          <Route path="/documentation/user-management/access-control" element={<AccessControl />} />
+          <Route path="/documentation/user-management/audit-logs" element={<AuditLogs />} />
           
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
