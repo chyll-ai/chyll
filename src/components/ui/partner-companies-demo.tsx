@@ -56,6 +56,16 @@ export function PartnerCompaniesDemo() {
           />
           <span className="text-sm font-medium text-gray-700">Bpifrance</span>
         </div>
+
+        {/* Region Île-de-France logo */}
+        <div className="flex flex-col items-center mx-4 min-w-[160px]">
+          <img 
+            src="/lovable-uploads/ca0dd06b-adba-4cf3-9194-84a7245c3c90.png" 
+            alt="Region Île-de-France logo" 
+            className="h-12 w-auto mb-2" 
+          />
+          <span className="text-sm font-medium text-gray-700">Région Île-de-France</span>
+        </div>
       </InfiniteSlider>
     </div>
   );
