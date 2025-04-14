@@ -41,7 +41,7 @@ const demoData = {
       ],
     },
   ],
-  copyright: "© 2024 GenerativSchool. All rights reserved.",
+  copyright: "© 2024 botis. All rights reserved.",
   bottomLinks: [
     { text: "Terms of Service", url: "#" },
     { text: "Privacy Policy", url: "#" },

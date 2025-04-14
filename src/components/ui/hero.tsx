@@ -17,7 +17,7 @@ export function Hero() {
       <div className="animation-delay-8 animate-fadeIn mt-20 flex flex-col items-center justify-center px-4 text-center md:mt-20">
         <div className="z-10 mb-6 mt-10 sm:justify-center md:mb-4 md:mt-20">
           <div className="relative flex items-center whitespace-nowrap rounded-full border bg-popover px-3 py-1 text-xs leading-6 text-primary/60">
-            <Shapes className="h-5 p-1" /> Introducing GenerativSchool.
+            <Shapes className="h-5 p-1" /> Introducing botis.
             <a
               href="/about"
               rel="noreferrer"
@@ -66,7 +66,7 @@ export function Hero() {
 
           <h1 className="mt-8 text-2xl md:text-2xl">
             Work smarter, not harder with{" "}
-            <span className="text-brand-blue font-bold">GenerativSchool</span>
+            <span className="text-brand-blue font-bold">botis</span>
           </h1>
 
           <p className="md:text-md mx-auto mb-16 mt-2 max-w-2xl px-6 text-sm text-primary/60 sm:px-6 md:max-w-4xl md:px-20 lg:text-lg">
