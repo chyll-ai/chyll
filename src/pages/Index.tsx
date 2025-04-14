@@ -4,7 +4,7 @@ import Navbar from '@/components/Navbar';
 import HowItWorks from '@/components/HowItWorks';
 import { HeroDemo } from '@/components/ui/animated-hero-demo';
 import { DisplayCardsDemo } from '@/components/ui/display-cards-demo';
-import Benefits from '@/components/Benefits';
+import { FeaturesSectionWithHoverEffectsDemo } from '@/components/ui/feature-section-with-hover-effects-demo';
 import { BentoDemo } from '@/components/ui/bento-demo';
 import { TestimonialsSectionDemo } from '@/components/ui/testimonials-section-demo';
 import { PricingBasic } from '@/components/ui/pricing-basic';
@@ -34,7 +34,7 @@ const Index = () => {
               Imagine having an employee that works non-stop, tackles complex tasks, and makes your customers feel like VIPs.
             </p>
           </div>
-          <Benefits />
+          <FeaturesSectionWithHoverEffectsDemo />
         </div>
       </section>
       
