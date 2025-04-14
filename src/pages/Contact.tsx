@@ -1,7 +1,11 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import Navbar from '@/components/Navbar';
 import { Footer2Demo } from '@/components/ui/footer2-demo';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { useToast } from '@/components/ui/use-toast';
 import { MapPin, Phone, Mail, Clock } from 'lucide-react';
 
 const ContactInfo = ({ icon, title, details }: {
@@ -21,6 +25,71 @@ const ContactInfo = ({ icon, title, details }: {
 );
 
 const Contact = () => {
+  const { toast } = useToast();
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    company: '',
+    subject: '',
+    message: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { id, value } = e.target;
+    setFormData(prev => ({ ...prev, [id]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      // This is a simple email sending implementation using formsubmit.co service
+      // It will forward the form data to contact@generativschool.com
+      const response = await fetch('https://formsubmit.co/contact@generativschool.com', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          ...formData,
+          _subject: `Contact Form: ${formData.subject}`,
+          _template: 'table'
+        })
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Message sent!",
+          description: "Thank you for contacting us. We'll get back to you soon.",
+        });
+        // Reset form
+        setFormData({
+          firstName: '',
+          lastName: '',
+          email: '',
+          company: '',
+          subject: '',
+          message: ''
+        });
+      } else {
+        throw new Error('Failed to send message');
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "There was a problem sending your message. Please try again.",
+        variant: "destructive",
+      });
+      console.error('Error sending message:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -101,26 +170,32 @@ const Contact = () => {
               
               <div>
                 <h2 className="text-2xl font-bold mb-6">Send Us a Message</h2>
-                <form className="space-y-6">
+                <form className="space-y-6" onSubmit={handleSubmit}>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label htmlFor="first-name" className="block text-sm font-medium text-gray-700 mb-1">
+                      <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1">
                         First Name
                       </label>
-                      <input
+                      <Input
                         type="text"
-                        id="first-name"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                        id="firstName"
+                        value={formData.firstName}
+                        onChange={handleChange}
+                        required
+                        className="w-full focus:ring-indigo-500 focus:border-indigo-500"
                       />
                     </div>
                     <div>
-                      <label htmlFor="last-name" className="block text-sm font-medium text-gray-700 mb-1">
+                      <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-1">
                         Last Name
                       </label>
-                      <input
+                      <Input
                         type="text"
-                        id="last-name"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                        id="lastName"
+                        value={formData.lastName}
+                        onChange={handleChange}
+                        required
+                        className="w-full focus:ring-indigo-500 focus:border-indigo-500"
                       />
                     </div>
                   </div>
@@ -129,10 +204,13 @@ const Contact = () => {
                     <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
                       Email Address
                     </label>
-                    <input
+                    <Input
                       type="email"
                       id="email"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                      value={formData.email}
+                      onChange={handleChange}
+                      required
+                      className="w-full focus:ring-indigo-500 focus:border-indigo-500"
                     />
                   </div>
                   
@@ -140,10 +218,12 @@ const Contact = () => {
                     <label htmlFor="company" className="block text-sm font-medium text-gray-700 mb-1">
                       Company Name
                     </label>
-                    <input
+                    <Input
                       type="text"
                       id="company"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                      value={formData.company}
+                      onChange={handleChange}
+                      className="w-full focus:ring-indigo-500 focus:border-indigo-500"
                     />
                   </div>
                   
@@ -151,10 +231,13 @@ const Contact = () => {
                     <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-1">
                       Subject
                     </label>
-                    <input
+                    <Input
                       type="text"
                       id="subject"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                      value={formData.subject}
+                      onChange={handleChange}
+                      required
+                      className="w-full focus:ring-indigo-500 focus:border-indigo-500"
                     />
                   </div>
                   
@@ -162,20 +245,24 @@ const Contact = () => {
                     <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">
                       Message
                     </label>
-                    <textarea
+                    <Textarea
                       id="message"
                       rows={5}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                    ></textarea>
+                      value={formData.message}
+                      onChange={handleChange}
+                      required
+                      className="w-full focus:ring-indigo-500 focus:border-indigo-500"
+                    />
                   </div>
                   
                   <div>
-                    <button
+                    <Button
                       type="submit"
+                      disabled={isSubmitting}
                       className="w-full inline-flex justify-center items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
                     >
-                      Send Message
-                    </button>
+                      {isSubmitting ? "Sending..." : "Send Message"}
+                    </Button>
                   </div>
                 </form>
               </div>
