@@ -3,40 +3,40 @@ import { FaqAccordion } from "@/components/ui/faq-chat-accordion";
 
 const defaultData = [
   {
-    answer: "GenerativSchool is an AI-powered automation platform that helps businesses streamline workflows, handle customer communications, and scale operations. It combines advanced AI with intuitive tools to handle repetitive tasks, engage with customers, and provide data-driven insights.",
+    answer: "Our AI Employees are advanced, specialized digital workers designed to handle specific business tasks 24/7. Each AI Employee is trained to perform unique roles like customer service, content creation, sales support, and more - transforming how businesses operate by providing constant, high-quality support.",
     icon: "🤖",
     iconPosition: "right" as const,
     id: 1,
-    question: "What is GenerativSchool and how can it help my business?",
+    question: "What are AI Employees and how can they help my business?",
   },
   {
-    answer: "No technical skills required! GenerativSchool is designed to be user-friendly with a simple interface. Our onboarding team will help you set up your workflows and automations, and our documentation provides step-by-step guidance.",
+    answer: "Absolutely not! Our AI Employees are designed to be user-friendly and intuitive. They seamlessly integrate into your existing workflows, requiring minimal technical expertise. Our team provides comprehensive onboarding and support to help you maximize their potential.",
     id: 2,
-    question: "Do I need technical skills to use GenerativSchool?",
+    question: "Do I need technical skills to use AI Employees?",
   },
   {
-    answer: "Most businesses can get up and running with GenerativSchool in just a few days. The exact timeline depends on your specific needs, but our white-glove onboarding ensures a smooth and efficient implementation process.",
+    answer: "Most businesses can onboard their first AI Employee within days. We provide a white-glove implementation process, working closely with you to understand your specific needs and customize the AI Employee's capabilities accordingly.",
     id: 3,
-    question: "How long does it take to implement GenerativSchool?",
+    question: "How quickly can I implement an AI Employee?",
   },
   {
-    answer: "Yes! GenerativSchool seamlessly integrates with most popular business tools including CRMs, marketing platforms, payment processors, and communication tools. Our team can assist with custom integrations if needed.",
+    answer: "Yes! Our AI Employees are built to integrate smoothly with popular business tools including CRMs, communication platforms, project management systems, and more. Custom integrations are also available to ensure a perfect fit for your business ecosystem.",
     icon: "⚙️",
     iconPosition: "left" as const,
     id: 4,
-    question: "Can GenerativSchool integrate with my existing tools and systems?",
+    question: "Can AI Employees integrate with my existing tools and systems?",
   },
   {
-    answer: "We offer multiple levels of support depending on your plan. All customers receive email support, while our Professional and Expert plans include faster response times, priority support, and scheduled strategy calls.",
+    answer: "We offer comprehensive support across different plans. This includes initial setup, ongoing training, performance optimization, and dedicated support channels. Our goal is to ensure your AI Employees continuously improve and deliver maximum value.",
     id: 5,
-    question: "What kind of support does GenerativSchool provide?",
+    question: "What kind of support do you provide for AI Employees?",
   },
   {
-    answer: "Absolutely. We take data security very seriously. GenerativSchool employs enterprise-grade encryption, regular security audits, and follows best practices for data protection. Our Expert plan includes additional security features like SSO authentication.",
+    answer: "Data security is our top priority. Each AI Employee operates with enterprise-grade encryption, follows strict data protection protocols, and is designed with multiple layers of security. We provide transparency in data handling and can customize security measures to meet your specific compliance requirements.",
     icon: "🔒",
     iconPosition: "right" as const,
     id: 6,
-    question: "Is my data secure with GenerativSchool?",
+    question: "How secure are AI Employees with my business data?",
   },
 ];
 
@@ -63,3 +63,4 @@ function CustomStyleDemo() {
 }
 
 export { DefaultDemo, CustomStyleDemo };
+

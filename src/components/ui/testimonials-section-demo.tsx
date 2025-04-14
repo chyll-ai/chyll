@@ -8,7 +8,7 @@ const testimonials = [
       handle: "@sarahj_marketing",
       avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=face"
     },
-    text: "Since implementing GenerativSchool Voice AI, we've saved 20 hours a week in customer service and doubled our lead response rate.",
+    text: "Our Voice AI Employee handles customer calls with such precision, we've reduced our customer service team's workload by 70% while improving response quality.",
     href: "#"
   },
   {
@@ -17,7 +17,7 @@ const testimonials = [
       handle: "@michaelc_tech",
       avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face"
     },
-    text: "The Conversational AI feature has transformed our customer service. We're handling twice as many inquiries with half the staff.",
+    text: "The Conversation AI Employee manages our entire customer support chat, handling complex inquiries with incredible accuracy and empathy.",
     href: "#"
   },
   {
@@ -26,7 +26,8 @@ const testimonials = [
       handle: "@sophiar_founder",
       avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face"
     },
-    text: "As a solo entrepreneur, GenerativSchool AI has become my most valuable team member. It handles customer inquiries 24/7 without missing a beat!"
+    text: "As a solo entrepreneur, my Content AI Employee creates marketing materials, blog posts, and social media content that perfectly matches my brand voice.",
+    href: "#"
   },
   {
     author: {
@@ -34,7 +35,7 @@ const testimonials = [
       handle: "@jameswilson_ceo",
       avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face"
     },
-    text: "Reviews AI has completely transformed our online reputation. Our Google ratings have gone from 3.8 to 4.7 in just three months.",
+    text: "Our Reviews AI Employee has transformed our online reputation management, automatically responding to reviews and improving our ratings.",
     href: "#"
   },
   {
@@ -43,7 +44,7 @@ const testimonials = [
       handle: "@emilyp_digital",
       avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face"
     },
-    text: "Content AI saves us hours every week. We've increased our content output by 300% while maintaining our brand voice perfectly.",
+    text: "The Workflow AI Employee automates our entire project management process, reducing administrative overhead by 50%.",
     href: "#"
   },
   {
@@ -52,7 +53,7 @@ const testimonials = [
       handle: "@danielk_agency",
       avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face"
     },
-    text: "The ROI on GenerativSchool has been incredible. We've seen a 35% increase in conversions since implementing the Funnel AI on our website.",
+    text: "Our Funnel AI Employee continuously optimizes our sales funnels, resulting in a 40% increase in conversion rates with minimal manual intervention.",
     href: "#"
   }
 ]
@@ -60,9 +61,10 @@ const testimonials = [
 export function TestimonialsSectionDemo() {
   return (
     <TestimonialsSection
-      title="See What Our Clients Are Saying"
-      description="Businesses of all sizes are transforming their operations with GenerativSchool AI employees"
+      title="Meet the AI Employees Transforming Businesses"
+      description="Hear how businesses are scaling and innovating with specialized AI team members"
       testimonials={testimonials}
     />
   )
 }
+
