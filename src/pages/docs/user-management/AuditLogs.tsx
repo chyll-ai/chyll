@@ -1,4 +1,3 @@
-
 import React from 'react';
 import DocLayout from '@/components/DocLayout';
 import { ClipboardList, Search, Download, AlertCircle, Clock, Filter, BarChart, MessageSquare } from 'lucide-react';
@@ -162,6 +161,7 @@ const AuditLogs = () => {
                   <td className="px-4 py-3 text-sm">Outcome of the action (success/failure)</td>
                   <td className="px-4 py-3 text-sm">success</td>
                 </tr>
+                {/* Replace problematic JSON representation */}
                 <tr>
                   <td className="px-4 py-3 text-sm font-medium">Event Details</td>
                   <td className="px-4 py-3 text-sm">Additional context-specific information</td>

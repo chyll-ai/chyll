@@ -1,4 +1,3 @@
-
 import React from 'react';
 import DocLayout from '@/components/DocLayout';
 import { UsersRound, Share2, MessageSquare, GitMerge, Zap, BookOpen } from 'lucide-react';
@@ -131,41 +130,44 @@ const Collaboration = () => {
             </ol>
           </div>
           
-          <Table>
-            <TableCaption>Workflow sharing permission levels and capabilities</TableCaption>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Permission Level</TableHead>
-                <TableHead>Can View</TableHead>
-                <TableHead>Can Edit</TableHead>
-                <TableHead>Can Share</TableHead>
-                <TableHead>Can Delete</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              <TableRow>
-                <TableCell className="font-medium">View</TableCell>
-                <TableCell>✓</TableCell>
-                <TableCell>✗</TableCell>
-                <TableCell>✗</TableCell>
-                <TableCell>✗</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="font-medium">Edit</TableCell>
-                <TableCell>✓</TableCell>
-                <TableCell>✓</TableCell>
-                <TableCell>✗</TableCell>
-                <TableCell>✗</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="font-medium">Manage</TableCell>
-                <TableCell>✓</TableCell>
-                <TableCell>✓</TableCell>
-                <TableCell>✓</TableCell>
-                <TableCell>✓</TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
+          <div className="bg-white border border-gray-200 rounded-lg p-6 mb-8">
+            <h3 className="text-xl font-semibold mb-4">Workflow Sharing Permission Levels</h3>
+            <Table>
+              <TableCaption>Workflow sharing permission levels and capabilities</TableCaption>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Permission Level</TableHead>
+                  <TableHead>Can View</TableHead>
+                  <TableHead>Can Edit</TableHead>
+                  <TableHead>Can Share</TableHead>
+                  <TableHead>Can Delete</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                <TableRow>
+                  <TableCell className="font-medium">View</TableCell>
+                  <TableCell>✓</TableCell>
+                  <TableCell>✗</TableCell>
+                  <TableCell>✗</TableCell>
+                  <TableCell>✗</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="font-medium">Edit</TableCell>
+                  <TableCell>✓</TableCell>
+                  <TableCell>✓</TableCell>
+                  <TableCell>✗</TableCell>
+                  <TableCell>✗</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="font-medium">Manage</TableCell>
+                  <TableCell>✓</TableCell>
+                  <TableCell>✓</TableCell>
+                  <TableCell>✓</TableCell>
+                  <TableCell>✓</TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </div>
         </div>
       </section>
 
