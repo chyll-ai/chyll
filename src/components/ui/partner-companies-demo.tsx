@@ -73,6 +73,16 @@ export function PartnerCompaniesDemo() {
           />
           <span className="text-sm font-medium text-gray-700">Paris&Co</span>
         </div>
+
+        {/* Blue Factory logo */}
+        <div className="flex flex-col items-center mx-4 min-w-[160px]">
+          <img 
+            src="/lovable-uploads/3efc216a-03c5-43f5-aa2c-1a26eb7cc4af.png" 
+            alt="Blue Factory logo" 
+            className="h-12 w-auto mb-2" 
+          />
+          <span className="text-sm font-medium text-gray-700">Blue Factory</span>
+        </div>
       </InfiniteSlider>
     </div>
   );
