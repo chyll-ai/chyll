@@ -23,7 +23,10 @@ import NotFound from "./pages/NotFound";
 import GettingStarted from "./pages/docs/GettingStarted";
 import QuickStart from "./pages/docs/QuickStart";
 import PlatformOverview from "./pages/docs/PlatformOverview";
+import AccountSetup from "./pages/docs/AccountSetup";
+import FirstAutomation from "./pages/docs/FirstAutomation";
 import ApiDocumentation from "./pages/docs/ApiDocumentation";
+import ApiReference from "./pages/docs/ApiReference";
 import VideoTutorials from "./pages/docs/VideoTutorials";
 
 const queryClient = new QueryClient();
@@ -59,7 +62,10 @@ const App = () => (
           <Route path="/documentation/getting-started" element={<GettingStarted />} />
           <Route path="/documentation/getting-started/quick-start" element={<QuickStart />} />
           <Route path="/documentation/getting-started/platform-overview" element={<PlatformOverview />} />
+          <Route path="/documentation/getting-started/account-setup" element={<AccountSetup />} />
+          <Route path="/documentation/getting-started/first-automation" element={<FirstAutomation />} />
           <Route path="/documentation/api" element={<ApiDocumentation />} />
+          <Route path="/documentation/api/reference" element={<ApiReference />} />
           <Route path="/documentation/videos" element={<VideoTutorials />} />
           
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
