@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -28,6 +29,11 @@ import FirstAutomation from "./pages/docs/FirstAutomation";
 import ApiDocumentation from "./pages/docs/ApiDocumentation";
 import ApiReference from "./pages/docs/ApiReference";
 import VideoTutorials from "./pages/docs/VideoTutorials";
+
+// API Documentation Pages
+import Authentication from "./pages/docs/api/Authentication";
+import RateLimits from "./pages/docs/api/RateLimits";
+import Webhooks from "./pages/docs/api/Webhooks";
 
 // Best Practices Pages
 import BestPractices from "./pages/docs/BestPractices";
@@ -85,6 +91,9 @@ const App = () => (
           {/* API Documentation Section */}
           <Route path="/documentation/api" element={<ApiDocumentation />} />
           <Route path="/documentation/api/reference" element={<ApiReference />} />
+          <Route path="/documentation/api/authentication" element={<Authentication />} />
+          <Route path="/documentation/api/rate-limits" element={<RateLimits />} />
+          <Route path="/documentation/api/webhooks" element={<Webhooks />} />
           
           {/* Videos Section */}
           <Route path="/documentation/videos" element={<VideoTutorials />} />
