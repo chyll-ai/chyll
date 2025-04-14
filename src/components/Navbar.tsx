@@ -1,8 +1,7 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Menu, X, ChevronDown, Home } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -17,8 +16,9 @@ interface NavbarProps {
 }
 
 const Navbar = ({ currentPath = '/' }: NavbarProps) => {
+  const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const isHomePage = currentPath === '/';
+  const isHomePage = location.pathname === '/';
 
   return (
     <nav className="bg-white/90 backdrop-blur-sm sticky top-0 z-50 border-b border-gray-100">
