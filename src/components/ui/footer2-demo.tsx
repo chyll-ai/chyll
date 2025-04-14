@@ -16,10 +16,10 @@ const demoData = {
     {
       title: "Company",
       links: [
-        { text: "About Us", url: "#" },
-        { text: "Team", url: "#" },
-        { text: "Careers", url: "#" },
-        { text: "Contact", url: "#" },
+        { text: "About Us", url: "/about-us" },
+        { text: "Team", url: "/team" },
+        { text: "Careers", url: "/careers" },
+        { text: "Contact", url: "/contact" },
       ],
     },
     {

@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -32,10 +33,12 @@ const Footer = () => {
           <div>
             <h3 className="text-gray-800 font-medium mb-4">Company</h3>
             <ul className="space-y-2">
-              <li><a href="#" className="text-gray-600 hover:text-brand-blue transition-colors">About</a></li>
-              <li><a href="#" className="text-gray-600 hover:text-brand-blue transition-colors">Contact</a></li>
-              <li><a href="#" className="text-gray-600 hover:text-brand-blue transition-colors">Privacy</a></li>
-              <li><a href="#" className="text-gray-600 hover:text-brand-blue transition-colors">Terms</a></li>
+              <li><Link to="/about-us" className="text-gray-600 hover:text-brand-blue transition-colors">About Us</Link></li>
+              <li><Link to="/team" className="text-gray-600 hover:text-brand-blue transition-colors">Team</Link></li>
+              <li><Link to="/careers" className="text-gray-600 hover:text-brand-blue transition-colors">Careers</Link></li>
+              <li><Link to="/contact" className="text-gray-600 hover:text-brand-blue transition-colors">Contact</Link></li>
+              <li><Link to="/privacy" className="text-gray-600 hover:text-brand-blue transition-colors">Privacy</Link></li>
+              <li><Link to="/terms" className="text-gray-600 hover:text-brand-blue transition-colors">Terms</Link></li>
             </ul>
           </div>
         </div>
