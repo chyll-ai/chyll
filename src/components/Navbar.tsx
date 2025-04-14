@@ -13,9 +13,8 @@ const Navbar = ({ currentPath = '/' }: NavbarProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const isHomePage = location.pathname === '/';
 
-  // Create proper links based on the current page
-  const getAnchorLink = (section: string) => {
-    // If on home page, use local anchor; otherwise, link to home page with the anchor
+  // Navigate to specific section if on home page, otherwise navigate to home with section hash
+  const getSectionLink = (section: string) => {
     return isHomePage ? `#${section}` : `/${section}`;
   };
 
@@ -38,9 +37,9 @@ const Navbar = ({ currentPath = '/' }: NavbarProps) => {
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center space-x-8">
-          <Link to="/features" className="text-gray-700 hover:text-brand-blue transition-colors">Features</Link>
-          <Link to="/how-it-works" className="text-gray-700 hover:text-brand-blue transition-colors">How It Works</Link>
-          <Link to="/pricing" className="text-gray-700 hover:text-brand-blue transition-colors">Pricing</Link>
+          <Link to={getSectionLink("features")} className="text-gray-700 hover:text-brand-blue transition-colors">Features</Link>
+          <Link to={getSectionLink("how-it-works")} className="text-gray-700 hover:text-brand-blue transition-colors">How It Works</Link>
+          <Link to={getSectionLink("pricing")} className="text-gray-700 hover:text-brand-blue transition-colors">Pricing</Link>
           
           <Button variant="rainbow" asChild>
             <a href="https://api.leadconnectorhq.com/widget/booking/XvUg6399vyVtvCXETgsY" target="_blank" rel="noopener noreferrer">
@@ -76,21 +75,21 @@ const Navbar = ({ currentPath = '/' }: NavbarProps) => {
             )}
             
             <Link 
-              to="/features"
+              to={getSectionLink("features")}
               className="text-gray-700 hover:text-brand-blue py-2 transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
               Features
             </Link>
             <Link 
-              to="/how-it-works"
+              to={getSectionLink("how-it-works")}
               className="text-gray-700 hover:text-brand-blue py-2 transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
               How It Works
             </Link>
             <Link 
-              to="/pricing"
+              to={getSectionLink("pricing")}
               className="text-gray-700 hover:text-brand-blue py-2 transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
