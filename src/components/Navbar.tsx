@@ -1,130 +1,84 @@
-
-import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Menu, X, Home } from 'lucide-react';
+import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Menu } from "lucide-react";
+import { useTranslation } from '@/contexts/TranslationContext';
+import LanguageSwitcher from './LanguageSwitcher';
 
-interface NavbarProps {
-  currentPath?: string;
+interface NavLinkProps {
+  to: string;
+  children: React.ReactNode;
 }
 
-const Navbar = ({ currentPath = '/' }: NavbarProps) => {
+const NavLink: React.FC<NavLinkProps> = ({ to, children }) => {
   const location = useLocation();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const isHomePage = location.pathname === '/';
+  const isActive = location.pathname === to;
+  return (
+    <Link to={to} className={`px-3 py-2 rounded-md hover:bg-gray-100 ${isActive ? 'font-semibold text-indigo-600' : 'text-gray-700'}`}>
+      {children}
+    </Link>
+  );
+};
 
-  // Navigate to specific section if on home page, otherwise navigate to home with section hash
-  const getSectionLink = (section: string) => {
-    return isHomePage ? `#${section}` : `/${section}`;
+const Navbar = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const location = useLocation();
+  const { t } = useTranslation();
+  
+  const navLinkClasses = "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 text-gray-700 hover:text-gray-900 px-3 py-2";
+
+  const checkActivePath = (path: string) => {
+    return location.hash === path ? 'text-indigo-600 font-semibold' : '';
   };
 
-  // Handle smooth scrolling when clicking on a link that points to an ID
-  useEffect(() => {
-    // Check if there's a hash in the URL
-    if (location.hash && isHomePage) {
-      const id = location.hash.replace('#', '');
-      const element = document.getElementById(id);
-      if (element) {
-        // Wait a bit for the DOM to fully render
-        setTimeout(() => {
-          element.scrollIntoView({ behavior: 'smooth' });
-        }, 100);
-      }
-    }
-  }, [location.hash, isHomePage]);
-
   return (
-    <nav className="bg-white/90 backdrop-blur-sm sticky top-0 z-50 border-b border-gray-100">
-      <div className="container-custom flex justify-between items-center py-4">
-        <div className="flex items-center gap-4">
-          <Link to="/" className="text-2xl font-bold text-gray-800">
-            GenerativSchool
+    <header className="border-b border-gray-100 bg-white/80 backdrop-blur-md fixed top-0 left-0 right-0 z-50">
+      <div className="container-custom mx-auto flex h-16 items-center justify-between px-4">
+        <div className="flex items-center">
+          <Link to="/" className="flex items-center gap-2">
+            <img src="/logo.svg" alt="Logo" className="h-8" />
+            <span className="font-bold text-xl">GenerativSchool</span>
           </Link>
-          
-          {/* Home button - only show when not on home page */}
-          {!isHomePage && (
-            <Link to="/" className="text-gray-700 hover:text-brand-blue transition-colors flex items-center gap-1">
-              <Home size={18} />
-              <span className="hidden sm:inline">Home</span>
-            </Link>
-          )}
         </div>
 
-        {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center space-x-8">
-          <Link to={getSectionLink("features")} className="text-gray-700 hover:text-brand-blue transition-colors">Features</Link>
-          <Link to={getSectionLink("how-it-works")} className="text-gray-700 hover:text-brand-blue transition-colors">How It Works</Link>
-          <Link to={getSectionLink("pricing")} className="text-gray-700 hover:text-brand-blue transition-colors">Pricing</Link>
-          
-          <Button variant="rainbow" asChild>
-            <a href="https://api.leadconnectorhq.com/widget/booking/XvUg6399vyVtvCXETgsY" target="_blank" rel="noopener noreferrer">
-              Book a Demo
-            </a>
-          </Button>
-        </div>
+        <nav className="hidden md:flex items-center space-x-1">
+          <Link to="/#features" className={`${navLinkClasses} ${checkActivePath('/#features')}`}>{t('features')}</Link>
+          <Link to="/#how-it-works" className={`${navLinkClasses} ${checkActivePath('/#how-it-works')}`}>{t('how_it_works')}</Link>
+          <Link to="/#pricing" className={`${navLinkClasses} ${checkActivePath('/#pricing')}`}>{t('pricing')}</Link>
+          <Link to="/documentation" className={`${navLinkClasses} ${checkActivePath('/documentation')}`}>{t('documentation')}</Link>
+          <Link to="/faq" className={`${navLinkClasses} ${checkActivePath('/faq')}`}>{t('faq')}</Link>
+          <Link to="/blog" className={`${navLinkClasses} ${checkActivePath('/blog')}`}>{t('blog')}</Link>
+          <Link to="/contact" className={`${navLinkClasses} ${checkActivePath('/contact')}`}>{t('contact')}</Link>
+          <LanguageSwitcher />
+        </nav>
 
-        {/* Mobile Menu Button */}
-        <div className="md:hidden">
-          <button 
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="text-gray-700 hover:text-brand-blue"
-          >
-            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
-        </div>
-      </div>
-
-      {/* Mobile Menu */}
-      {isMenuOpen && (
-        <div className="md:hidden bg-white border-t border-gray-100 animate-fade-in">
-          <div className="container-custom py-4 flex flex-col space-y-4">
-            {!isHomePage && (
-              <Link 
-                to="/"
-                className="text-gray-700 hover:text-brand-blue py-2 transition-colors flex items-center gap-1"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                <Home size={18} />
-                Home
-              </Link>
-            )}
-            
-            <Link 
-              to={getSectionLink("features")}
-              className="text-gray-700 hover:text-brand-blue py-2 transition-colors"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Features
-            </Link>
-            <Link 
-              to={getSectionLink("how-it-works")}
-              className="text-gray-700 hover:text-brand-blue py-2 transition-colors"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              How It Works
-            </Link>
-            <Link 
-              to={getSectionLink("pricing")}
-              className="text-gray-700 hover:text-brand-blue py-2 transition-colors"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Pricing
-            </Link>
-            
-            <Button 
-              variant="rainbow"
-              className="w-full"
-              onClick={() => setIsMenuOpen(false)}
-              asChild
-            >
-              <a href="https://api.leadconnectorhq.com/widget/booking/XvUg6399vyVtvCXETgsY" target="_blank" rel="noopener noreferrer">
-                Book a Demo
-              </a>
+        <Sheet open={isOpen} onOpenChange={setIsOpen}>
+          <SheetTrigger asChild>
+            <Button variant="ghost" className="md:hidden">
+              <Menu className="h-4 w-4" />
             </Button>
-          </div>
-        </div>
-      )}
-    </nav>
+          </SheetTrigger>
+          <SheetContent side="right" className="w-full sm:w-64">
+            <SheetHeader>
+              <SheetTitle>Menu</SheetTitle>
+              <SheetDescription>
+                Explore the platform and discover new possibilities.
+              </SheetDescription>
+            </SheetHeader>
+            <div className="grid gap-4 py-4">
+              <NavLink to="/#features">Features</NavLink>
+              <NavLink to="/#how-it-works">How It Works</NavLink>
+              <NavLink to="/#pricing">Pricing</NavLink>
+              <NavLink to="/documentation">Documentation</NavLink>
+              <NavLink to="/faq">FAQ</NavLink>
+              <NavLink to="/blog">Blog</NavLink>
+              <NavLink to="/contact">Contact</NavLink>
+            </div>
+          </SheetContent>
+        </Sheet>
+      </div>
+    </header>
   );
 };
 

@@ -3,8 +3,9 @@ import React from 'react';
 import Navbar from '@/components/Navbar';
 import { Footer2Demo } from '@/components/ui/footer2-demo';
 import { Link } from 'react-router-dom';
-import { ChevronRight, ChevronLeft, Search } from 'lucide-react';
+import { ChevronRight, ChevronLeft } from 'lucide-react';
 import DocSearch from '@/components/DocSearch';
+import { useTranslation } from '@/contexts/TranslationContext';
 
 interface DocLayoutProps {
   children: React.ReactNode;
@@ -25,6 +26,8 @@ const DocLayout = ({
   sidebarLinks,
   breadcrumbs = []
 }: DocLayoutProps) => {
+  const { t } = useTranslation();
+  
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -33,7 +36,7 @@ const DocLayout = ({
         <div className="container-custom">
           {breadcrumbs.length > 0 && (
             <div className="flex items-center space-x-2 text-sm text-gray-600 mb-4">
-              <Link to="/documentation" className="hover:text-indigo-600">Documentation</Link>
+              <Link to="/documentation" className="hover:text-indigo-600">{t('documentation')}</Link>
               {breadcrumbs.map((crumb, index) => (
                 <React.Fragment key={index}>
                   <ChevronRight className="h-4 w-4" />
@@ -51,7 +54,7 @@ const DocLayout = ({
               )}
             </div>
             <div className="w-full md:w-64">
-              <DocSearch placeholder="Search docs..." />
+              <DocSearch />
             </div>
           </div>
         </div>
@@ -62,7 +65,7 @@ const DocLayout = ({
           {sidebarLinks && sidebarLinks.length > 0 && (
             <div className="w-full md:w-64 flex-shrink-0">
               <div className="sticky top-24">
-                <h3 className="font-semibold mb-4 text-gray-900">In this section</h3>
+                <h3 className="font-semibold mb-4 text-gray-900">{t('in_this_section')}</h3>
                 <nav className="space-y-1">
                   {sidebarLinks.map((link, index) => (
                     <Link
