@@ -1,15 +1,37 @@
 
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { renderCanvas } from "@/components/ui/canvas";
 import { ArrowRight, Shapes } from "lucide-react";
-
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 
 export function Hero() {
   useEffect(() => {
     renderCanvas();
+  }, []);
+
+  // Define the rotating words for the AI employee capabilities
+  const [wordIndex, setWordIndex] = useState(0);
+  const rotatingWords = [
+    "sell",
+    "hire",
+    "design",
+    "schedule",
+    "support",
+    "analyze",
+    "automate"
+  ];
+
+  // Set up the word rotation with a timer
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setWordIndex((prevIndex) => (prevIndex + 1) % rotatingWords.length);
+    }, 2500);
+    
+    // Clean up interval on component unmount
+    return () => clearInterval(intervalId);
   }, []);
 
   return (
@@ -52,7 +74,29 @@ export function Hero() {
                   strokeWidth={4}
                   className="text-brand-blue absolute -bottom-5 -right-5 h-10 w-10"
                 />
-                Boost Revenue with 24/7 AI Automation
+                <div className="flex flex-wrap items-center justify-center gap-3 lg:gap-5">
+                  <span>We create AI employees that</span>
+                  <div className="relative inline-block h-[1.2em] overflow-hidden">
+                    {rotatingWords.map((word, index) => (
+                      <motion.span
+                        key={word}
+                        className="absolute left-0 right-0 text-brand-blue font-bold"
+                        initial={{ y: 50, opacity: 0 }}
+                        animate={{
+                          y: index === wordIndex ? 0 : index < wordIndex ? -50 : 50,
+                          opacity: index === wordIndex ? 1 : 0
+                        }}
+                        transition={{ 
+                          type: "spring", 
+                          stiffness: 100,
+                          damping: 20
+                        }}
+                      >
+                        {word}
+                      </motion.span>
+                    ))}
+                  </div>
+                </div>
               </h1>
               <div className="flex items-center justify-center gap-1">
                 <span className="relative flex h-3 w-3 items-center justify-center">
