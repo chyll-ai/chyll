@@ -39,7 +39,7 @@ const companies: CompanyLogo[] = [
 ];
 
 export function PartnerCompaniesDemo() {
-  const [processedLogoUrl, setProcessedLogoUrl] = useState<string>("/lovable-uploads/4640bcf9-d7bd-47f0-af20-a0bcf0927858.png");
+  const [processedLogoUrl, setProcessedLogoUrl] = useState<string>("/lovable-uploads/224bbd8d-aa23-496c-b6ca-729f37585e1f.png");
 
   useEffect(() => {
     const processLogo = async () => {
@@ -93,3 +93,4 @@ export function PartnerCompaniesDemo() {
     </div>
   );
 }
+
