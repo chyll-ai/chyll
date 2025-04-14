@@ -1,55 +1,47 @@
 
 import React from 'react';
+import DisplayCards from '@/components/ui/display-cards';
 import { Bot, Zap, TrendingUp } from 'lucide-react';
 
-const steps = [
+const stepsCards = [
   {
+    icon: <Zap className="size-4 text-indigo-300" />,
     title: "Choose Your AI Employee",
     description: "Select from our wide range of AI capabilities to match your business needs.",
-    icon: Bot,
-    color: "bg-brand-blue/10 text-brand-blue"
+    date: "Step 1",
+    iconClassName: "text-indigo-500",
+    titleClassName: "text-indigo-500",
+    className:
+      "[grid-area:stack] hover:-translate-y-10 before:absolute before:w-[100%] before:outline-1 before:rounded-xl before:outline-border before:h-[100%] before:content-[''] before:bg-blend-overlay before:bg-background/50 grayscale-[100%] hover:before:opacity-0 before:transition-opacity before:duration:700 hover:grayscale-0 before:left-0 before:top-0",
   },
   {
+    icon: <Bot className="size-4 text-blue-300" />,
     title: "Plug Into Your Workflow",
     description: "Seamlessly integrate with your existing tools and processes with minimal setup.",
-    icon: Zap,
-    color: "bg-indigo-100 text-indigo-600"
+    date: "Step 2",
+    iconClassName: "text-blue-500",
+    titleClassName: "text-blue-500",
+    className:
+      "[grid-area:stack] translate-x-16 translate-y-10 hover:-translate-y-1 before:absolute before:w-[100%] before:outline-1 before:rounded-xl before:outline-border before:h-[100%] before:content-[''] before:bg-blend-overlay before:bg-background/50 grayscale-[100%] hover:before:opacity-0 before:transition-opacity before:duration:700 hover:grayscale-0 before:left-0 before:top-0",
   },
   {
+    icon: <TrendingUp className="size-4 text-green-300" />,
     title: "Watch Productivity Skyrocket",
     description: "See immediate results as your AI Employee handles tasks around the clock.",
-    icon: TrendingUp,
-    color: "bg-green-100 text-green-600"
-  }
+    date: "Step 3",
+    iconClassName: "text-green-500",
+    titleClassName: "text-green-500",
+    className:
+      "[grid-area:stack] translate-x-32 translate-y-20 hover:translate-y-10",
+  },
 ];
 
 const HowItWorks = () => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-6">
-      {steps.map((step, index) => (
-        <div 
-          key={index} 
-          className="flex flex-col items-center text-center relative"
-        >
-          {/* Number indicator */}
-          <div className="absolute -top-6 font-bold text-5xl text-gray-100 select-none">
-            {index + 1}
-          </div>
-          
-          {/* Icon */}
-          <div className={`relative z-10 rounded-full w-20 h-20 flex items-center justify-center mb-4 ${step.color}`}>
-            <step.icon className="h-10 w-10" />
-          </div>
-          
-          {/* Connected line (for desktop) */}
-          {index < steps.length - 1 && (
-            <div className="hidden md:block absolute top-10 left-[60%] w-[80%] h-0.5 bg-gray-200" />
-          )}
-          
-          <h3 className="text-xl font-bold text-gray-900 mb-2">{step.title}</h3>
-          <p className="text-gray-600">{step.description}</p>
-        </div>
-      ))}
+    <div className="flex min-h-[400px] w-full items-center justify-center">
+      <div className="w-full max-w-3xl">
+        <DisplayCards cards={stepsCards} />
+      </div>
     </div>
   );
 };
