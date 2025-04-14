@@ -6,7 +6,7 @@ import { HeroDemo } from '@/components/ui/animated-hero-demo';
 import { DisplayCardsDemo } from '@/components/ui/display-cards-demo';
 import { FeaturesSectionWithHoverEffectsDemo } from '@/components/ui/feature-section-with-hover-effects-demo';
 import { BentoDemo } from '@/components/ui/bento-demo';
-import { TestimonialsCarouselDemo } from '@/components/ui/testimonials-carousel-demo';
+import { TestimonialsWithMarqueeDemo } from '@/components/ui/testimonials-with-marquee-demo';
 import { PricingBasic } from '@/components/ui/pricing-basic';
 import { DefaultDemo as FaqAccordionDemo } from '@/components/ui/faq-chat-accordion-demo';
 import { Footer2Demo } from '@/components/ui/footer2-demo';
@@ -77,7 +77,7 @@ const Index = () => {
       {/* Testimonials Section */}
       <section className="section-padding gradient-bg">
         <div className="container-custom">
-          <TestimonialsCarouselDemo />
+          <TestimonialsWithMarqueeDemo />
         </div>
       </section>
       
