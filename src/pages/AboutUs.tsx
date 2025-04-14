@@ -1,17 +1,22 @@
 
 import React from 'react';
 import Navbar from '@/components/Navbar';
-import { Footer2Demo } from '@/components/ui/footer2-demo';
+import { Footer2Demo } from '@/components/ui/footer-translated';
+import { useTranslation } from '@/contexts/TranslationContext';
+import { useLocation } from 'react-router-dom';
 
 const AboutUs = () => {
+  const { t } = useTranslation();
+  const location = useLocation();
+
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar />
+      <Navbar currentPath={location.pathname} />
       
       <section className="flex-grow py-16 bg-white">
         <div className="container-custom">
           <div className="max-w-4xl mx-auto">
-            <h1 className="text-3xl md:text-4xl font-bold mb-8">About Us</h1>
+            <h1 className="text-3xl md:text-4xl font-bold mb-8">{t('about_us')}</h1>
             
             <div className="prose max-w-none">
               <div className="mb-10">
@@ -58,7 +63,7 @@ const AboutUs = () => {
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 transition-colors"
                 >
-                  Book a Demo
+                  {t('book_demo')}
                 </a>
               </div>
             </div>

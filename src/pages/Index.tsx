@@ -8,16 +8,18 @@ import { BentoDemo } from '@/components/ui/bento-demo';
 import { TestimonialsWithMarqueeDemo } from '@/components/ui/testimonials-with-marquee-demo';
 import { PricingBasic } from '@/components/ui/pricing-basic';
 import { DefaultDemo as FaqAccordionDemo } from '@/components/ui/faq-chat-accordion-demo';
-import { Footer2Demo } from '@/components/ui/footer2-demo';
+import { Footer2Demo } from '@/components/ui/footer-translated';
 import { PartnerCompaniesDemo } from '@/components/ui/partner-companies-demo';
 import { useTranslation } from '@/contexts/TranslationContext';
+import { useLocation } from 'react-router-dom';
 
 const Index = () => {
   const { t } = useTranslation();
+  const location = useLocation();
   
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar />
+      <Navbar currentPath={location.pathname} />
       
       {/* Hero Section */}
       <section id="home">

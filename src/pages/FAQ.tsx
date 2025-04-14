@@ -1,7 +1,7 @@
 
 import React from 'react';
 import Navbar from '@/components/Navbar';
-import { Footer2Demo } from '@/components/ui/footer2-demo';
+import { Footer2Demo } from '@/components/ui/footer-translated';
 import { DefaultDemo } from '@/components/ui/faq-chat-accordion-demo';
 import { FAQSection } from '@/components/ui/faq-section';
 import { ArrowRight } from 'lucide-react';

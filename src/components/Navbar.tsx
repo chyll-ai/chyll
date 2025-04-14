@@ -1,95 +1,128 @@
 
-import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { Menu } from "lucide-react";
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useTranslation } from '@/contexts/TranslationContext';
+import { Menu, X } from 'lucide-react';
 import LanguageSwitcher from './LanguageSwitcher';
 
 interface NavbarProps {
   currentPath?: string;
 }
 
-interface NavLinkProps {
-  to: string;
-  children: React.ReactNode;
-}
-
-const NavLink: React.FC<NavLinkProps> = ({ to, children }) => {
-  const location = useLocation();
-  const isActive = location.pathname === to;
-  return (
-    <Link to={to} className={`px-3 py-2 rounded-md hover:bg-gray-100 ${isActive ? 'font-semibold text-indigo-600' : 'text-gray-700'}`}>
-      {children}
-    </Link>
-  );
-};
-
-const Navbar: React.FC<NavbarProps> = ({ currentPath }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const location = useLocation();
+const Navbar: React.FC<NavbarProps> = ({ currentPath = '' }) => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const { t } = useTranslation();
-  
-  // Use the currentPath prop if provided, otherwise use the location from the router
-  const activePath = currentPath || location.pathname;
-  
-  const navLinkClasses = "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 text-gray-700 hover:text-gray-900 px-3 py-2";
 
-  const checkActivePath = (path: string) => {
-    return location.hash === path ? 'text-indigo-600 font-semibold' : '';
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 10) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
   };
 
+  const navLinks = [
+    { name: t('home'), path: '/' },
+    { name: t('features'), path: '/#features' },
+    { name: t('how_it_works'), path: '/#how-it-works' },
+    { name: t('pricing'), path: '/#pricing' },
+    { name: t('documentation'), path: '/documentation' },
+    { name: t('blog'), path: '/blog' },
+    { name: t('faq'), path: '/faq' },
+    { name: t('about_us'), path: '/about-us' },
+  ];
+
   return (
-    <header className="border-b border-gray-100 bg-white/80 backdrop-blur-md fixed top-0 left-0 right-0 z-50">
-      <div className="container-custom mx-auto flex h-16 items-center justify-between px-4">
-        <div className="flex items-center">
-          <Link to="/" className="flex items-center gap-2">
-            <img src="/logo.svg" alt="Logo" className="h-8" />
-            <span className="font-bold text-xl">GenerativSchool</span>
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-white shadow-md py-2' : 'bg-transparent py-4'}`}>
+      <div className="container mx-auto px-4">
+        <div className="flex justify-between items-center">
+          <Link to="/" className="text-2xl font-bold text-gray-800">
+            GenerativSchool
           </Link>
-        </div>
 
-        <nav className="hidden md:flex items-center space-x-1">
-          <Link to="/#features" className={`${navLinkClasses} ${checkActivePath('/#features')}`}>{t('features')}</Link>
-          <Link to="/#how-it-works" className={`${navLinkClasses} ${checkActivePath('/#how-it-works')}`}>{t('how_it_works')}</Link>
-          <Link to="/#pricing" className={`${navLinkClasses} ${checkActivePath('/#pricing')}`}>{t('pricing')}</Link>
-          <Link to="/documentation" className={`${navLinkClasses} ${checkActivePath('/documentation')}`}>{t('documentation')}</Link>
-          <Link to="/faq" className={`${navLinkClasses} ${checkActivePath('/faq')}`}>{t('faq')}</Link>
-          <Link to="/blog" className={`${navLinkClasses} ${checkActivePath('/blog')}`}>{t('blog')}</Link>
-          <Link to="/contact" className={`${navLinkClasses} ${checkActivePath('/contact')}`}>{t('contact')}</Link>
-          <LanguageSwitcher />
-        </nav>
-
-        <Sheet open={isOpen} onOpenChange={setIsOpen}>
-          <SheetTrigger asChild>
-            <Button variant="ghost" className="md:hidden">
-              <Menu className="h-4 w-4" />
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="right" className="w-full sm:w-64">
-            <SheetHeader>
-              <SheetTitle>{t('menu')}</SheetTitle>
-              <SheetDescription>
-                {t('menu_description')}
-              </SheetDescription>
-            </SheetHeader>
-            <div className="grid gap-4 py-4">
-              <NavLink to="/#features">{t('features')}</NavLink>
-              <NavLink to="/#how-it-works">{t('how_it_works')}</NavLink>
-              <NavLink to="/#pricing">{t('pricing')}</NavLink>
-              <NavLink to="/documentation">{t('documentation')}</NavLink>
-              <NavLink to="/faq">{t('faq')}</NavLink>
-              <NavLink to="/blog">{t('blog')}</NavLink>
-              <NavLink to="/contact">{t('contact')}</NavLink>
-              <div className="mt-2">
-                <LanguageSwitcher />
-              </div>
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center space-x-8">
+            <div className="flex space-x-6">
+              {navLinks.map((link, index) => (
+                <Link
+                  key={index}
+                  to={link.path}
+                  className={`text-gray-600 hover:text-gray-900 transition-colors ${
+                    currentPath === link.path || 
+                    (link.path !== '/' && currentPath?.startsWith(link.path)) ? 
+                    'font-medium text-gray-900' : ''
+                  }`}
+                >
+                  {link.name}
+                </Link>
+              ))}
             </div>
-          </SheetContent>
-        </Sheet>
+            
+            <div className="flex items-center gap-4">
+              <LanguageSwitcher />
+              <Link
+                to="https://api.leadconnectorhq.com/widget/booking/XvUg6399vyVtvCXETgsY"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-brand-blue hover:bg-blue-700 text-white py-2 px-4 rounded-md transition-colors"
+              >
+                {t('contact')}
+              </Link>
+            </div>
+          </div>
+
+          {/* Mobile Menu Button */}
+          <div className="md:hidden flex items-center">
+            <LanguageSwitcher />
+            <button
+              onClick={toggleMenu}
+              className="text-gray-500 hover:text-gray-700 focus:outline-none ml-4"
+            >
+              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
+        </div>
       </div>
-    </header>
+
+      {/* Mobile Menu */}
+      {isMenuOpen && (
+        <div className="md:hidden bg-white shadow-lg">
+          <div className="container mx-auto px-4 py-3">
+            <div className="flex flex-col space-y-3">
+              {navLinks.map((link, index) => (
+                <Link
+                  key={index}
+                  to={link.path}
+                  className="text-gray-600 hover:text-gray-900 py-2 transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  {link.name}
+                </Link>
+              ))}
+              <Link
+                to="https://api.leadconnectorhq.com/widget/booking/XvUg6399vyVtvCXETgsY"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-brand-blue hover:bg-blue-700 text-white py-2 px-4 rounded-md transition-colors text-center mt-2"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                {t('contact')}
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
+    </nav>
   );
 };
 

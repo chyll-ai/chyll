@@ -1,50 +1,45 @@
 
 import React from 'react';
-import DisplayCards from '@/components/ui/display-cards';
-import { Bot, Zap, TrendingUp } from 'lucide-react';
 import { useTranslation } from '@/contexts/TranslationContext';
 
 const HowItWorks = () => {
   const { t } = useTranslation();
 
-  const stepsCards = [
+  const steps = [
     {
-      icon: <Zap className="size-4 text-indigo-300" />,
+      number: t('step_1'),
       title: t('choose_ai_employee'),
-      description: "",
-      date: t('step_1'),
-      iconClassName: "text-indigo-500",
-      titleClassName: "text-indigo-500",
-      className:
-        "[grid-area:stack] hover:-translate-y-10 before:absolute before:w-[100%] before:outline-1 before:rounded-xl before:outline-border before:h-[100%] before:content-[''] before:bg-blend-overlay before:bg-background/50 grayscale-[100%] hover:before:opacity-0 before:transition-opacity before:duration:700 hover:grayscale-0 before:left-0 before:top-0",
+      description: "Select from our diverse range of AI employees designed for specific business functions.",
+      icon: "👥"
     },
     {
-      icon: <Bot className="size-4 text-blue-300" />,
+      number: t('step_2'),
       title: t('plug_workflow'),
-      description: "",
-      date: t('step_2'),
-      iconClassName: "text-blue-500",
-      titleClassName: "text-blue-500",
-      className:
-        "[grid-area:stack] translate-x-16 translate-y-10 hover:-translate-y-1 before:absolute before:w-[100%] before:outline-1 before:rounded-xl before:outline-border before:h-[100%] before:content-[''] before:bg-blend-overlay before:bg-background/50 grayscale-[100%] hover:before:opacity-0 before:transition-opacity before:duration:700 hover:grayscale-0 before:left-0 before:top-0",
+      description: "Connect your AI employee to existing tools and customize their behavior.",
+      icon: "🔌"
     },
     {
-      icon: <TrendingUp className="size-4 text-green-300" />,
+      number: t('step_3'),
       title: t('productivity_skyrocket'),
-      description: "",
-      date: t('step_3'),
-      iconClassName: "text-green-500",
-      titleClassName: "text-green-500",
-      className:
-        "[grid-area:stack] translate-x-32 translate-y-20 hover:translate-y-10",
-    },
+      description: "Sit back as your AI employee handles tasks 24/7, increasing efficiency and revenue.",
+      icon: "🚀"
+    }
   ];
 
   return (
-    <div className="flex min-h-[400px] w-full items-center justify-center">
-      <div className="w-full max-w-3xl">
-        <DisplayCards cards={stepsCards} />
-      </div>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      {steps.map((step, index) => (
+        <div key={index} className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+          <div className="mb-4 flex justify-between items-center">
+            <span className="bg-brand-blue/10 text-brand-blue font-medium px-3 py-1 rounded-md text-sm">
+              {step.number}
+            </span>
+            <div className="text-3xl">{step.icon}</div>
+          </div>
+          <h3 className="text-xl font-semibold mb-3">{step.title}</h3>
+          <p className="text-gray-600">{step.description}</p>
+        </div>
+      ))}
     </div>
   );
 };
