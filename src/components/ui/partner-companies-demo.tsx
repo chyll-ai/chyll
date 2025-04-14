@@ -83,6 +83,16 @@ export function PartnerCompaniesDemo() {
           />
           <span className="text-sm font-medium text-gray-700">Blue Factory</span>
         </div>
+
+        {/* Daftar logo */}
+        <div className="flex flex-col items-center mx-4 min-w-[160px]">
+          <img 
+            src="/lovable-uploads/ab44546c-7195-48e4-a71d-050ccdd0d82f.png" 
+            alt="Daftar logo" 
+            className="h-12 w-auto mb-2" 
+          />
+          <span className="text-sm font-medium text-gray-700">Daftar</span>
+        </div>
       </InfiniteSlider>
     </div>
   );
