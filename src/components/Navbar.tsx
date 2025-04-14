@@ -23,7 +23,8 @@ const Navbar = ({ currentPath = '/' }: NavbarProps) => {
 
   // Create proper links based on the current page
   const getAnchorLink = (section: string) => {
-    return isHomePage ? `#${section}` : `/#${section}`;
+    // If on home page, use local anchor; otherwise, link to home page with the anchor
+    return isHomePage ? `#${section}` : `/${section}`;
   };
 
   return (
@@ -45,9 +46,9 @@ const Navbar = ({ currentPath = '/' }: NavbarProps) => {
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center space-x-8">
-          <a href={getAnchorLink("features")} className="text-gray-700 hover:text-brand-blue transition-colors">Features</a>
-          <a href={getAnchorLink("how-it-works")} className="text-gray-700 hover:text-brand-blue transition-colors">How It Works</a>
-          <a href={getAnchorLink("pricing")} className="text-gray-700 hover:text-brand-blue transition-colors">Pricing</a>
+          <Link to={getAnchorLink("features")} className="text-gray-700 hover:text-brand-blue transition-colors">Features</Link>
+          <Link to={getAnchorLink("how-it-works")} className="text-gray-700 hover:text-brand-blue transition-colors">How It Works</Link>
+          <Link to={getAnchorLink("pricing")} className="text-gray-700 hover:text-brand-blue transition-colors">Pricing</Link>
           
           <NavigationMenu>
             <NavigationMenuList>
@@ -183,27 +184,27 @@ const Navbar = ({ currentPath = '/' }: NavbarProps) => {
               </Link>
             )}
             
-            <a 
-              href={getAnchorLink("features")}
+            <Link 
+              to={getAnchorLink("features")}
               className="text-gray-700 hover:text-brand-blue py-2 transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
               Features
-            </a>
-            <a 
-              href={getAnchorLink("how-it-works")}
+            </Link>
+            <Link 
+              to={getAnchorLink("how-it-works")}
               className="text-gray-700 hover:text-brand-blue py-2 transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
               How It Works
-            </a>
-            <a 
-              href={getAnchorLink("pricing")}
+            </Link>
+            <Link 
+              to={getAnchorLink("pricing")}
               className="text-gray-700 hover:text-brand-blue py-2 transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
               Pricing
-            </a>
+            </Link>
             
             {/* Mobile Company submenu */}
             <div className="py-2">
