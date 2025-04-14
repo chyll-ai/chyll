@@ -43,9 +43,9 @@ const demoData = {
   ],
   copyright: "© 2024 GenerativSchool. All rights reserved.",
   bottomLinks: [
-    { text: "Terms of Service", url: "#" },
-    { text: "Privacy Policy", url: "#" },
-    { text: "Cookie Policy", url: "#" },
+    { text: "Terms of Service", url: "/terms" },
+    { text: "Privacy Policy", url: "/privacy" },
+    { text: "Cookie Policy", url: "/cookies" },
   ],
 };
 
