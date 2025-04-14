@@ -3,13 +3,13 @@ import React from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import DemoForm from '@/components/DemoForm';
-import TestimonialCarousel from '@/components/TestimonialCarousel';
 import PricingCards from '@/components/PricingCards';
 import HowItWorks from '@/components/HowItWorks';
 import { Hero } from '@/components/ui/hero';
 import { DisplayCardsDemo } from '@/components/ui/display-cards-demo';
 import Benefits from '@/components/Benefits';
 import { BentoDemo } from '@/components/ui/bento-demo';
+import { TestimonialsSectionDemo } from '@/components/ui/testimonials-section-demo';
 
 const Index = () => {
   return (
@@ -69,7 +69,7 @@ const Index = () => {
               Businesses of all sizes are transforming their operations with botis.
             </p>
           </div>
-          <TestimonialCarousel />
+          <TestimonialsSectionDemo />
         </div>
       </section>
       
