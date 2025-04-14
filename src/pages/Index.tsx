@@ -5,10 +5,10 @@ import Footer from '@/components/Footer';
 import DemoForm from '@/components/DemoForm';
 import TestimonialCarousel from '@/components/TestimonialCarousel';
 import PricingCards from '@/components/PricingCards';
-import FeatureCards from '@/components/FeatureCards';
 import HowItWorks from '@/components/HowItWorks';
 import { Hero } from '@/components/ui/hero';
 import { DisplayCardsDemo } from '@/components/ui/display-cards-demo';
+import Benefits from '@/components/Benefits';
 
 const Index = () => {
   return (
@@ -27,7 +27,7 @@ const Index = () => {
               Imagine having an employee that works non-stop, tackles complex tasks, and makes your customers feel like VIPs.
             </p>
           </div>
-          <DisplayCardsDemo />
+          <Benefits />
         </div>
       </section>
       
@@ -42,7 +42,7 @@ const Index = () => {
               botis isn't just automation — it's your business's competitive advantage.
             </p>
           </div>
-          <FeatureCards />
+          <DisplayCardsDemo />
         </div>
       </section>
       
