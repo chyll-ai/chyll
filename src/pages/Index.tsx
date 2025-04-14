@@ -10,6 +10,7 @@ import { TestimonialsSectionDemo } from '@/components/ui/testimonials-section-de
 import { PricingBasic } from '@/components/ui/pricing-basic';
 import { DefaultDemo as FaqAccordionDemo } from '@/components/ui/faq-chat-accordion-demo';
 import { Footer2Demo } from '@/components/ui/footer2-demo';
+import { PartnerCompaniesDemo } from '@/components/ui/partner-companies-demo';
 
 const Index = () => {
   return (
@@ -35,6 +36,13 @@ const Index = () => {
             </p>
           </div>
           <FeaturesSectionWithHoverEffectsDemo />
+        </div>
+      </section>
+      
+      {/* Partner Companies Section */}
+      <section className="py-10 bg-gray-50 border-y border-gray-100">
+        <div className="container-custom">
+          <PartnerCompaniesDemo />
         </div>
       </section>
       
