@@ -3,7 +3,6 @@
 
 import React, { useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
 
 function NavHeader() {
   const [position, setPosition] = useState({
@@ -17,11 +16,11 @@ function NavHeader() {
       className="relative mx-auto flex w-fit rounded-full border-2 border-brand-blue bg-white p-1"
       onMouseLeave={() => setPosition((pv) => ({ ...pv, opacity: 0 }))}
     >
-      <Tab setPosition={setPosition}><Link to="/">Home</Link></Tab>
-      <Tab setPosition={setPosition}><a href="#features">Features</a></Tab>
-      <Tab setPosition={setPosition}><a href="#how-it-works">How It Works</a></Tab>
-      <Tab setPosition={setPosition}><a href="#pricing">Pricing</a></Tab>
-      <Tab setPosition={setPosition}><a href="#faq">FAQ</a></Tab>
+      <Tab setPosition={setPosition}>Home</Tab>
+      <Tab setPosition={setPosition}>Pricing</Tab>
+      <Tab setPosition={setPosition}>About</Tab>
+      <Tab setPosition={setPosition}>Services</Tab>
+      <Tab setPosition={setPosition}>Contact</Tab>
 
       <Cursor position={position} />
     </ul>
@@ -66,3 +65,4 @@ const Cursor = ({ position }: { position: any }) => {
 };
 
 export default NavHeader;
+

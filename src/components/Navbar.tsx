@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Menu, X } from 'lucide-react';
-import NavHeader from '@/components/ui/nav-header';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -17,8 +16,13 @@ const Navbar = () => {
         </div>
 
         {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center">
-          <NavHeader />
+        <div className="hidden md:flex items-center space-x-8">
+          <a href="#features" className="text-gray-700 hover:text-brand-blue transition-colors">Features</a>
+          <a href="#how-it-works" className="text-gray-700 hover:text-brand-blue transition-colors">How It Works</a>
+          <a href="#pricing" className="text-gray-700 hover:text-brand-blue transition-colors">Pricing</a>
+          <Button variant="default" className="bg-brand-blue hover:bg-brand-blue-dark">
+            Book a Demo
+          </Button>
         </div>
 
         {/* Mobile Menu Button */}
@@ -57,13 +61,6 @@ const Navbar = () => {
             >
               Pricing
             </a>
-            <a 
-              href="#faq" 
-              className="text-gray-700 hover:text-brand-blue py-2 transition-colors"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              FAQ
-            </a>
             <Button 
               variant="default" 
               className="bg-brand-blue hover:bg-brand-blue-dark w-full"
@@ -79,3 +76,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
