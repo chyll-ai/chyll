@@ -4,21 +4,21 @@ import { ChevronLeft, ChevronRight, Star } from 'lucide-react';
 
 const testimonials = [
   {
-    quote: "Since hiring our AI Employee, we've saved 20 hours a week and doubled our lead response time.",
+    quote: "Since hiring Obi-One Voice AI, we've saved 20 hours a week and doubled our lead response time. It's like having a Jedi answer every call!",
     author: "Jane D.",
     title: "Marketing Lead",
     company: "Growth Agency",
     stars: 5
   },
   {
-    quote: "The Voice AI feature has transformed our customer service. We're handling twice as many calls with half the staff.",
+    quote: "Leia Conversation AI has transformed our customer service. We're handling twice as many calls with half the staff. The diplomatic skills are truly royal level.",
     author: "Michael T.",
     title: "Operations Manager",
     company: "ServiceTech Inc.",
     stars: 5
   },
   {
-    quote: "As a solo founder, AI Employee has become my most valuable team member. Always on, never complains!",
+    quote: "As a solo founder, R2-View has become my most valuable team member. It handles our online reputation 24/7 without missing a beat - beep boop perfection!",
     author: "Sarah K.",
     title: "Founder",
     company: "Startup Ventures",
