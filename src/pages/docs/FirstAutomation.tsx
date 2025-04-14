@@ -127,7 +127,7 @@ const FirstAutomation = () => {
               <li>Configure the email details:
                 <ul className="list-disc pl-6 space-y-2 mt-2">
                   <li>Recipients (team members or dynamic recipients)</li>
-                  <li>Subject line (e.g., "New Lead: {{lead.name}}")</li>
+                  <li>Subject line (e.g., "New Lead: {"{"}{"{"}"lead.name"{"}"}{"}"}")</li>
                   <li>Email body with dynamic content from the lead record</li>
                   <li>Add any attachments or formatting options</li>
                 </ul>
@@ -136,7 +136,7 @@ const FirstAutomation = () => {
             </ol>
             <div className="bg-gray-50 p-4 rounded border border-gray-200">
               <p className="text-sm text-gray-700">
-                <strong>Pro Tip:</strong> Use dynamic placeholders (indicated by {{ }}) to personalize your emails 
+                <strong>Pro Tip:</strong> Use dynamic placeholders (indicated by {"{"}{"{"} {"}"}{"}"}{"}"}) to personalize your emails 
                 with data from the lead record. This makes your notifications more informative and actionable.
               </p>
             </div>
