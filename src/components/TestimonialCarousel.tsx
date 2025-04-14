@@ -4,24 +4,24 @@ import { ChevronLeft, ChevronRight, Star } from 'lucide-react';
 
 const testimonials = [
   {
-    quote: "Since hiring our AI Employee, we've saved 20 hours a week and doubled our lead response time.",
-    author: "Jane D.",
-    title: "Marketing Lead",
-    company: "Growth Agency",
-    stars: 5
-  },
-  {
-    quote: "The Voice AI feature has transformed our customer service. We're handling twice as many calls with half the staff.",
-    author: "Michael T.",
-    title: "Operations Manager",
-    company: "ServiceTech Inc.",
-    stars: 5
-  },
-  {
-    quote: "As a solo founder, AI Employee has become my most valuable team member. Always on, never complains!",
-    author: "Sarah K.",
+    quote: "My AI Employee manages our entire lead nurturing sequence. We've seen conversion rates double while I focus on strategy.",
+    author: "Emma L.",
     title: "Founder",
-    company: "Startup Ventures",
+    company: "Growth Accelerator",
+    stars: 5
+  },
+  {
+    quote: "Our AI Assistant handles customer inquiries 24/7 with remarkable accuracy. It's like hiring a full support team at a fraction of the cost.",
+    author: "Michael S.",
+    title: "CEO",
+    company: "SaaS Innovations",
+    stars: 5
+  },
+  {
+    quote: "As a solo founder, my AI Content Creator produces high-quality blog posts and social media content that perfectly matches our brand voice.",
+    author: "Sarah J.",
+    title: "Founder",
+    company: "Digital First",
     stars: 5
   }
 ];

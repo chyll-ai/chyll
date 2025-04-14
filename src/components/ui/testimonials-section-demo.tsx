@@ -4,56 +4,56 @@ import { TestimonialsSection } from "@/components/ui/testimonials-section"
 const testimonials = [
   {
     author: {
-      name: "Sarah Johnson",
-      handle: "@sarahj_marketing",
+      name: "Rebecca Taylor",
+      handle: "@rebecca_founder",
       avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=face"
     },
-    text: "Our Voice AI Employee handles customer calls with such precision, we've reduced our customer service team's workload by 70% while improving response quality.",
+    text: "Our AI Communications Employee writes all our marketing copy, social posts, and email campaigns. The quality is amazing, and it's saved me 25 hours every week.",
     href: "#"
   },
   {
     author: {
-      name: "Michael Chen",
-      handle: "@michaelc_tech",
+      name: "Jason Kim",
+      handle: "@jason_startup",
       avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face"
     },
-    text: "The Conversation AI Employee manages our entire customer support chat, handling complex inquiries with incredible accuracy and empathy.",
+    text: "The AI Sales Employee handles our entire outbound process - from prospecting to follow-ups. We've tripled our pipeline with zero additional headcount.",
     href: "#"
   },
   {
     author: {
-      name: "Sophia Rodriguez",
-      handle: "@sophiar_founder",
+      name: "Maria Garcia",
+      handle: "@maria_ceo",
       avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face"
     },
-    text: "As a solo entrepreneur, my Content AI Employee creates marketing materials, blog posts, and social media content that perfectly matches my brand voice.",
+    text: "My AI Customer Success Employee monitors customer health scores and proactively reaches out to at-risk accounts. Our retention rate has improved by 35%.",
     href: "#"
   },
   {
     author: {
-      name: "James Wilson",
-      handle: "@jameswilson_ceo",
+      name: "Thomas Wright",
+      handle: "@thomas_founder",
       avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face"
     },
-    text: "Our Reviews AI Employee has transformed our online reputation management, automatically responding to reviews and improving our ratings.",
+    text: "Our AI Development Employee reviews code, finds bugs, and suggests optimizations. It's like having a senior developer who never gets tired.",
     href: "#"
   },
   {
     author: {
-      name: "Emily Parker",
-      handle: "@emilyp_digital",
+      name: "Sophia Chen",
+      handle: "@sophia_tech",
       avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face"
     },
-    text: "The Workflow AI Employee automates our entire project management process, reducing administrative overhead by 50%.",
+    text: "As a technical founder, I've deployed an AI Data Analyst that continuously monitors our metrics and sends me actionable insights. It's transformed our decision-making.",
     href: "#"
   },
   {
     author: {
-      name: "Daniel Kim",
-      handle: "@danielk_agency",
+      name: "Daniel Lee",
+      handle: "@daniel_saas",
       avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face"
     },
-    text: "Our Funnel AI Employee continuously optimizes our sales funnels, resulting in a 40% increase in conversion rates with minimal manual intervention.",
+    text: "Our AI Operations Employee manages our entire scheduling system, handling changes, conflicts, and notifications automatically. It's eliminated admin work completely.",
     href: "#"
   }
 ]
@@ -61,10 +61,9 @@ const testimonials = [
 export function TestimonialsSectionDemo() {
   return (
     <TestimonialsSection
-      title="Meet the AI Employees Transforming Businesses"
-      description="Hear how businesses are scaling and innovating with specialized AI team members"
+      title="AI Employees Transforming Founder-Led Businesses"
+      description="See how founders and CEOs are using AI team members to scale faster with fewer resources"
       testimonials={testimonials}
     />
   )
 }
-
