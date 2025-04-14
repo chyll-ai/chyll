@@ -83,41 +83,6 @@ const Index = () => {
       <section className="py-16 bg-brand-blue text-white">
         <div className="container-custom">
           <div className="flex flex-col md:flex-row items-center md:items-start justify-between gap-10">
-            <div className="md:w-1/2 text-center md:text-left">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                Ready to Hire Your First botis?
-              </h2>
-              <p className="text-xl mb-6 text-blue-100">
-                Join hundreds of businesses already transforming their operations with our AI-powered solutions.
-              </p>
-              <ul className="text-left space-y-3 mb-8 max-w-md">
-                <li className="flex items-start">
-                  <div className="bg-white/20 rounded-full p-1 mr-3 mt-1">
-                    <svg className="h-3 w-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"></path>
-                    </svg>
-                  </div>
-                  <span>No setup fees or long-term contracts</span>
-                </li>
-                <li className="flex items-start">
-                  <div className="bg-white/20 rounded-full p-1 mr-3 mt-1">
-                    <svg className="h-3 w-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"></path>
-                    </svg>
-                  </div>
-                  <span>Easy integration with your existing systems</span>
-                </li>
-                <li className="flex items-start">
-                  <div className="bg-white/20 rounded-full p-1 mr-3 mt-1">
-                    <svg className="h-3 w-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"></path>
-                    </svg>
-                  </div>
-                  <span>Free personalized onboarding and training</span>
-                </li>
-              </ul>
-            </div>
-            
             <div className="md:w-1/2 max-w-md w-full">
               <div className="bg-white rounded-xl p-6 shadow-md">
                 <h3 className="text-gray-900 font-bold text-xl mb-4">Schedule Your Demo</h3>
