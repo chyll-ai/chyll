@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Menu, X, ChevronDown, Home } from 'lucide-react';
@@ -20,6 +21,11 @@ const Navbar = ({ currentPath = '/' }: NavbarProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const isHomePage = location.pathname === '/';
 
+  // Create proper links based on the current page
+  const getAnchorLink = (section: string) => {
+    return isHomePage ? `#${section}` : `/#${section}`;
+  };
+
   return (
     <nav className="bg-white/90 backdrop-blur-sm sticky top-0 z-50 border-b border-gray-100">
       <div className="container-custom flex justify-between items-center py-4">
@@ -39,9 +45,9 @@ const Navbar = ({ currentPath = '/' }: NavbarProps) => {
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center space-x-8">
-          <a href="#features" className="text-gray-700 hover:text-brand-blue transition-colors">Features</a>
-          <a href="#how-it-works" className="text-gray-700 hover:text-brand-blue transition-colors">How It Works</a>
-          <a href="#pricing" className="text-gray-700 hover:text-brand-blue transition-colors">Pricing</a>
+          <a href={getAnchorLink("features")} className="text-gray-700 hover:text-brand-blue transition-colors">Features</a>
+          <a href={getAnchorLink("how-it-works")} className="text-gray-700 hover:text-brand-blue transition-colors">How It Works</a>
+          <a href={getAnchorLink("pricing")} className="text-gray-700 hover:text-brand-blue transition-colors">Pricing</a>
           
           <NavigationMenu>
             <NavigationMenuList>
@@ -178,21 +184,21 @@ const Navbar = ({ currentPath = '/' }: NavbarProps) => {
             )}
             
             <a 
-              href="#features" 
+              href={getAnchorLink("features")}
               className="text-gray-700 hover:text-brand-blue py-2 transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
               Features
             </a>
             <a 
-              href="#how-it-works" 
+              href={getAnchorLink("how-it-works")}
               className="text-gray-700 hover:text-brand-blue py-2 transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
               How It Works
             </a>
             <a 
-              href="#pricing" 
+              href={getAnchorLink("pricing")}
               className="text-gray-700 hover:text-brand-blue py-2 transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
