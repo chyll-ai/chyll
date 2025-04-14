@@ -93,6 +93,16 @@ export function PartnerCompaniesDemo() {
           />
           <span className="text-sm font-medium text-gray-700">Daftar</span>
         </div>
+
+        {/* Bpifrance logo */}
+        <div className="flex flex-col items-center mx-4 min-w-[160px]">
+          <img 
+            src="/lovable-uploads/9c5562c8-93bf-431d-af7b-6aed23681bed.png" 
+            alt="Bpifrance logo" 
+            className="h-12 w-auto mb-2" 
+          />
+          <span className="text-sm font-medium text-gray-700">Bpifrance</span>
+        </div>
       </InfiniteSlider>
     </div>
   );
