@@ -52,7 +52,7 @@ export function Hero() {
                   strokeWidth={4}
                   className="text-brand-blue absolute -bottom-5 -right-5 h-10 w-10"
                 />
-                Your AI Automation Platform
+                Boost Revenue with 24/7 AI Automation
               </h1>
               <div className="flex items-center justify-center gap-1">
                 <span className="relative flex h-3 w-3 items-center justify-center">
@@ -65,7 +65,7 @@ export function Hero() {
           </div>
 
           <h1 className="mt-8 text-2xl md:text-2xl">
-            Welcome to your AI automation platform!{" "}
+            Work smarter, not harder with{" "}
             <span className="text-brand-blue font-bold">botis</span>
           </h1>
 

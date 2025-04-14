@@ -7,7 +7,7 @@ export function PartnerCompaniesDemo() {
     <div className="py-12">
       <div className="text-center mb-8">
         <h3 className="text-xl md:text-2xl font-semibold text-gray-800">
-          Trusted by innovative companies
+          Join 1000+ businesses accelerating growth with our AI solutions
         </h3>
       </div>
       
@@ -96,8 +96,17 @@ export function PartnerCompaniesDemo() {
           />
           <span className="text-sm font-medium text-gray-700">Entrepreneur dans la Ville</span>
         </div>
+
+        {/* Pômmy logo */}
+        <div className="flex flex-col items-center mx-4 min-w-[160px]">
+          <img 
+            src="/lovable-uploads/454e29dc-aa80-4023-a129-ab63c56a21e1.png" 
+            alt="Pômmy logo" 
+            className="h-12 w-auto mb-2" 
+          />
+          <span className="text-sm font-medium text-gray-700">Pômmy</span>
+        </div>
       </InfiniteSlider>
     </div>
   );
 }
-
