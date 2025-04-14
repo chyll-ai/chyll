@@ -8,7 +8,7 @@ import { renderCanvas } from "@/components/ui/canvas";
 function Hero() {
   const [titleNumber, setTitleNumber] = useState(0);
   const titles = useMemo(
-    () => ["sell", "designs", "writes", "calls"],
+    () => ["sell", "design", "write", "call"],
     []
   );
 
@@ -86,4 +86,3 @@ function Hero() {
 }
 
 export { Hero };
-
