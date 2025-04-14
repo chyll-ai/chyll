@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -21,7 +22,7 @@ const Index = () => {
       <section id="benefits" className="section-padding bg-white">
         <div className="container-custom">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Discover the Benefits of Automating Your Business with Botis AI</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Discover the Benefits of Automating Your Business with botis</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Imagine having an employee that works non-stop, tackles complex tasks, and makes your customers feel like VIPs.
             </p>
@@ -38,7 +39,7 @@ const Index = () => {
               AI-Powered Tools to Streamline Your Workflows, Voice Calls, and More
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Botis AI isn't just automation — it's your business's competitive advantage.
+              botis isn't just automation — it's your business's competitive advantage.
             </p>
           </div>
           <FeatureCards />
@@ -51,7 +52,7 @@ const Index = () => {
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">How It Works</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Getting started with AI Employee is simple. Follow these steps to transform your business operations.
+              Getting started with botis is simple. Follow these steps to transform your business operations.
             </p>
           </div>
           <HowItWorks />
@@ -64,7 +65,7 @@ const Index = () => {
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">What Our Clients Say</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Businesses of all sizes are transforming their operations with AI Employee.
+              Businesses of all sizes are transforming their operations with botis.
             </p>
           </div>
           <TestimonialCarousel />
@@ -76,10 +77,10 @@ const Index = () => {
         <div className="container-custom">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Choose the Right AI Employee for Your Business
+              Choose the Right botis for Your Business
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Whether you're just getting started or scaling fast, we've got the AI employee that fits your workflow.
+              Whether you're just getting started or scaling fast, we've got the AI solution that fits your workflow.
             </p>
           </div>
           <PricingCards />
@@ -92,7 +93,7 @@ const Index = () => {
           <div className="flex flex-col md:flex-row items-center md:items-start justify-between gap-10">
             <div className="md:w-1/2 text-center md:text-left">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                Ready to Hire Your First Botis AI Employee?
+                Ready to Hire Your First botis?
               </h2>
               <p className="text-xl mb-6 text-blue-100">
                 Join hundreds of businesses already transforming their operations with our AI-powered solutions.
