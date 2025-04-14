@@ -1,3 +1,4 @@
+
 import React from "react";
 import { InfiniteSlider } from "@/components/ui/infinite-slider";
 
@@ -85,7 +86,18 @@ export function PartnerCompaniesDemo() {
           />
           <span className="text-sm font-medium text-gray-700">My Artist Place</span>
         </div>
+
+        {/* Entrepreneur dans la Ville logo */}
+        <div className="flex flex-col items-center mx-4 min-w-[160px]">
+          <img 
+            src="/lovable-uploads/e334b214-19ba-4a5c-934d-05030ad0a5df.png" 
+            alt="Entrepreneur dans la Ville logo" 
+            className="h-12 w-auto mb-2" 
+          />
+          <span className="text-sm font-medium text-gray-700">Entrepreneur dans la Ville</span>
+        </div>
       </InfiniteSlider>
     </div>
   );
 }
+
