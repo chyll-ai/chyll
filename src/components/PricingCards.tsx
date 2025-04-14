@@ -102,12 +102,13 @@ const PricingCards = () => {
           
           <CardFooter className="pt-4">
             <Button 
+              variant={plan.highlight ? "rainbow" : "default"}
               className={`w-full ${
-                plan.highlight 
-                  ? 'bg-yellow-400 hover:bg-yellow-500 text-white' 
-                  : plan.color === 'blue'
-                    ? 'bg-blue-500 hover:bg-blue-600 text-white'
-                    : 'bg-red-500 hover:bg-red-600 text-white'
+                !plan.highlight 
+                  ? (plan.color === 'blue'
+                      ? 'bg-blue-500 hover:bg-blue-600 text-white'
+                      : 'bg-red-500 hover:bg-red-600 text-white')
+                  : ''
               }`}
             >
               Book a Demo

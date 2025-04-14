@@ -74,7 +74,7 @@ export function Hero() {
           </p>
           <div className="flex justify-center gap-2">
             <a href="/dashboard">
-              <Button variant="default" size="lg">
+              <Button variant="rainbow" size="lg">
                 Get Started
               </Button>
             </a>

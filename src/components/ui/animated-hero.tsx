@@ -76,7 +76,7 @@ function Hero() {
             <Button size="lg" className="gap-4" variant="outline">
               Book a demo <PhoneCall className="w-4 h-4" />
             </Button>
-            <Button size="lg" className="gap-4">
+            <Button size="lg" className="gap-4" variant="rainbow">
               Get started now <MoveRight className="w-4 h-4" />
             </Button>
           </div>

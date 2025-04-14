@@ -20,7 +20,7 @@ const Navbar = () => {
           <a href="#features" className="text-gray-700 hover:text-brand-blue transition-colors">Features</a>
           <a href="#how-it-works" className="text-gray-700 hover:text-brand-blue transition-colors">How It Works</a>
           <a href="#pricing" className="text-gray-700 hover:text-brand-blue transition-colors">Pricing</a>
-          <Button variant="default" className="bg-brand-blue hover:bg-brand-blue-dark">
+          <Button variant="rainbow">
             Book a Demo
           </Button>
         </div>
@@ -62,8 +62,8 @@ const Navbar = () => {
               Pricing
             </a>
             <Button 
-              variant="default" 
-              className="bg-brand-blue hover:bg-brand-blue-dark w-full"
+              variant="rainbow"
+              className="w-full"
               onClick={() => setIsMenuOpen(false)}
             >
               Book a Demo

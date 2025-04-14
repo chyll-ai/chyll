@@ -188,13 +188,11 @@ export function Pricing({
                 href={plan.href}
                 className={cn(
                   buttonVariants({
-                    variant: "outline",
+                    variant: plan.isPopular ? "rainbow" : "outline",
                   }),
                   "group relative w-full gap-2 overflow-hidden text-lg font-semibold tracking-tighter",
-                  "transform-gpu ring-offset-current transition-all duration-300 ease-out hover:ring-2 hover:ring-primary hover:ring-offset-1 hover:bg-primary hover:text-primary-foreground",
-                  plan.isPopular
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-background text-foreground"
+                  "transform-gpu ring-offset-current transition-all duration-300 ease-out hover:ring-2 hover:ring-primary hover:ring-offset-1",
+                  !plan.isPopular && "hover:bg-primary hover:text-primary-foreground"
                 )}
               >
                 {plan.buttonText}
