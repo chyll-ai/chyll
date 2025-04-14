@@ -100,7 +100,7 @@ const WorkflowTemplates = () => {
           <ol className="list-decimal pl-6 space-y-2">
             <li>Browse the templates below and find one that matches your needs</li>
             <li>Click the "Download Template" button to download the template file</li>
-            <li>In your GenerativSchool workspace, go to Workflows > Import</li>
+            <li>In your GenerativSchool workspace, go to Workflows &gt; Import</li>
             <li>Upload the template file and follow the prompts to configure it</li>
             <li>Create a condition (e.g., &quot;Lead Score &gt; 50&quot;)</li>
             <li>Customize the workflow to match your specific processes</li>

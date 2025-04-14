@@ -50,6 +50,12 @@ import WorkflowTemplates from "./pages/docs/resources/WorkflowTemplates";
 import UserManagement from "./pages/docs/UserManagement";
 import Roles from "./pages/docs/user-management/Roles";
 
+// Video Tutorial Categories Pages
+import AIWorkflows from "./pages/docs/videos/AIWorkflows";
+import AdvancedAutomation from "./pages/docs/videos/AdvancedAutomation";
+import CustomIntegrations from "./pages/docs/videos/CustomIntegrations";
+import DataAnalysis from "./pages/docs/videos/DataAnalysis";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -97,6 +103,10 @@ const App = () => (
           
           {/* Videos Section */}
           <Route path="/documentation/videos" element={<VideoTutorials />} />
+          <Route path="/documentation/videos/ai-workflows" element={<AIWorkflows />} />
+          <Route path="/documentation/videos/advanced-automation" element={<AdvancedAutomation />} />
+          <Route path="/documentation/videos/custom-integrations" element={<CustomIntegrations />} />
+          <Route path="/documentation/videos/data-analysis" element={<DataAnalysis />} />
           
           {/* Best Practices Section */}
           <Route path="/documentation/best-practices" element={<BestPractices />} />
