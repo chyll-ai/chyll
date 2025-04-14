@@ -1,3 +1,4 @@
+
 import React from 'react';
 import DocLayout from '@/components/DocLayout';
 import { FileDown, Star, Clock, Tag } from 'lucide-react';
@@ -101,7 +102,7 @@ const WorkflowTemplates = () => {
             <li>Click the "Download Template" button to download the template file</li>
             <li>In your GenerativSchool workspace, go to Workflows > Import</li>
             <li>Upload the template file and follow the prompts to configure it</li>
-            <li>Create a condition (e.g., "Lead Score &gt; 50")</li>
+            <li>Create a condition (e.g., &quot;Lead Score &gt; 50&quot;)</li>
             <li>Customize the workflow to match your specific processes</li>
           </ol>
         </div>
