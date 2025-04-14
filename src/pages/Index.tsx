@@ -43,10 +43,10 @@ const Index = () => {
         <div className="container-custom">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Meet Your Star Team of AI Specialists
+              AI-Powered Tools to Streamline Your Workflows, Voice Calls, and More
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              botis isn't just automation — it's like hiring an elite team of AI specialists for your business.
+              botis isn't just automation — it's your business's competitive advantage.
             </p>
           </div>
           <BentoDemo />
