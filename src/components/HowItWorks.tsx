@@ -7,7 +7,7 @@ const stepsCards = [
   {
     icon: <Zap className="size-4 text-indigo-300" />,
     title: "Choose Your AI Employee",
-    description: "Select from our wide range of AI capabilities to match your business needs.",
+    description: "",
     date: "Step 1",
     iconClassName: "text-indigo-500",
     titleClassName: "text-indigo-500",
@@ -17,7 +17,7 @@ const stepsCards = [
   {
     icon: <Bot className="size-4 text-blue-300" />,
     title: "Plug Into Your Workflow",
-    description: "Seamlessly integrate with your existing tools and processes with minimal setup.",
+    description: "",
     date: "Step 2",
     iconClassName: "text-blue-500",
     titleClassName: "text-blue-500",
@@ -27,7 +27,7 @@ const stepsCards = [
   {
     icon: <TrendingUp className="size-4 text-green-300" />,
     title: "Watch Productivity Skyrocket",
-    description: "See immediate results as your AI Employee handles tasks around the clock.",
+    description: "",
     date: "Step 3",
     iconClassName: "text-green-500",
     titleClassName: "text-green-500",
