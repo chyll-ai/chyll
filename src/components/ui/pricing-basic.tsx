@@ -1,4 +1,3 @@
-
 "use client";
 
 import { Pricing } from "@/components/ui/pricing";
@@ -67,8 +66,7 @@ function PricingBasic() {
       <Pricing 
         plans={demoPlans}
         title="Simple, Transparent Pricing"
-        description="Choose the plan that works for your business needs.
-All plans include access to our platform, AI automation tools, and dedicated support."
+        description="Choose a plan that fits your business needs."
       />
     </div>
   );
