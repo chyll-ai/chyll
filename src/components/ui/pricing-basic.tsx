@@ -66,8 +66,8 @@ function PricingBasic() {
     <div className="overflow-y-auto">
       <Pricing 
         plans={demoPlans}
-        title="Pricing"
-        description="Get AI employees at 1/10 the cost with 5x the ROI."
+        title="AI Employees at 1/10 the Cost"
+        description="5x Return on Investment"
       />
     </div>
   );
