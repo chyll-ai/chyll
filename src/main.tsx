@@ -7,12 +7,12 @@ import './index.css';
 const reportWebVitals = () => {
   if (typeof window !== 'undefined' && 'performance' in window && 'addEventListener' in window) {
     // Core Web Vitals measurement
-    import('web-vitals').then(({ getCLS, getFID, getLCP, getFCP, getTTFB }) => {
-      getCLS(console.log);   // Cumulative Layout Shift
-      getFID(console.log);   // First Input Delay
-      getLCP(console.log);   // Largest Contentful Paint
-      getFCP(console.log);   // First Contentful Paint
-      getTTFB(console.log);  // Time to First Byte
+    import('web-vitals').then(({ onCLS, onFID, onLCP, onFCP, onTTFB }) => {
+      onCLS(console.log);   // Cumulative Layout Shift
+      onFID(console.log);   // First Input Delay
+      onLCP(console.log);   // Largest Contentful Paint
+      onFCP(console.log);   // First Contentful Paint
+      onTTFB(console.log);  // Time to First Byte
     });
   }
 };
