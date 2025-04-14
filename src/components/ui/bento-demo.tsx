@@ -1,17 +1,17 @@
 
 import {
-  BellIcon,
-  PhoneIcon,
-  MicIcon,
-  BrainIcon,
-  CodeIcon,
-} from "@radix-ui/react-icons";
+  Bell,
+  Phone,
+  Mic,
+  Brain,
+  Code
+} from "lucide-react";
 
 import { BentoCard, BentoGrid } from "@/components/ui/bento-grid";
 
 const features = [
   {
-    Icon: BrainIcon,
+    Icon: Brain,
     name: "AI-Powered Workflows",
     description: "Create and automate complex business processes with a few clicks using our advanced AI engine.",
     href: "/",
@@ -20,7 +20,7 @@ const features = [
     className: "lg:row-start-1 lg:row-end-4 lg:col-start-2 lg:col-end-3",
   },
   {
-    Icon: PhoneIcon,
+    Icon: Phone,
     name: "Voice Call Automation",
     description: "Let AI handle your customer calls, schedule appointments, and answer common questions 24/7.",
     href: "/",
@@ -29,7 +29,7 @@ const features = [
     className: "lg:col-start-1 lg:col-end-2 lg:row-start-1 lg:row-end-3",
   },
   {
-    Icon: MicIcon,
+    Icon: Mic,
     name: "Voice Recognition",
     description: "Advanced speech-to-text technology that understands context and industry-specific terminology.",
     href: "/",
@@ -38,7 +38,7 @@ const features = [
     className: "lg:col-start-1 lg:col-end-2 lg:row-start-3 lg:row-end-4",
   },
   {
-    Icon: CodeIcon,
+    Icon: Code,
     name: "Custom Integrations",
     description: "Connect with your existing tools and software through our open API and pre-built connectors.",
     href: "/",
@@ -47,7 +47,7 @@ const features = [
     className: "lg:col-start-3 lg:col-end-3 lg:row-start-1 lg:row-end-2",
   },
   {
-    Icon: BellIcon,
+    Icon: Bell,
     name: "Smart Notifications",
     description:
       "Get real-time alerts and insights based on your business data, customer interactions, and market trends.",
