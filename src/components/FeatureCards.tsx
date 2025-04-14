@@ -7,37 +7,37 @@ import {
 const features = [
   {
     title: "Voice AI",
-    description: "Human-like phone calls that handle customers automatically",
+    description: "Never miss a call with 24/7 automated phone reception",
     icon: Phone,
     color: "bg-blue-50 text-blue-600"
   },
   {
     title: "Conversation AI",
-    description: "AI chat across web, SMS, and social",
+    description: "Natural live chat across SMS, web, and social media",
     icon: MessageSquare,
     color: "bg-purple-50 text-purple-600"
   },
   {
     title: "Reviews AI",
-    description: "Request and manage reviews automatically",
+    description: "Reputation management and review automation",
     icon: Star,
     color: "bg-yellow-50 text-yellow-600"
   },
   {
     title: "Content AI",
-    description: "Auto-generate posts, emails, and client messages",
+    description: "Generate blogs, social posts, emails, and images",
     icon: FileText,
     color: "bg-green-50 text-green-600"
   },
   {
     title: "Workflow AI Assistant",
-    description: "Automate operations and task handling",
+    description: "Build and master business automation workflows",
     icon: Workflow,
     color: "bg-indigo-50 text-indigo-600"
   },
   {
     title: "Funnel AI",
-    description: "Smarter lead capture and conversion workflows",
+    description: "Create high-converting pages and funnels quickly",
     icon: LineChart,
     color: "bg-red-50 text-red-600"
   }
