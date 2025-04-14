@@ -21,7 +21,7 @@ const Index = () => {
       <section id="benefits" className="section-padding bg-white">
         <div className="container-custom">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Discover the Benefits of Automating Your Business with AI</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Discover the Benefits of Automating Your Business with Botis AI</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Imagine having an employee that works non-stop, tackles complex tasks, and makes your customers feel like VIPs.
             </p>
@@ -38,7 +38,7 @@ const Index = () => {
               AI-Powered Tools to Streamline Your Workflows, Voice Calls, and More
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              AI Employee isn't just automation — it's your business's competitive advantage.
+              Botis AI isn't just automation — it's your business's competitive advantage.
             </p>
           </div>
           <FeatureCards />
@@ -92,7 +92,7 @@ const Index = () => {
           <div className="flex flex-col md:flex-row items-center md:items-start justify-between gap-10">
             <div className="md:w-1/2 text-center md:text-left">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                Ready to Hire Your First AI Employee?
+                Ready to Hire Your First Botis AI Employee?
               </h2>
               <p className="text-xl mb-6 text-blue-100">
                 Join hundreds of businesses already transforming their operations with our AI-powered solutions.
