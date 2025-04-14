@@ -2,95 +2,118 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Check } from 'lucide-react';
+import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card';
 
 const pricingPlans = [
   {
     name: "Starter",
     price: "99€",
     period: "/month",
-    description: "Ideal for small teams or solo founders looking to automate the essentials.",
+    description: "Designed for solo founders and small teams who want to automate the basics without friction.",
     features: [
-      "Voice & Conversation AI",
-      "Basic Workflow Automation",
-      "Reviews AI",
-      "24/7 Multichannel Support"
+      "Reviews AI: Reputation on Auto-Pilot",
+      "Content AI: Cure to Blank Pages",
+      "Funnel AI: High-Converting Pages"
     ],
-    highlight: false
+    highlight: false,
+    color: "blue"
   },
   {
     name: "Pro",
     price: "199€",
     period: "/month",
-    description: "Perfect for growing businesses ready to scale their AI operations.",
+    description: "Built for growing businesses ready to scale customer interactions and marketing efforts with smart automation.",
     features: [
       "Everything in Starter",
-      "Funnel AI & Content Automation",
-      "Advanced Workflow Builder",
-      "Dedicated Onboarding"
+      "Workflow AI: Your Automation Weapon",
+      "Conversation AI: Natural Live Chat"
     ],
-    highlight: true
+    highlight: true,
+    color: "yellow"
   },
   {
     name: "Expert",
     price: "699€",
     period: "/month",
-    description: "For businesses that want full AI integration and maximum performance.",
+    description: "For high-volume teams needing full AI integration, advanced workflows, and always-on voice communication.",
     features: [
       "Everything in Pro",
-      "Custom Voice Agents",
-      "White-Glove Setup",
-      "Priority Support + AI Strategy Sessions"
+      "Voice AI: Never Miss a Call",
+      "Custom AI Setup & Strategy",
+      "White-Glove Onboarding + Priority Support",
+      "Monthly Strategy Calls + Performance Reviews"
     ],
-    highlight: false
+    highlight: false,
+    color: "red"
   }
 ];
+
+const getPlanIcon = (color: string) => {
+  switch (color) {
+    case "blue":
+      return <div className="inline-block w-5 h-5 mr-2 bg-blue-500 rounded-sm">🟦</div>;
+    case "yellow":
+      return <div className="inline-block w-5 h-5 mr-2 bg-yellow-400 rounded-sm">🟨</div>;
+    case "red":
+      return <div className="inline-block w-5 h-5 mr-2 bg-red-500 rounded-sm">🟥</div>;
+    default:
+      return null;
+  }
+};
 
 const PricingCards = () => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
       {pricingPlans.map((plan, index) => (
-        <div 
+        <Card 
           key={index} 
-          className={`pricing-card flex flex-col h-full ${
+          className={`pricing-card flex flex-col h-full border-2 ${
             plan.highlight 
-              ? 'border-brand-blue shadow-lg relative' 
-              : ''
+              ? 'border-yellow-400 shadow-lg relative' 
+              : plan.color === 'blue' 
+                ? 'border-blue-500' 
+                : 'border-red-500'
           }`}
         >
           {plan.highlight && (
-            <div className="absolute -top-4 left-0 right-0 mx-auto w-max px-4 py-1 bg-brand-blue text-white text-sm font-medium rounded-full">
+            <div className="absolute -top-4 left-0 right-0 mx-auto w-max px-4 py-1 bg-yellow-400 text-white text-sm font-medium rounded-full">
               Most Popular
             </div>
           )}
           
-          <div className="mb-6">
-            <h3 className="text-xl font-bold text-gray-900 mb-2">{plan.name}</h3>
-            <div className="flex items-end mb-2">
-              <span className="text-4xl font-bold text-gray-900">{plan.price}</span>
-              <span className="text-gray-500 ml-1">{plan.period}</span>
+          <CardHeader className="pb-2">
+            <div className="flex items-center mb-2">
+              {getPlanIcon(plan.color)}
+              <h3 className="text-xl font-bold text-gray-900">{plan.name} — {plan.price}{plan.period}</h3>
             </div>
             <p className="text-gray-600">{plan.description}</p>
-          </div>
+          </CardHeader>
           
-          <ul className="space-y-3 mb-8 flex-grow">
-            {plan.features.map((feature, i) => (
-              <li key={i} className="flex items-start">
-                <Check className="h-5 w-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
-                <span className="text-gray-700">{feature}</span>
-              </li>
-            ))}
-          </ul>
+          <CardContent className="flex-grow">
+            <ul className="space-y-3">
+              {plan.features.map((feature, i) => (
+                <li key={i} className="flex items-start">
+                  <Check className="h-5 w-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
+                  <span className="text-gray-700">{feature}</span>
+                </li>
+              ))}
+            </ul>
+          </CardContent>
           
-          <Button 
-            className={`w-full mt-auto ${
-              plan.highlight 
-                ? 'bg-brand-blue hover:bg-brand-blue-dark' 
-                : 'bg-white hover:bg-gray-50 text-brand-blue border border-brand-blue'
-            }`}
-          >
-            Book a Demo
-          </Button>
-        </div>
+          <CardFooter className="pt-4">
+            <Button 
+              className={`w-full ${
+                plan.highlight 
+                  ? 'bg-yellow-400 hover:bg-yellow-500 text-white' 
+                  : plan.color === 'blue'
+                    ? 'bg-blue-500 hover:bg-blue-600 text-white'
+                    : 'bg-red-500 hover:bg-red-600 text-white'
+              }`}
+            >
+              Book a Demo
+            </Button>
+          </CardFooter>
+        </Card>
       ))}
     </div>
   );
