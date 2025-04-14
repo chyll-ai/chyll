@@ -1,8 +1,7 @@
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Building, Building2, Globe, Briefcase, Factory } from "lucide-react";
 import { InfiniteSlider } from "@/components/ui/infinite-slider";
-import { processLogoWithBackgroundRemoval } from "@/utils/imageUtils";
 
 type CompanyLogo = {
   name: string;
@@ -39,21 +38,6 @@ const companies: CompanyLogo[] = [
 ];
 
 export function PartnerCompaniesDemo() {
-  const [processedLogoUrl, setProcessedLogoUrl] = useState<string>("/lovable-uploads/224bbd8d-aa23-496c-b6ca-729f37585e1f.png");
-
-  useEffect(() => {
-    const processLogo = async () => {
-      try {
-        const result = await processLogoWithBackgroundRemoval(processedLogoUrl);
-        setProcessedLogoUrl(result);
-      } catch (error) {
-        console.error('Logo processing error:', error);
-      }
-    };
-
-    processLogo();
-  }, []);
-
   return (
     <div className="py-12">
       <div className="text-center mb-8">
@@ -79,18 +63,7 @@ export function PartnerCompaniesDemo() {
             <span className="text-sm font-medium text-gray-700">{company.name}</span>
           </div>
         ))}
-        
-        {/* PARIS&CO logo */}
-        <div className="flex flex-col items-center mx-4 min-w-[180px]">
-          <img
-            src={processedLogoUrl}
-            alt="PARIS&CO logo"
-            className="h-16 w-auto"
-          />
-          <span className="text-sm font-medium text-gray-700 mt-2">PARIS&CO</span>
-        </div>
       </InfiniteSlider>
     </div>
   );
 }
-
