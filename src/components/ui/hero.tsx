@@ -1,33 +1,29 @@
+
 "use client";
 
 import { useEffect, useState } from "react";
 import { renderCanvas } from "@/components/ui/canvas";
-import { ArrowRight, SquareCode, Users } from "lucide-react";
+import { ArrowRight, SquareCode, Users, MoveRight, PhoneCall } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 
 export function Hero() {
-  useEffect(() => {
-    renderCanvas();
-  }, []);
-
+  // Initialize rotating words for the animation
   const [wordIndex, setWordIndex] = useState(0);
-  const rotatingWords = [
-    "sell",
-    "hire",
-    "design",
-    "schedule",
-    "support",
-    "analyze",
-    "automate"
-  ];
+  const rotatingWords = ["sell", "design", "write", "support", "automate"];
 
+  // Set up animation interval
   useEffect(() => {
     const intervalId = setInterval(() => {
       setWordIndex((prevIndex) => (prevIndex + 1) % rotatingWords.length);
-    }, 2500);
+    }, 2000);
     
     return () => clearInterval(intervalId);
+  }, []);
+
+  // Initialize canvas effect
+  useEffect(() => {
+    renderCanvas();
   }, []);
 
   return (
@@ -53,7 +49,7 @@ export function Hero() {
         <div className="mb-10 mt-4 md:mt-6">
           <div className="px-2">
             <div className="border-brand-blue relative mx-auto h-full max-w-7xl border p-6 [mask-image:radial-gradient(800rem_96rem_at_center,white,transparent)] md:px-12 md:py-20">
-              <h1 className="flex select-none flex-col px-3 py-2 text-center text-5xl font-semibold leading-none tracking-tight md:flex-col md:text-8xl lg:flex-row lg:text-8xl">
+              <h1 className="flex select-none flex-col px-3 py-2 text-center text-5xl font-semibold leading-none tracking-tight md:flex-col md:text-7xl lg:flex-row lg:text-7xl">
                 <ArrowRight
                   strokeWidth={4}
                   className="text-brand-blue absolute -left-5 -top-5 h-10 w-10"
@@ -71,7 +67,7 @@ export function Hero() {
                   className="text-brand-blue absolute -bottom-5 -right-5 h-10 w-10"
                 />
                 <div className="flex flex-wrap items-center justify-center gap-3 lg:gap-5">
-                  <span>We create AI employees that</span>
+                  <span>Hire AI employees that</span>
                   <div className="relative inline-block h-[1.2em] overflow-hidden">
                     {rotatingWords.map((word, index) => (
                       <motion.span
@@ -110,26 +106,27 @@ export function Hero() {
           </h1>
 
           <p className="md:text-md mx-auto mb-16 mt-2 max-w-2xl px-6 text-sm text-primary/60 sm:px-6 md:max-w-4xl md:px-20 lg:text-lg">
-            Streamline your workflows, automate customer interactions, and scale your business operations.
+            Transform your business with AI employees that never sleep, never take vacations, 
+            and consistently deliver exceptional results. Streamline operations, 
+            reduce costs, and scale your business like never before.
           </p>
-          <div className="flex justify-center gap-2">
-            <Button variant="rainbow" size="lg" asChild>
+          <div className="flex flex-row justify-center gap-3">
+            <Button variant="outline" size="lg" className="gap-4" asChild>
               <a 
                 href="https://api.leadconnectorhq.com/widget/booking/XvUg6399vyVtvCXETgsY" 
                 target="_blank" 
                 rel="noopener noreferrer"
               >
-                Hire AI: Sales Team / Content Manager / Support Manager / Email Writer / SMS Sender
-                <Users className="w-4 h-4 ml-2" />
+                Book a Demo <PhoneCall className="w-4 h-4" />
               </a>
             </Button>
-            <Button variant="outline" size="lg" asChild>
+            <Button variant="rainbow" size="lg" className="gap-4" asChild>
               <a 
                 href="https://api.leadconnectorhq.com/widget/booking/XvUg6399vyVtvCXETgsY" 
                 target="_blank" 
                 rel="noopener noreferrer"
               >
-                Book a Demo
+                Hire AI Now <MoveRight className="w-4 h-4" />
               </a>
             </Button>
           </div>

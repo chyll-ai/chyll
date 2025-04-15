@@ -1,16 +1,13 @@
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { MoveRight, PhoneCall, Bot } from "lucide-react";
+import { MoveRight, PhoneCall } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { renderCanvas } from "@/components/ui/canvas";
 
 function Hero() {
   const [titleNumber, setTitleNumber] = useState(0);
-  const titles = useMemo(
-    () => ["sell", "design", "write", "call"],
-    []
-  );
+  const titles = ["sell", "design", "write", "support", "automate"];
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -21,7 +18,7 @@ function Hero() {
       }
     }, 2000);
     return () => clearTimeout(timeoutId);
-  }, [titleNumber, titles]);
+  }, [titleNumber, titles.length]);
 
   // Initialize canvas effect
   useEffect(() => {
@@ -75,7 +72,7 @@ function Hero() {
             </Button>
             <Button size="lg" className="gap-4" variant="rainbow" asChild>
               <a href="https://api.leadconnectorhq.com/widget/booking/XvUg6399vyVtvCXETgsY" target="_blank" rel="noopener noreferrer">
-                Get started now <MoveRight className="w-4 h-4" />
+                Hire AI now <MoveRight className="w-4 h-4" />
               </a>
             </Button>
           </div>
