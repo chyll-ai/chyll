@@ -3,6 +3,8 @@
 
 import React, { useRef, useState } from "react";
 import { motion } from "framer-motion";
+import { Button } from "./button";
+import { LogIn } from "lucide-react";
 
 function NavHeader() {
   const [position, setPosition] = useState({
@@ -12,18 +14,31 @@ function NavHeader() {
   });
 
   return (
-    <ul
-      className="relative mx-auto flex w-fit rounded-full border-2 border-brand-blue bg-white p-1"
-      onMouseLeave={() => setPosition((pv) => ({ ...pv, opacity: 0 }))}
-    >
-      <Tab setPosition={setPosition}>Home</Tab>
-      <Tab setPosition={setPosition}>Pricing</Tab>
-      <Tab setPosition={setPosition}>About</Tab>
-      <Tab setPosition={setPosition}>Services</Tab>
-      <Tab setPosition={setPosition}>Contact</Tab>
+    <div className="flex items-center justify-between w-full max-w-screen-xl mx-auto px-4">
+      <ul
+        className="relative flex w-fit rounded-full border-2 border-brand-blue bg-white p-1"
+        onMouseLeave={() => setPosition((pv) => ({ ...pv, opacity: 0 }))}
+      >
+        <Tab setPosition={setPosition}>Home</Tab>
+        <Tab setPosition={setPosition}>Pricing</Tab>
+        <Tab setPosition={setPosition}>About</Tab>
+        <Tab setPosition={setPosition}>Services</Tab>
+        <Tab setPosition={setPosition}>Contact</Tab>
 
-      <Cursor position={position} />
-    </ul>
+        <Cursor position={position} />
+      </ul>
+      
+      <Button 
+        className="flex items-center gap-2" 
+        variant="outline"
+        asChild
+      >
+        <a href="https://app.generativschool.com/" target="_blank" rel="noopener noreferrer">
+          <LogIn size={18} />
+          <span>Login</span>
+        </a>
+      </Button>
+    </div>
   );
 }
 
@@ -65,4 +80,3 @@ const Cursor = ({ position }: { position: any }) => {
 };
 
 export default NavHeader;
-
