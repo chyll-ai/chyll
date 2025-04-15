@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useState } from "react";
@@ -115,13 +114,21 @@ export function Hero() {
           </p>
           <div className="flex justify-center gap-2">
             <Button variant="rainbow" size="lg" asChild>
-              <a href="https://api.leadconnectorhq.com/widget/booking/XvUg6399vyVtvCXETgsY" target="_blank" rel="noopener noreferrer">
+              <a 
+                href="https://api.leadconnectorhq.com/widget/booking/XvUg6399vyVtvCXETgsY" 
+                target="_blank" 
+                rel="noopener noreferrer"
+              >
                 Hire AI: Sales Team / Content Manager / Support Manager / Email Writer / SMS Sender
                 <Users className="w-4 h-4 ml-2" />
               </a>
             </Button>
             <Button variant="outline" size="lg" asChild>
-              <a href="https://api.leadconnectorhq.com/widget/booking/XvUg6399vyVtvCXETgsY" target="_blank" rel="noopener noreferrer">
+              <a 
+                href="https://api.leadconnectorhq.com/widget/booking/XvUg6399vyVtvCXETgsY" 
+                target="_blank" 
+                rel="noopener noreferrer"
+              >
                 Book a Demo
               </a>
             </Button>
