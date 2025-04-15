@@ -1,8 +1,9 @@
+
 "use client";
 
 import { useEffect, useState } from "react";
 import { renderCanvas } from "@/components/ui/canvas";
-import { ArrowRight, Users } from "lucide-react";
+import { ArrowRight, CircleSquare, Users } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 
@@ -35,7 +36,7 @@ export function Hero() {
       <div className="animation-delay-8 animate-fadeIn mt-20 flex flex-col items-center justify-center px-4 text-center md:mt-20">
         <div className="z-10 mb-6 mt-10 sm:justify-center md:mb-4 md:mt-20">
           <div className="relative flex items-center whitespace-nowrap rounded-full border bg-popover px-3 py-1 text-xs leading-6 text-primary/60">
-            <Shapes className="h-5 p-1" /> Introducing GenerativSchool.
+            <CircleSquare className="h-5 p-1" /> Introducing GenerativSchool.
             <a
               href="/about"
               rel="noreferrer"
