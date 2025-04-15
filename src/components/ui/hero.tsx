@@ -1,9 +1,8 @@
-
 "use client";
 
 import { useEffect, useState } from "react";
 import { renderCanvas } from "@/components/ui/canvas";
-import { ArrowRight, Shapes } from "lucide-react";
+import { ArrowRight, Users } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 
@@ -12,7 +11,6 @@ export function Hero() {
     renderCanvas();
   }, []);
 
-  // Define the rotating words for the AI employee capabilities
   const [wordIndex, setWordIndex] = useState(0);
   const rotatingWords = [
     "sell",
@@ -24,13 +22,11 @@ export function Hero() {
     "automate"
   ];
 
-  // Set up the word rotation with a timer
   useEffect(() => {
     const intervalId = setInterval(() => {
       setWordIndex((prevIndex) => (prevIndex + 1) % rotatingWords.length);
     }, 2500);
     
-    // Clean up interval on component unmount
     return () => clearInterval(intervalId);
   }, []);
 
@@ -119,7 +115,8 @@ export function Hero() {
           <div className="flex justify-center gap-2">
             <Button variant="rainbow" size="lg" asChild>
               <a href="https://api.leadconnectorhq.com/widget/booking/XvUg6399vyVtvCXETgsY" target="_blank" rel="noopener noreferrer">
-                Get Started
+                Hire AI: Sales Team / Content Manager / Support Manager / Email Writer / SMS Sender
+                <Users className="w-4 h-4 ml-2" />
               </a>
             </Button>
             <Button variant="outline" size="lg" asChild>
