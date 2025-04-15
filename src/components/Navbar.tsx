@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Menu, X, Home } from 'lucide-react';
+import { Menu, X, Home, LogIn } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 
 interface NavbarProps {
@@ -56,11 +56,20 @@ const Navbar = ({ currentPath = '/' }: NavbarProps) => {
           <Link to={getSectionLink("how-it-works")} className="text-gray-700 hover:text-brand-blue transition-colors">How It Works</Link>
           <Link to={getSectionLink("pricing")} className="text-gray-700 hover:text-brand-blue transition-colors">Pricing</Link>
           
-          <Button variant="rainbow" asChild>
-            <a href="https://api.leadconnectorhq.com/widget/booking/XvUg6399vyVtvCXETgsY" target="_blank" rel="noopener noreferrer">
-              Book a Demo
-            </a>
-          </Button>
+          <div className="flex items-center space-x-4">
+            <Button variant="outline" asChild>
+              <a href="https://app.generativschool.com/" target="_blank" rel="noopener noreferrer">
+                <LogIn size={18} />
+                <span>Login</span>
+              </a>
+            </Button>
+
+            <Button variant="rainbow" asChild>
+              <a href="https://api.leadconnectorhq.com/widget/booking/XvUg6399vyVtvCXETgsY" target="_blank" rel="noopener noreferrer">
+                Book a Demo
+              </a>
+            </Button>
+          </div>
         </div>
 
         {/* Mobile Menu Button */}
@@ -112,6 +121,18 @@ const Navbar = ({ currentPath = '/' }: NavbarProps) => {
             </Link>
             
             <Button 
+              variant="outline"
+              className="w-full mb-4"
+              onClick={() => setIsMenuOpen(false)}
+              asChild
+            >
+              <a href="https://app.generativschool.com/" target="_blank" rel="noopener noreferrer">
+                <LogIn size={18} />
+                <span>Login</span>
+              </a>
+            </Button>
+
+            <Button 
               variant="rainbow"
               className="w-full"
               onClick={() => setIsMenuOpen(false)}
@@ -129,3 +150,4 @@ const Navbar = ({ currentPath = '/' }: NavbarProps) => {
 };
 
 export default Navbar;
+
