@@ -16,7 +16,8 @@ const pricingPlans = [
       "Funnel AI: High-Converting Pages"
     ],
     highlight: false,
-    color: "blue"
+    color: "blue",
+    trial: "14-day free trial"
   },
   {
     name: "Pro",
@@ -29,7 +30,8 @@ const pricingPlans = [
       "Conversation AI: Natural Live Chat"
     ],
     highlight: true,
-    color: "yellow"
+    color: "yellow",
+    trial: "14-day free trial"
   },
   {
     name: "Expert",
@@ -44,7 +46,8 @@ const pricingPlans = [
       "Monthly Strategy Calls + Performance Reviews"
     ],
     highlight: false,
-    color: "red"
+    color: "red",
+    trial: "14-day free trial"
   }
 ];
 
@@ -87,6 +90,9 @@ const PricingCards = () => {
               <h3 className="text-xl font-bold text-gray-900">{plan.name} — {plan.price}{plan.period}</h3>
             </div>
             <p className="text-gray-600">{plan.description}</p>
+            <div className="mt-2">
+              <p className="text-sm font-medium text-green-600">{plan.trial}</p>
+            </div>
           </CardHeader>
           
           <CardContent className="flex-grow">

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { buttonVariants } from "@/components/ui/button";
@@ -178,6 +179,10 @@ export function Pricing({
               <p className="text-xs leading-5 text-muted-foreground">
                 {isMonthly ? "billed monthly" : "billed annually"}
               </p>
+              
+              <div className="mt-2">
+                <p className="text-sm font-medium text-green-600">14-day free trial</p>
+              </div>
 
               <ul className="mt-5 gap-2 flex flex-col">
                 {plan.features.map((feature, idx) => (

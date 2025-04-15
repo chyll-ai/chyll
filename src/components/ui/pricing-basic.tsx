@@ -67,7 +67,7 @@ function PricingBasic() {
       <Pricing 
         plans={demoPlans}
         title="AI Employees at 1/10 the Cost"
-        description="5x Return on Investment"
+        description="5x Return on Investment - All plans include a 14-day free trial"
       />
     </div>
   );
