@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -39,10 +40,43 @@
     <!-- Preload critical assets -->
     <link rel="preload" href="/src/main.tsx" as="script" />
     <link rel="preload" href="/src/index.css" as="style" />
+    
+    <!-- Hide Lovable Badge -->
+    <script>
+      window.addEventListener('load', function() {
+        // Hide any lovable badge or edit prompt that might appear
+        const style = document.createElement('style');
+        style.textContent = `
+          [data-gpt-id], 
+          .gpt-badge, 
+          .gpt-container, 
+          .lovable-badge, 
+          .lovable-container,
+          [id*="lovable"],
+          [class*="lovable"],
+          [data-lovable],
+          [id*="gpt-engineer"],
+          [class*="gpt-engineer"] {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+          }
+          
+          body, html {
+            overflow: auto !important;
+          }
+        `;
+        document.head.appendChild(style);
+        
+        // Apply data-gpt-ignore to the entire body
+        document.body.setAttribute('data-gpt-ignore', 'true');
+      });
+    </script>
   </head>
 
   <body>
-    <div id="root"></div>
+    <div id="root" data-gpt-ignore="true"></div>
     <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS VERY COMMENT! -->
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
     <script type="module" src="/src/main.tsx"></script>
