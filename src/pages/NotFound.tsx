@@ -42,9 +42,12 @@ const NotFound = () => {
         canonicalUrl={location.pathname}
         structuredData={structuredData}
       />
-      <NotFoundPage />
+      <div data-gpt-ignore="true">
+        <NotFoundPage />
+      </div>
     </>
   );
 };
 
 export default NotFound;
+
