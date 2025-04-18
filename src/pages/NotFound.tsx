@@ -42,9 +42,7 @@ const NotFound = () => {
         canonicalUrl={location.pathname}
         structuredData={structuredData}
       />
-      <div data-gpt-ignore="true" className="lovable-hidden">
-        <NotFoundPage />
-      </div>
+      <NotFoundPage />
     </>
   );
 };
