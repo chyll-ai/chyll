@@ -1,4 +1,3 @@
-
 import React, { Suspense, lazy } from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -156,7 +155,10 @@ const App = () => (
               <Route path="/documentation/user-management/access-control" element={<AccessControl />} />
               <Route path="/documentation/user-management/audit-logs" element={<AuditLogs />} />
               
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              {/* Demo route for 404 page */}
+              <Route path="/404-demo" element={<NotFound />} />
+              
+              {/* Catch-all route for 404 */}
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
