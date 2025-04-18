@@ -18,7 +18,7 @@ const SEOMetadata = ({
   description,
   canonicalUrl,
   ogType = 'website',
-  ogImage = 'https://lovable.dev/opengraph-image-p98pqg.png',
+  ogImage = '/lovable-uploads/e8f6a264-0ce4-4f38-86ae-c0050aa0470d.png',
   articlePublishedTime,
   articleModifiedTime,
   structuredData,
