@@ -56,11 +56,26 @@
           [class*="lovable"],
           [data-lovable],
           [id*="gpt-engineer"],
-          [class*="gpt-engineer"] {
+          [class*="gpt-engineer"],
+          .gpt-engineer-badge,
+          .gpt-editor-button,
+          .gpt-edit-button,
+          .gpt-editable,
+          .gpt-toolbar,
+          div[class*="gpt-"],
+          div[id*="gpt-"],
+          #gpt-badge,
+          #lovable-badge {
             display: none !important;
             visibility: hidden !important;
             opacity: 0 !important;
             pointer-events: none !important;
+            width: 0 !important;
+            height: 0 !important;
+            position: absolute !important;
+            top: -9999px !important;
+            left: -9999px !important;
+            z-index: -9999 !important;
           }
           
           body, html {
@@ -69,13 +84,45 @@
         `;
         document.head.appendChild(style);
         
-        // Apply data-gpt-ignore to the entire body
+        // Apply data-gpt-ignore to the entire body and root
         document.body.setAttribute('data-gpt-ignore', 'true');
+        document.documentElement.setAttribute('data-gpt-ignore', 'true');
+        
+        // Remove any dynamically added elements
+        function removeBadges() {
+          const selectors = [
+            '[data-gpt-id]',
+            '.gpt-badge',
+            '.gpt-container',
+            '.lovable-badge',
+            '.lovable-container',
+            '[id*="lovable"]',
+            '[class*="lovable"]',
+            '[data-lovable]',
+            '[id*="gpt-engineer"]',
+            '[class*="gpt-engineer"]',
+            '.gpt-engineer-badge',
+            '.gpt-editor-button',
+            '.gpt-edit-button',
+            '.gpt-editable',
+            '.gpt-toolbar'
+          ];
+          
+          selectors.forEach(selector => {
+            document.querySelectorAll(selector).forEach(el => {
+              el.remove();
+            });
+          });
+        }
+        
+        // Run immediately and then periodically check
+        removeBadges();
+        setInterval(removeBadges, 1000);
       });
     </script>
   </head>
 
-  <body>
+  <body data-gpt-ignore="true">
     <div id="root" data-gpt-ignore="true"></div>
     <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS VERY COMMENT! -->
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
