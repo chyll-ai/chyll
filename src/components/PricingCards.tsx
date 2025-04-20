@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Check } from 'lucide-react';
@@ -6,55 +5,51 @@ import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card'
 
 const pricingPlans = [
   {
-    name: "Starter",
-    price: "99€",
-    period: "/month",
-    description: "Perfect for solo founders who want to automate a specific business task.",
+    name: "Once",
+    price: "$99",
+    period: "one-time",
+    description: "One task, fully done-for-you.",
     features: [
-      "1 AI Employee (of your choice)",
-      "Up to 50 automated actions per month",
-      "Dedicated interface",
-      "Standard support (48h response time)",
-      "Knowledge base access"
+      "We build and deliver 1 automation for your use case",
+      "Delivered with a simple interface (Airtable or Notion)",
+      "Includes setup, configuration, and test run",
+      "Great for proof-of-concept or small need"
     ],
     highlight: false,
     color: "blue",
-    trial: "14-day free trial"
+    trial: null
   },
   {
-    name: "Growth",
-    price: "199€",
+    name: "Automate",
+    price: "$199",
     period: "/month",
-    description: "For startups and growing teams ready to scale with automation.",
+    description: "An AI assistant you can control.",
     features: [
-      "Up to 3 active AI Employees",
-      "Up to 200 automated actions per month",
-      "Custom interfaces for each use case",
-      "Priority support (24h)",
-      "Usage dashboard",
-      "Monthly performance review"
+      "Access a custom interface connected to your AI workflows",
+      "Includes 200 automation actions/month",
+      "Tasks include scraping, enrichment, messaging, CRM updates, alerts",
+      "No technical setup required – we handle everything",
+      "Ongoing support and upgrades included"
     ],
     highlight: true,
     color: "yellow",
     trial: "14-day free trial"
   },
   {
-    name: "Scale",
-    price: "699€",
+    name: "Integrate",
+    price: "$699",
     period: "/month",
-    description: "For businesses ready to fully integrate AI into their operations.",
+    description: "Full-stack AI setup across your operations.",
     features: [
-      "Full access to the AI Employee suite",
-      "Up to 1,000 automated actions per month",
-      "Integration with your internal tools",
-      "Dedicated support team",
-      "Personalized onboarding",
-      "Secure multi-user access",
-      "Monthly strategy calls"
+      "Custom-built workflows across departments",
+      "Works with your stack (CRM, HR, project tools, etc.)",
+      "Up to 1,000 automation actions/month",
+      "Personalized onboarding, support & strategy",
+      "SLA, reporting, and dedicated expert sessions"
     ],
     highlight: false,
     color: "red",
-    trial: "14-day free trial"
+    trial: null
   }
 ];
 

@@ -5,56 +5,49 @@ import { Pricing } from "@/components/ui/pricing";
 
 const demoPlans = [
   {
-    name: "STARTER",
+    name: "ONCE",
     price: "99",
-    yearlyPrice: "79",
-    period: "per month",
+    period: "one-time",
     features: [
-      "1 AI Employee (of your choice)",
-      "Up to 50 automated actions per month",
-      "Dedicated interface",
-      "Standard support (48h response time)",
-      "Knowledge base access"
+      "We build and deliver 1 automation for your use case",
+      "Delivered with a simple interface (Airtable or Notion)",
+      "Includes setup, configuration, and test run",
+      "Great for proof-of-concept or small need",
     ],
-    description: "Perfect for solo founders who want to automate a specific business task.",
-    buttonText: "Book a Demo",
+    description: "One task, fully done-for-you.",
+    buttonText: "Start with One Task",
     href: "https://api.leadconnectorhq.com/widget/booking/XvUg6399vyVtvCXETgsY",
     isPopular: false,
   },
   {
-    name: "GROWTH",
+    name: "AUTOMATE",
     price: "199",
-    yearlyPrice: "159",
     period: "per month",
     features: [
-      "Up to 3 active AI Employees",
-      "Up to 200 automated actions per month",
-      "Custom interfaces for each use case",
-      "Priority support (24h)",
-      "Usage dashboard",
-      "Monthly performance review"
+      "Access a custom interface connected to your AI workflows",
+      "Includes 200 automation actions/month",
+      "Tasks include scraping, enrichment, messaging, CRM updates, alerts",
+      "No technical setup required – we handle everything",
+      "Ongoing support and upgrades included"
     ],
-    description: "For startups and growing teams ready to scale with automation.",
-    buttonText: "Book a Demo",
+    description: "An AI assistant you can control.",
+    buttonText: "Start Free Trial – 14 Days",
     href: "https://api.leadconnectorhq.com/widget/booking/XvUg6399vyVtvCXETgsY",
     isPopular: true,
   },
   {
-    name: "SCALE",
+    name: "INTEGRATE",
     price: "699",
-    yearlyPrice: "559",
     period: "per month",
     features: [
-      "Full access to the AI Employee suite",
-      "Up to 1,000 automated actions per month",
-      "Integration with your internal tools",
-      "Dedicated support team",
-      "Personalized onboarding",
-      "Secure multi-user access",
-      "Monthly strategy calls"
+      "Custom-built workflows across departments",
+      "Works with your stack (CRM, HR, project tools, etc.)",
+      "Up to 1,000 automation actions/month",
+      "Personalized onboarding, support & strategy",
+      "SLA, reporting, and dedicated expert sessions"
     ],
-    description: "For businesses ready to fully integrate AI into their operations.",
-    buttonText: "Book a Demo",
+    description: "Full-stack AI setup across your operations.",
+    buttonText: "Talk to Our Team",
     href: "https://api.leadconnectorhq.com/widget/booking/XvUg6399vyVtvCXETgsY",
     isPopular: false,
   },
@@ -65,8 +58,8 @@ function PricingBasic() {
     <div className="overflow-y-auto">
       <Pricing 
         plans={demoPlans}
-        title="AI Employees at 1/10 the Cost"
-        description="5x Return on Investment - All plans include a 14-day free trial"
+        title="AI Automation Made Simple"
+        description="Try risk-free with our 14-day trial"
       />
     </div>
   );
