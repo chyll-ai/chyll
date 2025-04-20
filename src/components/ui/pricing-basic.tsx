@@ -7,13 +7,13 @@ const demoPlans = [
   {
     name: "ONCE",
     price: "99",
-    yearlyPrice: "99", // Added yearlyPrice property (same as price for one-time payment)
+    yearlyPrice: "99", // One-time payment remains the same
     period: "one-time",
     features: [
       "We build and deliver 1 automation for your use case",
       "Delivered with a simple interface (Airtable or Notion)",
       "Includes setup, configuration, and test run",
-      "Great for proof-of-concept or small need",
+      "Great for proof-of-concept or small need"
     ],
     description: "One task, fully done-for-you.",
     buttonText: "Start with One Task",
