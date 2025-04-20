@@ -49,10 +49,10 @@ const features = [
   },
   {
     Icon: Mail,
-    name: "CLAUDE — The Email Strategist",
-    description: "Emails that convert — no copywriter needed. Claude crafts compelling outreach and follow-up emails, personalizes each message, and triggers them at the right time.",
+    name: "LAFAYETTE — The Email Strategist (AI Email Writer)",
+    description: "Emails that convert — no copywriter needed. Lafayette crafts compelling outreach and follow-up emails, personalizes each message, and triggers them at the right time.",
     href: "/",
-    cta: "Deploy Claude",
+    cta: "Deploy Lafayette",
     background: <div className="absolute -right-20 -top-20 bg-indigo-100 rounded-full w-64 h-64 blur-3xl opacity-40" />,
     className: "lg:col-start-2 lg:col-end-3 lg:row-start-3 lg:row-end-4",
   },
