@@ -8,7 +8,7 @@ const demoPlans = [
     name: "ONCE",
     price: "99",
     yearlyPrice: "99", // One-time payment remains the same
-    period: "to run", // Changed from "one-time" to "to run"
+    period: "BY RUN", // Changed from "to run" to "BY RUN"
     features: [
       "We build and deliver 1 automation for your use case",
       "Delivered with a simple interface (Airtable or Notion)",
@@ -81,3 +81,4 @@ function PricingBasic() {
 }
 
 export { PricingBasic };
+
