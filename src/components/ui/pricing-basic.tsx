@@ -1,4 +1,3 @@
-
 "use client";
 
 import { Pricing } from "@/components/ui/pricing";
@@ -41,22 +40,31 @@ const demoPlans = [
     isPopular: true,
   },
   {
-    name: "INTEGRATE",
+    name: "ENTERPRISE AI OPS",
     price: "699",
-    yearlyPrice: "559", // Added yearlyPrice property with 20% discount
+    yearlyPrice: "559",
     period: "per month",
     features: [
-      "Custom-built workflows across departments",
-      "Works with your stack (CRM, HR, project tools, etc.)",
-      "Up to 1,000 automation actions/month",
-      "Personalized onboarding, support & strategy",
-      "SLA, reporting, and dedicated expert sessions"
+      "1,000 Monthly Automation Actions",
+      "Scale your operations with high-volume task execution across departments — sales, support, HR, marketing, and beyond",
+      "Custom-Built Workflows",
+      "We design and deploy intelligent workflows tailored to your unique business needs, processes, and team structure",
+      "Integrates with Your Existing Stack",
+      "Your AI agents seamlessly connect to your CRM, ATS, support desk, project management tools, and internal systems — no disruption",
+      "Personalized White-Glove Onboarding",
+      "Dedicated setup sessions to map your workflows, install your AI employees, and ensure a smooth handover with your team",
+      "Priority Support & Strategy Access",
+      "You get a direct line to our automation experts for troubleshooting, performance tuning, and quarterly strategy reviews",
+      "SLA & Operational Reporting",
+      "We commit to guaranteed uptime and deliver clear, actionable reports on usage, performance, and ROI",
+      "Advanced Security & Access Controls",
+      "Single sign-on (SSO), encrypted data handling, and permission-based interface access — your data stays safe and segmented"
     ],
-    description: "Full-stack AI setup across your operations.",
+    description: "Your Dedicated Automation Layer – Tailored for Growth, Reliability, and Scale",
     buttonText: "Talk to Our Team",
     href: "https://api.leadconnectorhq.com/widget/booking/XvUg6399vyVtvCXETgsY",
     isPopular: false,
-  },
+  }
 ];
 
 function PricingBasic() {
@@ -72,4 +80,3 @@ function PricingBasic() {
 }
 
 export { PricingBasic };
-
