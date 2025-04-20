@@ -23,17 +23,20 @@ const demoPlans = [
   {
     name: "AUTOMATE",
     price: "199",
-    yearlyPrice: "159", // Added yearlyPrice property with 20% discount
+    yearlyPrice: "159", 
     period: "per month",
     features: [
-      "Access a custom interface connected to your AI workflows",
-      "Includes 200 automation actions/month",
-      "Tasks include scraping, enrichment, messaging, CRM updates, alerts",
-      "No technical setup required – we handle everything",
-      "Ongoing support and upgrades included"
+      "Custom AI Interface",
+      "Get a tailored dashboard where you can interact with your agent and track its performance",
+      "200 Monthly AI-Powered Actions",
+      "Your agent can automate tasks like outreach, follow-ups, scheduling, content creation, CRM updates, alerts, and more — depending on its role",
+      "Done-for-You Setup: No technical skills needed",
+      "We build, connect, and launch your AI employee for you",
+      "Ongoing Support & Improvements",
+      "We provide continuous updates, monitoring, and hands-on support to keep your agent sharp and aligned with your business goals"
     ],
     description: "An AI assistant you can control.",
-    buttonText: "Start Free Trial – 14 Days",
+    buttonText: "Book a Demo",
     href: "https://api.leadconnectorhq.com/widget/booking/XvUg6399vyVtvCXETgsY",
     isPopular: true,
   },
@@ -69,3 +72,4 @@ function PricingBasic() {
 }
 
 export { PricingBasic };
+
