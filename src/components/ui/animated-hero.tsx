@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { MoveRight, PhoneCall } from "lucide-react";
@@ -7,7 +6,16 @@ import { renderCanvas } from "@/components/ui/canvas";
 
 function Hero() {
   const [titleNumber, setTitleNumber] = useState(0);
-  const titles = ["sell", "design", "write", "support", "automate"];
+  const titles = [
+    "automate workflows",
+    "write content", 
+    "analyze data",
+    "handle support",
+    "manage projects",
+    "generate leads",
+    "process documents",
+    "schedule meetings"
+  ];
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -20,7 +28,6 @@ function Hero() {
     return () => clearTimeout(timeoutId);
   }, [titleNumber, titles.length]);
 
-  // Initialize canvas effect
   useEffect(() => {
     renderCanvas();
   }, []);
