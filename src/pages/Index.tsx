@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import HowItWorks from '@/components/HowItWorks';
@@ -72,8 +71,15 @@ const Index = () => {
         </div>
       </section>
       
+      {/* Pricing Section - Moved here */}
+      <section id="pricing" className="section-padding bg-gray-50">
+        <div className="container-custom">
+          <PricingBasic />
+        </div>
+      </section>
+
       {/* Partner Companies Section */}
-      <section className="py-10 bg-gray-50 border-y border-gray-100">
+      <section className="py-10 bg-white border-y border-gray-100">
         <div className="container-custom">
           <PartnerCompaniesDemo />
         </div>
@@ -114,15 +120,8 @@ const Index = () => {
         </div>
       </section>
       
-      {/* Pricing Section */}
-      <section id="pricing" className="section-padding bg-white">
-        <div className="container-custom">
-          <PricingBasic />
-        </div>
-      </section>
-      
       {/* FAQ Section */}
-      <section id="faq" className="section-padding gradient-bg">
+      <section id="faq" className="section-padding bg-white">
         <div className="container-custom">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">Frequently Asked Questions</h2>
