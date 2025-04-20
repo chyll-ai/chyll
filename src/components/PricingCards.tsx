@@ -9,41 +9,48 @@ const pricingPlans = [
     name: "Starter",
     price: "99€",
     period: "/month",
-    description: "Designed for solo founders and small teams who want to automate the basics without friction.",
+    description: "Perfect for solo founders who want to automate a specific business task.",
     features: [
-      "Reviews AI: Reputation on Auto-Pilot",
-      "Content AI: Cure to Blank Pages",
-      "Funnel AI: High-Converting Pages"
+      "1 AI Employee (of your choice)",
+      "Up to 50 automated actions per month",
+      "Dedicated interface",
+      "Standard support (48h response time)",
+      "Knowledge base access"
     ],
     highlight: false,
     color: "blue",
     trial: "14-day free trial"
   },
   {
-    name: "Pro",
+    name: "Growth",
     price: "199€",
     period: "/month",
-    description: "Built for growing businesses ready to scale customer interactions and marketing efforts with smart automation.",
+    description: "For startups and growing teams ready to scale with automation.",
     features: [
-      "Everything in Starter",
-      "Workflow AI: Your Automation Weapon",
-      "Conversation AI: Natural Live Chat"
+      "Up to 3 active AI Employees",
+      "Up to 200 automated actions per month",
+      "Custom interfaces for each use case",
+      "Priority support (24h)",
+      "Usage dashboard",
+      "Monthly performance review"
     ],
     highlight: true,
     color: "yellow",
     trial: "14-day free trial"
   },
   {
-    name: "Expert",
+    name: "Scale",
     price: "699€",
     period: "/month",
-    description: "For high-volume teams needing full AI integration, advanced workflows, and always-on voice communication.",
+    description: "For businesses ready to fully integrate AI into their operations.",
     features: [
-      "Everything in Pro",
-      "Voice AI: Never Miss a Call",
-      "Custom AI Setup & Strategy",
-      "White-Glove Onboarding + Priority Support",
-      "Monthly Strategy Calls + Performance Reviews"
+      "Full access to the AI Employee suite",
+      "Up to 1,000 automated actions per month",
+      "Integration with your internal tools",
+      "Dedicated support team",
+      "Personalized onboarding",
+      "Secure multi-user access",
+      "Monthly strategy calls"
     ],
     highlight: false,
     color: "red",
