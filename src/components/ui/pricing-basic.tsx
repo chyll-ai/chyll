@@ -1,4 +1,3 @@
-
 "use client";
 
 import { Pricing } from "@/components/ui/pricing";
@@ -8,7 +7,7 @@ const demoPlans = [
     name: "ONCE",
     price: "99",
     yearlyPrice: "99", // One-time payment remains the same
-    period: "BY RUN", // Changed from "to run" to "BY RUN"
+    period: "by run", // Changed to lowercase
     features: [
       "We build and deliver 1 automation for your use case",
       "Delivered with a simple interface (Airtable or Notion)",
@@ -81,4 +80,3 @@ function PricingBasic() {
 }
 
 export { PricingBasic };
-
