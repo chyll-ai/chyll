@@ -7,6 +7,7 @@ const demoPlans = [
   {
     name: "ONCE",
     price: "99",
+    yearlyPrice: "99", // Added yearlyPrice property (same as price for one-time payment)
     period: "one-time",
     features: [
       "We build and deliver 1 automation for your use case",
@@ -22,6 +23,7 @@ const demoPlans = [
   {
     name: "AUTOMATE",
     price: "199",
+    yearlyPrice: "159", // Added yearlyPrice property with 20% discount
     period: "per month",
     features: [
       "Access a custom interface connected to your AI workflows",
@@ -38,6 +40,7 @@ const demoPlans = [
   {
     name: "INTEGRATE",
     price: "699",
+    yearlyPrice: "559", // Added yearlyPrice property with 20% discount
     period: "per month",
     features: [
       "Custom-built workflows across departments",
