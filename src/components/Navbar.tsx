@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Menu, X, Home } from 'lucide-react';
@@ -58,7 +57,7 @@ const Navbar = ({ currentPath = '/' }: NavbarProps) => {
           
           <div className="flex items-center space-x-4">
             <Button variant="rainbow" asChild>
-              <a href="https://api.leadconnectorhq.com/widget/booking/XvUg6399vyVtvCXETgsY" target="_blank" rel="noopener noreferrer">
+              <a href="https://cal.com/generativschool/30min?overlayCalendar=true" target="_blank" rel="noopener noreferrer">
                 Book a Demo
               </a>
             </Button>
@@ -119,7 +118,7 @@ const Navbar = ({ currentPath = '/' }: NavbarProps) => {
               onClick={() => setIsMenuOpen(false)}
               asChild
             >
-              <a href="https://api.leadconnectorhq.com/widget/booking/XvUg6399vyVtvCXETgsY" target="_blank" rel="noopener noreferrer">
+              <a href="https://cal.com/generativschool/30min?overlayCalendar=true" target="_blank" rel="noopener noreferrer">
                 Book a Demo
               </a>
             </Button>
@@ -131,4 +130,3 @@ const Navbar = ({ currentPath = '/' }: NavbarProps) => {
 };
 
 export default Navbar;
-

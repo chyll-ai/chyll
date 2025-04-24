@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,8 +18,8 @@ const DemoForm = () => {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Redirect to booking page instead of showing toast
-    window.location.href = "https://api.leadconnectorhq.com/widget/booking/XvUg6399vyVtvCXETgsY";
+    // Redirect to new booking page
+    window.location.href = "https://cal.com/generativschool/30min?overlayCalendar=true";
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

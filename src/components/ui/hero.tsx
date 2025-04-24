@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useState } from "react";
@@ -113,7 +112,7 @@ export function Hero() {
           <div className="flex flex-row justify-center gap-3">
             <Button variant="outline" size="lg" className="gap-4" asChild>
               <a 
-                href="https://api.leadconnectorhq.com/widget/booking/XvUg6399vyVtvCXETgsY" 
+                href="https://cal.com/generativschool/30min?overlayCalendar=true" 
                 target="_blank" 
                 rel="noopener noreferrer"
               >
@@ -122,7 +121,7 @@ export function Hero() {
             </Button>
             <Button variant="rainbow" size="lg" className="gap-4" asChild>
               <a 
-                href="https://api.leadconnectorhq.com/widget/booking/XvUg6399vyVtvCXETgsY" 
+                href="https://cal.com/generativschool/30min?overlayCalendar=true" 
                 target="_blank" 
                 rel="noopener noreferrer"
               >

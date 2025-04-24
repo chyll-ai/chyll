@@ -120,7 +120,7 @@ const PricingCards = () => {
               }`}
               asChild
             >
-              <a href="https://api.leadconnectorhq.com/widget/booking/XvUg6399vyVtvCXETgsY" target="_blank" rel="noopener noreferrer">
+              <a href="https://cal.com/generativschool/30min?overlayCalendar=true" target="_blank" rel="noopener noreferrer">
                 Book a Demo
               </a>
             </Button>

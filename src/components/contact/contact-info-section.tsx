@@ -59,7 +59,7 @@ export const ContactInfoSection = () => {
           See our AI employees in action. Schedule a personalized demo with our team.
         </p>
         <a 
-          href="https://api.leadconnectorhq.com/widget/booking/XvUg6399vyVtvCXETgsY" 
+          href="https://cal.com/generativschool/30min?overlayCalendar=true" 
           target="_blank" 
           rel="noopener noreferrer"
           className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 transition-colors"
