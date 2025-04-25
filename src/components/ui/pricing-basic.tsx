@@ -17,7 +17,7 @@ const demoPlans = [
     ],
     description: "One task, fully done-for-you.",
     buttonText: "Start with One Task",
-    href: "https://api.leadconnectorhq.com/widget/booking/XvUg6399vyVtvCXETgsY",
+    href: "https://cal.com/generativschool/30min?overlayCalendar=true",
     isPopular: false,
   },
   {
@@ -37,7 +37,7 @@ const demoPlans = [
     ],
     description: "An AI assistant you can control.",
     buttonText: "Book a Demo",
-    href: "https://api.leadconnectorhq.com/widget/booking/XvUg6399vyVtvCXETgsY",
+    href: "https://cal.com/generativschool/30min?overlayCalendar=true",
     isPopular: true,
   },
   {
@@ -63,7 +63,7 @@ const demoPlans = [
     ],
     description: "Your Dedicated Automation Layer – Tailored for Growth, Reliability, and Scale",
     buttonText: "Talk to Our Team",
-    href: "https://api.leadconnectorhq.com/widget/booking/XvUg6399vyVtvCXETgsY",
+    href: "https://cal.com/generativschool/30min?overlayCalendar=true",
     isPopular: false,
   }
 ];
@@ -81,4 +81,3 @@ function PricingBasic() {
 }
 
 export { PricingBasic };
-
