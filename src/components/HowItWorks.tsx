@@ -5,14 +5,14 @@ import { Bot, Zap, TrendingUp } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 
 const HowItWorks = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   
   const stepsCards = [
     {
       icon: <Zap className="size-4 text-indigo-300" />,
       title: t.home.howItWorks.steps[0],
       description: "",
-      date: t.language === 'fr' ? "Étape 1" : "Step 1",
+      date: language === 'fr' ? "Étape 1" : "Step 1",
       iconClassName: "text-indigo-500",
       titleClassName: "text-indigo-500",
       className:
@@ -22,7 +22,7 @@ const HowItWorks = () => {
       icon: <Bot className="size-4 text-blue-300" />,
       title: t.home.howItWorks.steps[1],
       description: "",
-      date: t.language === 'fr' ? "Étape 2" : "Step 2",
+      date: language === 'fr' ? "Étape 2" : "Step 2",
       iconClassName: "text-blue-500",
       titleClassName: "text-blue-500",
       className:
@@ -32,7 +32,7 @@ const HowItWorks = () => {
       icon: <TrendingUp className="size-4 text-green-300" />,
       title: t.home.howItWorks.steps[2],
       description: "",
-      date: t.language === 'fr' ? "Étape 3" : "Step 3",
+      date: language === 'fr' ? "Étape 3" : "Step 3",
       iconClassName: "text-green-500",
       titleClassName: "text-green-500",
       className:

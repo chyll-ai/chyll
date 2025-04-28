@@ -10,7 +10,7 @@ import { useLanguage } from '@/context/LanguageContext';
 
 const FAQ = () => {
   const location = useLocation();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   
   return (
     <div className="min-h-screen flex flex-col">
@@ -31,23 +31,23 @@ const FAQ = () => {
         <div className="container-custom">
           <div className="max-w-4xl mx-auto">
             <h2 className="text-2xl font-bold mb-8 text-center">
-              {t.language === 'fr' ? "Questions générales" : "General Questions"}
+              {language === 'fr' ? "Questions générales" : "General Questions"}
             </h2>
             <FAQSection />
             
             <div className="mt-16">
               <h2 className="text-2xl font-bold mb-8 text-center">
-                {t.language === 'fr' ? "Questions sur les employés IA" : "AI Employee Questions"}
+                {language === 'fr' ? "Questions sur les employés IA" : "AI Employee Questions"}
               </h2>
               <DefaultDemo />
             </div>
             
             <div className="mt-16 bg-gray-50 p-8 rounded-lg">
               <h3 className="text-xl font-bold mb-4">
-                {t.language === 'fr' ? "Vous avez encore des questions ?" : "Still have questions?"}
+                {language === 'fr' ? "Vous avez encore des questions ?" : "Still have questions?"}
               </h3>
               <p className="text-gray-600 mb-6">
-                {t.language === 'fr' 
+                {language === 'fr' 
                   ? "Notre équipe de support est là pour vous aider. Contactez-nous pour une assistance personnalisée concernant vos questions spécifiques." 
                   : "Our support team is here to help. Contact us for personalized assistance with your specific questions."}
               </p>
