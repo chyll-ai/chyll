@@ -17,7 +17,7 @@ const LanguageSwitcher = ({ variant = 'default' }: LanguageSwitcherProps) => {
         variant="ghost" 
         size="icon" 
         onClick={toggleLanguage} 
-        className="rounded-full p-2 hover:text-[#9b87f5] transition-colors"
+        className="rounded-full p-2"
         title={language === 'en' ? 'Switch to French' : 'Passer à l\'anglais'}
       >
         <Globe size={18} />
@@ -29,7 +29,7 @@ const LanguageSwitcher = ({ variant = 'default' }: LanguageSwitcherProps) => {
     return (
       <button 
         onClick={toggleLanguage}
-        className="flex items-center text-sm text-gray-600 hover:text-[#9b87f5] transition-colors"
+        className="flex items-center text-sm text-[#8E9196]"
       >
         <Globe size={16} className="mr-1" />
         <span>{language === 'en' ? 'FR' : 'EN'}</span>
@@ -42,7 +42,7 @@ const LanguageSwitcher = ({ variant = 'default' }: LanguageSwitcherProps) => {
       onClick={toggleLanguage}
       variant="outline" 
       size="sm" 
-      className="flex items-center gap-2 hover:text-[#9b87f5] hover:bg-transparent transition-colors"
+      className="flex items-center gap-2 text-[#8E9196]"
     >
       <Globe size={16} />
       {language === 'en' ? 'Français' : 'English'}
