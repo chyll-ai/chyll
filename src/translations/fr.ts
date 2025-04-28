@@ -77,6 +77,10 @@ export const fr = {
       description: "Votre employé IA ne dort jamais, assurant un service continu pour vos clients dans tous les fuseaux horaires.",
       items: [
         {
+          title: "Disponibilité 24/7",
+          description: "Votre employé IA ne dort jamais, assurant un service continu pour vos clients dans tous les fuseaux horaires."
+        },
+        {
           title: "Efficacité des coûts",
           description: "Réduisez les coûts opérationnels tout en augmentant la productivité. Pas d'avantages sociaux, de pauses ou d'heures supplémentaires à payer."
         },

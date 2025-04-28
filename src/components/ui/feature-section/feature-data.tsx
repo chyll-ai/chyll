@@ -1,3 +1,4 @@
+
 import { 
   Zap,
   Clock,
@@ -72,16 +73,16 @@ export const useFeatureItems = (): FeatureItem[] => {
     },
   ];
 
-  // If we have French translations, return those instead
+  // If we have French translations, make sure to use all the items from the benefits section
   if (hasFrenchFeatures && Array.isArray(t.home?.benefits?.items)) {
-    // Map icons to the translated content
+    // Map icons in the same order as the English version
     const icons = [Clock, TrendingUp, Headphones, ArrowUpRight, Users, ShieldCheck, Bot, Zap];
     
+    // Make sure we have exactly 8 items by using all items from the French translation
     return t.home?.benefits?.items.map((item, index) => ({
       title: item.title,
       description: item.description,
-      // Use the corresponding icon or default to first icon if we run out
-      icon: <React.Fragment>{icons[index % icons.length] && React.createElement(icons[index % icons.length], { className: "w-6 h-6" })}</React.Fragment>
+      icon: <React.Fragment>{React.createElement(icons[index], { className: "w-6 h-6" })}</React.Fragment>
     }));
   }
   
