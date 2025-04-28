@@ -4,10 +4,12 @@ import { motion } from "framer-motion";
 import { MoveRight, PhoneCall } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { renderCanvas } from "@/components/ui/canvas";
+import { useLanguage } from "@/context/LanguageContext";
 
 function Hero() {
+  const { language, t } = useLanguage();
   const [titleNumber, setTitleNumber] = useState(0);
-  const titles = [
+  const titles = t.home.hero.actions || [
     "automate workflows",
     "write content", 
     "analyze data",
@@ -39,7 +41,7 @@ function Hero() {
         <div className="flex gap-8 py-20 lg:py-40 items-center justify-center flex-col">
           <div className="flex gap-4 flex-col">
             <h1 className="text-5xl md:text-7xl max-w-2xl tracking-tighter text-center font-regular">
-              <span className="text-brand-blue">Hire AI employees that</span>
+              <span className="text-brand-blue">{t.home.hero.title}</span>
               <span className="relative flex w-full justify-center overflow-hidden text-center md:pb-4 md:pt-1">
                 &nbsp;
                 {titles.map((title, index) => (
@@ -67,20 +69,18 @@ function Hero() {
             </h1>
 
             <p className="text-lg md:text-xl leading-relaxed tracking-tight text-muted-foreground max-w-2xl text-center">
-              Transform your business with AI employees that never sleep, never take vacations, 
-              and consistently deliver exceptional results. Streamline operations, 
-              reduce costs, and scale your business like never before.
+              {t.home.hero.description}
             </p>
           </div>
           <div className="flex flex-row gap-3">
             <Button size="lg" className="gap-4" variant="outline" asChild>
               <a href="https://cal.com/generativschool/30min?overlayCalendar=true" target="_blank" rel="noopener noreferrer">
-                Book a demo <PhoneCall className="w-4 h-4" />
+                {t.common.bookDemo} <PhoneCall className="w-4 h-4" />
               </a>
             </Button>
             <Button size="lg" className="gap-4" variant="rainbow" asChild>
               <a href="https://cal.com/generativschool/30min?overlayCalendar=true" target="_blank" rel="noopener noreferrer">
-                Hire AI now <MoveRight className="w-4 h-4" />
+                {t.home.hero.buttons.hireNow} <MoveRight className="w-4 h-4" />
               </a>
             </Button>
           </div>
