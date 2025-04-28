@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 interface MenuItem {
@@ -46,7 +45,6 @@ const Footer2 = ({
         { text: "Blog", url: "#" },
         { text: "FAQ", url: "#faq" },
         { text: "Support", url: "#" },
-        { text: "Documentation", url: "#" },
       ],
     },
     {
