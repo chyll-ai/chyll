@@ -36,11 +36,11 @@ export function TestimonialsWithMarqueeDemo() {
   ];
 
   // Check if French testimonials are available
-  const hasFrenchTestimonials = language === 'fr' && t.home && 'testimonials' in t.home && t.home.testimonials && 'quotes' in t.home.testimonials;
+  const hasFrenchTestimonials = language === 'fr' && t.home?.testimonials?.quotes !== undefined;
   
   // Use testimonials from translations if available
   const testimonials = hasFrenchTestimonials
-    ? t.home.testimonials.quotes.map(quote => ({
+    ? t.home?.testimonials?.quotes?.map(quote => ({
         author: {
           name: quote.author,
           handle: quote.handle,
@@ -56,14 +56,14 @@ export function TestimonialsWithMarqueeDemo() {
   const defaultDescription = "Join thousands of business owners who are scaling their operations with our tireless AI team members";
   
   // Check if French titles are available
-  const hasFrenchTitles = language === 'fr' && t.home && 'testimonials' in t.home && t.home.testimonials && 'title' in t.home.testimonials;
-  const hasFrenchSubtitle = language === 'fr' && t.home && 'testimonials' in t.home && t.home.testimonials && 'subtitle' in t.home.testimonials;
+  const hasFrenchTitles = language === 'fr' && t.home?.testimonials?.title !== undefined;
+  const hasFrenchSubtitle = language === 'fr' && t.home?.testimonials?.subtitle !== undefined;
   
   return (
     <TestimonialsSection
-      title={hasFrenchTitles ? t.home.testimonials.title : defaultTitle}
-      description={hasFrenchSubtitle ? t.home.testimonials.subtitle : defaultDescription}
-      testimonials={testimonials}
+      title={hasFrenchTitles ? t.home?.testimonials?.title || "" : defaultTitle}
+      description={hasFrenchSubtitle ? t.home?.testimonials?.subtitle || "" : defaultDescription}
+      testimonials={testimonials || []}
     />
   );
 }

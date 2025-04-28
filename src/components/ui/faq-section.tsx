@@ -42,11 +42,11 @@ export function FAQSection() {
   ];
   
   // Check if French FAQ translations are available
-  const hasFrenchFaq = language === 'fr' && t.faq && 'general' in t.faq && t.faq.general && 'items' in t.faq.general;
+  const hasFrenchFaq = language === 'fr' && t.faq?.general?.items !== undefined;
   
   // Use the translations from the language context if available, otherwise use defaults
   const faqItems = hasFrenchFaq
-    ? t.faq.general.items 
+    ? t.faq?.general?.items 
     : defaultFaqItems;
   
   return (

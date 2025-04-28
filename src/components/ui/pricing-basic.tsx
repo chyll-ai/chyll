@@ -74,42 +74,40 @@ function PricingBasic() {
   ];
 
   // Check if French pricing translations are available
-  const hasFrenchPricing = language === 'fr' && t.pricing && 'plans' in t.pricing;
-  const hasFrenchOncePlan = hasFrenchPricing && 'once' in t.pricing.plans && 'features' in t.pricing.plans.once && 'buttonText' in t.pricing.plans.once;
-  const hasFrenchAutomatePlan = hasFrenchPricing && 'automate' in t.pricing.plans && 'features' in t.pricing.plans.automate && 'buttonText' in t.pricing.plans.automate;
-  const hasFrenchIntegratePlan = hasFrenchPricing && 'integrate' in t.pricing.plans && 'features' in t.pricing.plans.integrate && 'buttonText' in t.pricing.plans.integrate;
-
-  const demoPlans = (hasFrenchOncePlan && hasFrenchAutomatePlan && hasFrenchIntegratePlan) ? [
+  const hasFrenchPricing = language === 'fr' && t.pricing?.plans !== undefined;
+  
+  // Create complete plan objects with appropriate fallbacks
+  const demoPlans = hasFrenchPricing ? [
     {
-      name: t.pricing.plans.once.name,
-      price: t.pricing.plans.once.price,
-      yearlyPrice: t.pricing.plans.once.price,
-      period: t.pricing.plans.once.period,
-      features: t.pricing.plans.once.features,
-      description: t.pricing.plans.once.description,
-      buttonText: t.pricing.plans.once.buttonText,
+      name: t.pricing?.plans.once.name || defaultPlans[0].name,
+      price: t.pricing?.plans.once.price || defaultPlans[0].price,
+      yearlyPrice: t.pricing?.plans.once.price || defaultPlans[0].yearlyPrice,
+      period: t.pricing?.plans.once.period || defaultPlans[0].period,
+      features: t.pricing?.plans.once.features || defaultPlans[0].features,
+      description: t.pricing?.plans.once.description || defaultPlans[0].description,
+      buttonText: t.pricing?.plans.once.buttonText || defaultPlans[0].buttonText,
       href: "https://cal.com/generativschool/30min?overlayCalendar=true",
       isPopular: false,
     },
     {
-      name: t.pricing.plans.automate.name,
-      price: t.pricing.plans.automate.price,
+      name: t.pricing?.plans.automate.name || defaultPlans[1].name,
+      price: t.pricing?.plans.automate.price || defaultPlans[1].price,
       yearlyPrice: "159€",
-      period: t.pricing.plans.automate.period,
-      features: t.pricing.plans.automate.features,
-      description: t.pricing.plans.automate.description,
-      buttonText: t.pricing.plans.automate.buttonText,
+      period: t.pricing?.plans.automate.period || defaultPlans[1].period,
+      features: t.pricing?.plans.automate.features || defaultPlans[1].features,
+      description: t.pricing?.plans.automate.description || defaultPlans[1].description,
+      buttonText: t.pricing?.plans.automate.buttonText || defaultPlans[1].buttonText,
       href: "https://cal.com/generativschool/30min?overlayCalendar=true",
       isPopular: true,
     },
     {
-      name: t.pricing.plans.integrate.name,
-      price: t.pricing.plans.integrate.price,
+      name: t.pricing?.plans.integrate.name || defaultPlans[2].name,
+      price: t.pricing?.plans.integrate.price || defaultPlans[2].price,
       yearlyPrice: "559€",
-      period: t.pricing.plans.integrate.period,
-      features: t.pricing.plans.integrate.features,
-      description: t.pricing.plans.integrate.description,
-      buttonText: t.pricing.plans.integrate.buttonText,
+      period: t.pricing?.plans.integrate.period || defaultPlans[2].period,
+      features: t.pricing?.plans.integrate.features || defaultPlans[2].features,
+      description: t.pricing?.plans.integrate.description || defaultPlans[2].description,
+      buttonText: t.pricing?.plans.integrate.buttonText || defaultPlans[2].buttonText,
       href: "https://cal.com/generativschool/30min?overlayCalendar=true",
       isPopular: false,
     }
@@ -120,15 +118,15 @@ function PricingBasic() {
   const defaultDescription = "Try risk-free with our 14-day trial";
   
   // Check if French pricing title/description are available
-  const hasFrenchTitle = language === 'fr' && t.pricing && 'title' in t.pricing;
-  const hasFrenchDescription = language === 'fr' && t.pricing && 'description' in t.pricing;
+  const hasFrenchTitle = language === 'fr' && t.pricing?.title !== undefined;
+  const hasFrenchDescription = language === 'fr' && t.pricing?.description !== undefined;
   
   return (
     <div className="overflow-y-auto">
       <Pricing 
         plans={demoPlans}
-        title={hasFrenchTitle ? t.pricing.title : defaultTitle}
-        description={hasFrenchDescription ? t.pricing.description : defaultDescription}
+        title={hasFrenchTitle ? t.pricing?.title || defaultTitle : defaultTitle}
+        description={hasFrenchDescription ? t.pricing?.description || defaultDescription : defaultDescription}
       />
     </div>
   );

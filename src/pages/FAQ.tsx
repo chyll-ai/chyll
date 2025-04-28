@@ -20,11 +20,11 @@ const FAQ = () => {
     stillHaveQuestionsDescription: "Our support team is here to help. Contact us for personalized assistance with your specific questions."
   };
   
-  // Check if French FAQ translations are available
-  const hasFrenchFaqGeneral = language === 'fr' && t.faq && 'general' in t.faq && t.faq.general && 'title' in t.faq.general;
-  const hasFrenchFaqAiEmployees = language === 'fr' && t.faq && 'aiEmployees' in t.faq && t.faq.aiEmployees && 'title' in t.faq.aiEmployees;
-  const hasFrenchFaqStillQuestions = language === 'fr' && t.faq && 'stillHaveQuestions' in t.faq && t.faq.stillHaveQuestions && 'title' in t.faq.stillHaveQuestions;
-  const hasFrenchFaqStillQuestionsDesc = language === 'fr' && t.faq && 'stillHaveQuestions' in t.faq && t.faq.stillHaveQuestions && 'description' in t.faq.stillHaveQuestions;
+  // Check if French FAQ translations are available with safe optional chaining
+  const hasFrenchFaqGeneral = language === 'fr' && t.faq?.general?.title !== undefined;
+  const hasFrenchFaqAiEmployees = language === 'fr' && t.faq?.aiEmployees?.title !== undefined;
+  const hasFrenchFaqStillQuestions = language === 'fr' && t.faq?.stillHaveQuestions?.title !== undefined;
+  const hasFrenchFaqStillQuestionsDesc = language === 'fr' && t.faq?.stillHaveQuestions?.description !== undefined;
   
   return (
     <div className="min-h-screen flex flex-col">
@@ -45,24 +45,24 @@ const FAQ = () => {
         <div className="container-custom">
           <div className="max-w-4xl mx-auto">
             <h2 className="text-2xl font-bold mb-8 text-center">
-              {hasFrenchFaqGeneral ? t.faq.general.title : defaultTexts.generalTitle}
+              {hasFrenchFaqGeneral ? t.faq?.general?.title : defaultTexts.generalTitle}
             </h2>
             <FAQSection />
             
             <div className="mt-16">
               <h2 className="text-2xl font-bold mb-8 text-center">
-                {hasFrenchFaqAiEmployees ? t.faq.aiEmployees.title : defaultTexts.aiEmployeesTitle}
+                {hasFrenchFaqAiEmployees ? t.faq?.aiEmployees?.title : defaultTexts.aiEmployeesTitle}
               </h2>
               <DefaultDemo />
             </div>
             
             <div className="mt-16 bg-gray-50 p-8 rounded-lg">
               <h3 className="text-xl font-bold mb-4">
-                {hasFrenchFaqStillQuestions ? t.faq.stillHaveQuestions.title : defaultTexts.stillHaveQuestionsTitle}
+                {hasFrenchFaqStillQuestions ? t.faq?.stillHaveQuestions?.title : defaultTexts.stillHaveQuestionsTitle}
               </h3>
               <p className="text-gray-600 mb-6">
                 {hasFrenchFaqStillQuestionsDesc 
-                  ? t.faq.stillHaveQuestions.description 
+                  ? t.faq?.stillHaveQuestions?.description 
                   : defaultTexts.stillHaveQuestionsDescription}
               </p>
               <div className="flex flex-wrap gap-4">
