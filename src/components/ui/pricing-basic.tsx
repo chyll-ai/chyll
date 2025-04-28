@@ -80,8 +80,8 @@ function PricingBasic() {
   const demoPlans = hasFrenchPricing ? [
     {
       name: t.pricing?.plans.once.name || defaultPlans[0].name,
-      price: t.pricing?.plans.once.price || defaultPlans[0].price,
-      yearlyPrice: t.pricing?.plans.once.price || defaultPlans[0].yearlyPrice,
+      price: "99€", // Hardcoded to ensure proper display
+      yearlyPrice: "99€", // Hardcoded to ensure proper display
       period: t.pricing?.plans.once.period || defaultPlans[0].period,
       features: t.pricing?.plans.once.features || defaultPlans[0].features,
       description: t.pricing?.plans.once.description || defaultPlans[0].description,
@@ -91,7 +91,7 @@ function PricingBasic() {
     },
     {
       name: t.pricing?.plans.automate.name || defaultPlans[1].name,
-      price: t.pricing?.plans.automate.price || defaultPlans[1].price,
+      price: "199€", // Hardcoded to ensure proper display
       yearlyPrice: "159€",
       period: t.pricing?.plans.automate.period || defaultPlans[1].period,
       features: t.pricing?.plans.automate.features || defaultPlans[1].features,
@@ -102,7 +102,7 @@ function PricingBasic() {
     },
     {
       name: t.pricing?.plans.integrate.name || defaultPlans[2].name,
-      price: t.pricing?.plans.integrate.price || defaultPlans[2].price,
+      price: "699€", // Hardcoded to ensure proper display
       yearlyPrice: "559€",
       period: t.pricing?.plans.integrate.period || defaultPlans[2].period,
       features: t.pricing?.plans.integrate.features || defaultPlans[2].features,

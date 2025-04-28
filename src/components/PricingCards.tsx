@@ -3,6 +3,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Check } from 'lucide-react';
 import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card';
+import { useLanguage } from '@/context/LanguageContext';
 
 const pricingPlans = [
   {
@@ -54,6 +55,65 @@ const pricingPlans = [
   }
 ];
 
+// French pricing plans
+const frPricingPlans = [
+  {
+    name: "Une fois",
+    price: "99€",
+    period: "unique",
+    description: "Une tâche, entièrement réalisée pour vous.",
+    features: [
+      "Nous construisons et livrons 1 automatisation pour votre cas d'utilisation",
+      "Livré avec une interface simple (Airtable ou Notion)",
+      "Comprend la configuration, le paramétrage et le test",
+      "Parfait pour une preuve de concept ou un besoin spécifique"
+    ],
+    highlight: false,
+    color: "blue",
+    trial: null
+  },
+  {
+    name: "Automatiser",
+    price: "199€",
+    period: "/mois",
+    description: "Un assistant IA que vous pouvez contrôler.",
+    features: [
+      "Interface IA personnalisée",
+      "Obtenez un tableau de bord sur mesure où vous pouvez interagir avec votre agent et suivre ses performances",
+      "200 actions mensuelles alimentées par l'IA",
+      "Votre agent peut automatiser des tâches comme la prospection, le suivi, la planification, la création de contenu, les mises à jour CRM, les alertes, et plus — selon son rôle",
+      "Configuration clé en main : Aucune compétence technique requise",
+      "Nous construisons, connectons et lançons votre employé IA pour vous",
+      "Support continu et améliorations",
+      "Nous fournissons des mises à jour continues, une surveillance et un support pratique pour garder votre agent performant et aligné avec vos objectifs commerciaux"
+    ],
+    highlight: true,
+    color: "yellow",
+    trial: "Essai gratuit de 14 jours"
+  },
+  {
+    name: "Intégrer",
+    price: "699€",
+    period: "/mois",
+    description: "Configuration IA complète à travers vos opérations.",
+    features: [
+      "Flux de travail personnalisés",
+      "Nous concevons et déployons des flux de travail intelligents adaptés à vos besoins commerciaux uniques, à vos processus et à la structure de votre équipe",
+      "S'intègre à votre pile technologique existante",
+      "Vos agents IA se connectent facilement à votre CRM, ATS, service d'assistance, outils de gestion de projet et systèmes internes — sans perturbation",
+      "1 000 actions d'automatisation mensuelles",
+      "Développez vos opérations avec une exécution de tâches à haut volume dans tous les départements — ventes, support, RH, marketing, et au-delà",
+      "Intégration personnalisée haut de gamme",
+      "Sessions de configuration dédiées pour cartographier vos flux de travail, installer vos employés IA et assurer une transition en douceur avec votre équipe",
+      "Support prioritaire et accès stratégique",
+      "Vous obtenez une ligne directe vers nos experts en automatisation pour le dépannage, l'optimisation des performances et les révisions stratégiques trimestrielles"
+    ],
+    highlight: false,
+    color: "red",
+    trial: "Essai gratuit de 14 jours"
+  }
+];
+
 const getPlanIcon = (color: string) => {
   switch (color) {
     case "blue":
@@ -68,9 +128,12 @@ const getPlanIcon = (color: string) => {
 };
 
 const PricingCards = () => {
+  const { language } = useLanguage();
+  const plans = language === 'fr' ? frPricingPlans : pricingPlans;
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-      {pricingPlans.map((plan, index) => (
+      {plans.map((plan, index) => (
         <Card 
           key={index} 
           className={`pricing-card flex flex-col h-full border-2 ${
