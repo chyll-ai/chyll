@@ -49,7 +49,70 @@ export const en = {
     },
     faq: {
       title: "Frequently Asked Questions",
-      subtitle: "Everything you need to know about GenerativSchool and how it can transform your business."
+      subtitle: "Everything you need to know about GenerativSchool and how it can transform your business.",
+      general: {
+        title: "General Questions",
+        items: [
+          {
+            question: "What are AI Employees and how can they help my business?",
+            answer: "AI Employees are artificial intelligence assistants that can automate repetitive tasks, handle customer communications, analyze data, and more. They help you save time and resources while improving operational efficiency."
+          },
+          {
+            question: "Do I need technical skills to use AI Employees?",
+            answer: "No technical skills are required. Our platform is designed to be user-friendly with an intuitive interface. Our onboarding team will guide you through the setup process."
+          },
+          {
+            question: "How quickly can I implement an AI Employee?",
+            answer: "Implementing an AI Employee typically only takes a few days. We handle the setup and integration for you, ensuring a fast and hassle-free deployment."
+          },
+          {
+            question: "Can AI Employees integrate with my existing tools and systems?",
+            answer: "Yes, our AI Employees seamlessly integrate with most popular business tools, including CRMs, marketing platforms, ticketing systems, and other business software."
+          },
+          {
+            question: "What kind of support do you provide for AI Employees?",
+            answer: "We offer comprehensive support, including onboarding, training, ongoing technical assistance, and regular optimizations to ensure your AI Employee is operating at peak performance."
+          },
+          {
+            question: "How secure are AI Employees with my business data?",
+            answer: "Absolutely secure. We take security very seriously with enterprise-grade encryption, regular security audits, and strict compliance with data protection regulations."
+          }
+        ]
+      },
+      aiEmployees: {
+        title: "AI Employee Questions",
+        items: [
+          {
+            question: "What are AI Employees and how can they help my business?",
+            answer: "Our AI Employees are advanced, specialized digital workers designed to handle specific business tasks 24/7. Each AI Employee is trained to perform unique roles like customer service, content creation, sales support, and more - transforming how businesses operate by providing constant, high-quality support."
+          },
+          {
+            question: "Do I need technical skills to use AI Employees?",
+            answer: "Absolutely not! Our AI Employees are designed to be user-friendly and intuitive. They seamlessly integrate into your existing workflows, requiring minimal technical expertise. Our team provides comprehensive onboarding and support to help you maximize their potential."
+          },
+          {
+            question: "How quickly can I implement an AI Employee?",
+            answer: "Most businesses can onboard their first AI Employee within days. We provide a white-glove implementation process, working closely with you to understand your specific needs and customize the AI Employee's capabilities accordingly."
+          },
+          {
+            question: "Can AI Employees integrate with my existing tools and systems?",
+            answer: "Yes! Our AI Employees are built to integrate smoothly with popular business tools including CRMs, communication platforms, project management systems, and more. Custom integrations are also available to ensure a perfect fit for your business ecosystem."
+          },
+          {
+            question: "What kind of support do you provide for AI Employees?",
+            answer: "We offer comprehensive support across different plans. This includes initial setup, ongoing training, performance optimization, and dedicated support channels. Our goal is to ensure your AI Employees continuously improve and deliver maximum value."
+          },
+          {
+            question: "How secure are AI Employees with my business data?",
+            answer: "Data security is our top priority. Each AI Employee operates with enterprise-grade encryption, follows strict data protection protocols, and is designed with multiple layers of security. We provide transparency in data handling and can customize security measures to meet your specific compliance requirements."
+          }
+        ]
+      },
+      stillHaveQuestions: {
+        title: "Still have questions?",
+        description: "Our support team is here to help. Contact us for personalized assistance with your specific questions."
+      },
+      lastUpdated: "Last updated: April 2025"
     },
     partners: {
       title: "Join businesses accelerating growth with our AI solutions"

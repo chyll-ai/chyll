@@ -57,12 +57,17 @@ function DefaultDemo() {
         question: item.question,
       }))
     : defaultData;
+    
+  // Get the last updated text
+  const lastUpdated = language === 'fr' && t.faq?.lastUpdated 
+    ? t.faq.lastUpdated 
+    : "Last updated: April 2025";
 
   return (
     <FaqAccordion 
       data={frenchItems || defaultData}
       className="max-w-[700px]"
-      timestamp={language === 'fr' ? "Dernière mise à jour : Avril 2025" : "Last updated: April 2025"}
+      timestamp={lastUpdated}
     />
   );
 }

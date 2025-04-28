@@ -1,3 +1,4 @@
+
 import { en } from './en';
 import { fr } from './fr';
 
@@ -233,6 +234,7 @@ export interface TranslationKeys {
       title: string;
       description: string;
     };
+    lastUpdated?: string;
   };
   notFound: {
     title: string;

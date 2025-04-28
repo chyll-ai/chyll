@@ -341,12 +341,39 @@ export const fr = {
       ]
     },
     aiEmployees: {
-      title: "Questions sur les employés IA"
+      title: "Questions sur les employés IA",
+      items: [
+        {
+          question: "Que sont les employés IA et comment peuvent-ils aider mon entreprise ?",
+          answer: "Nos employés IA sont des travailleurs numériques spécialisés et avancés, conçus pour gérer des tâches commerciales spécifiques 24h/24 et 7j/7. Chaque employé IA est formé pour exercer des rôles uniques comme le service client, la création de contenu, le support commercial, et plus encore - transformant le fonctionnement des entreprises en fournissant un support constant et de haute qualité."
+        },
+        {
+          question: "Ai-je besoin de compétences techniques pour utiliser les employés IA ?",
+          answer: "Absolument pas ! Nos employés IA sont conçus pour être conviviaux et intuitifs. Ils s'intègrent parfaitement dans vos flux de travail existants, nécessitant un minimum d'expertise technique. Notre équipe fournit un accompagnement et un support complets pour vous aider à maximiser leur potentiel."
+        },
+        {
+          question: "Combien de temps faut-il pour mettre en œuvre un employé IA ?",
+          answer: "La plupart des entreprises peuvent intégrer leur premier employé IA en quelques jours. Nous fournissons un processus d'implémentation clé en main, travaillant en étroite collaboration avec vous pour comprendre vos besoins spécifiques et personnaliser les capacités de l'employé IA en conséquence."
+        },
+        {
+          question: "Les employés IA peuvent-ils s'intégrer à mes outils et systèmes existants ?",
+          answer: "Oui ! Nos employés IA sont conçus pour s'intégrer facilement aux outils commerciaux populaires, notamment les CRM, les plateformes de communication, les systèmes de gestion de projet et bien plus encore. Des intégrations personnalisées sont également disponibles pour assurer une parfaite adéquation avec votre écosystème d'entreprise."
+        },
+        {
+          question: "Quel type de support fournissez-vous pour les employés IA ?",
+          answer: "Nous offrons un support complet pour différents plans. Cela comprend la configuration initiale, la formation continue, l'optimisation des performances et des canaux de support dédiés. Notre objectif est de garantir que vos employés IA s'améliorent continuellement et offrent une valeur maximale."
+        },
+        {
+          question: "Les employés IA sont-ils sécurisés avec mes données d'entreprise ?",
+          answer: "La sécurité des données est notre priorité absolue. Chaque employé IA fonctionne avec un chiffrement de niveau entreprise, suit des protocoles de protection des données stricts et est conçu avec plusieurs couches de sécurité. Nous assurons la transparence dans la gestion des données et pouvons personnaliser les mesures de sécurité pour répondre à vos exigences de conformité spécifiques."
+        }
+      ]
     },
     stillHaveQuestions: {
       title: "Vous avez encore des questions ?",
       description: "Notre équipe de support est là pour vous aider. Contactez-nous pour une assistance personnalisée concernant vos questions spécifiques."
-    }
+    },
+    lastUpdated: "Dernière mise à jour : Avril 2025"
   },
   
   // Other pages
