@@ -305,8 +305,8 @@ export const fr = {
   
   // Blog
   blog: {
-    title: "Notre blog",
-    subtitle: "Idées, mises à jour et perspectives de l'équipe GenerativSchool sur l'IA, l'automatisation et l'innovation commerciale.",
+    title: "Notre Blog",
+    subtitle: "Découvrez nos articles, mises à jour et perspectives de l'équipe GenerativSchool sur l'IA, l'automatisation et l'innovation.",
     loadMore: "Charger plus d'articles",
     allLoaded: "Tous les articles sont chargés",
     endReached: "Vous avez atteint la fin de notre collection d'articles."
