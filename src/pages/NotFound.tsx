@@ -3,9 +3,11 @@ import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import { NotFoundPage } from "@/components/ui/404-page-not-found";
 import SEOMetadata from "@/components/SEOMetadata";
+import { useLanguage } from '@/context/LanguageContext';
 
 const NotFound = () => {
   const location = useLocation();
+  const { t } = useLanguage();
 
   useEffect(() => {
     console.error(
@@ -37,8 +39,8 @@ const NotFound = () => {
   return (
     <>
       <SEOMetadata
-        title="Page Not Found (404)"
-        description="We're sorry, but the page you are looking for does not exist or has been moved."
+        title={t.notFound.title}
+        description={t.notFound.message}
         canonicalUrl={location.pathname}
         structuredData={structuredData}
       />

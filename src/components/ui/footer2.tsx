@@ -73,6 +73,20 @@ const Footer2 = ({
   const displayTagline = tagline || t.footer.tagline;
   const displayCopyright = copyright || t.footer.copyright;
 
+  // Map bottom links to translations if not provided explicitly
+  const displayBottomLinks = bottomLinks.map(link => {
+    if (link.text === "Terms of Service") {
+      return { ...link, text: t.footer.links.terms };
+    }
+    if (link.text === "Privacy Policy") {
+      return { ...link, text: t.footer.links.privacy };
+    }
+    if (link.text === "Cookie Policy") {
+      return { ...link, text: t.footer.links.cookies };
+    }
+    return link;
+  });
+
   return (
     <section className="py-16 bg-[#1A1F2C] text-white">
       <div className="container">
@@ -87,7 +101,13 @@ const Footer2 = ({
             </div>
             {menuItems.map((section, sectionIdx) => (
               <div key={sectionIdx}>
-                <h3 className="mb-4 font-bold text-white">{section.title}</h3>
+                <h3 className="mb-4 font-bold text-white">{
+                  section.title === "Product" ? t.footer.menuTitles.product :
+                  section.title === "Company" ? t.footer.menuTitles.company :
+                  section.title === "Resources" ? t.footer.menuTitles.resources :
+                  section.title === "Connect" ? t.footer.menuTitles.connect :
+                  section.title
+                }</h3>
                 <ul className="space-y-4 text-[#8E9196]">
                   {section.links.map((link, linkIdx) => (
                     <li
@@ -104,7 +124,7 @@ const Footer2 = ({
           <div className="mt-16 flex flex-col justify-between gap-4 border-t border-gray-700 pt-8 text-sm font-medium text-[#8E9196] md:flex-row md:items-center">
             <p>{displayCopyright}</p>
             <ul className="flex flex-wrap gap-4">
-              {bottomLinks.map((link, linkIdx) => (
+              {displayBottomLinks.map((link, linkIdx) => (
                 <li key={linkIdx} className="hover:text-[#9b87f5] transition-colors">
                   <a href={link.url}>{link.text}</a>
                 </li>

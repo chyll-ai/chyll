@@ -2,8 +2,11 @@
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import { Footer2Demo } from '@/components/ui/footer2-demo';
+import { useLanguage } from '@/context/LanguageContext';
 
 const AboutUs = () => {
+  const { t } = useLanguage();
+  
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -11,54 +14,42 @@ const AboutUs = () => {
       <section className="flex-grow py-16 bg-white">
         <div className="container-custom">
           <div className="max-w-4xl mx-auto">
-            <h1 className="text-3xl md:text-4xl font-bold mb-8">About Us</h1>
+            <h1 className="text-3xl md:text-4xl font-bold mb-8">{t.about.title}</h1>
+            
+            <div className="mb-10">
+              <img 
+                src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=1200" 
+                alt="Team working together" 
+                className="w-full h-72 object-cover rounded-lg mb-6"
+              />
+            </div>
             
             <div className="prose max-w-none">
-              <div className="mb-10">
-                <img 
-                  src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=1200" 
-                  alt="Team working together" 
-                  className="w-full h-72 object-cover rounded-lg mb-6"
-                />
-              </div>
+              <h2 className="text-2xl font-semibold mt-8 mb-4">{t.about.story.title}</h2>
+              <p>{t.about.story.text1}</p>
+              <p className="mt-4">{t.about.story.text2}</p>
               
-              <h2 className="text-2xl font-semibold mt-8 mb-4">Our Story</h2>
-              <p>
-                Founded in 2024, GenerativSchool was born from a simple yet powerful idea: what if businesses could have AI employees that work alongside human teams? Our founders, having worked in the AI industry for years, saw firsthand how fragmented and complex implementing AI solutions could be for most companies.
-              </p>
-              <p className="mt-4">
-                We set out to build a platform that would make AI implementation straightforward and accessible, allowing businesses of all sizes to benefit from the advances in artificial intelligence without requiring specialized technical knowledge.
-              </p>
+              <h2 className="text-2xl font-semibold mt-8 mb-4">{t.about.mission.title}</h2>
+              <p>{t.about.mission.text1}</p>
+              <p className="mt-4">{t.about.mission.text2}</p>
               
-              <h2 className="text-2xl font-semibold mt-8 mb-4">Our Mission</h2>
-              <p>
-                At GenerativSchool, our mission is to democratize access to AI-powered automation and enable businesses to deploy AI employees that transform how they operate, serve customers, and grow their operations.
-              </p>
-              <p className="mt-4">
-                We believe that by making AI accessible and practical, we can help businesses become more efficient, innovative, and customer-focused, allowing them to thrive in an increasingly digital world.
-              </p>
-              
-              <h2 className="text-2xl font-semibold mt-8 mb-4">What Sets Us Apart</h2>
+              <h2 className="text-2xl font-semibold mt-8 mb-4">{t.about.unique.title}</h2>
               <ul className="list-disc pl-6 space-y-2">
-                <li><strong>No-code platform:</strong> Our solutions don't require technical expertise to implement or manage.</li>
-                <li><strong>Seamless integration:</strong> Our AI employees work with your existing systems and tools.</li>
-                <li><strong>Continuous learning:</strong> Our AI improves over time, adapting to your specific business needs.</li>
-                <li><strong>Human-centric approach:</strong> We design our AI to complement human teams, not replace them.</li>
-                <li><strong>Ethical AI development:</strong> We adhere to strict ethical guidelines in all our AI development.</li>
+                {t.about.unique.items.map((item, index) => (
+                  <li key={index}>{item}</li>
+                ))}
               </ul>
               
               <div className="bg-gray-50 p-6 rounded-lg mt-10">
-                <h3 className="text-xl font-semibold mb-4">Ready to transform your business with AI?</h3>
-                <p className="mb-6">
-                  Schedule a demo today and see how our AI employees can help your business thrive.
-                </p>
+                <h3 className="text-xl font-semibold mb-4">{t.about.cta.title}</h3>
+                <p className="mb-6">{t.about.cta.text}</p>
                 <a 
                   href="https://api.leadconnectorhq.com/widget/booking/XvUg6399vyVtvCXETgsY" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 transition-colors"
                 >
-                  Book a Demo
+                  {t.about.cta.button}
                 </a>
               </div>
             </div>

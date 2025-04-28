@@ -40,104 +40,55 @@ export function Hero() {
               rel="noreferrer"
               className="hover:text-brand-blue ml-1 flex items-center font-semibold"
             >
-              <div className="absolute inset-0 flex" aria-hidden="true" />
               {t.common.learnMore}{" "}
               <span aria-hidden="true">
-                <ArrowRight className="h-4 w-4" />
+                <MoveRight className="h-5 p-1" />
               </span>
             </a>
           </div>
         </div>
 
-        <div className="mb-10 mt-4 md:mt-6">
-          <div className="px-2">
-            <div className="border-brand-blue relative mx-auto h-full max-w-7xl border p-6 [mask-image:radial-gradient(800rem_96rem_at_center,white,transparent)] md:px-12 md:py-20">
-              <h1 className="flex select-none flex-col px-3 py-2 text-center text-5xl font-semibold leading-none tracking-tight md:flex-col md:text-7xl lg:flex-row lg:text-7xl">
-                <ArrowRight
-                  strokeWidth={4}
-                  className="text-brand-blue absolute -left-5 -top-5 h-10 w-10"
-                />
-                <ArrowRight
-                  strokeWidth={4}
-                  className="text-brand-blue absolute -bottom-5 -left-5 h-10 w-10"
-                />
-                <ArrowRight
-                  strokeWidth={4}
-                  className="text-brand-blue absolute -right-5 -top-5 h-10 w-10"
-                />
-                <ArrowRight
-                  strokeWidth={4}
-                  className="text-brand-blue absolute -bottom-5 -right-5 h-10 w-10"
-                />
-                <div className="flex flex-wrap items-center justify-center gap-3 lg:gap-5">
-                  <span>{t.home.hero.title}</span>
-                  <div className="relative inline-block h-[1.2em] overflow-hidden">
-                    {rotatingWords.map((word, index) => (
-                      <motion.span
-                        key={word}
-                        className="absolute left-0 right-0 text-brand-blue font-bold"
-                        initial={{ y: 50, opacity: 0 }}
-                        animate={{
-                          y: index === wordIndex ? 0 : index < wordIndex ? -50 : 50,
-                          opacity: index === wordIndex ? 1 : 0
-                        }}
-                        transition={{ 
-                          type: "spring", 
-                          stiffness: 100,
-                          damping: 20
-                        }}
-                      >
-                        {word}
-                      </motion.span>
-                    ))}
-                  </div>
-                </div>
-              </h1>
-              <div className="flex items-center justify-center gap-1">
-                <span className="relative flex h-3 w-3 items-center justify-center">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-500 opacity-75"></span>
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500"></span>
-                </span>
-                <p className="text-xs text-green-500">{t.common.availableNow}</p>
-              </div>
+        <div className="mb-6 md:mb-10">
+          <div className="typography-h1 font-extrabold leading-tight tracking-tight text-center">
+            <span className="block text-5xl xl:text-8xl">{t.home.hero.title}</span>
+            <div className="inline-block bg-gradient-to-r from-[#61DAFB] via-[#1fc0f1] to-[#03a3d7] bg-clip-text text-transparent text-5xl xl:text-8xl">
+              {rotatingWords[wordIndex]}
             </div>
           </div>
+        </div>
 
-          <h1 className="mt-8 text-2xl md:text-2xl">
-            {t.home.hero.subtitle.split('GenerativSchool')[0]}
-            <span className="text-brand-blue font-bold">GenerativSchool</span>
-            {t.home.hero.subtitle.includes('GenerativSchool') ? t.home.hero.subtitle.split('GenerativSchool')[1] : ''}
-          </h1>
+        <p className="max-w-3xl text-lg font-semibold text-gray-700 mb-4 md:text-xl md:leading-relaxed">
+          {t.home.hero.subtitle}
+        </p>
 
-          <p className="md:text-md mx-auto mb-16 mt-2 max-w-2xl px-6 text-sm text-primary/60 sm:px-6 md:max-w-4xl md:px-20 lg:text-lg">
-            {t.home.hero.description}
-          </p>
-          <div className="flex flex-row justify-center gap-3">
-            <Button variant="outline" size="lg" className="gap-4" asChild>
-              <a 
-                href="https://cal.com/generativschool/30min?overlayCalendar=true" 
-                target="_blank" 
-                rel="noopener noreferrer"
-              >
-                {t.home.hero.buttons.bookDemo} <PhoneCall className="w-4 h-4" />
-              </a>
-            </Button>
-            <Button variant="rainbow" size="lg" className="gap-4" asChild>
-              <a 
-                href="https://cal.com/generativschool/30min?overlayCalendar=true" 
-                target="_blank" 
-                rel="noopener noreferrer"
-              >
-                {t.home.hero.buttons.hireNow} <MoveRight className="w-4 h-4" />
-              </a>
-            </Button>
-          </div>
+        <p className="max-w-2xl text-gray-600 mb-10">
+          {t.home.hero.description}
+        </p>
+
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <Button
+            variant="rainbow"
+            size="lg"
+            className="inline-flex items-center justify-center whitespace-nowrap gap-1"
+            asChild
+          >
+            <a href="https://cal.com/generativschool/30min?overlayCalendar=true" target="_blank" rel="noopener noreferrer">
+              <PhoneCall className="size-5" />
+              {t.home.hero.buttons.bookDemo}
+            </a>
+          </Button>
+          <Button
+            variant="outline"
+            size="lg"
+            className="inline-flex items-center justify-center whitespace-nowrap gap-1"
+            asChild
+          >
+            <a href="#features">
+              {t.home.hero.buttons.hireNow} <ArrowRight className="size-5" />
+            </a>
+          </Button>
         </div>
       </div>
-      <canvas
-        className="bg-skin-base pointer-events-none absolute inset-0 mx-auto"
-        id="canvas"
-      ></canvas>
     </section>
   );
 }

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import HowItWorks from '@/components/HowItWorks';
@@ -13,6 +14,7 @@ import { PartnerCompaniesDemo } from '@/components/ui/partner-companies-demo';
 import SEOMetadata from '@/components/SEOMetadata';
 import { getOrganizationSchema, getFAQSchema } from '@/utils/structuredData';
 import { Suspense, lazy } from 'react';
+import { useLanguage } from '@/context/LanguageContext';
 
 // Sample FAQ data for structured data
 const faqData = [
@@ -31,6 +33,8 @@ const faqData = [
 ];
 
 const Index = () => {
+  const { t } = useLanguage();
+  
   // Generate structured data
   const organizationSchema = getOrganizationSchema();
   const faqSchema = getFAQSchema(faqData);
@@ -62,16 +66,16 @@ const Index = () => {
       <section id="features" className="section-padding bg-white">
         <div className="container-custom">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">AI Employees that Transform Your Business</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">{t.home.features.title}</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Digital workers that never sleep, solve complex problems, and deliver exceptional customer experiences.
+              {t.home.features.subtitle}
             </p>
           </div>
           <FeaturesSectionWithHoverEffectsDemo />
         </div>
       </section>
       
-      {/* Pricing Section - Moved here */}
+      {/* Pricing Section */}
       <section id="pricing" className="section-padding bg-gray-50">
         <div className="container-custom">
           <PricingBasic />
@@ -90,10 +94,10 @@ const Index = () => {
         <div className="container-custom">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Meet Your Team of AI Employees
+              {t.home.meetTeam.title}
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              GenerativSchool isn't just automation — it's your digital workforce ready to transform your business.
+              {t.home.meetTeam.subtitle}
             </p>
           </div>
           <BentoDemo />
@@ -104,9 +108,9 @@ const Index = () => {
       <section id="how-it-works" className="section-padding bg-white">
         <div className="container-custom">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">How It Works</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">{t.home.howItWorks.title}</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Getting started with GenerativSchool is simple. Follow these steps to transform your business operations.
+              {t.home.howItWorks.subtitle}
             </p>
           </div>
           <HowItWorks />
@@ -124,9 +128,9 @@ const Index = () => {
       <section id="faq" className="section-padding bg-white">
         <div className="container-custom">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Frequently Asked Questions</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">{t.home.faq.title}</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Everything you need to know about GenerativSchool and how it can transform your business.
+              {t.home.faq.subtitle}
             </p>
           </div>
           <div className="flex justify-center">

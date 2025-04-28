@@ -4,8 +4,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
 import { Calendar, Mail, Phone, User } from 'lucide-react';
+import { useLanguage } from '@/context/LanguageContext';
 
 const DemoForm = () => {
+  const { t } = useLanguage();
   const { toast } = useToast();
   const [formData, setFormData] = useState({
     name: '',
@@ -84,7 +86,7 @@ const DemoForm = () => {
         className="w-full bg-brand-blue hover:bg-brand-blue-dark"
         disabled={isSubmitting}
       >
-        {isSubmitting ? "Redirecting..." : "Book Your Demo"}
+        {isSubmitting ? "Redirecting..." : t.common.bookDemo}
       </Button>
       
       <p className="text-xs text-gray-500 text-center">

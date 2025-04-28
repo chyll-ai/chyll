@@ -6,9 +6,11 @@ import { DefaultDemo } from '@/components/ui/faq-chat-accordion-demo';
 import { FAQSection } from '@/components/ui/faq-section';
 import { ArrowRight } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
+import { useLanguage } from '@/context/LanguageContext';
 
 const FAQ = () => {
   const location = useLocation();
+  const { t } = useLanguage();
   
   return (
     <div className="min-h-screen flex flex-col">
@@ -17,9 +19,9 @@ const FAQ = () => {
       <section className="bg-indigo-50 py-20">
         <div className="container-custom">
           <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-3xl md:text-5xl font-bold mb-4">Frequently Asked Questions</h1>
+            <h1 className="text-3xl md:text-5xl font-bold mb-4">{t.home.faq.title}</h1>
             <p className="text-lg text-gray-700 mb-8">
-              Find answers to common questions about GenerativSchool's AI solutions, implementation process, and support.
+              {t.home.faq.subtitle}
             </p>
           </div>
         </div>
@@ -46,13 +48,7 @@ const FAQ = () => {
                   href="/support" 
                   className="inline-flex items-center px-6 py-3 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors font-medium"
                 >
-                  Contact Support <ArrowRight size={16} className="ml-2" />
-                </a>
-                <a 
-                  href="/documentation" 
-                  className="inline-flex items-center px-6 py-3 border border-indigo-600 text-indigo-600 rounded-md hover:bg-indigo-50 transition-colors font-medium"
-                >
-                  Browse Documentation <ArrowRight size={16} className="ml-2" />
+                  {t.common.contactUs} <ArrowRight size={16} className="ml-2" />
                 </a>
               </div>
             </div>

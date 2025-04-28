@@ -7,6 +7,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { BlogList } from '@/components/blog/blog-list';
 import { initialBlogPosts, additionalBlogPosts, finalBlogPosts } from '@/components/blog/blog-data';
 import { BlogPost } from '@/components/blog/blog-card';
+import { useLanguage } from '@/context/LanguageContext';
 
 const Blog = () => {
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>(initialBlogPosts);
@@ -15,6 +16,7 @@ const Blog = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const location = useLocation();
+  const { t } = useLanguage();
 
   const loadMoreArticles = () => {
     setIsLoading(true);
@@ -31,8 +33,8 @@ const Blog = () => {
         setHasMore(false);
         setIsLoading(false);
         toast({
-          title: "All articles loaded",
-          description: "You've reached the end of our article collection.",
+          title: t.blog.allLoaded,
+          description: t.blog.endReached,
           duration: 3000,
         });
       }
@@ -46,9 +48,9 @@ const Blog = () => {
       <section className="bg-indigo-50 py-20">
         <div className="container-custom">
           <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-3xl md:text-5xl font-bold mb-4">Our Blog</h1>
+            <h1 className="text-3xl md:text-5xl font-bold mb-4">{t.blog.title}</h1>
             <p className="text-lg text-gray-700">
-              Insights, updates, and perspectives from the GenerativSchool team on AI, automation, and business innovation.
+              {t.blog.subtitle}
             </p>
           </div>
         </div>
