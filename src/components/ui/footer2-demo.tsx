@@ -27,7 +27,6 @@ const demoData = {
         { text: "Blog", url: "/blog" },
         { text: "FAQ", url: "/faq" },
         { text: "Support", url: "/support" },
-        { text: "Documentation", url: "/documentation" },
       ],
     },
     {
