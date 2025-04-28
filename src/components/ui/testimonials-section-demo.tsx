@@ -5,16 +5,8 @@ import { useLanguage } from "@/context/LanguageContext";
 export function TestimonialsSectionDemo() {
   const { language, t } = useLanguage();
   
-  const testimonials = language === 'fr' ? 
-    (t.home.testimonials?.quotes || []).map(quote => ({
-      author: {
-        name: quote.author,
-        handle: quote.handle,
-        avatar: getAvatarForName(quote.author)
-      },
-      text: quote.text,
-      href: "#"
-    })) : [
+  // Default testimonials in case translations are missing
+  const defaultTestimonials = [
     {
       author: {
         name: "Rebecca Taylor",
@@ -44,10 +36,27 @@ export function TestimonialsSectionDemo() {
     },
   ];
   
+  // Use testimonials from translations if available, otherwise use defaults
+  const testimonials = language === 'fr' && t.home?.testimonials?.quotes
+    ? (t.home.testimonials.quotes || []).map(quote => ({
+        author: {
+          name: quote.author,
+          handle: quote.handle,
+          avatar: getAvatarForName(quote.author)
+        },
+        text: quote.text,
+        href: "#"
+      }))
+    : defaultTestimonials;
+  
+  // Default titles in case translations are missing
+  const defaultTitle = "AI Employees Transforming Founder-Led Businesses";
+  const defaultDescription = "See how founders and CEOs are using AI team members to scale faster with fewer resources";
+  
   return (
     <TestimonialsSection
-      title={language === 'fr' ? t.home.testimonials.title : "AI Employees Transforming Founder-Led Businesses"}
-      description={language === 'fr' ? t.home.testimonials.subtitle : "See how founders and CEOs are using AI team members to scale faster with fewer resources"}
+      title={language === 'fr' && t.home?.testimonials?.title ? t.home.testimonials.title : defaultTitle}
+      description={language === 'fr' && t.home?.testimonials?.subtitle ? t.home.testimonials.subtitle : defaultDescription}
       testimonials={testimonials}
     />
   )

@@ -7,41 +7,8 @@ import { useLanguage } from "@/context/LanguageContext";
 function PricingBasic() {
   const { language, t } = useLanguage();
   
-  const demoPlans = language === 'fr' ? [
-    {
-      name: t.pricing.plans.once.name,
-      price: t.pricing.plans.once.price,
-      yearlyPrice: t.pricing.plans.once.price,
-      period: t.pricing.plans.once.period,
-      features: t.pricing.plans.once.features,
-      description: t.pricing.plans.once.description,
-      buttonText: t.pricing.plans.once.buttonText,
-      href: "https://cal.com/generativschool/30min?overlayCalendar=true",
-      isPopular: false,
-    },
-    {
-      name: t.pricing.plans.automate.name,
-      price: t.pricing.plans.automate.price,
-      yearlyPrice: "159€",
-      period: t.pricing.plans.automate.period,
-      features: t.pricing.plans.automate.features,
-      description: t.pricing.plans.automate.description,
-      buttonText: t.pricing.plans.automate.buttonText,
-      href: "https://cal.com/generativschool/30min?overlayCalendar=true",
-      isPopular: true,
-    },
-    {
-      name: t.pricing.plans.integrate.name,
-      price: t.pricing.plans.integrate.price,
-      yearlyPrice: "559€",
-      period: t.pricing.plans.integrate.period,
-      features: t.pricing.plans.integrate.features,
-      description: t.pricing.plans.integrate.description,
-      buttonText: t.pricing.plans.integrate.buttonText,
-      href: "https://cal.com/generativschool/30min?overlayCalendar=true",
-      isPopular: false,
-    }
-  ] : [
+  // Default pricing plans if translations are missing
+  const defaultPlans = [
     {
       name: "ONCE",
       price: "99",
@@ -106,12 +73,62 @@ function PricingBasic() {
     }
   ];
 
+  // Check if French translations are available and construct the plans with proper fallbacks
+  const frenchPlansAvailable = language === 'fr' && 
+    t.pricing?.plans?.once &&
+    t.pricing?.plans?.once?.features && 
+    t.pricing?.plans?.once?.buttonText &&
+    t.pricing?.plans?.automate?.features &&
+    t.pricing?.plans?.automate?.buttonText &&
+    t.pricing?.plans?.integrate?.features &&
+    t.pricing?.plans?.integrate?.buttonText;
+
+  const demoPlans = frenchPlansAvailable ? [
+    {
+      name: t.pricing.plans.once.name,
+      price: t.pricing.plans.once.price,
+      yearlyPrice: t.pricing.plans.once.price,
+      period: t.pricing.plans.once.period,
+      features: t.pricing.plans.once.features,
+      description: t.pricing.plans.once.description,
+      buttonText: t.pricing.plans.once.buttonText,
+      href: "https://cal.com/generativschool/30min?overlayCalendar=true",
+      isPopular: false,
+    },
+    {
+      name: t.pricing.plans.automate.name,
+      price: t.pricing.plans.automate.price,
+      yearlyPrice: "159€",
+      period: t.pricing.plans.automate.period,
+      features: t.pricing.plans.automate.features,
+      description: t.pricing.plans.automate.description,
+      buttonText: t.pricing.plans.automate.buttonText,
+      href: "https://cal.com/generativschool/30min?overlayCalendar=true",
+      isPopular: true,
+    },
+    {
+      name: t.pricing.plans.integrate.name,
+      price: t.pricing.plans.integrate.price,
+      yearlyPrice: "559€",
+      period: t.pricing.plans.integrate.period,
+      features: t.pricing.plans.integrate.features,
+      description: t.pricing.plans.integrate.description,
+      buttonText: t.pricing.plans.integrate.buttonText,
+      href: "https://cal.com/generativschool/30min?overlayCalendar=true",
+      isPopular: false,
+    }
+  ] : defaultPlans;
+
+  // Default titles in case translations are missing
+  const defaultTitle = "AI Automation Made Simple";
+  const defaultDescription = "Try risk-free with our 14-day trial";
+  
   return (
     <div className="overflow-y-auto">
       <Pricing 
         plans={demoPlans}
-        title={language === 'fr' ? t.pricing.title : "AI Automation Made Simple"}
-        description={language === 'fr' ? t.pricing.description : "Try risk-free with our 14-day trial"}
+        title={language === 'fr' && t.pricing?.title ? t.pricing.title : defaultTitle}
+        description={language === 'fr' && t.pricing?.description ? t.pricing.description : defaultDescription}
       />
     </div>
   );

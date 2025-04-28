@@ -12,9 +12,9 @@ import { BentoCard, BentoGrid } from "@/components/ui/bento-grid";
 import { useLanguage } from '@/context/LanguageContext';
 
 function BentoDemo() {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
   
-  const features = [
+  const defaultFeatures = [
     {
       Icon: LineChart,
       name: "NAPOLEON — The AI SDR",
@@ -70,6 +70,64 @@ function BentoDemo() {
       className: "lg:col-start-3 lg:col-end-3 lg:row-start-2 lg:row-end-4",
     },
   ];
+  
+  // Use French translations if available, otherwise use defaults
+  const features = language === 'fr' && t.home?.aiEmployees ? [
+    {
+      Icon: LineChart,
+      name: t.home.aiEmployees.napoleon.name,
+      description: t.home.aiEmployees.napoleon.description,
+      href: "/",
+      cta: t.home.aiEmployees.napoleon.cta,
+      background: <div className="absolute -right-20 -top-20 bg-blue-100 rounded-full w-64 h-64 blur-3xl opacity-40" />,
+      className: "lg:row-start-1 lg:row-end-3 lg:col-start-1 lg:col-end-2",
+    },
+    {
+      Icon: Users,
+      name: t.home.aiEmployees.talie.name,
+      description: t.home.aiEmployees.talie.description,
+      href: "/",
+      cta: t.home.aiEmployees.talie.cta,
+      background: <div className="absolute -right-20 -top-20 bg-purple-100 rounded-full w-64 h-64 blur-3xl opacity-40" />,
+      className: "lg:col-start-2 lg:col-end-3 lg:row-start-1 lg:row-end-3",
+    },
+    {
+      Icon: MessageSquare,
+      name: t.home.aiEmployees.julienne.name,
+      description: t.home.aiEmployees.julienne.description,
+      href: "/",
+      cta: t.home.aiEmployees.julienne.cta,
+      background: <div className="absolute -right-20 -top-20 bg-yellow-100 rounded-full w-64 h-64 blur-3xl opacity-40" />,
+      className: "lg:col-start-3 lg:col-end-3 lg:row-start-1 lg:row-end-2",
+    },
+    {
+      Icon: Phone,
+      name: t.home.aiEmployees.bastien.name,
+      description: t.home.aiEmployees.bastien.description,
+      href: "/",
+      cta: t.home.aiEmployees.bastien.cta,
+      background: <div className="absolute -right-20 -top-20 bg-green-100 rounded-full w-64 h-64 blur-3xl opacity-40" />,
+      className: "lg:col-start-1 lg:col-end-2 lg:row-start-3 lg:row-end-4",
+    },
+    {
+      Icon: Mail,
+      name: t.home.aiEmployees.lafayette.name,
+      description: t.home.aiEmployees.lafayette.description,
+      href: "/",
+      cta: t.home.aiEmployees.lafayette.cta,
+      background: <div className="absolute -right-20 -top-20 bg-indigo-100 rounded-full w-64 h-64 blur-3xl opacity-40" />,
+      className: "lg:col-start-2 lg:col-end-3 lg:row-start-3 lg:row-end-4",
+    },
+    {
+      Icon: FileText,
+      name: t.home.aiEmployees.voltaire.name,
+      description: t.home.aiEmployees.voltaire.description,
+      href: "/",
+      cta: t.home.aiEmployees.voltaire.cta,
+      background: <div className="absolute -right-20 -top-20 bg-red-100 rounded-full w-64 h-64 blur-3xl opacity-40" />,
+      className: "lg:col-start-3 lg:col-end-3 lg:row-start-2 lg:row-end-4",
+    },
+  ] : defaultFeatures;
 
   return (
     <BentoGrid className="lg:grid-rows-3">

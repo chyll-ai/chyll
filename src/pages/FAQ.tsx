@@ -12,6 +12,14 @@ const FAQ = () => {
   const location = useLocation();
   const { t, language } = useLanguage();
   
+  // Default text in case translations are missing
+  const defaultTexts = {
+    generalTitle: "General Questions",
+    aiEmployeesTitle: "AI Employee Questions",
+    stillHaveQuestionsTitle: "Still have questions?",
+    stillHaveQuestionsDescription: "Our support team is here to help. Contact us for personalized assistance with your specific questions."
+  };
+  
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar currentPath={location.pathname} />
@@ -31,25 +39,25 @@ const FAQ = () => {
         <div className="container-custom">
           <div className="max-w-4xl mx-auto">
             <h2 className="text-2xl font-bold mb-8 text-center">
-              {language === 'fr' ? t.faq.general.title : "General Questions"}
+              {language === 'fr' && t.faq?.general?.title ? t.faq.general.title : defaultTexts.generalTitle}
             </h2>
             <FAQSection />
             
             <div className="mt-16">
               <h2 className="text-2xl font-bold mb-8 text-center">
-                {language === 'fr' ? t.faq.aiEmployees.title : "AI Employee Questions"}
+                {language === 'fr' && t.faq?.aiEmployees?.title ? t.faq.aiEmployees.title : defaultTexts.aiEmployeesTitle}
               </h2>
               <DefaultDemo />
             </div>
             
             <div className="mt-16 bg-gray-50 p-8 rounded-lg">
               <h3 className="text-xl font-bold mb-4">
-                {language === 'fr' ? t.faq.stillHaveQuestions.title : "Still have questions?"}
+                {language === 'fr' && t.faq?.stillHaveQuestions?.title ? t.faq.stillHaveQuestions.title : defaultTexts.stillHaveQuestionsTitle}
               </h3>
               <p className="text-gray-600 mb-6">
-                {language === 'fr' 
-                  ? t.faq.stillHaveQuestions.description
-                  : "Our support team is here to help. Contact us for personalized assistance with your specific questions."}
+                {language === 'fr' && t.faq?.stillHaveQuestions?.description 
+                  ? t.faq.stillHaveQuestions.description 
+                  : defaultTexts.stillHaveQuestionsDescription}
               </p>
               <div className="flex flex-wrap gap-4">
                 <a 
