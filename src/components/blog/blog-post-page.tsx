@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
@@ -13,6 +14,18 @@ import { useLanguage } from '@/context/LanguageContext';
 
 // Lazy load images for performance
 const LazyImage = lazy(() => import('@/components/common/LazyImage'));
+
+// Helper function to parse dates safely
+const parseAndFormatDate = (dateString: string) => {
+  // Try to extract year from string like "5 avril 2025" or "April 5, 2025"
+  const yearMatch = dateString.match(/\d{4}/);
+  if (!yearMatch) return null; // No year found
+  
+  const year = parseInt(yearMatch[0]);
+  
+  // Use a safe default date with the correct year
+  return `${year}-01-01T00:00:00.000Z`;
+};
 
 const BlogPostPage = () => {
   const { id } = useParams();
@@ -51,18 +64,18 @@ const BlogPostPage = () => {
     );
   }
   
-  // Format date for structured data
-  const formattedDate = new Date(post.date).toISOString();
+  // Safely format date for structured data
+  const formattedDate = parseAndFormatDate(post.date);
   
-  // Generate article schema
-  const articleSchema = getArticleSchema({
+  // Generate article schema only if we have a valid date
+  const articleSchema = formattedDate ? getArticleSchema({
     title: post.title,
     description: post.excerpt,
     url: `https://generativschool.com/blog/${post.id}`,
     imageUrl: post.imageUrl,
     publishDate: formattedDate,
     authorName: 'Soufiane Lemqari'
-  });
+  }) : null;
   
   // Generate breadcrumb schema
   const breadcrumbSchema = getBreadcrumbSchema([
@@ -79,9 +92,9 @@ const BlogPostPage = () => {
         canonicalUrl={`/blog/${post.id}`}
         ogType="article"
         ogImage={post.imageUrl}
-        articlePublishedTime={formattedDate}
+        articlePublishedTime={formattedDate || undefined}
         structuredData={{
-          article: articleSchema,
+          ...(articleSchema ? { article: articleSchema } : {}),
           breadcrumb: breadcrumbSchema
         }}
       />
