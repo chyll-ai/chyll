@@ -1,4 +1,7 @@
+
 import React from 'react';
+import { useLanguage } from '@/context/LanguageContext';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 interface MenuItem {
   title: string;
@@ -19,7 +22,7 @@ interface Footer2Props {
 }
 
 const Footer2 = ({
-  tagline = "Intelligent automation for your business.",
+  tagline,
   menuItems = [
     {
       title: "Product",
@@ -57,13 +60,19 @@ const Footer2 = ({
       ],
     },
   ],
-  copyright = "© 2024 GenerativSchool. All rights reserved.",
+  copyright,
   bottomLinks = [
     { text: "Terms of Service", url: "#" },
     { text: "Privacy Policy", url: "#" },
     { text: "Cookie Policy", url: "#" },
   ],
 }: Footer2Props) => {
+  const { t } = useLanguage();
+  
+  // Use provided props or fallback to translations
+  const displayTagline = tagline || t.footer.tagline;
+  const displayCopyright = copyright || t.footer.copyright;
+
   return (
     <section className="py-16 bg-[#1A1F2C] text-white">
       <div className="container">
@@ -71,7 +80,10 @@ const Footer2 = ({
           <div className="grid grid-cols-2 gap-8 lg:grid-cols-6">
             <div className="col-span-2 mb-8 lg:mb-0">
               <p className="text-xl font-semibold text-white">GenerativSchool</p>
-              <p className="mt-4 font-bold text-[#aaadb0]">{tagline}</p>
+              <p className="mt-4 font-bold text-[#aaadb0]">{displayTagline}</p>
+              <div className="mt-4">
+                <LanguageSwitcher />
+              </div>
             </div>
             {menuItems.map((section, sectionIdx) => (
               <div key={sectionIdx}>
@@ -90,7 +102,7 @@ const Footer2 = ({
             ))}
           </div>
           <div className="mt-16 flex flex-col justify-between gap-4 border-t border-gray-700 pt-8 text-sm font-medium text-[#8E9196] md:flex-row md:items-center">
-            <p>{copyright}</p>
+            <p>{displayCopyright}</p>
             <ul className="flex flex-wrap gap-4">
               {bottomLinks.map((link, linkIdx) => (
                 <li key={linkIdx} className="hover:text-[#9b87f5] transition-colors">

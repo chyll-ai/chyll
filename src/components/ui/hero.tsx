@@ -1,15 +1,19 @@
+
 "use client";
 
 import { useEffect, useState } from "react";
 import { renderCanvas } from "@/components/ui/canvas";
-import { ArrowRight, SquareCode, Users, MoveRight, PhoneCall } from "lucide-react";
+import { ArrowRight, SquareCode, MoveRight, PhoneCall } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/context/LanguageContext";
 
 export function Hero() {
+  const { t } = useLanguage();
+  
   // Initialize rotating words for the animation
   const [wordIndex, setWordIndex] = useState(0);
-  const rotatingWords = ["sell", "design", "write", "support", "automate"];
+  const rotatingWords = t.home.hero.actions;
 
   // Set up animation interval
   useEffect(() => {
@@ -18,7 +22,7 @@ export function Hero() {
     }, 2000);
     
     return () => clearInterval(intervalId);
-  }, []);
+  }, [rotatingWords]);
 
   // Initialize canvas effect
   useEffect(() => {
@@ -30,14 +34,14 @@ export function Hero() {
       <div className="animation-delay-8 animate-fadeIn mt-20 flex flex-col items-center justify-center px-4 text-center md:mt-20">
         <div className="z-10 mb-6 mt-10 sm:justify-center md:mb-4 md:mt-20">
           <div className="relative flex items-center whitespace-nowrap rounded-full border bg-popover px-3 py-1 text-xs leading-6 text-primary/60">
-            <SquareCode className="h-5 p-1" /> Introducing GenerativSchool.
+            <SquareCode className="h-5 p-1" /> {t.home.hero.introducing}
             <a
               href="/about"
               rel="noreferrer"
               className="hover:text-brand-blue ml-1 flex items-center font-semibold"
             >
               <div className="absolute inset-0 flex" aria-hidden="true" />
-              Learn More{" "}
+              {t.common.learnMore}{" "}
               <span aria-hidden="true">
                 <ArrowRight className="h-4 w-4" />
               </span>
@@ -66,7 +70,7 @@ export function Hero() {
                   className="text-brand-blue absolute -bottom-5 -right-5 h-10 w-10"
                 />
                 <div className="flex flex-wrap items-center justify-center gap-3 lg:gap-5">
-                  <span>Hire AI employees that</span>
+                  <span>{t.home.hero.title}</span>
                   <div className="relative inline-block h-[1.2em] overflow-hidden">
                     {rotatingWords.map((word, index) => (
                       <motion.span
@@ -94,20 +98,19 @@ export function Hero() {
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-500 opacity-75"></span>
                   <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500"></span>
                 </span>
-                <p className="text-xs text-green-500">Available Now</p>
+                <p className="text-xs text-green-500">{t.common.availableNow}</p>
               </div>
             </div>
           </div>
 
           <h1 className="mt-8 text-2xl md:text-2xl">
-            Work smarter, not harder with{" "}
+            {t.home.hero.subtitle.split('GenerativSchool')[0]}
             <span className="text-brand-blue font-bold">GenerativSchool</span>
+            {t.home.hero.subtitle.includes('GenerativSchool') ? t.home.hero.subtitle.split('GenerativSchool')[1] : ''}
           </h1>
 
           <p className="md:text-md mx-auto mb-16 mt-2 max-w-2xl px-6 text-sm text-primary/60 sm:px-6 md:max-w-4xl md:px-20 lg:text-lg">
-            Transform your business with AI employees that never sleep, never take vacations, 
-            and consistently deliver exceptional results. Streamline operations, 
-            reduce costs, and scale your business like never before.
+            {t.home.hero.description}
           </p>
           <div className="flex flex-row justify-center gap-3">
             <Button variant="outline" size="lg" className="gap-4" asChild>
@@ -116,7 +119,7 @@ export function Hero() {
                 target="_blank" 
                 rel="noopener noreferrer"
               >
-                Book a Demo <PhoneCall className="w-4 h-4" />
+                {t.home.hero.buttons.bookDemo} <PhoneCall className="w-4 h-4" />
               </a>
             </Button>
             <Button variant="rainbow" size="lg" className="gap-4" asChild>
@@ -125,7 +128,7 @@ export function Hero() {
                 target="_blank" 
                 rel="noopener noreferrer"
               >
-                Hire AI Now <MoveRight className="w-4 h-4" />
+                {t.home.hero.buttons.hireNow} <MoveRight className="w-4 h-4" />
               </a>
             </Button>
           </div>

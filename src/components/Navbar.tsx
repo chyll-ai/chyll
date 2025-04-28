@@ -1,7 +1,10 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Menu, X, Home } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
+import { useLanguage } from '@/context/LanguageContext';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 interface NavbarProps {
   currentPath?: string;
@@ -11,6 +14,7 @@ const Navbar = ({ currentPath = '/' }: NavbarProps) => {
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const isHomePage = location.pathname === '/';
+  const { t } = useLanguage();
 
   // Navigate to specific section if on home page, otherwise navigate to home with section hash
   const getSectionLink = (section: string) => {
@@ -44,28 +48,36 @@ const Navbar = ({ currentPath = '/' }: NavbarProps) => {
           {!isHomePage && (
             <Link to="/" className="text-gray-700 hover:text-brand-blue transition-colors flex items-center gap-1">
               <Home size={18} />
-              <span className="hidden sm:inline">Home</span>
+              <span className="hidden sm:inline">{t.nav.home}</span>
             </Link>
           )}
         </div>
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center space-x-8">
-          <Link to={getSectionLink("features")} className="text-gray-700 hover:text-brand-blue transition-colors">Features</Link>
-          <Link to={getSectionLink("how-it-works")} className="text-gray-700 hover:text-brand-blue transition-colors">How It Works</Link>
-          <Link to={getSectionLink("pricing")} className="text-gray-700 hover:text-brand-blue transition-colors">Pricing</Link>
+          <Link to={getSectionLink("features")} className="text-gray-700 hover:text-brand-blue transition-colors">
+            {t.nav.features}
+          </Link>
+          <Link to={getSectionLink("how-it-works")} className="text-gray-700 hover:text-brand-blue transition-colors">
+            {t.nav.howItWorks}
+          </Link>
+          <Link to={getSectionLink("pricing")} className="text-gray-700 hover:text-brand-blue transition-colors">
+            {t.nav.pricing}
+          </Link>
           
           <div className="flex items-center space-x-4">
+            <LanguageSwitcher variant="minimal" />
             <Button variant="rainbow" asChild>
               <a href="https://cal.com/generativschool/30min?overlayCalendar=true" target="_blank" rel="noopener noreferrer">
-                Book a Demo
+                {t.nav.bookDemo}
               </a>
             </Button>
           </div>
         </div>
 
         {/* Mobile Menu Button */}
-        <div className="md:hidden">
+        <div className="md:hidden flex items-center gap-2">
+          <LanguageSwitcher variant="icon" />
           <button 
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             className="text-gray-700 hover:text-brand-blue"
@@ -86,7 +98,7 @@ const Navbar = ({ currentPath = '/' }: NavbarProps) => {
                 onClick={() => setIsMenuOpen(false)}
               >
                 <Home size={18} />
-                Home
+                {t.nav.home}
               </Link>
             )}
             
@@ -95,21 +107,21 @@ const Navbar = ({ currentPath = '/' }: NavbarProps) => {
               className="text-gray-700 hover:text-brand-blue py-2 transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
-              Features
+              {t.nav.features}
             </Link>
             <Link 
               to={getSectionLink("how-it-works")}
               className="text-gray-700 hover:text-brand-blue py-2 transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
-              How It Works
+              {t.nav.howItWorks}
             </Link>
             <Link 
               to={getSectionLink("pricing")}
               className="text-gray-700 hover:text-brand-blue py-2 transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
-              Pricing
+              {t.nav.pricing}
             </Link>
             
             <Button 
@@ -119,7 +131,7 @@ const Navbar = ({ currentPath = '/' }: NavbarProps) => {
               asChild
             >
               <a href="https://cal.com/generativschool/30min?overlayCalendar=true" target="_blank" rel="noopener noreferrer">
-                Book a Demo
+                {t.nav.bookDemo}
               </a>
             </Button>
           </div>
