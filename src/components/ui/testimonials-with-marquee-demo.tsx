@@ -35,8 +35,11 @@ export function TestimonialsWithMarqueeDemo() {
     }
   ];
 
+  // Check if French testimonials are available
+  const hasFrenchTestimonials = language === 'fr' && t.home && 'testimonials' in t.home && t.home.testimonials && 'quotes' in t.home.testimonials;
+  
   // Use testimonials from translations if available
-  const testimonials = language === 'fr' && t.home?.testimonials?.quotes
+  const testimonials = hasFrenchTestimonials
     ? t.home.testimonials.quotes.map(quote => ({
         author: {
           name: quote.author,
@@ -52,10 +55,14 @@ export function TestimonialsWithMarqueeDemo() {
   const defaultTitle = "Founders love our AI Employees";
   const defaultDescription = "Join thousands of business owners who are scaling their operations with our tireless AI team members";
   
+  // Check if French titles are available
+  const hasFrenchTitles = language === 'fr' && t.home && 'testimonials' in t.home && t.home.testimonials && 'title' in t.home.testimonials;
+  const hasFrenchSubtitle = language === 'fr' && t.home && 'testimonials' in t.home && t.home.testimonials && 'subtitle' in t.home.testimonials;
+  
   return (
     <TestimonialsSection
-      title={language === 'fr' && t.home?.testimonials?.title ? t.home.testimonials.title : defaultTitle}
-      description={language === 'fr' && t.home?.testimonials?.subtitle ? t.home.testimonials.subtitle : defaultDescription}
+      title={hasFrenchTitles ? t.home.testimonials.title : defaultTitle}
+      description={hasFrenchSubtitle ? t.home.testimonials.subtitle : defaultDescription}
       testimonials={testimonials}
     />
   );

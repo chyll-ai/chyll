@@ -44,8 +44,11 @@ function DefaultDemo() {
     },
   ];
   
-  // Check if French translations are available
-  const frenchItems = language === 'fr' && t.faq?.aiEmployees?.items 
+  // Check if French FAQ translations are available
+  const hasFrenchFaqItems = language === 'fr' && t.faq && 'aiEmployees' in t.faq && t.faq.aiEmployees && 'items' in t.faq.aiEmployees;
+  
+  // Use French translations if available
+  const frenchItems = hasFrenchFaqItems 
     ? t.faq.aiEmployees.items.map((item, index) => ({
         answer: item.answer,
         icon: index === 0 ? "🤖" : index === 3 ? "⚙️" : index === 5 ? "🔒" : undefined,

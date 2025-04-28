@@ -73,17 +73,13 @@ function PricingBasic() {
     }
   ];
 
-  // Check if French translations are available and construct the plans with proper fallbacks
-  const frenchPlansAvailable = language === 'fr' && 
-    t.pricing?.plans?.once &&
-    t.pricing?.plans?.once?.features && 
-    t.pricing?.plans?.once?.buttonText &&
-    t.pricing?.plans?.automate?.features &&
-    t.pricing?.plans?.automate?.buttonText &&
-    t.pricing?.plans?.integrate?.features &&
-    t.pricing?.plans?.integrate?.buttonText;
+  // Check if French pricing translations are available
+  const hasFrenchPricing = language === 'fr' && t.pricing && 'plans' in t.pricing;
+  const hasFrenchOncePlan = hasFrenchPricing && 'once' in t.pricing.plans && 'features' in t.pricing.plans.once && 'buttonText' in t.pricing.plans.once;
+  const hasFrenchAutomatePlan = hasFrenchPricing && 'automate' in t.pricing.plans && 'features' in t.pricing.plans.automate && 'buttonText' in t.pricing.plans.automate;
+  const hasFrenchIntegratePlan = hasFrenchPricing && 'integrate' in t.pricing.plans && 'features' in t.pricing.plans.integrate && 'buttonText' in t.pricing.plans.integrate;
 
-  const demoPlans = frenchPlansAvailable ? [
+  const demoPlans = (hasFrenchOncePlan && hasFrenchAutomatePlan && hasFrenchIntegratePlan) ? [
     {
       name: t.pricing.plans.once.name,
       price: t.pricing.plans.once.price,
@@ -123,12 +119,16 @@ function PricingBasic() {
   const defaultTitle = "AI Automation Made Simple";
   const defaultDescription = "Try risk-free with our 14-day trial";
   
+  // Check if French pricing title/description are available
+  const hasFrenchTitle = language === 'fr' && t.pricing && 'title' in t.pricing;
+  const hasFrenchDescription = language === 'fr' && t.pricing && 'description' in t.pricing;
+  
   return (
     <div className="overflow-y-auto">
       <Pricing 
         plans={demoPlans}
-        title={language === 'fr' && t.pricing?.title ? t.pricing.title : defaultTitle}
-        description={language === 'fr' && t.pricing?.description ? t.pricing.description : defaultDescription}
+        title={hasFrenchTitle ? t.pricing.title : defaultTitle}
+        description={hasFrenchDescription ? t.pricing.description : defaultDescription}
       />
     </div>
   );
