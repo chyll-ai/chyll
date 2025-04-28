@@ -146,7 +146,7 @@ const PricingCards = () => {
         >
           {plan.highlight && (
             <div className="absolute -top-4 left-0 right-0 mx-auto w-max px-4 py-1 bg-yellow-400 text-white text-sm font-medium rounded-full">
-              Most Popular
+              {language === 'fr' ? 'Le plus populaire' : 'Most Popular'}
             </div>
           )}
           
@@ -185,7 +185,7 @@ const PricingCards = () => {
               asChild
             >
               <a href="https://cal.com/generativschool/30min?overlayCalendar=true" target="_blank" rel="noopener noreferrer">
-                Book a Demo
+                {language === 'fr' ? 'Réserver une démo' : 'Book a Demo'}
               </a>
             </Button>
           </CardFooter>

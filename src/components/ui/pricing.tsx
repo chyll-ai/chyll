@@ -1,3 +1,4 @@
+
 "use client";
 
 import { buttonVariants } from "@/components/ui/button";
@@ -27,12 +28,14 @@ interface PricingProps {
   plans: PricingPlan[];
   title?: string;
   description?: string;
+  language?: string;
 }
 
 export function Pricing({
   plans,
   title = "",
   description = "",
+  language = "en"
 }: PricingProps) {
   const [isMonthly, setIsMonthly] = useState(true);
   const isDesktop = useMediaQuery("(min-width: 768px)");
@@ -67,6 +70,9 @@ export function Pricing({
     }
   };
 
+  // Currency symbol based on language
+  const currencySymbol = language === "fr" ? "€" : "$";
+
   return (
     <div className="container py-20">
       {(title || description) && (
@@ -96,7 +102,10 @@ export function Pricing({
           </Label>
         </label>
         <span className="ml-2 font-semibold">
-          Annual billing <span className="text-primary">(Save 20%)</span>
+          {language === "fr" ? "Facturation annuelle " : "Annual billing "}
+          <span className="text-primary">
+            {language === "fr" ? "(Économisez 20%)" : "(Save 20%)"}
+          </span>
         </span>
       </div>
 
@@ -140,7 +149,7 @@ export function Pricing({
               <div className="absolute top-0 right-0 bg-primary py-0.5 px-2 rounded-bl-xl rounded-tr-xl flex items-center">
                 <Star className="text-primary-foreground h-4 w-4 fill-current" />
                 <span className="text-primary-foreground ml-1 font-sans font-semibold">
-                  Popular
+                  {language === "fr" ? "Populaire" : "Popular"}
                 </span>
               </div>
             )}
@@ -150,23 +159,31 @@ export function Pricing({
               </p>
               <div className="mt-6 flex items-center justify-center gap-x-2">
                 <span className="text-5xl font-bold tracking-tight text-foreground">
-                  <NumberFlow
-                    value={
-                      isMonthly ? Number(plan.price) : Number(plan.yearlyPrice)
-                    }
-                    format={{
-                      style: "currency",
-                      currency: "USD",
-                      minimumFractionDigits: 0,
-                      maximumFractionDigits: 0,
-                    }}
-                    transformTiming={{
-                      duration: 500,
-                      easing: "ease-out",
-                    }}
-                    willChange
-                    className="font-variant-numeric: tabular-nums"
-                  />
+                  {language === "fr" ? (
+                    // French format: 99€, 199€, etc.
+                    <span>
+                      {isMonthly ? plan.price : plan.yearlyPrice}{currencySymbol}
+                    </span>
+                  ) : (
+                    // English format: $99, $199, etc.
+                    <NumberFlow
+                      value={
+                        isMonthly ? Number(plan.price) : Number(plan.yearlyPrice)
+                      }
+                      format={{
+                        style: "currency",
+                        currency: "USD",
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 0,
+                      }}
+                      transformTiming={{
+                        duration: 500,
+                        easing: "ease-out",
+                      }}
+                      willChange
+                      className="font-variant-numeric: tabular-nums"
+                    />
+                  )}
                 </span>
                 {plan.period !== "Next 3 months" && (
                   <span className="text-sm font-semibold leading-6 tracking-wide text-muted-foreground">
@@ -175,9 +192,11 @@ export function Pricing({
                 )}
               </div>
 
-              {plan.name !== "ONCE" && (
+              {plan.name !== "ONCE" && plan.name !== "Une fois" && (
                 <div className="mt-2">
-                  <p className="text-sm font-medium text-green-600">14-day free trial</p>
+                  <p className="text-sm font-medium text-green-600">
+                    {language === "fr" ? "Essai gratuit de 14 jours" : "14-day free trial"}
+                  </p>
                 </div>
               )}
 
