@@ -11,7 +11,7 @@ function Footer2Demo() {
       {
         title: t.footer.menuTitles.product,
         links: [
-          { text: "Overview", url: "#" },
+          { text: t.footer.links.overview, url: "#" },
           { text: t.nav.features, url: "#features" },
           { text: t.nav.howItWorks, url: "#how-it-works" },
           { text: t.nav.pricing, url: "#pricing" },
@@ -20,8 +20,8 @@ function Footer2Demo() {
       {
         title: t.footer.menuTitles.company,
         links: [
-          { text: "About Us", url: "/about-us" },
-          { text: "Careers", url: "/careers" },
+          { text: t.footer.links.aboutUs, url: "/about-us" },
+          { text: t.footer.links.careers, url: "/careers" },
           { text: t.common.contactUs, url: "/contact" },
         ],
       },

@@ -82,7 +82,7 @@ export const fr = {
         },
         {
           title: "Efficacité des coûts",
-          description: "Réduisez les coûts opérationnels tout en augmentant la productivité. Pas d'avantages sociaux, de pauses ou d'heures supplémentaires à payer."
+          description: "Réduisez les coûts op��rationnels tout en augmentant la productivité. Pas d'avantages sociaux, de pauses ou d'heures supplémentaires à payer."
         },
         {
           title: "Support client instantané",
@@ -161,7 +161,10 @@ export const fr = {
     links: {
       terms: "Conditions d'utilisation",
       privacy: "Politique de confidentialité",
-      cookies: "Politique des cookies"
+      cookies: "Politique des cookies",
+      overview: "Aperçu",
+      aboutUs: "À propos",
+      careers: "Carrières"
     }
   },
   

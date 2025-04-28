@@ -132,7 +132,10 @@ export const en = {
     links: {
       terms: "Terms of Service",
       privacy: "Privacy Policy",
-      cookies: "Cookie Policy"
+      cookies: "Cookie Policy",
+      overview: "Overview",
+      aboutUs: "About Us",
+      careers: "Careers"
     }
   },
   
