@@ -1,4 +1,3 @@
-
 import { en } from './en';
 import { fr } from './fr';
 
@@ -96,6 +95,9 @@ export interface TranslationKeys {
         description: string;
         cta: string;
       };
+    };
+    partners: {
+      title: string;
     };
   };
   footer: {

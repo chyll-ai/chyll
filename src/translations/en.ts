@@ -50,6 +50,9 @@ export const en = {
     faq: {
       title: "Frequently Asked Questions",
       subtitle: "Everything you need to know about GenerativSchool and how it can transform your business."
+    },
+    partners: {
+      title: "Join businesses accelerating growth with our AI solutions"
     }
   },
   

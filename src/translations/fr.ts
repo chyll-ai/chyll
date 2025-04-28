@@ -142,6 +142,9 @@ export const fr = {
         description: "Du contenu intelligent, dans votre ton et style. Voltaire écrit vos articles de blog, légendes de médias sociaux, campagnes d'emails et visuels — transformant vos idées en contenus magnifiquement rédigés.",
         cta: "Déployer Voltaire"
       }
+    },
+    partners: {
+      title: "Rejoignez les entreprises qui accélèrent leur croissance avec nos solutions IA"
     }
   },
   
