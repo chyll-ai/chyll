@@ -172,7 +172,8 @@ export const fr = {
         period: "mois",
         description: "Parfait pour les petites équipes",
         features: [
-          "50 enrichissements par mois",
+          "50 numéros de téléphone ET adresses email par mois",
+          "Personas illimités (LinkedIn)",
           "2 utilisateurs",
           "Interface CRM personnalisée",
           "Support par email",
@@ -186,12 +187,13 @@ export const fr = {
         period: "mois",
         description: "Pour les équipes en croissance",
         features: [
-          "100 enrichissements par mois",
+          "100 numéros de téléphone ET adresses email par mois",
+          "Personas illimités (LinkedIn)",
           "3 utilisateurs",
           "Interface CRM personnalisée",
           "Support prioritaire",
           "Mises à jour en temps réel",
-          "Intégration avec votre CRM existant"
+          "Export et import de data"
         ],
         buttonText: "Réserver une démo"
       },
@@ -201,12 +203,13 @@ export const fr = {
         period: "mois",
         description: "Pour les équipes commerciales établies",
         features: [
-          "200 enrichissements par mois",
+          "200 numéros de téléphone ET adresses email par mois",
+          "Personas illimités (LinkedIn)",
           "5 utilisateurs",
           "Interface CRM sur mesure",
           "Support dédié",
           "Mises à jour en temps réel",
-          "Intégrations avancées",
+          "Export et import de data",
           "Critères de recherche illimités",
           "Rapports de performance"
         ],
