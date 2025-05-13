@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '@/context/LanguageContext';
@@ -85,7 +84,7 @@ export function Footer2({
                 <img 
                   src="/lovable-uploads/6aebfbfd-ba13-4ef3-91a5-c262bd385900.png" 
                   alt="chyll.ai logo" 
-                  className="h-10 mb-4" 
+                  className="h-12 mb-4" 
                 />
               </Link>
               <p className="mt-4 font-bold text-[#aaadb0]">{displayTagline}</p>
