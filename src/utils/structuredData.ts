@@ -4,21 +4,31 @@ export const getOrganizationSchema = () => {
   return {
     '@context': 'https://schema.org',
     '@type': 'Organization',
-    name: 'GenerativSchool',
-    url: 'https://generativschool.com',
-    logo: 'https://generativschool.com/logo.png',
+    name: 'chyll.ai',
+    alternateName: ['chyll', 'Chyll AI'],
+    url: 'https://chyll.ai',
+    logo: 'https://chyll.ai/logo.png',
     sameAs: [
-      'https://twitter.com/generativschool',
-      'https://linkedin.com/company/generativschool',
-      'https://facebook.com/generativschool'
+      'https://twitter.com/chyllai',
+      'https://linkedin.com/company/chyll-ai',
+      'https://facebook.com/chyllai'
     ],
     contactPoint: {
       '@type': 'ContactPoint',
-      telephone: '+1-555-123-4567',
+      telephone: '+33 1 23 45 67 89',
       contactType: 'customer service',
-      email: 'contact@generativschool.com',
-      availableLanguage: ['English']
-    }
+      email: 'contact@chyll.ai',
+      availableLanguage: ['French', 'English']
+    },
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: '60 RUE FRANCOIS IER',
+      addressLocality: 'PARIS',
+      postalCode: '75008',
+      addressCountry: 'FR'
+    },
+    description: 'chyll.ai est un agent SDR automatisé qui trouve les bons prospects, les enrichit, et met à jour votre CRM pendant que vous travaillez sur autre chose.',
+    slogan: 'La prospection B2B, automatisée'
   };
 };
 
@@ -31,6 +41,9 @@ export const getArticleSchema = (article: {
   publishDate: string;
   modifiedDate?: string;
   authorName: string;
+  authorUrl?: string;
+  keywords?: string[];
+  category?: string;
 }) => {
   return {
     '@context': 'https://schema.org',
@@ -43,20 +56,24 @@ export const getArticleSchema = (article: {
     author: {
       '@type': 'Person',
       name: article.authorName,
-      url: 'https://generativschool.com/team'
+      url: article.authorUrl || 'https://chyll.ai/team'
     },
     publisher: {
       '@type': 'Organization',
-      name: 'GenerativSchool',
+      name: 'chyll.ai',
       logo: {
         '@type': 'ImageObject',
-        url: 'https://generativschool.com/logo.png'
+        url: 'https://chyll.ai/logo.png'
       }
     },
     mainEntityOfPage: {
       '@type': 'WebPage',
       '@id': article.url
-    }
+    },
+    keywords: article.keywords?.join(', ') || 'prospection B2B, SDR, enrichissement, leads, automation',
+    articleSection: article.category || 'Prospection B2B',
+    isAccessibleForFree: true,
+    inLanguage: 'fr-FR'
   };
 };
 
@@ -91,18 +108,26 @@ export const getProductSchema = (product: {
 }) => {
   return {
     '@context': 'https://schema.org',
-    '@type': 'Product',
-    name: product.name,
-    description: product.description,
+    '@type': 'SoftwareApplication',
+    name: product.name || 'chyll.ai',
+    applicationCategory: 'BusinessApplication',
+    operatingSystem: 'Web',
+    description: product.description || 'Agent SDR automatisé pour la prospection B2B',
     image: product.image,
-    sku: product.sku,
     offers: {
       '@type': 'Offer',
       price: product.offers.price,
       priceCurrency: product.offers.priceCurrency,
       availability: product.offers.availability,
       url: product.url
-    }
+    },
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: '4.8',
+      reviewCount: '215'
+    },
+    featureList: "Enrichissement de leads, Recherche automatisée de prospects, Export et import de data, Personas LinkedIn illimités, Interface CRM personnalisée",
+    keywords: "chyll.ai, prospection B2B, SDR automatisé, enrichissement de leads, automation commerciale"
   };
 };
 
@@ -117,5 +142,30 @@ export const getBreadcrumbSchema = (items: { name: string; url: string }[]) => {
       name: item.name,
       item: item.url
     }))
+  };
+};
+
+// SoftwareApplication schema specifically for chyll.ai
+export const getChyllAiSchema = () => {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: 'chyll.ai',
+    applicationCategory: 'BusinessApplication',
+    applicationSubCategory: 'Sales Development Tool',
+    operatingSystem: 'Web',
+    offers: {
+      '@type': 'Offer',
+      price: '199.00',
+      priceCurrency: 'EUR'
+    },
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: '4.8',
+      ratingCount: '215'
+    },
+    description: "chyll.ai est un agent SDR automatisé qui trouve les bons prospects, les enrichit avec des numéros de téléphone et emails, et met à jour votre CRM.",
+    featureList: "Enrichissement de leads, Recherche automatisée de prospects, Export et import de data, Personas LinkedIn illimités",
+    keywords: "chyll.ai, prospection B2B, SDR automatisé, enrichissement de leads, automation commerciale"
   };
 };

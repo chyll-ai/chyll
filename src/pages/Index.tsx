@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import HowItWorks from '@/components/HowItWorks';
@@ -8,7 +9,7 @@ import { DefaultDemo as FaqAccordionDemo } from '@/components/ui/faq-chat-accord
 import { Footer2 } from '@/components/ui/footer2';
 import { PartnerCompaniesDemo } from '@/components/ui/partner-companies-demo';
 import SEOMetadata from '@/components/SEOMetadata';
-import { getOrganizationSchema, getFAQSchema } from '@/utils/structuredData';
+import { getOrganizationSchema, getFAQSchema, getChyllAiSchema } from '@/utils/structuredData';
 import { Suspense } from 'react';
 import { useLanguage } from '@/context/LanguageContext';
 import { TestimonialsCarousel } from '@/components/ui/testimonials-carousel';
@@ -35,6 +36,22 @@ const Index = () => {
   // Generate structured data
   const organizationSchema = getOrganizationSchema();
   const faqSchema = getFAQSchema(faqData);
+  const chyllAiSchema = getChyllAiSchema();
+  
+  // SEO keywords focused on brand and B2B prospection
+  const seoKeywords = [
+    'chyll.ai', 
+    'chyll', 
+    'agent SDR', 
+    'prospection B2B',
+    'enrichissement de leads',
+    'automation commerciale',
+    'SDR automatisé',
+    'génération de leads B2B',
+    'numéros de téléphone professionnels',
+    'emails professionnels',
+    'personas LinkedIn'
+  ];
   
   return (
     <div className="min-h-screen flex flex-col">
@@ -42,9 +59,11 @@ const Index = () => {
         title="chyll.ai - La prospection B2B, automatisée"
         description="chyll.ai trouve les bons prospects, les enrichit, et met à jour ton CRM pendant que tu bosses sur autre chose."
         canonicalUrl="/"
+        keywords={seoKeywords}
         structuredData={{
           organization: organizationSchema,
-          faq: faqSchema
+          faq: faqSchema,
+          software: chyllAiSchema
         }}
       />
       
