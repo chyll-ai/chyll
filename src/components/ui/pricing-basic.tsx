@@ -23,7 +23,10 @@ function PricingBasic() {
     {
       name: t.pricing.plans.automate.name,
       price: t.pricing.plans.automate.price,
-      yearlyPrice: t.pricing.plans.automate.yearlyPrice || "159",
+      // Use price as fallback if yearlyPrice doesn't exist in translations
+      yearlyPrice: t.pricing.plans.automate.price ? 
+        (parseFloat(t.pricing.plans.automate.price.replace('€', '')) * 12 * 0.8).toFixed(0) + '€' : 
+        "159€",
       period: t.pricing.plans.automate.period,
       features: t.pricing.plans.automate.features || [],
       description: t.pricing.plans.automate.description,
@@ -34,7 +37,10 @@ function PricingBasic() {
     {
       name: t.pricing.plans.integrate.name,
       price: t.pricing.plans.integrate.price,
-      yearlyPrice: t.pricing.plans.integrate.yearlyPrice || "559",
+      // Use price as fallback if yearlyPrice doesn't exist in translations
+      yearlyPrice: t.pricing.plans.integrate.price ? 
+        (parseFloat(t.pricing.plans.integrate.price.replace('€', '')) * 12 * 0.8).toFixed(0) + '€' : 
+        "559€",
       period: t.pricing.plans.integrate.period,
       features: t.pricing.plans.integrate.features || [],
       description: t.pricing.plans.integrate.description,
