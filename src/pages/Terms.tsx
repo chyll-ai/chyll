@@ -1,11 +1,10 @@
-
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import { Footer2Demo } from '@/components/ui/footer2-demo';
 import { useLanguage } from '@/context/LanguageContext';
 
 const Terms = () => {
-  const { currentLanguage } = useLanguage();
+  const { language } = useLanguage();
   
   return (
     <div className="min-h-screen flex flex-col">
@@ -14,7 +13,7 @@ const Terms = () => {
       <section className="flex-grow py-16 bg-white">
         <div className="container-custom">
           <div className="max-w-4xl mx-auto">
-            {currentLanguage === 'en' ? (
+            {language === 'en' ? (
               <>
                 <h1 className="text-3xl md:text-4xl font-bold mb-8">Terms of Service</h1>
                 
