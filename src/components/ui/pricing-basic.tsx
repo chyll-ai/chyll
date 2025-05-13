@@ -17,7 +17,7 @@ function PricingBasic() {
       features: t.pricing.plans.once.features || [],
       description: t.pricing.plans.once.description,
       buttonText: t.pricing.plans.once.buttonText || "Commencer",
-      href: "https://tally.so/r/wA0pJl",
+      href: "https://buy.stripe.com/5kAeWh18h6cOenSeUV",
       isPopular: false,
     },
     {

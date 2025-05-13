@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Check } from 'lucide-react';
@@ -19,7 +18,9 @@ const pricingPlans = [
     ],
     highlight: false,
     color: "blue",
-    trial: null
+    trial: null,
+    buttonText: "Start Free Trial",
+    href: "https://buy.stripe.com/5kAeWh18h6cOenSeUV"
   },
   {
     name: "Automate",
@@ -70,7 +71,9 @@ const frPricingPlans = [
     ],
     highlight: false,
     color: "blue",
-    trial: null
+    trial: null,
+    buttonText: "Commencer l'essai gratuit",
+    href: "https://buy.stripe.com/5kAeWh18h6cOenSeUV"
   },
   {
     name: "Automatiser",
@@ -184,8 +187,14 @@ const PricingCards = () => {
               }`}
               asChild
             >
-              <a href="https://tally.so/r/wA0pJl" target="_blank" rel="noopener noreferrer">
-                {language === 'fr' ? 'Réserver une démo' : 'Book a Demo'}
+              <a 
+                href={index === 0 ? "https://buy.stripe.com/5kAeWh18h6cOenSeUV" : "https://tally.so/r/wA0pJl"} 
+                target="_blank" 
+                rel="noopener noreferrer"
+              >
+                {index === 0 
+                  ? (language === 'fr' ? 'Commencer l\'essai gratuit' : 'Start Free Trial') 
+                  : (language === 'fr' ? 'Réserver une démo' : 'Book a Demo')}
               </a>
             </Button>
           </CardFooter>
