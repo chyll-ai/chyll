@@ -81,7 +81,13 @@ export function Footer2({
         <footer>
           <div className="grid grid-cols-2 gap-8 lg:grid-cols-6">
             <div className="col-span-2 mb-8 lg:mb-0">
-              <p className="text-xl font-semibold text-white">chyll.ai</p>
+              <Link to="/" className="inline-block">
+                <img 
+                  src="/lovable-uploads/6aebfbfd-ba13-4ef3-91a5-c262bd385900.png" 
+                  alt="chyll.ai logo" 
+                  className="h-10 mb-4" 
+                />
+              </Link>
               <p className="mt-4 font-bold text-[#aaadb0]">{displayTagline}</p>
               <p className="mt-2 text-[#8E9196]">hello@chyll.ai</p>
               <div className="mt-4">

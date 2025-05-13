@@ -12,8 +12,14 @@ const Footer = () => {
       <div className="container-custom py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="col-span-1 md:col-span-2">
-            <div className="text-2xl font-bold text-brand-blue mb-4">
-              <span className="text-gray-800">chyll.ai</span>
+            <div className="mb-4">
+              <Link to="/">
+                <img 
+                  src="/lovable-uploads/6aebfbfd-ba13-4ef3-91a5-c262bd385900.png" 
+                  alt="chyll.ai logo" 
+                  className="h-10" 
+                />
+              </Link>
             </div>
             <p className="text-gray-600 mb-4 max-w-md">
               {t.footer.tagline}

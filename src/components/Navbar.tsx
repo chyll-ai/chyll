@@ -39,8 +39,12 @@ const Navbar = ({ currentPath = '/' }: NavbarProps) => {
     <nav className="bg-white/90 backdrop-blur-sm sticky top-0 z-50 border-b border-gray-100">
       <div className="container-custom flex justify-between items-center py-4">
         <div className="flex items-center gap-4">
-          <Link to="/" className="text-2xl font-bold text-gray-800">
-            chyll.ai
+          <Link to="/" className="flex items-center">
+            <img 
+              src="/lovable-uploads/6aebfbfd-ba13-4ef3-91a5-c262bd385900.png" 
+              alt="chyll.ai logo" 
+              className="h-8" 
+            />
           </Link>
           
           {/* Home button - only show when not on home page */}

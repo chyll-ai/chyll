@@ -5,6 +5,7 @@ import React, { useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "./button";
 import { LogIn } from "lucide-react";
+import { Link } from "react-router-dom";
 
 function NavHeader() {
   const [position, setPosition] = useState({
@@ -15,18 +16,27 @@ function NavHeader() {
 
   return (
     <div className="flex items-center justify-between w-full max-w-screen-xl mx-auto px-4">
-      <ul
-        className="relative flex w-fit rounded-full border-2 border-brand-blue bg-white p-1"
-        onMouseLeave={() => setPosition((pv) => ({ ...pv, opacity: 0 }))}
-      >
-        <Tab setPosition={setPosition}>Home</Tab>
-        <Tab setPosition={setPosition}>Pricing</Tab>
-        <Tab setPosition={setPosition}>About</Tab>
-        <Tab setPosition={setPosition}>Services</Tab>
-        <Tab setPosition={setPosition}>Contact</Tab>
+      <div className="flex items-center">
+        <Link to="/" className="mr-8">
+          <img 
+            src="/lovable-uploads/6aebfbfd-ba13-4ef3-91a5-c262bd385900.png" 
+            alt="chyll.ai logo" 
+            className="h-8" 
+          />
+        </Link>
+        <ul
+          className="relative flex w-fit rounded-full border-2 border-brand-blue bg-white p-1"
+          onMouseLeave={() => setPosition((pv) => ({ ...pv, opacity: 0 }))}
+        >
+          <Tab setPosition={setPosition}>Home</Tab>
+          <Tab setPosition={setPosition}>Pricing</Tab>
+          <Tab setPosition={setPosition}>About</Tab>
+          <Tab setPosition={setPosition}>Services</Tab>
+          <Tab setPosition={setPosition}>Contact</Tab>
 
-        <Cursor position={position} />
-      </ul>
+          <Cursor position={position} />
+        </ul>
+      </div>
       
       <Button 
         className="flex items-center gap-2" 
