@@ -28,7 +28,7 @@ const SEOMetadata = ({
   description,
   canonicalUrl,
   ogType = 'website',
-  ogImage = '/lovable-uploads/860cdec8-1919-4afc-928c-cbfa116c2f7b.png',
+  ogImage = '/lovable-uploads/dd35b91f-36a3-4849-ab8e-6941ead9b4f4.png',
   articlePublishedTime,
   articleModifiedTime,
   structuredData,
@@ -220,7 +220,7 @@ const SEOMetadata = ({
       <meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
       <meta name="bingbot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
       
-      {/* Alternative URLs for different languages - Fixing hreflang to hrefLang */}
+      {/* Alternative URLs for different languages - Fixed hreflang to hrefLang */}
       {language === 'fr' && <link rel="alternate" hrefLang="fr" href={`${siteUrl}${canonicalUrl || ''}`} />}
       {language === 'en' && <link rel="alternate" hrefLang="en" href={`${siteUrl}/en${canonicalUrl || ''}`} />}
       <link rel="alternate" hrefLang="x-default" href={`${siteUrl}${canonicalUrl || ''}`} />
