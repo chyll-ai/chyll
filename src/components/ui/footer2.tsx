@@ -47,7 +47,7 @@ export function Footer2({
       ],
     },
   ],
-  copyright,
+  copyright = "© 2025 chyll.ai",
   bottomLinks = [
     { text: "Conditions Générales", url: "#" },
     { text: "Politique de Confidentialité", url: "#" },
@@ -58,7 +58,7 @@ export function Footer2({
   
   // Use provided props or fallback to translations
   const displayTagline = tagline || t.footer.tagline;
-  const displayCopyright = copyright || t.footer.copyright;
+  const displayCopyright = copyright || "© 2025 chyll.ai";
 
   // Map bottom links to translations if not provided explicitly
   const displayBottomLinks = bottomLinks.map(link => {

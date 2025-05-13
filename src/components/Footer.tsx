@@ -13,13 +13,13 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="col-span-1 md:col-span-2">
             <div className="text-2xl font-bold text-brand-blue mb-4">
-              <span className="text-gray-800">GenerativSchool</span>
+              <span className="text-gray-800">chyll.ai</span>
             </div>
             <p className="text-gray-600 mb-4 max-w-md">
               {t.footer.tagline}
             </p>
             <p className="text-gray-500 text-sm">
-              {t.footer.copyright}
+              © 2025 chyll.ai
             </p>
           </div>
 
