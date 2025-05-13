@@ -73,14 +73,14 @@ export function Pricing({
   // Always use Euro symbol for this application
   const currencySymbol = "€";
 
-  // Calculate savings for yearly price
-  const calculateYearlySavings = (price: string) => {
+  // Calculate monthly price with 20% discount for yearly subscription
+  const calculateDiscountedMonthlyPrice = (price: string): string => {
     const monthlyPrice = parseFloat(price);
     if (isNaN(monthlyPrice)) return price;
     
-    // Calculate yearly price with 20% discount (multiply by 12 months, then apply 0.8 for 20% off)
-    const yearlyPrice = (monthlyPrice * 12 * 0.8).toFixed(0);
-    return yearlyPrice;
+    // Calculate discounted monthly price (20% off)
+    const discountedMonthlyPrice = (monthlyPrice * 0.8).toFixed(0);
+    return discountedMonthlyPrice;
   };
 
   return (
@@ -121,10 +121,10 @@ export function Pricing({
 
       <div className="grid grid-cols-1 md:grid-cols-3 sm:2 gap-4">
         {plans.map((plan, index) => {
-          // Use yearly price if provided, otherwise calculate it from monthly price
-          const displayedYearlyPrice = plan.yearlyPrice === plan.price
-            ? calculateYearlySavings(plan.price)
-            : plan.yearlyPrice;
+          // Calculate discounted monthly price for annual billing
+          const displayedPrice = isMonthly 
+            ? plan.price 
+            : calculateDiscountedMonthlyPrice(plan.price) + currencySymbol;
 
           return (
             <motion.div
@@ -175,16 +175,13 @@ export function Pricing({
                 </p>
                 <div className="mt-6 flex items-center justify-center gap-x-2">
                   <span className="text-5xl font-bold tracking-tight text-foreground">
-                    {/* Display price based on billing period */}
-                    <span>
-                      {isMonthly ? plan.price : displayedYearlyPrice}{currencySymbol}
-                    </span>
+                    {displayedPrice}
                   </span>
                   {plan.period !== "Next 3 months" && (
                     <span className="text-sm font-semibold leading-6 tracking-wide text-muted-foreground">
                       {isMonthly 
                         ? plan.period 
-                        : language === "fr" ? "/an" : "/year"}
+                        : language === "fr" ? "/mois" : "/month"}
                     </span>
                   )}
                 </div>
