@@ -1,11 +1,10 @@
-
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Star } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 
 const TestimonialCarousel = () => {
   const [activeIndex, setActiveIndex] = useState(0);
-  const { language, t } = useLanguage();
+  const { t, language } = useLanguage();
 
   // Default testimonials for fallback
   const defaultTestimonials = [
@@ -33,7 +32,7 @@ const TestimonialCarousel = () => {
   ];
 
   // Get testimonials from translations if available
-  const testimonials = language === 'fr' && t.home?.testimonials?.quotes ? 
+  const testimonials = t.home?.testimonials?.quotes ? 
     t.home.testimonials.quotes.map((quote: any) => ({
       quote: quote.text,
       author: quote.author.split(' ')[0] + ' ' + quote.author.split(' ')[1].charAt(0) + '.',

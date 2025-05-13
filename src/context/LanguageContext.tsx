@@ -5,6 +5,7 @@ import type { TranslationKeys } from '@/translations';
 
 interface LanguageContextType {
   t: TranslationKeys;
+  language: 'fr'; // Keep language property but fix it to 'fr'
 }
 
 // Add missing properties to ensure TranslationKeys compatibility
@@ -63,6 +64,7 @@ const translationWithDefaults = {
 
 const LanguageContext = createContext<LanguageContextType>({
   t: translationWithDefaults,
+  language: 'fr'
 });
 
 export const useLanguage = () => useContext(LanguageContext);
@@ -70,7 +72,8 @@ export const useLanguage = () => useContext(LanguageContext);
 export const LanguageProvider = ({ children }: { children: ReactNode }) => {
   return (
     <LanguageContext.Provider value={{ 
-      t: translationWithDefaults
+      t: translationWithDefaults,
+      language: 'fr'
     }}>
       {children}
     </LanguageContext.Provider>
