@@ -191,7 +191,7 @@ export const fr = {
           "Interface CRM personnalisée",
           "Support prioritaire",
           "Mises à jour en temps réel",
-          "Intégration CRM existant"
+          "Intégration avec votre CRM existant"
         ],
         buttonText: "Réserver une démo"
       },
