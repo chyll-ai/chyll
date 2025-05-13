@@ -1,66 +1,100 @@
 
 # chyll.ai - Agent SDR automatisé - Robots.txt
+
 # Main directives
 User-agent: *
 Allow: /
+Allow: /api/offers.json
+Allow: /offres/
 Disallow: /admin/
 Disallow: /wp-admin/
 Disallow: /wp-login/
 Disallow: /private/
 Disallow: /account/
 
+# Sitemap location
+Sitemap: https://chyll.ai/sitemap.xml
+
 # Allow search engines
 User-agent: Googlebot
 Allow: /
+Allow: /api/offers.json
+Allow: /offres/
 Disallow: /admin/
 
 User-agent: Bingbot
 Allow: /
-Disallow: /admin/
-
-User-agent: DuckDuckBot
-Allow: /
+Allow: /api/offers.json
+Allow: /offres/
 Disallow: /admin/
 
 # AI Crawlers - Important content for AI models
 User-agent: GPTBot
 Allow: /
+Allow: /api/offers.json
 Allow: /about-us
 Allow: /faq
 Allow: /blog
+Allow: /offres/
 Disallow: /admin/
 
 User-agent: ChatGPT-User
 Allow: /
+Allow: /api/offers.json
+Allow: /offres/
 Disallow: /admin/
 
 User-agent: GoogleOther
 Allow: /
+Allow: /api/offers.json
+Allow: /offres/
+
+User-agent: Anthropic-AI
+Allow: /
+Allow: /api/offers.json
+Allow: /offres/
+
+User-agent: ClaudeBot
+Allow: /
+Allow: /api/offers.json
+Allow: /offres/
+
+User-agent: Bytespider
+Allow: /
+Allow: /api/offers.json
+Allow: /offres/
+
+User-agent: CCBot
+Allow: /
+Allow: /api/offers.json
+Allow: /offres/
 
 # Social Media Crawlers
 User-agent: Twitterbot
 Allow: /
+Allow: /api/offers.json
 
 User-agent: facebookexternalhit
 Allow: /
+Allow: /api/offers.json
 
 # International search engines
 User-agent: Baiduspider
 Allow: /
+Allow: /api/offers.json
 
 User-agent: YandexBot
 Allow: /
+Allow: /api/offers.json
 
 User-agent: Slurp
 Allow: /
+Allow: /api/offers.json
 
 User-agent: Applebot
 Allow: /
+Allow: /api/offers.json
 
-# Crawl delays to prevent server overload
-Crawl-delay: 1
-
-# Sitemap locations
-Sitemap: https://chyll.ai/sitemap.xml
-
-# Brand keywords: chyll.ai, chyll, prospection B2B, SDR agent, automation, leads B2B, enrichissement de leads
+# Brand keywords and SEO hints
+# chyll.ai, chyll, agent SDR automatisé, prospection B2B
+# enrichissement de leads, SDR automatisation, IA pour la vente

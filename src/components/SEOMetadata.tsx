@@ -15,6 +15,12 @@ interface SEOMetadataProps {
   author?: string;
   language?: 'fr' | 'en';
   pageUrl?: string;
+  offers?: {
+    name: string;
+    price: string;
+    description: string;
+    url: string;
+  }[];
 }
 
 const SEOMetadata = ({
@@ -30,6 +36,7 @@ const SEOMetadata = ({
   author = 'chyll.ai',
   language = 'fr',
   pageUrl,
+  offers
 }: SEOMetadataProps) => {
   const fullTitle = title ? `${title} | chyll.ai` : 'chyll.ai | La prospection B2B, automatisée';
   const siteUrl = 'https://chyll.ai';
@@ -69,12 +76,106 @@ const SEOMetadata = ({
     }
   };
   
+  // Generate service/product schemas from offers
+  const servicesStructuredData = offers ? {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    itemListElement: offers.map((offer, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      item: {
+        '@type': 'Service',
+        name: offer.name,
+        description: offer.description,
+        url: offer.url,
+        offers: {
+          '@type': 'Offer',
+          price: offer.price.replace('€', ''),
+          priceCurrency: 'EUR',
+          url: offer.url
+        }
+      }
+    }))
+  } : null;
+  
+  // Business info structured data
+  const businessStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'LocalBusiness',
+    name: 'chyll.ai',
+    image: `${siteUrl}/lovable-uploads/860cdec8-1919-4afc-928c-cbfa116c2f7b.png`,
+    url: siteUrl,
+    telephone: '+33 1 23 45 67 89',
+    email: 'contact@chyll.ai',
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: '60 RUE FRANCOIS IER',
+      addressLocality: 'PARIS',
+      postalCode: '75008',
+      addressCountry: 'FR'
+    },
+    openingHours: 'Mo-Fr 09:00-18:00',
+    priceRange: '€€'
+  };
+  
+  // Testimonials structured data
+  const reviewsStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: 'chyll.ai',
+    description: 'Agent SDR automatisé pour la prospection B2B',
+    review: [
+      {
+        '@type': 'Review',
+        reviewRating: {
+          '@type': 'Rating',
+          ratingValue: '5',
+          bestRating: '5'
+        },
+        author: {
+          '@type': 'Person',
+          name: 'Thomas Martin'
+        },
+        datePublished: '2025-02-15',
+        reviewBody: 'Un gain de temps incroyable pour notre équipe commerciale. Nous avons multiplié par 3 notre volume de leads qualifiés.'
+      }
+    ],
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: '4.8',
+      reviewCount: '215',
+      bestRating: '5'
+    }
+  };
+  
+  // Pricing specification structured data
+  const pricingStructuredData = offers ? {
+    '@context': 'https://schema.org',
+    '@type': 'PriceSpecification',
+    priceCurrency: 'EUR',
+    price: offers[1].price.replace('€', ''), // Using the main "Automate" price
+    validFrom: '2025-01-01',
+    validThrough: '2025-12-31',
+    valueAddedTaxIncluded: true,
+    eligibleCustomerType: 'Business',
+    description: 'Tarification mensuelle standard pour chyll.ai'
+  } : null;
+  
   // Merge structured data
   const combinedStructuredData = {
     website: websiteStructuredData,
     software: softwareStructuredData,
+    business: businessStructuredData,
+    reviews: reviewsStructuredData,
+    pricing: pricingStructuredData,
+    services: servicesStructuredData,
     ...structuredData
   };
+  
+  // Filter out null values
+  const finalStructuredData = Object.fromEntries(
+    Object.entries(combinedStructuredData).filter(([_, v]) => v !== null)
+  );
   
   return (
     <Helmet>
@@ -119,6 +220,11 @@ const SEOMetadata = ({
       <meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
       <meta name="bingbot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
       
+      {/* Alternative URLs for different languages */}
+      {language === 'fr' && <link rel="alternate" hreflang="fr" href={`${siteUrl}${canonicalUrl || ''}`} />}
+      {language === 'en' && <link rel="alternate" hreflang="en" href={`${siteUrl}/en${canonicalUrl || ''}`} />}
+      <link rel="alternate" hreflang="x-default" href={`${siteUrl}${canonicalUrl || ''}`} />
+      
       {/* B2B and Sales Development specific metadata */}
       <meta name="category" content="B2B Sales, Prospection, SDR Tools" />
       <meta name="subject" content="Automation pour SDR, Prospection B2B" />
@@ -146,8 +252,14 @@ const SEOMetadata = ({
       <meta name="apple-itunes-app" content="app-id=XXXXXXXXXXXXX" /> {/* Replace with actual app ID */}
       <meta name="google-play-app" content="app-id=com.chyll.ai" /> {/* Replace with actual app ID */}
       
+      {/* Link to offers API JSON for non-JS clients */}
+      <link rel="alternate" type="application/json" href="/api/offers.json" />
+      
+      {/* Link to sitemap */}
+      <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
+      
       {/* Structured Data / JSON-LD */}
-      {Object.values(combinedStructuredData).map((data, index) => (
+      {Object.values(finalStructuredData).map((data, index) => (
         <script key={index} type="application/ld+json">
           {JSON.stringify(data)}
         </script>

@@ -42,6 +42,28 @@
     <!-- Canonical URL -->
     <link rel="canonical" href="https://chyll.ai" />
     
+    <!-- Link to JSON API data -->
+    <link rel="alternate" type="application/json" href="/api/offers.json" />
+    
+    <!-- Link to sitemap -->
+    <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
+    
+    <!-- Critical CSS for no-JS experience -->
+    <style>
+      body { font-family: 'Inter', sans-serif; line-height: 1.5; color: #333; margin: 0; padding: 0; }
+      .noscript-header { text-align: center; padding: 2rem 1rem; background: linear-gradient(135deg, #4F46E5 0%, #0EA5E9 100%); color: white; }
+      .noscript-offer { border: 1px solid #e5e5e5; border-radius: 8px; padding: 1.5rem; margin: 1rem 0; }
+      .noscript-cta { display: inline-block; background: #4F46E5; color: white; padding: 0.5rem 1rem; border-radius: 4px; text-decoration: none; font-weight: bold; }
+      .noscript-section { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
+      .noscript-footer { text-align: center; border-top: 1px solid #e5e5e5; padding: 1rem; margin-top: 2rem; }
+      .hidden { display: none; }
+      @media (prefers-color-scheme: dark) {
+        body { background: #1a1a1a; color: #e5e5e5; }
+        .noscript-offer { border-color: #333; }
+        .noscript-footer { border-color: #333; }
+      }
+    </style>
+    
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
     <script>
@@ -64,6 +86,51 @@
           "target": "https://chyll.ai/search?q={search_term_string}",
           "query-input": "required name=search_term_string"
         }
+      }
+    </script>
+    
+    <!-- Structured data for service -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Service",
+        "name": "chyll.ai",
+        "serviceType": "Prospection B2B Automatisée",
+        "provider": {
+          "@type": "Organization",
+          "name": "chyll.ai",
+          "url": "https://chyll.ai"
+        },
+        "description": "Agent SDR automatisé qui trouve les bons prospects, les enrichit, et met à jour votre CRM.",
+        "offers": {
+          "@type": "AggregateOffer",
+          "highPrice": "699",
+          "lowPrice": "99",
+          "priceCurrency": "EUR",
+          "offerCount": "3"
+        }
+      }
+    </script>
+    
+    <!-- Structured data for business -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "LocalBusiness",
+        "name": "chyll.ai",
+        "image": "https://chyll.ai/lovable-uploads/860cdec8-1919-4afc-928c-cbfa116c2f7b.png",
+        "url": "https://chyll.ai",
+        "telephone": "+33 1 23 45 67 89",
+        "email": "contact@chyll.ai",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "60 RUE FRANCOIS IER",
+          "addressLocality": "PARIS",
+          "postalCode": "75008",
+          "addressCountry": "FR"
+        },
+        "openingHours": "Mo-Fr 09:00-18:00",
+        "priceRange": "€€"
       }
     </script>
     
@@ -157,19 +224,90 @@
 
   <body data-gpt-ignore="true">
     <div id="root" data-gpt-ignore="true"></div>
+    
+    <!-- No-JS Fallback Content -->
+    <noscript>
+      <div class="noscript-header">
+        <h1>chyll.ai | La prospection B2B, automatisée</h1>
+        <p>Notre agent SDR trouve les bons prospects, les enrichit, et met à jour votre CRM.</p>
+      </div>
+      
+      <div class="noscript-section">
+        <h2 style="text-align: center;">Nos offres</h2>
+        
+        <div class="noscript-offer">
+          <h3>Une fois — 99€</h3>
+          <p>Une tâche, entièrement réalisée pour vous.</p>
+          <ul>
+            <li>Construction et livraison d'une automatisation pour votre cas d'utilisation</li>
+            <li>Interface simple (Airtable ou Notion)</li>
+            <li>Configuration, paramétrage et test inclus</li>
+            <li>Idéal pour une preuve de concept</li>
+          </ul>
+          <p><a href="https://buy.stripe.com/5kAeWh18h6cOenSeUV" class="noscript-cta">Commencer</a></p>
+        </div>
+        
+        <div class="noscript-offer">
+          <h3>Automatiser — 199€/mois</h3>
+          <p>Un assistant IA que vous pouvez contrôler.</p>
+          <ul>
+            <li>Interface IA personnalisée</li>
+            <li>200 actions mensuelles alimentées par l'IA</li>
+            <li>Configuration clé en main sans compétence technique</li>
+            <li>Support continu et améliorations</li>
+          </ul>
+          <p><a href="https://tally.so/r/wA0pJl" class="noscript-cta">Réserver une démo</a></p>
+        </div>
+        
+        <div class="noscript-offer">
+          <h3>Intégrer — 699€/mois</h3>
+          <p>Configuration IA complète à travers vos opérations.</p>
+          <ul>
+            <li>Flux de travail personnalisés</li>
+            <li>Intégration avec votre pile technologique existante</li>
+            <li>1 000 actions d'automatisation mensuelles</li>
+            <li>Support prioritaire et accès stratégique</li>
+          </ul>
+          <p><a href="https://tally.so/r/wA0pJl" class="noscript-cta">Contacter l'équipe</a></p>
+        </div>
+      </div>
+      
+      <div class="noscript-section">
+        <h2 style="text-align: center;">Comment ça marche</h2>
+        <ol>
+          <li>Nous configurons votre agent SDR basé sur l'IA selon vos besoins</li>
+          <li>L'agent identifie et enrichit automatiquement les prospects pertinents</li>
+          <li>Les données enrichies sont synchronisées avec votre CRM</li>
+          <li>Vous concentrez votre temps sur les conversations qui comptent</li>
+        </ol>
+      </div>
+      
+      <div class="noscript-section">
+        <h2 style="text-align: center;">Questions fréquentes</h2>
+        <dl>
+          <dt style="font-weight: bold; margin-top: 1rem;">Ai-je besoin de savoir coder pour utiliser chyll.ai ?</dt>
+          <dd>Non, aucune compétence technique n'est nécessaire. Notre équipe s'occupe de toute la configuration pour vous.</dd>
+          
+          <dt style="font-weight: bold; margin-top: 1rem;">Combien de temps faut-il pour mettre en place chyll.ai ?</dt>
+          <dd>Votre agent chyll.ai est prêt en 48h maximum. Nous nous occupons de toute la configuration et l'intégration.</dd>
+          
+          <dt style="font-weight: bold; margin-top: 1rem;">Comment chyll.ai trouve-t-il mes prospects ?</dt>
+          <dd>Notre agent utilise l'IA pour identifier les entreprises et décideurs correspondant à vos critères, puis enrichit les données avec des emails et numéros vérifiés.</dd>
+        </dl>
+      </div>
+      
+      <div class="noscript-footer">
+        <p>Contact: contact@chyll.ai | +33 1 23 45 67 89</p>
+        <p>60 RUE FRANCOIS IER, 75008 PARIS</p>
+        <p>© 2025 chyll.ai - Tous droits réservés</p>
+      </div>
+    </noscript>
+    
     <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS VERY COMMENT! -->
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
     <script type="module" src="/src/main.tsx"></script>
     
     <!-- Preconnect to origin, just in case -->
     <link rel="preconnect" href="https://chyll.ai" crossorigin />
-    
-    <!-- No-JS Fallback (optional) -->
-    <noscript>
-      <div style="padding: 2rem; text-align: center;">
-        <h1>JavaScript Required</h1>
-        <p>We're sorry, but chyll.ai requires JavaScript to function properly. Please enable JavaScript to continue.</p>
-      </div>
-    </noscript>
   </body>
 </html>

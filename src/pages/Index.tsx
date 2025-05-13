@@ -38,6 +38,55 @@ const faqData = [
   }
 ];
 
+// Offres pour le SEO et le contenu sans JavaScript
+const offersData = [
+  {
+    name: "Une fois",
+    price: "99€",
+    period: "unique",
+    description: "Une tâche, entièrement réalisée pour vous.",
+    features: [
+      "Construction et livraison d'une automatisation pour votre cas d'utilisation",
+      "Interface simple (Airtable ou Notion)",
+      "Configuration, paramétrage et test inclus",
+      "Idéal pour une preuve de concept"
+    ],
+    url: "https://chyll.ai/offres/une-fois",
+    action: "https://buy.stripe.com/5kAeWh18h6cOenSeUV",
+    actionText: "Commencer"
+  },
+  {
+    name: "Automatiser",
+    price: "199€",
+    period: "/mois",
+    description: "Un assistant IA que vous pouvez contrôler.",
+    features: [
+      "Interface IA personnalisée",
+      "200 actions mensuelles alimentées par l'IA",
+      "Configuration clé en main sans compétence technique",
+      "Support continu et améliorations"
+    ],
+    url: "https://chyll.ai/offres/automatiser",
+    action: "https://tally.so/r/wA0pJl",
+    actionText: "Réserver une démo"
+  },
+  {
+    name: "Intégrer",
+    price: "699€",
+    period: "/mois",
+    description: "Configuration IA complète à travers vos opérations.",
+    features: [
+      "Flux de travail personnalisés",
+      "Intégration avec votre pile technologique existante",
+      "1 000 actions d'automatisation mensuelles",
+      "Support prioritaire et accès stratégique"
+    ],
+    url: "https://chyll.ai/offres/integrer",
+    action: "https://tally.so/r/wA0pJl",
+    actionText: "Contacter l'équipe"
+  }
+];
+
 const Index = () => {
   const { t } = useLanguage();
   
@@ -73,12 +122,73 @@ const Index = () => {
         canonicalUrl="/"
         pageUrl="https://chyll.ai/"
         keywords={seoKeywords}
+        offers={offersData}
         structuredData={{
           organization: organizationSchema,
           faq: faqSchema,
           software: chyllAiSchema
         }}
       />
+      
+      {/* Contenu pour les navigateurs sans JavaScript */}
+      <noscript>
+        <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto', fontFamily: 'Arial, sans-serif' }}>
+          <header style={{ textAlign: 'center', margin: '20px 0' }}>
+            <h1>chyll.ai - La prospection B2B, automatisée</h1>
+            <p>chyll.ai trouve les bons prospects, les enrichit avec emails et téléphones vérifiés, et met à jour ton CRM.</p>
+          </header>
+          
+          <section style={{ margin: '30px 0' }}>
+            <h2 style={{ textAlign: 'center' }}>Nos offres</h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              {offersData.map((offer, index) => (
+                <div key={index} style={{ border: '1px solid #ddd', padding: '20px', borderRadius: '8px' }}>
+                  <h3>{offer.name} — {offer.price}{offer.period}</h3>
+                  <p>{offer.description}</p>
+                  <ul>
+                    {offer.features.map((feature, i) => (
+                      <li key={i}>{feature}</li>
+                    ))}
+                  </ul>
+                  <p>
+                    <a href={offer.action} style={{ fontWeight: 'bold', color: '#4F46E5' }}>
+                      {offer.actionText}
+                    </a>
+                  </p>
+                </div>
+              ))}
+            </div>
+          </section>
+          
+          <section style={{ margin: '30px 0' }}>
+            <h2 style={{ textAlign: 'center' }}>Comment ça marche</h2>
+            <ol>
+              <li>Nous configurons votre agent SDR basé sur l'IA selon vos besoins</li>
+              <li>L'agent identifie et enrichit automatiquement les prospects pertinents</li>
+              <li>Les données enrichies sont synchronisées avec votre CRM</li>
+              <li>Vous concentrez votre temps sur les conversations qui comptent</li>
+            </ol>
+          </section>
+          
+          <section style={{ margin: '30px 0' }}>
+            <h2 style={{ textAlign: 'center' }}>FAQ</h2>
+            <dl>
+              {faqData.map((faq, index) => (
+                <div key={index} style={{ margin: '10px 0' }}>
+                  <dt style={{ fontWeight: 'bold' }}>{faq.question}</dt>
+                  <dd>{faq.answer}</dd>
+                </div>
+              ))}
+            </dl>
+          </section>
+          
+          <footer style={{ textAlign: 'center', margin: '30px 0', padding: '20px', borderTop: '1px solid #ddd' }}>
+            <p>Contact: contact@chyll.ai | +33 1 23 45 67 89</p>
+            <p>60 RUE FRANCOIS IER, 75008 PARIS</p>
+            <p>© 2025 chyll.ai - Tous droits réservés</p>
+          </footer>
+        </div>
+      </noscript>
       
       <Navbar />
       

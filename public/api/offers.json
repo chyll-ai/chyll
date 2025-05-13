@@ -1,0 +1,32 @@
+
+{
+  "offers": [
+    {
+      "id": "once",
+      "name": "Une fois",
+      "price": "99€",
+      "description": "Une tâche, entièrement réalisée pour vous.",
+      "url": "https://chyll.ai/offres/une-fois",
+      "action": "https://buy.stripe.com/5kAeWh18h6cOenSeUV",
+      "actionText": "Commencer l'essai gratuit"
+    },
+    {
+      "id": "automate",
+      "name": "Automatiser",
+      "price": "199€",
+      "description": "Un assistant IA que vous pouvez contrôler.",
+      "url": "https://chyll.ai/offres/automatiser",
+      "action": "https://tally.so/r/wA0pJl",
+      "actionText": "Réserver une démo"
+    },
+    {
+      "id": "integrate",
+      "name": "Intégrer",
+      "price": "699€",
+      "description": "Configuration IA complète à travers vos opérations.",
+      "url": "https://chyll.ai/offres/integrer",
+      "action": "https://tally.so/r/wA0pJl",
+      "actionText": "Contacter l'équipe"
+    }
+  ]
+}
