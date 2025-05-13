@@ -91,9 +91,20 @@
     @apply border-border;
   }
 
+  html {
+    -webkit-text-size-adjust: 100%;
+    font-size: 16px;
+    scroll-behavior: smooth;
+  }
+
   body {
     @apply bg-background text-foreground font-inter;
     font-feature-settings: "rlig" 1, "calt" 1;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+    width: 100%;
   }
 
   h1, h2, h3, h4 {
@@ -111,6 +122,33 @@
   .container-custom {
     @apply container mx-auto px-4 md:px-8;
   }
+  
+  /* Make tap targets larger on mobile */
+  @media (max-width: 767px) {
+    button, 
+    a, 
+    input, 
+    textarea, 
+    select {
+      @apply min-h-9 touch-manipulation;
+    }
+    
+    select, input {
+      @apply text-base;
+    }
+  }
+  
+  /* Hide focus outlines for mouse, but keep for keyboard */
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+  
+  /* Improve scrolling on iOS */
+  @supports (-webkit-touch-callout: none) {
+    .scroll-smooth {
+      -webkit-overflow-scrolling: touch;
+    }
+  }
 }
 
 @layer components {
@@ -123,15 +161,15 @@
   }
 
   .section-padding {
-    @apply py-16 md:py-24;
+    @apply py-12 md:py-16 lg:py-24;
   }
 
   .feature-card {
-    @apply p-6 bg-white rounded-xl shadow-card border border-gray-100 hover:border-brand-blue/20 transition-all;
+    @apply p-4 md:p-6 bg-white rounded-xl shadow-card border border-gray-100 hover:border-brand-blue/20 transition-all;
   }
 
   .pricing-card {
-    @apply p-8 bg-white rounded-xl shadow-card border border-gray-100 hover:border-brand-blue/30 transition-all;
+    @apply p-5 md:p-8 bg-white rounded-xl shadow-card border border-gray-100 hover:border-brand-blue/30 transition-all;
   }
 
   .hover-lift {
@@ -147,6 +185,21 @@
   }
   
   .section-title {
-    @apply text-3xl md:text-4xl font-bold mb-4;
+    @apply text-2xl sm:text-3xl md:text-4xl font-bold mb-4;
+  }
+  
+  /* Mobile-friendly media */
+  .responsive-image {
+    @apply w-full h-auto object-cover;
+  }
+  
+  /* Mobile-friendly tables */
+  .responsive-table {
+    @apply w-full overflow-x-auto;
+  }
+  
+  /* Improved mobile form elements */
+  .form-input-mobile {
+    @apply py-3 px-4 w-full text-base rounded-lg;
   }
 }
