@@ -55,7 +55,7 @@ function PricingBasic() {
       <Pricing 
         plans={pricingPlans}
         title={t.pricing.title || "Tarifs simples et transparents"}
-        description={t.pricing.description || "Essai gratuit de 14 jours sans carte bancaire"}
+        description={t.pricing.description || "Essai sans engagement"}
         language="fr"
       />
     </div>

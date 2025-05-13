@@ -1,4 +1,3 @@
-
 export const fr = {
   // Common elements
   common: {
@@ -165,7 +164,7 @@ export const fr = {
   // Pricing content
   pricing: {
     title: "Tarifs simples et transparents",
-    description: "Essai gratuit de 14 jours sans carte bancaire",
+    description: "Essai sans engagement",
     plans: {
       once: {
         name: "Starter",
