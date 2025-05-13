@@ -8,7 +8,7 @@ const testimonials = [
       handle: "@jen_techfounder",
       avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=face"
     },
-    text: "Our AI Employee handles all customer outreach and nurturing campaigns. It crafts personalized messages that have increased our engagement rates by 85%.",
+    text: "Notre AI Employee handles all customer outreach and nurturing campaigns. It crafts personalized messages that have increased our engagement rates by 85%.",
     href: "#"
   },
   {
@@ -61,8 +61,8 @@ const testimonials = [
 export function TestimonialsCarouselDemo() {
   return (
     <TestimonialsCarousel
-      title="How Founders Are Scaling With AI Employees"
-      description="Hear directly from business owners who have transformed their operations with our AI workforce"
+      title="Des clients conquis par notre agent IA"
+      description="Rejoins les entreprises qui ont transformé leur prospection grâce à chyll.ai"
       testimonials={testimonials}
     />
   );
