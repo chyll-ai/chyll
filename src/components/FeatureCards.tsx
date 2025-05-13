@@ -1,50 +1,50 @@
 
 import React from 'react';
 import { 
-  Search, Mail, CreditCard, LineChart, Users, Database
+  Search, Settings, ClipboardList, RefreshCcw, DollarSign, TrendingUp, Compass, Shield
 } from 'lucide-react';
 
 const features = [
   {
     title: "Recherche LinkedIn",
-    starWarsName: "RECHERCHE AUTOMATISÉE",
-    description: "Trouve les prospects sur LinkedIn via mots-clés ou entreprises ciblées",
+    starWarsName: "PROSPECTION AUTOMATISÉE",
+    description: "L'agent identifie automatiquement les bons profils à contacter en fonction de ton secteur.",
     icon: Search,
     color: "bg-blue-50 text-blue-600"
   },
   {
     title: "Enrichissement de données",
-    starWarsName: "ENRICHISSEMENT",
-    description: "Obtiens emails professionnels et numéros des prospects identifiés",
-    icon: Mail,
+    starWarsName: "DONNÉES ENRICHIES",
+    description: "Obtiens emails professionnels, téléphones et informations essentielles de chaque prospect.",
+    icon: Settings,
     color: "bg-purple-50 text-purple-600"
   },
   {
-    title: "Mise à jour CRM",
-    starWarsName: "CRM SIMPLE",
-    description: "Interface Airtable personnalisée et automatiquement mise à jour",
-    icon: Database,
+    title: "Interface simplifiée",
+    starWarsName: "GESTION SIMPLE",
+    description: "Interface claire pour suivre chaque contact : statut, actions passées, prochaines étapes.",
+    icon: ClipboardList,
     color: "bg-yellow-50 text-yellow-600"
   },
   {
-    title: "Sans code",
-    starWarsName: "ZÉRO CODE",
-    description: "Aucune compétence technique requise, prêt en 48h",
-    icon: CreditCard,
+    title: "Automatisation complète",
+    starWarsName: "ZÉRO TÂCHE MANUELLE",
+    description: "Tu ne passes plus des heures à chercher ou organiser. Tout est automatisé de A à Z.",
+    icon: RefreshCcw,
     color: "bg-green-50 text-green-600"
   },
   {
-    title: "Support continu",
-    starWarsName: "SUPPORT DÉDIÉ",
-    description: "Une équipe pour t'accompagner et optimiser ton agent",
-    icon: Users,
+    title: "Coût optimisé",
+    starWarsName: "ÉCONOMIES",
+    description: "Leads qualifiés à un coût bien inférieur à une prospection manuelle ou équipe SDR classique.",
+    icon: DollarSign,
     color: "bg-indigo-50 text-indigo-600"
   },
   {
-    title: "Analytics B2B",
-    starWarsName: "ANALYTICS",
-    description: "Mesure et optimise tes performances de prospection",
-    icon: LineChart,
+    title: "Scalabilité immédiate",
+    starWarsName: "VOLUME ADAPTABLE",
+    description: "Ajuste le volume de leads sans délai, sans recrutement, sans friction.",
+    icon: TrendingUp,
     color: "bg-red-50 text-red-600"
   }
 ];

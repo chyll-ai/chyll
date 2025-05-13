@@ -1,12 +1,12 @@
 import { 
-  Zap,
-  Clock,
-  Headphones,
-  ShieldCheck,
-  Users,
+  Search,
+  Settings,
+  ClipboardList,
+  RefreshCcw, 
+  DollarSign,
   TrendingUp,
-  Bot,
-  ArrowUpRight
+  Compass,
+  Shield
 } from "lucide-react";
 import React from "react";
 import { useLanguage } from "@/context/LanguageContext";
@@ -18,7 +18,7 @@ export interface FeatureItem {
 }
 
 export const useFeatureItems = (): FeatureItem[] => {
-  const { language, t } = useLanguage();
+  const { t } = useLanguage();
   
   // Check if French translations are available for benefits
   const hasFrenchFeatures = t.home?.benefits?.items !== undefined;
@@ -26,56 +26,56 @@ export const useFeatureItems = (): FeatureItem[] => {
   // French feature items
   const frenchFeatures: FeatureItem[] = [
     {
-      title: "Disponibilité 24/7",
+      title: "Prospection automatisée et ciblée",
       description:
-        "Votre employé IA ne dort jamais, assurant un service continu pour vos clients dans tous les fuseaux horaires.",
-      icon: <Clock className="w-6 h-6" />,
+        "L'agent identifie automatiquement les bons profils à contacter en fonction de ton secteur, de tes mots-clés ou des entreprises que tu vises.",
+      icon: <Search className="w-6 h-6" />,
     },
     {
-      title: "Efficacité des coûts",
+      title: "Données enrichies instantanément",
       description:
-        "Réduisez les coûts opérationnels tout en augmentant la productivité. Pas d'avantages sociaux, de pauses ou d'heures supplémentaires requis.",
+        "Pour chaque prospect, tu obtiens les informations essentielles : email pro, téléphone, rôle actuel, entreprise — prêtes à l'emploi.",
+      icon: <Settings className="w-6 h-6" />,
+    },
+    {
+      title: "Interface de gestion simplifiée",
+      description:
+        "Tu accèdes à une interface claire pour suivre chaque contact : statut commercial, actions passées, prochaines étapes.",
+      icon: <ClipboardList className="w-6 h-6" />,
+    },
+    {
+      title: "Zéro tâche manuelle",
+      description: "Tu ne passes plus des heures à chercher, copier-coller ou organiser. Tout est automatisé, du ciblage jusqu'au suivi.",
+      icon: <RefreshCcw className="w-6 h-6" />,
+    },
+    {
+      title: "Gain de temps & baisse du coût par lead",
+      description: "Tu obtiens des leads qualifiés à un coût bien inférieur à une prospection manuelle ou à une équipe SDR classique.",
+      icon: <DollarSign className="w-6 h-6" />,
+    },
+    {
+      title: "Scalable dès le premier jour",
+      description:
+        "Tu veux 50, 100 ou 500 leads par mois ? Tu ajustes le volume sans délai, sans recrutement, sans friction.",
       icon: <TrendingUp className="w-6 h-6" />,
     },
     {
-      title: "Support client instantané",
+      title: "Suivi commercial intégré",
       description:
-        "Fournissez des réponses immédiates aux demandes des clients, améliorant la satisfaction et les taux de fidélisation.",
-      icon: <Headphones className="w-6 h-6" />,
+        "Chaque lead est suivi dans le temps, avec des statuts clairs et un historique d'actions. Tu ne laisses plus passer aucune opportunité.",
+      icon: <Compass className="w-6 h-6" />,
     },
     {
-      title: "Solutions évolutives",
-      description: "Adaptez facilement votre main-d'œuvre IA à la hausse ou à la baisse en fonction de la demande, sans délais d'embauche ou de formation.",
-      icon: <ArrowUpRight className="w-6 h-6" />,
-    },
-    {
-      title: "Interactions naturelles",
-      description: "Nos employés IA communiquent naturellement, faisant en sorte que vos clients se sentent valorisés et compris.",
-      icon: <Users className="w-6 h-6" />,
-    },
-    {
-      title: "Sécurité des données",
-      description:
-        "Des protocoles de sécurité de niveau entreprise garantissent que toutes les données et interactions des clients restent protégées.",
-      icon: <ShieldCheck className="w-6 h-6" />,
-    },
-    {
-      title: "Performance constante",
-      description:
-        "Éliminez les erreurs humaines et les sautes d'humeur. Votre employé IA offre une qualité constante à chaque fois.",
-      icon: <Bot className="w-6 h-6" />,
-    },
-    {
-      title: "Potentiel illimité",
-      description: "À mesure que la technologie IA évolue, votre employé GenerativSchool s'améliore continuellement, apprenant automatiquement de nouvelles compétences.",
-      icon: <Zap className="w-6 h-6" />,
+      title: "Confidentialité garantie",
+      description: "Toutes les données restent confidentielles et sécurisées. Tu gardes la main sur tes prospects, sans exposition extérieure.",
+      icon: <Shield className="w-6 h-6" />,
     },
   ];
 
   // If we have French translations from the benefits section, use those instead
   if (hasFrenchFeatures && Array.isArray(t.home?.benefits?.items)) {
     // Map icons in the same order as the French version
-    const icons = [Clock, TrendingUp, Headphones, ArrowUpRight, Users, ShieldCheck, Bot, Zap];
+    const icons = [Search, Settings, ClipboardList, RefreshCcw, DollarSign, TrendingUp, Compass, Shield];
     
     // Make sure we have exactly 8 items by using all items from the French translation
     return t.home?.benefits?.items.map((item, index) => ({
