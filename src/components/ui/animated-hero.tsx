@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { MoveRight, PhoneCall } from "lucide-react";
@@ -71,7 +70,7 @@ function Hero() {
           </div>
           <div className="flex flex-row gap-3">
             <Button size="lg" className="gap-4" variant="rainbow" asChild>
-              <a href="https://cal.com/generativschool/30min?overlayCalendar=true" target="_blank" rel="noopener noreferrer">
+              <a href="https://tally.so/r/wA0pJl" target="_blank" rel="noopener noreferrer">
                 {t.home.hero.buttons.bookDemo} <PhoneCall className="w-4 h-4" />
               </a>
             </Button>

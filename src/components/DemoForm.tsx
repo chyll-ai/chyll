@@ -22,7 +22,7 @@ const DemoForm = () => {
     setIsSubmitting(true);
     
     // Redirect to new booking page
-    window.location.href = "https://cal.com/generativschool/30min?overlayCalendar=true";
+    window.location.href = "https://tally.so/r/wA0pJl";
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

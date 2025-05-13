@@ -184,7 +184,7 @@ const PricingCards = () => {
               }`}
               asChild
             >
-              <a href="https://cal.com/generativschool/30min?overlayCalendar=true" target="_blank" rel="noopener noreferrer">
+              <a href="https://tally.so/r/wA0pJl" target="_blank" rel="noopener noreferrer">
                 {language === 'fr' ? 'Réserver une démo' : 'Book a Demo'}
               </a>
             </Button>

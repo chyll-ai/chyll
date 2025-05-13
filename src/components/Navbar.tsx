@@ -66,7 +66,7 @@ const Navbar = ({ currentPath = '/' }: NavbarProps) => {
           
           <div className="flex items-center space-x-4">
             <Button variant="rainbow" asChild>
-              <a href="https://cal.com/chyll-ai/30min?overlayCalendar=true" target="_blank" rel="noopener noreferrer">
+              <a href="https://tally.so/r/wA0pJl" target="_blank" rel="noopener noreferrer">
                 {t.nav.bookDemo}
               </a>
             </Button>
@@ -127,7 +127,7 @@ const Navbar = ({ currentPath = '/' }: NavbarProps) => {
               onClick={() => setIsMenuOpen(false)}
               asChild
             >
-              <a href="https://cal.com/chyll-ai/30min?overlayCalendar=true" target="_blank" rel="noopener noreferrer">
+              <a href="https://tally.so/r/wA0pJl" target="_blank" rel="noopener noreferrer">
                 {t.nav.bookDemo}
               </a>
             </Button>
