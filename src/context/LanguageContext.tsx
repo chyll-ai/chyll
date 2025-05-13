@@ -1,5 +1,5 @@
 
-import React, { createContext, useState, useContext, ReactNode } from 'react';
+import React, { createContext, useContext, ReactNode } from 'react';
 import { fr } from '@/translations/fr';
 import type { TranslationKeys } from '@/translations';
 
