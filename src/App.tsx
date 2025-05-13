@@ -10,6 +10,7 @@ import NotFound from '@/pages/NotFound';
 import Terms from '@/pages/Terms';
 import Privacy from '@/pages/Privacy';
 import Cookies from '@/pages/Cookies';
+import FAQ from '@/pages/FAQ';
 
 import { LanguageProvider } from '@/context/LanguageContext';
 
@@ -24,6 +25,7 @@ function App() {
             <Route path="/terms" element={<Terms />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/cookies" element={<Cookies />} />
+            <Route path="/faq" element={<FAQ />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <Toaster />

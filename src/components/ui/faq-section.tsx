@@ -16,28 +16,32 @@ export function FAQSection() {
   // Default FAQ items in case translations are missing
   const defaultFaqItems = [
     {
-      question: "What are AI Employees and how can they help my business?",
-      answer: "AI Employees are artificial intelligence assistants that can automate repetitive tasks, handle customer communications, analyze data, and more. They help you save time and resources while improving operational efficiency."
+      question: "📈 Quel type de résultats puis-je attendre ?",
+      answer: "Nos utilisateurs constatent en moyenne : Un temps de prospection divisé par 5, une baisse significative du coût par lead, une meilleure priorisation des prospects réellement activables."
     },
     {
-      question: "Do I need technical skills to use AI Employees?",
-      answer: "No technical skills are required. Our platform is designed to be user-friendly with an intuitive interface. Our onboarding team will guide you through the setup process."
+      question: "🔄 Est-ce que les leads sont mis à jour automatiquement ?",
+      answer: "Oui. chyll.ai met à jour votre base chaque semaine, en évitant les doublons, en détectant les nouveaux contacts intéressants, et en maintenant un suivi à jour."
     },
     {
-      question: "How quickly can I implement an AI Employee?",
-      answer: "Implementing an AI Employee typically only takes a few days. We handle the setup and integration for you, ensuring a fast and hassle-free deployment."
+      question: "🤖 Est-ce que c'est un chatbot ou un outil de messagerie ?",
+      answer: "Non. chyll.ai n'écrit pas aux leads à votre place. C'est un outil d'aide à la prospection, pas un outil d'email automation. Il vous fournit des leads enrichis, organisés, et suivis — à vous de décider comment les contacter."
     },
     {
-      question: "Can AI Employees integrate with my existing tools and systems?",
-      answer: "Yes, our AI Employees seamlessly integrate with most popular business tools, including CRMs, marketing platforms, ticketing systems, and other business software."
+      question: "👥 À qui s'adresse chyll.ai ?",
+      answer: "chyll.ai est conçu pour : Les fondateurs de startups, les freelances en B2B, les commerciaux en PME ou agences, les équipes marketing/growth qui veulent gagner du temps et scaler sans recruter."
     },
     {
-      question: "What kind of support do you provide for AI Employees?",
-      answer: "We offer comprehensive support, including onboarding, training, ongoing technical assistance, and regular optimizations to ensure your AI Employee is operating at peak performance."
+      question: "💼 Combien de leads puis-je recevoir par mois ?",
+      answer: "Le volume dépend de votre plan. Nos offres commencent à 50 leads enrichis/mois, et sont adaptables à vos besoins selon votre rythme de prospection."
     },
     {
-      question: "How secure are AI Employees with my business data?",
-      answer: "Absolutely secure. We take security very seriously with enterprise-grade encryption, regular security audits, and strict compliance with data protection regulations."
+      question: "🔐 Mes données sont-elles sécurisées ?",
+      answer: "Oui. Votre espace est isolé, protégé, et aucune donnée n'est partagée ou exposée à des tiers. Vous gardez le contrôle complet sur vos contacts."
+    },
+    {
+      question: "💳 Comment s'abonner ?",
+      answer: "Il vous suffit de remplir notre formulaire de qualification pour vérifier votre éligibilité. Une fois validé, vous accédez à votre espace personnalisé et commencez à recevoir vos leads."
     }
   ];
   

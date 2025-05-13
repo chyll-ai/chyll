@@ -14,10 +14,10 @@ const FAQ = () => {
   
   // Default text in case translations are missing
   const defaultTexts = {
-    generalTitle: "General Questions",
-    aiEmployeesTitle: "AI Employee Questions",
-    stillHaveQuestionsTitle: "Still have questions?",
-    stillHaveQuestionsDescription: "Our support team is here to help. Contact us for personalized assistance with your specific questions."
+    generalTitle: "Questions générales",
+    aiEmployeesTitle: "Questions sur l'agent IA",
+    stillHaveQuestionsTitle: "D'autres questions ?",
+    stillHaveQuestionsDescription: "Notre équipe support est là pour t'aider. Contacte-nous pour une assistance personnalisée."
   };
   
   // Check if French FAQ translations are available with safe optional chaining
