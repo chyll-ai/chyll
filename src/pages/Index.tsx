@@ -146,3 +146,5 @@ function getAvatarForName(name: string) {
   
   return avatarMap[name] || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face";
 }
+
+export default Index;

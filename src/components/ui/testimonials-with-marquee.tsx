@@ -3,8 +3,8 @@ import { cn } from "@/lib/utils"
 import { TestimonialCard, TestimonialAuthor } from "@/components/ui/testimonial-card"
 
 interface TestimonialsSectionProps {
-  title: string
-  description: string
+  title?: string;
+  description?: string;
   testimonials: Array<{
     author: TestimonialAuthor
     text: string
@@ -26,14 +26,18 @@ export function TestimonialsSection({
       className
     )}>
       <div className="mx-auto flex max-w-container flex-col items-center gap-4 text-center sm:gap-16">
-        <div className="flex flex-col items-center gap-4 px-4 sm:gap-8">
-          <h2 className="max-w-[720px] text-3xl font-semibold leading-tight sm:text-5xl sm:leading-tight">
-            {title}
-          </h2>
-          <p className="text-md max-w-[600px] font-medium text-muted-foreground sm:text-xl">
-            {description}
-          </p>
-        </div>
+        {title && (
+          <div className="flex flex-col items-center gap-4 px-4 sm:gap-8">
+            <h2 className="max-w-[720px] text-3xl font-semibold leading-tight sm:text-5xl sm:leading-tight">
+              {title}
+            </h2>
+            {description && (
+              <p className="text-md max-w-[600px] font-medium text-muted-foreground sm:text-xl">
+                {description}
+              </p>
+            )}
+          </div>
+        )}
 
         <div className="relative w-full overflow-hidden">
           <div className="flex flex-nowrap overflow-hidden">
