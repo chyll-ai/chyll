@@ -1,104 +1,167 @@
 
 import React from 'react';
 import Navbar from '@/components/Navbar';
-import { Footer2Demo } from '@/components/ui/footer2-demo';
+import { Footer2 } from '@/components/ui/footer2';
+import { useLanguage } from '@/context/LanguageContext';
+import { Helmet } from 'react-helmet-async';
 
 const Privacy = () => {
+  const { t } = useLanguage();
+  
   return (
     <div className="min-h-screen flex flex-col">
+      <Helmet>
+        <title>Politique de Confidentialité | chyll.ai</title>
+        <meta name="description" content="Politique de confidentialité de chyll.ai, une marque de GenerativSchool SAS." />
+      </Helmet>
+      
       <Navbar />
       
       <section className="flex-grow py-16 bg-white">
         <div className="container-custom">
           <div className="max-w-4xl mx-auto">
-            <h1 className="text-3xl md:text-4xl font-bold mb-8">Privacy Policy</h1>
+            <h1 className="text-3xl md:text-4xl font-bold mb-4">Politique de Confidentialité</h1>
+            <p className="text-gray-500 mb-8">Dernière mise à jour : 13 mai 2025</p>
             
             <div className="prose max-w-none">
-              <h2 className="text-2xl font-semibold mt-8 mb-4">1. Introduction</h2>
-              <p>
-                At GenerativSchool, we respect your privacy and are committed to protecting your personal data.
-                This Privacy Policy will inform you about how we look after your personal data when you visit our website
-                and tell you about your privacy rights and how the law protects you.
+              <p className="mb-6">
+                Chez chyll.ai, une marque de GenerativSchool SAS, nous nous engageons à protéger votre vie privée et à respecter 
+                la confidentialité des données personnelles que vous nous fournissez. Cette Politique de Confidentialité décrit 
+                les informations que nous collectons, comment nous les utilisons et vos droits en matière de protection des données.
               </p>
               
-              <h2 className="text-2xl font-semibold mt-8 mb-4">2. Company Information</h2>
+              <h2 className="text-2xl font-semibold mt-8 mb-4">1. Responsable du traitement</h2>
               <p>
-                <strong>Company Name:</strong> GENERATIVSCHOOL<br />
-                <strong>Legal Form:</strong> SAS, société par actions simplifiée<br />
-                <strong>SIREN:</strong> 938 422 896<br />
-                <strong>SIRET:</strong> 938 422 896 00010<br />
-                <strong>VAT Number:</strong> FR64 938 422 896<br />
-                <strong>Main Activity (NAF/APE):</strong> Autres enseignements (85.59B)<br />
-                <strong>Address:</strong> 60 RUE FRANCOIS IER 75008 PARIS<br />
-                <strong>Date of Creation:</strong> 10/12/2024
+                Le responsable du traitement des données personnelles est GenerativSchool SAS, société immatriculée en France, 
+                dont le siège social est situé au 60 rue François Premier, 75008 Paris, France.
+                <br />Email de contact : <a href="mailto:contact@generativschool.com" className="text-brand-blue hover:underline">contact@generativschool.com</a>
               </p>
               
-              <h2 className="text-2xl font-semibold mt-8 mb-4">3. Data We Collect</h2>
+              <h2 className="text-2xl font-semibold mt-8 mb-4">2. Collecte des données personnelles</h2>
               <p>
-                We may collect, use, store and transfer different kinds of personal data about you which we have grouped together as follows:
+                Nous collectons les données personnelles que vous nous fournissez directement lorsque vous créez un compte sur notre 
+                plateforme chyll.ai, ainsi que celles que nous recueillons automatiquement lors de votre utilisation de nos services.
               </p>
+              
+              <p className="font-medium mt-4">Données collectées lors de l'inscription :</p>
               <ul className="list-disc ml-6 mb-4">
-                <li><strong>Identity Data</strong> includes first name, last name, username, or similar identifier.</li>
-                <li><strong>Contact Data</strong> includes billing address, delivery address, email address, and telephone numbers.</li>
-                <li><strong>Technical Data</strong> includes internet protocol (IP) address, browser type and version, time zone setting, browser plug-in types and versions, operating system and platform.</li>
-                <li><strong>Usage Data</strong> includes information about how you use our website, products, and services.</li>
+                <li>Informations personnelles : nom, prénom, adresse e-mail, numéro de téléphone</li>
+                <li>Informations sur l'entreprise : nom de l'entreprise, secteur d'activité, taille de l'entreprise</li>
+                <li>Informations de facturation : adresse de facturation, informations de paiement</li>
               </ul>
               
-              <h2 className="text-2xl font-semibold mt-8 mb-4">4. How We Use Your Data</h2>
-              <p>
-                We will only use your personal data when the law allows us to. Most commonly, we will use your personal data in the following circumstances:
-              </p>
+              <p className="font-medium mt-4">Données collectées automatiquement :</p>
               <ul className="list-disc ml-6 mb-4">
-                <li>To provide and improve our services to you.</li>
-                <li>To manage our relationship with you.</li>
-                <li>To administer and protect our business and this website.</li>
-                <li>To use data analytics to improve our website, products/services, marketing, customer relationships, and experiences.</li>
+                <li>Données d'utilisation : informations techniques relatives à votre appareil, adresse IP, type de navigateur, pages visitées, durée de la session</li>
+                <li>Données de prospection : données des prospects enrichis via l'usage de l'outil (emails, numéros de téléphone, etc.), dans le cadre de l'utilisation de notre service AI SDR Agent</li>
               </ul>
               
-              <h2 className="text-2xl font-semibold mt-8 mb-4">5. Data Security</h2>
-              <p>
-                We have put in place appropriate security measures to prevent your personal data from being accidentally lost, used,
-                or accessed in an unauthorized way, altered, or disclosed.
-              </p>
+              <h2 className="text-2xl font-semibold mt-8 mb-4">3. Utilisation des données personnelles</h2>
+              <p>Les données collectées sont utilisées pour les finalités suivantes :</p>
               
-              <h2 className="text-2xl font-semibold mt-8 mb-4">6. Data Retention</h2>
-              <p>
-                We will only retain your personal data for as long as necessary to fulfill the purposes we collected it for,
-                including for the purposes of satisfying any legal, accounting, or reporting requirements.
-              </p>
-              
-              <h2 className="text-2xl font-semibold mt-8 mb-4">7. Your Legal Rights</h2>
-              <p>
-                Under certain circumstances, you have rights under data protection laws in relation to your personal data, including:
-              </p>
               <ul className="list-disc ml-6 mb-4">
-                <li>The right to request access to your personal data.</li>
-                <li>The right to request correction of your personal data.</li>
-                <li>The right to request erasure of your personal data.</li>
-                <li>The right to object to processing of your personal data.</li>
-                <li>The right to request restriction of processing your personal data.</li>
-                <li>The right to request transfer of your personal data.</li>
-                <li>The right to withdraw consent.</li>
+                <li>Fournir nos services : gestion de votre compte, fourniture des services de prospection, mise à jour des leads, suivi des actions commerciales</li>
+                <li>Améliorer nos services : analyse de l'utilisation de la plateforme, développement de nouvelles fonctionnalités, et amélioration continue de l'expérience utilisateur</li>
+                <li>Communication : envoi d'informations relatives à votre compte, notifications de service, informations marketing et commerciales (si vous avez consenti à recevoir des communications)</li>
+                <li>Conformité légale : respecter nos obligations légales, résoudre les litiges et protéger nos droits</li>
               </ul>
               
-              <h2 className="text-2xl font-semibold mt-8 mb-4">8. Changes to This Privacy Policy</h2>
+              <h2 className="text-2xl font-semibold mt-8 mb-4">4. Base légale du traitement</h2>
+              <p>Le traitement de vos données personnelles est fondé sur plusieurs bases légales :</p>
+              
+              <ul className="list-disc ml-6 mb-4">
+                <li><strong>Exécution d'un contrat</strong> : le traitement des données est nécessaire pour l'exécution du contrat entre vous et chyll.ai (par exemple, pour la gestion de votre abonnement).</li>
+                <li><strong>Consentement</strong> : lorsque vous vous inscrivez pour recevoir des communications marketing ou des informations promotionnelles.</li>
+                <li><strong>Intérêts légitimes</strong> : améliorer nos services, effectuer des analyses internes pour améliorer l'expérience utilisateur.</li>
+              </ul>
+              
+              <h2 className="text-2xl font-semibold mt-8 mb-4">5. Partage des données</h2>
               <p>
-                We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page.
+                Nous ne vendons ni ne louons vos données personnelles à des tiers. Toutefois, nous pouvons partager vos données avec 
+                des partenaires de confiance ou prestataires de services qui nous aident à fournir nos services (par exemple, pour le 
+                traitement des paiements ou l'envoi d'e-mails). Ces prestataires sont tenus par des contrats de confidentialité stricts.
+              </p>
+              <p>
+                Nous pouvons également divulguer vos données si la loi nous y oblige ou dans le cadre d'une procédure judiciaire.
               </p>
               
-              <h2 className="text-2xl font-semibold mt-8 mb-4">9. Contact Us</h2>
+              <h2 className="text-2xl font-semibold mt-8 mb-4">6. Transfert de données</h2>
               <p>
-                If you have any questions about this Privacy Policy, please contact us at:<br />
-                <a href="mailto:privacy@generativschool.com" className="text-brand-blue hover:underline">privacy@generativschool.com</a>
+                Vos données personnelles peuvent être transférées en dehors de l'Espace économique européen (EEE), dans le cadre de 
+                l'utilisation de certains services tiers ou partenaires. Dans ce cas, nous nous assurons que les transferts de données 
+                sont conformes aux exigences du RGPD et que les données sont protégées de manière adéquate.
               </p>
               
-              <p className="text-sm mt-12">Last updated: April 14, 2025</p>
+              <h2 className="text-2xl font-semibold mt-8 mb-4">7. Sécurité des données</h2>
+              <p>
+                Nous mettons en œuvre des mesures techniques et organisationnelles appropriées pour protéger vos données personnelles 
+                contre tout accès non autorisé, perte, divulgation ou altération. Cependant, aucune méthode de transmission de données 
+                sur Internet ou de stockage électronique n'est totalement sécurisée, et nous ne pouvons garantir une sécurité absolue.
+              </p>
+              
+              <h2 className="text-2xl font-semibold mt-8 mb-4">8. Durée de conservation des données</h2>
+              <p>
+                Nous conservons vos données personnelles aussi longtemps que nécessaire pour fournir nos services, respecter nos 
+                obligations légales et résoudre les litiges. Les données liées à votre compte seront conservées pendant la durée 
+                de votre abonnement, puis archivées pendant une période de 3 ans.
+              </p>
+              <p>
+                Les données relatives à la prospection (leads, contacts) sont conservées tant que vous utilisez notre service ou 
+                sur demande de suppression de votre part.
+              </p>
+              
+              <h2 className="text-2xl font-semibold mt-8 mb-4">9. Vos droits</h2>
+              <p>Conformément à la législation sur la protection des données, vous disposez des droits suivants :</p>
+              
+              <ul className="list-disc ml-6 mb-4">
+                <li><strong>Droit d'accès</strong> : vous avez le droit de savoir quelles données personnelles nous détenons à votre sujet.</li>
+                <li><strong>Droit de rectification</strong> : vous pouvez demander la correction de données inexactes ou la mise à jour de vos informations personnelles.</li>
+                <li><strong>Droit à l'effacement</strong> : vous pouvez demander la suppression de vos données personnelles, sous réserve des exceptions légales.</li>
+                <li><strong>Droit à la limitation du traitement</strong> : vous pouvez demander la limitation de l'utilisation de vos données dans certaines circonstances.</li>
+                <li><strong>Droit à la portabilité</strong> : vous avez le droit de recevoir vos données personnelles dans un format structuré, couramment utilisé et lisible par machine.</li>
+                <li><strong>Droit d'opposition</strong> : vous pouvez vous opposer à l'utilisation de vos données personnelles, notamment à des fins de marketing direct.</li>
+              </ul>
+              
+              <p>
+                Pour exercer vos droits, vous pouvez nous contacter à l'adresse suivante :<br />
+                Email de contact : <a href="mailto:contact@generativschool.com" className="text-brand-blue hover:underline">contact@generativschool.com</a>
+              </p>
+              
+              <h2 className="text-2xl font-semibold mt-8 mb-4">10. Cookies et technologies similaires</h2>
+              <p>
+                Nous utilisons des cookies et des technologies similaires pour améliorer votre expérience sur notre plateforme, 
+                analyser l'utilisation de nos services et personnaliser notre contenu. Vous pouvez gérer vos préférences en matière 
+                de cookies via les paramètres de votre navigateur.
+              </p>
+              
+              <h2 className="text-2xl font-semibold mt-8 mb-4">11. Modifications de la politique de confidentialité</h2>
+              <p>
+                Nous nous réservons le droit de modifier cette Politique de Confidentialité à tout moment. En cas de modification, 
+                la nouvelle version sera publiée sur cette page avec la date de mise à jour. Nous vous encourageons à consulter 
+                régulièrement cette page pour être informé de toute mise à jour.
+              </p>
+              
+              <h2 className="text-2xl font-semibold mt-8 mb-4">12. Contact</h2>
+              <p>
+                Si vous avez des questions concernant cette Politique de Confidentialité ou si vous souhaitez exercer vos droits, 
+                vous pouvez nous contacter à l'adresse suivante :
+              </p>
+              <p>
+                GenerativSchool SAS<br />
+                Email de contact : <a href="mailto:contact@generativschool.com" className="text-brand-blue hover:underline">contact@generativschool.com</a><br />
+                Adresse : 60 rue François Premier, 75008 Paris, France
+              </p>
+              
+              <p className="mt-8">
+                Cette Politique de Confidentialité reflète notre engagement à protéger vos données personnelles et à respecter 
+                vos droits en matière de confidentialité.
+              </p>
             </div>
           </div>
         </div>
       </section>
       
-      <Footer2Demo />
+      <Footer2 />
     </div>
   );
 };
