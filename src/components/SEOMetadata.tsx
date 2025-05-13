@@ -220,10 +220,10 @@ const SEOMetadata = ({
       <meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
       <meta name="bingbot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
       
-      {/* Alternative URLs for different languages */}
-      {language === 'fr' && <link rel="alternate" hreflang="fr" href={`${siteUrl}${canonicalUrl || ''}`} />}
-      {language === 'en' && <link rel="alternate" hreflang="en" href={`${siteUrl}/en${canonicalUrl || ''}`} />}
-      <link rel="alternate" hreflang="x-default" href={`${siteUrl}${canonicalUrl || ''}`} />
+      {/* Alternative URLs for different languages - Fixing hreflang to hrefLang */}
+      {language === 'fr' && <link rel="alternate" hrefLang="fr" href={`${siteUrl}${canonicalUrl || ''}`} />}
+      {language === 'en' && <link rel="alternate" hrefLang="en" href={`${siteUrl}/en${canonicalUrl || ''}`} />}
+      <link rel="alternate" hrefLang="x-default" href={`${siteUrl}${canonicalUrl || ''}`} />
       
       {/* B2B and Sales Development specific metadata */}
       <meta name="category" content="B2B Sales, Prospection, SDR Tools" />
