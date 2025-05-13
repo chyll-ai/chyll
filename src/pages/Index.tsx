@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import HowItWorks from '@/components/HowItWorks';
@@ -96,9 +95,6 @@ const Index = () => {
       {/* Partner Companies Section */}
       <section className="py-10 bg-gray-50 border-y border-gray-100">
         <div className="container-custom">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold mb-4 rainbow-text-static">{t.home.partners.title}</h2>
-          </div>
           <PartnerCompaniesDemo />
         </div>
       </section>
