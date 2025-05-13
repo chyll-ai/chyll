@@ -21,52 +21,39 @@ interface Footer2Props {
   }[];
 }
 
-const Footer2 = ({
+export function Footer2({
   tagline,
   menuItems = [
     {
-      title: "Product",
+      title: "Produit",
       links: [
-        { text: "Overview", url: "#" },
-        { text: "Features", url: "#features" },
-        { text: "How It Works", url: "#how-it-works" },
-        { text: "Pricing", url: "#pricing" },
+        { text: "Fonctionnalités", url: "#features" },
+        { text: "Comment ça marche", url: "#how-it-works" },
+        { text: "Tarifs", url: "#pricing" },
       ],
     },
     {
-      title: "Company",
+      title: "Entreprise",
       links: [
-        { text: "About Us", url: "#" },
-        { text: "Team", url: "#" },
-        { text: "Careers", url: "#" },
+        { text: "À propos", url: "#" },
         { text: "Contact", url: "#" },
       ],
     },
     {
-      title: "Resources",
+      title: "Ressources",
       links: [
-        { text: "Blog", url: "#" },
         { text: "FAQ", url: "#faq" },
         { text: "Support", url: "#" },
-      ],
-    },
-    {
-      title: "Connect",
-      links: [
-        { text: "Twitter", url: "#" },
-        { text: "LinkedIn", url: "#" },
-        { text: "Instagram", url: "#" },
-        { text: "YouTube", url: "#" },
       ],
     },
   ],
   copyright,
   bottomLinks = [
-    { text: "Terms of Service", url: "#" },
-    { text: "Privacy Policy", url: "#" },
-    { text: "Cookie Policy", url: "#" },
+    { text: "Conditions Générales", url: "#" },
+    { text: "Politique de Confidentialité", url: "#" },
+    { text: "Politique de Cookies", url: "#" },
   ],
-}: Footer2Props) => {
+}: Footer2Props) {
   const { t } = useLanguage();
   
   // Use provided props or fallback to translations
@@ -75,13 +62,13 @@ const Footer2 = ({
 
   // Map bottom links to translations if not provided explicitly
   const displayBottomLinks = bottomLinks.map(link => {
-    if (link.text === "Terms of Service") {
+    if (link.text === "Terms of Service" || link.text === "Conditions Générales") {
       return { ...link, text: t.footer.links.terms };
     }
-    if (link.text === "Privacy Policy") {
+    if (link.text === "Privacy Policy" || link.text === "Politique de Confidentialité") {
       return { ...link, text: t.footer.links.privacy };
     }
-    if (link.text === "Cookie Policy") {
+    if (link.text === "Cookie Policy" || link.text === "Politique de Cookies") {
       return { ...link, text: t.footer.links.cookies };
     }
     return link;
@@ -93,8 +80,9 @@ const Footer2 = ({
         <footer>
           <div className="grid grid-cols-2 gap-8 lg:grid-cols-6">
             <div className="col-span-2 mb-8 lg:mb-0">
-              <p className="text-xl font-semibold text-white">GenerativSchool</p>
+              <p className="text-xl font-semibold text-white">chyll.ai</p>
               <p className="mt-4 font-bold text-[#aaadb0]">{displayTagline}</p>
+              <p className="mt-2 text-[#8E9196]">hello@chyll.ai</p>
               <div className="mt-4">
                 <LanguageSwitcher />
               </div>
@@ -102,10 +90,10 @@ const Footer2 = ({
             {menuItems.map((section, sectionIdx) => (
               <div key={sectionIdx}>
                 <h3 className="mb-4 font-bold text-white">{
-                  section.title === "Product" ? t.footer.menuTitles.product :
-                  section.title === "Company" ? t.footer.menuTitles.company :
-                  section.title === "Resources" ? t.footer.menuTitles.resources :
-                  section.title === "Connect" ? t.footer.menuTitles.connect :
+                  section.title === "Product" || section.title === "Produit" ? t.footer.menuTitles.product :
+                  section.title === "Company" || section.title === "Entreprise" ? t.footer.menuTitles.company :
+                  section.title === "Resources" || section.title === "Ressources" ? t.footer.menuTitles.resources :
+                  section.title === "Connect" || section.title === "Contact" ? t.footer.menuTitles.connect :
                   section.title
                 }</h3>
                 <ul className="space-y-4 text-[#8E9196]">
@@ -135,6 +123,4 @@ const Footer2 = ({
       </div>
     </section>
   );
-};
-
-export { Footer2 };
+}

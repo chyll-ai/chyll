@@ -11,7 +11,7 @@ interface LanguageContextType {
   isDetectingLanguage: boolean;
 }
 
-const defaultLanguage: SupportedLanguage = 'en';
+const defaultLanguage: SupportedLanguage = 'fr'; // Changed to French by default
 
 const LanguageContext = createContext<LanguageContextType>({
   language: defaultLanguage,

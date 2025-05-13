@@ -12,7 +12,7 @@ export const fr = {
   nav: {
     features: "Fonctionnalités",
     howItWorks: "Comment ça marche",
-    pricing: "Tarification",
+    pricing: "Tarifs",
     bookDemo: "Réserver une démo",
     home: "Accueil",
   },
@@ -20,254 +20,197 @@ export const fr = {
   // Homepage sections
   home: {
     hero: {
-      introducing: "Découvrez GenerativSchool.",
-      title: "Embauchez des employés IA qui",
-      actions: ["vendent", "conçoivent", "écrivent", "soutiennent", "automatisent"],
-      subtitle: "Travaillez plus intelligemment avec GenerativSchool",
-      description: "Transformez votre entreprise avec des employés IA qui ne dorment jamais, ne prennent jamais de vacances et offrent constamment des résultats exceptionnels. Rationalisez vos opérations, réduisez vos coûts et développez votre entreprise comme jamais auparavant.",
+      introducing: "Voici chyll.ai.",
+      title: "La prospection B2B,",
+      actions: ["automatisée.", "simplifiée.", "efficace.", "sans effort.", "optimisée."],
+      subtitle: "Boost ta prospection B2B avec notre agent IA",
+      description: "chyll.ai trouve les bons prospects, les enrichit, et met à jour ton CRM pendant que tu bosses sur autre chose.",
       buttons: {
         bookDemo: "Réserver une démo",
-        hireNow: "Embaucher l'IA maintenant",
+        hireNow: "Essai gratuit 14 jours",
       }
     },
     features: {
-      title: "Des employés IA qui transforment votre entreprise",
-      subtitle: "Des travailleurs numériques qui ne dorment jamais, résolvent des problèmes complexes et offrent des expériences client exceptionnelles."
+      title: "Un agent IA qui révolutionne ta prospection",
+      subtitle: "Une solution complète pour automatiser ta prospection B2B et maximiser ton temps productif."
     },
     meetTeam: {
-      title: "Rencontrez votre équipe d'employés IA",
-      subtitle: "GenerativSchool n'est pas qu'une simple automatisation — c'est votre personnel numérique prêt à transformer votre entreprise."
+      title: "Un assistant IA qui travaille pour toi",
+      subtitle: "chyll.ai n'est pas juste un outil – c'est ton assistant commercial virtuel prêt à transformer ta prospection."
     },
     howItWorks: {
       title: "Comment ça marche",
-      subtitle: "Commencer avec GenerativSchool est simple. Suivez ces étapes pour transformer vos opérations commerciales.",
+      subtitle: "Démarrer avec chyll.ai est simple. Suis ces étapes pour transformer ta prospection commerciale.",
       steps: [
-        "Choisissez votre employé IA",
-        "Intégrez-le à votre flux de travail",
-        "Regardez votre productivité décoller"
+        "Définis tes critères de recherche",
+        "L'agent IA trouve et enrichit les profils",
+        "Ton CRM est automatiquement mis à jour"
       ]
     },
     faq: {
-      title: "Foire aux questions",
-      subtitle: "Tout ce que vous devez savoir sur GenerativSchool et comment il peut transformer votre entreprise."
-    },
-    testimonials: {
-      title: "Les entrepreneurs adorent nos employés IA",
-      subtitle: "Rejoignez des milliers de chefs d'entreprise qui développent leurs activités grâce à nos collaborateurs IA infatigables",
-      quotes: [
-        {
-          text: "Notre employé IA gère tous nos emails clients avec une précision parfaite. C'est comme avoir un membre d'équipe dédié qui travaille 24h/24 et 7j/7 sans interruption.",
-          author: "Alex Chen",
-          handle: "@alexfounder"
-        },
-        {
-          text: "En tant que fondateur solo, mon employé IA gère l'ensemble de notre pipeline de vente. Il assure le suivi des pistes, qualifie les prospects et conclut même des affaires pendant que je dors.",
-          author: "Sarah Miller",
-          handle: "@sarahstartup"
-        },
-        {
-          text: "Nous avons réduit nos coûts d'équipe de support de 70% depuis la mise en place des employés IA. Ils traitent les demandes courantes avec une précision et une empathie incroyables.",
-          author: "Michael Rodriguez",
-          handle: "@mikeceo"
-        }
-      ]
-    },
-    benefits: {
-      title: "Disponibilité 24/7",
-      description: "Votre employé IA ne dort jamais, assurant un service continu pour vos clients dans tous les fuseaux horaires.",
-      items: [
-        {
-          title: "Disponibilité 24/7",
-          description: "Votre employé IA ne dort jamais, assurant un service continu pour vos clients dans tous les fuseaux horaires."
-        },
-        {
-          title: "Efficacité des coûts",
-          description: "Réduisez les coûts op��rationnels tout en augmentant la productivité. Pas d'avantages sociaux, de pauses ou d'heures supplémentaires à payer."
-        },
-        {
-          title: "Support client instantané",
-          description: "Fournissez des réponses immédiates aux demandes des clients, améliorant la satisfaction et les taux de fidélisation."
-        },
-        {
-          title: "Solutions évolutives",
-          description: "Adaptez facilement votre main-d'œuvre IA en fonction de la demande, sans délais d'embauche ou de formation."
-        },
-        {
-          title: "Interactions naturelles",
-          description: "Nos employés IA communiquent naturellement, faisant sentir à vos clients qu'ils sont valorisés et compris."
-        },
-        {
-          title: "Sécurité des données",
-          description: "Des protocoles de sécurité de niveau entreprise garantissent que toutes les données et interactions des clients restent protégées."
-        },
-        {
-          title: "Performance constante",
-          description: "Éliminez les erreurs humaines et les sautes d'humeur. Votre employé IA offre une qualité constante à chaque fois."
-        },
-        {
-          title: "Potentiel illimité",
-          description: "À mesure que la technologie IA évolue, votre employé GenerativSchool s'améliore continuellement, apprenant automatiquement de nouvelles compétences."
-        }
-      ]
-    },
-    aiEmployees: {
-      title: "Nos employés IA",
-      napoleon: {
-        name: "NAPOLEON — L'IA SDR",
-        description: "Prospection incessante, entièrement automatisée. Napoleon recherche des prospects, les qualifie, assure le suivi et remplit votre pipeline de vente — comme un infatigable soldat commercial.",
-        cta: "Déployer NAPOLEON"
+      title: "Questions fréquentes",
+      subtitle: "Tout ce que tu dois savoir sur chyll.ai et comment il peut transformer ta prospection commerciale.",
+      general: {
+        title: "Questions générales",
+        items: [
+          {
+            question: "Ai-je besoin de savoir coder pour utiliser chyll.ai ?",
+            answer: "Absolument pas ! Notre solution est conçue pour être utilisée sans aucune compétence technique. Notre équipe s'occupe de toute la configuration et de l'intégration pour toi."
+          },
+          {
+            question: "Combien de temps faut-il pour mettre en place chyll.ai ?",
+            answer: "Ton agent chyll.ai est prêt en 48h maximum. Nous nous occupons de toute la configuration et l'intégration pour toi, ce qui garantit un déploiement rapide et sans tracas."
+          },
+          {
+            question: "Quelles données exactes vais-je recevoir ?",
+            answer: "chyll.ai enrichit les profils LinkedIn avec des emails professionnels, des numéros de téléphone, la taille de l'entreprise, le secteur, et d'autres informations pertinentes pour ta prospection. Toutes ces données sont organisées dans un CRM simple et intuitif."
+          },
+          {
+            question: "L'outil est-il sécurisé ?",
+            answer: "Absolument. Nous prenons la sécurité très au sérieux avec un chiffrement des données de niveau professionnel, des audits réguliers et une stricte conformité avec les réglementations de protection des données comme le RGPD."
+          }
+        ]
       },
-      talie: {
-        name: "TALIE — La recruteuse révolutionnaire",
-        description: "Trouvez les meilleurs talents, plus rapidement que jamais. Talie repère des candidats exceptionnels, envoie des messages personnalisés et les présélectionne selon vos critères — recrutement en pilote automatique.",
-        cta: "Déployer Talie"
+      aiEmployees: {
+        title: "Questions sur l'agent IA",
+        items: [
+          {
+            question: "Comment chyll.ai trouve-t-il des prospects ?",
+            answer: "Notre agent IA recherche des prospects sur LinkedIn en fonction de tes critères (mots-clés, entreprises, titres de poste, secteur, etc.). Il identifie les profils pertinents qui correspondent exactement à ta cible."
+          },
+          {
+            question: "Comment se fait l'enrichissement des données ?",
+            answer: "Une fois les prospects identifiés, chyll.ai utilise des technologies avancées pour enrichir les profils avec des emails professionnels, des numéros de téléphone et d'autres informations pertinentes, tout en respectant la réglementation sur la protection des données."
+          },
+          {
+            question: "Comment puis-je accéder aux données de mes prospects ?",
+            answer: "Toutes les données sont automatiquement organisées dans une interface CRM simple basée sur Airtable. Tu reçois un tableau de bord personnalisé, accessible à tout moment, que tu peux facilement partager avec ton équipe."
+          },
+          {
+            question: "Quelles intégrations sont disponibles ?",
+            answer: "chyll.ai s'intègre nativement avec Airtable pour le CRM. Nous pouvons également configurer des connexions avec d'autres outils CRM populaires, des plateformes de communication, ou des systèmes de gestion de projet sur demande."
+          },
+          {
+            question: "Quel type de support est inclus ?",
+            answer: "Nous offrons un support complet pour tous nos plans. Cela inclut la configuration initiale, des ajustements continus, et des canaux de support dédiés. Notre objectif est de garantir que ton agent chyll.ai génère un maximum de valeur pour ton entreprise."
+          },
+          {
+            question: "Puis-je personnaliser les critères de recherche ?",
+            answer: "Oui ! Tu définis exactement les critères que tu souhaites cibler : secteurs d'activité, taille d'entreprise, fonctions, localisation, etc. L'agent s'adapte parfaitement à tes besoins spécifiques de prospection."
+          }
+        ]
       },
-      julienne: {
-        name: "JULIENNE — L'experte en communauté",
-        description: "Engagement et modération 24h/24 et 7j/7. Julienne gère vos communautés en ligne, répond aux commentaires, publie des mises à jour et maintient la conversation — avec grâce et constance.",
-        cta: "Déployer Julienne"
+      stillHaveQuestions: {
+        title: "D'autres questions ?",
+        description: "Notre équipe support est là pour t'aider. Contacte-nous pour une assistance personnalisée."
       },
-      bastien: {
-        name: "BASTIEN — L'agent vocal",
-        description: "Ne manquez plus jamais un appel. Bastien répond aux appels téléphoniques comme un réceptionniste virtuel, recueille des informations clés, planifie des rendez-vous et qualifie les appelants en langage naturel.",
-        cta: "Déployer Bastien"
-      },
-      lafayette: {
-        name: "LAFAYETTE — Le stratège email",
-        description: "Des emails qui convertissent — sans rédacteur nécessaire. Lafayette rédige des messages de prospection et de suivi convaincants, personnalise chaque message et les déclenche au bon moment.",
-        cta: "Déployer Lafayette"
-      },
-      voltaire: {
-        name: "VOLTAIRE — L'architecte de contenu",
-        description: "Du contenu intelligent, dans votre ton et style. Voltaire écrit vos articles de blog, légendes de médias sociaux, campagnes d'emails et visuels — transformant vos idées en contenus magnifiquement rédigés.",
-        cta: "Déployer Voltaire"
-      }
+      lastUpdated: "Dernière mise à jour : Mai 2025"
     },
     partners: {
-      title: "Rejoignez les entreprises qui accélèrent leur croissance avec nos solutions IA"
+      title: "Ils font confiance à chyll.ai pour booster leur prospection"
+    },
+    testimonials: {
+      title: "Des clients conquis par notre agent IA",
+      subtitle: "Rejoins les entreprises qui ont transformé leur prospection grâce à chyll.ai",
+      quotes: [
+        {
+          author: "Thomas Martin",
+          handle: "@thomasceo",
+          text: "Notre agent chyll.ai a multiplié par 3 notre pipeline commercial en seulement 2 mois. C'est comme avoir un SDR qui travaille 24/7 sans jamais se fatiguer."
+        },
+        {
+          author: "Sophie Dubois",
+          handle: "@sophiegrowthlead",
+          text: "En tant que responsable croissance, chyll.ai a complètement transformé notre approche de la prospection. Plus besoin de passer des heures sur LinkedIn, tout est automatisé et notre CRM est toujours à jour."
+        },
+        {
+          author: "Marc Leroy",
+          handle: "@marcfondateur",
+          text: "Avec chyll.ai, nous avons réduit de 70% le temps consacré à la recherche de leads. Mon équipe commerciale peut maintenant se concentrer uniquement sur la conversion des prospects qualifiés."
+        }
+      ]
     }
   },
   
   // Footer
   footer: {
-    tagline: "Automatisation intelligente pour votre entreprise.",
+    tagline: "Automatisation intelligente de ta prospection B2B.",
     copyright: "© 2024 GenerativSchool. Tous droits réservés.",
     menuTitles: {
       product: "Produit",
       company: "Entreprise",
       resources: "Ressources",
-      connect: "Réseaux"
+      connect: "Contact"
     },
     links: {
-      terms: "Conditions d'utilisation",
-      privacy: "Politique de confidentialité",
-      cookies: "Politique des cookies",
+      terms: "Conditions Générales",
+      privacy: "Politique de Confidentialité",
+      cookies: "Politique de Cookies",
       overview: "Aperçu",
       aboutUs: "À propos",
       careers: "Carrières"
     }
   },
   
-  // About page
-  about: {
-    title: "À propos de nous",
-    story: {
-      title: "Notre histoire",
-      text1: "Fondée en 2024, GenerativSchool est née d'une idée simple mais puissante : et si les entreprises pouvaient avoir des employés IA qui travaillent aux côtés des équipes humaines ? Nos fondateurs, ayant travaillé dans l'industrie de l'IA pendant des années, ont constaté de première main à quel point la mise en œuvre de solutions d'IA pouvait être fragmentée et complexe pour la plupart des entreprises.",
-      text2: "Nous avons entrepris de construire une plateforme qui rendrait l'implémentation de l'IA simple et accessible, permettant aux entreprises de toutes tailles de bénéficier des avancées de l'intelligence artificielle sans nécessiter de connaissances techniques spécialisées."
-    },
-    mission: {
-      title: "Notre mission",
-      text1: "Chez GenerativSchool, notre mission est de démocratiser l'accès à l'automatisation alimentée par l'IA et de permettre aux entreprises de déployer des employés IA qui transforment leur façon de fonctionner, de servir les clients et de développer leurs opérations.",
-      text2: "Nous croyons qu'en rendant l'IA accessible et pratique, nous pouvons aider les entreprises à devenir plus efficaces, innovantes et centrées sur le client, leur permettant de prospérer dans un monde de plus en plus numérique."
-    },
-    unique: {
-      title: "Ce qui nous distingue",
-      items: [
-        "Plateforme sans code : Nos solutions ne nécessitent pas d'expertise technique pour être mises en œuvre ou gérées.",
-        "Intégration transparente : Nos employés IA fonctionnent avec vos systèmes et outils existants.",
-        "Apprentissage continu : Notre IA s'améliore avec le temps, s'adaptant à vos besoins spécifiques.",
-        "Approche centrée sur l'humain : Nous concevons notre IA pour compléter les équipes humaines, pas pour les remplacer.",
-        "Développement éthique de l'IA : Nous adhérons à des directives éthiques strictes dans tout notre développement d'IA."
-      ]
-    },
-    cta: {
-      title: "Prêt à transformer votre entreprise avec l'IA ?",
-      text: "Programmez une démo dès aujourd'hui et découvrez comment nos employés IA peuvent aider votre entreprise à prospérer.",
-      button: "Réserver une démo"
-    }
-  },
-  
   // Contact page
   contact: {
-    title: "Contactez-nous",
-    subtitle: "Vous avez des questions sur nos solutions IA ? Prêt à transformer votre entreprise ? Contactez notre équipe et nous serons ravis de vous aider.",
+    title: "Contact",
+    subtitle: "Des questions sur notre solution de prospection IA ? Prêt à transformer ton approche commerciale ? Contacte notre équipe et nous serons ravis de t'aider.",
     form: {
-      title: "Envoyez-nous un message"
+      title: "Envoie-nous un message"
     }
   },
   
   // Pricing content
   pricing: {
-    title: "L'automatisation IA simplifiée",
-    description: "Essayez sans risque avec notre essai de 14 jours",
-    joinText: "Rejoignez les entreprises qui accélèrent leur croissance avec nos solutions IA",
+    title: "Tarifs simples et transparents",
+    description: "Essai gratuit de 14 jours sans carte bancaire",
     plans: {
       once: {
-        name: "Une fois",
-        price: "99€",
-        period: "unique",
-        description: "Une tâche, entièrement réalisée pour vous.",
+        name: "Starter",
+        price: "99",
+        period: "/mois",
+        description: "Parfait pour les petites équipes",
         features: [
-          "Nous construisons et livrons 1 automatisation pour votre cas d'utilisation",
-          "Livré avec une interface simple (Airtable ou Notion)",
-          "Comprend la configuration, le paramétrage et le test",
-          "Parfait pour une preuve de concept ou un besoin spécifique"
+          "50 enrichissements par mois",
+          "2 utilisateurs",
+          "Interface CRM personnalisée",
+          "Support par email",
+          "Mise à jour quotidienne"
         ],
-        buttonText: "Commencer avec une tâche"
+        buttonText: "Commencer l'essai"
       },
       automate: {
-        name: "Automatiser",
-        price: "199€",
+        name: "Growth",
+        price: "200",
         period: "/mois",
-        description: "Un assistant IA que vous pouvez contrôler.",
-        badge: "Le plus populaire",
-        trial: "Essai gratuit de 14 jours",
+        description: "Pour les équipes en croissance",
         features: [
-          "Interface IA personnalisée",
-          "Obtenez un tableau de bord sur mesure où vous pouvez interagir avec votre agent et suivre ses performances",
-          "200 actions mensuelles alimentées par l'IA",
-          "Votre agent peut automatiser des tâches comme la prospection, le suivi, la planification, la création de contenu, les mises à jour CRM, les alertes, et plus — selon son rôle",
-          "Configuration clé en main : Aucune compétence technique requise",
-          "Nous construisons, connectons et lançons votre employé IA pour vous",
-          "Support continu et améliorations",
-          "Nous fournissons des mises à jour continues, une surveillance et un support pratique pour garder votre agent performant et aligné avec vos objectifs commerciaux"
+          "100 enrichissements par mois",
+          "3 utilisateurs",
+          "Interface CRM personnalisée",
+          "Support prioritaire",
+          "Mises à jour en temps réel",
+          "Intégration CRM existant"
         ],
         buttonText: "Réserver une démo"
       },
       integrate: {
-        name: "Intégrer",
-        price: "699€",
+        name: "Scale",
+        price: "300",
         period: "/mois",
-        description: "Configuration IA complète à travers vos opérations.",
-        trial: "Essai gratuit de 14 jours",
+        description: "Pour les équipes commerciales établies",
         features: [
-          "1 000 actions d'automatisation mensuelles",
-          "Développez vos opérations avec une exécution de tâches à haut volume dans tous les départements — ventes, support, RH, marketing, et au-delà",
-          "Flux de travail personnalisés",
-          "Nous concevons et déployons des flux de travail intelligents adaptés à vos besoins commerciaux uniques, à vos processus et à la structure de votre équipe",
-          "S'intègre à votre pile technologique existante",
-          "Vos agents IA se connectent facilement à votre CRM, ATS, service d'assistance, outils de gestion de projet et systèmes internes — sans perturbation",
-          "Intégration personnalisée haut de gamme",
-          "Sessions de configuration dédiées pour cartographier vos flux de travail, installer vos employés IA et assurer une transition en douceur avec votre équipe",
-          "Support prioritaire et accès stratégique",
-          "Vous obtenez une ligne directe vers nos experts en automatisation pour le dépannage, l'optimisation des performances et les révisions stratégiques trimestrielles",
-          "SLA et reporting opérationnel",
-          "Nous nous engageons à garantir un temps de fonctionnement et à fournir des rapports clairs et exploitables sur l'utilisation, les performances et le ROI",
-          "Contrôles de sécurité et d'accès avancés",
-          "Authentification unique (SSO), traitement de données crypté et accès à l'interface basé sur les autorisations — vos données restent sécurisées et segmentées"
+          "200 enrichissements par mois",
+          "5 utilisateurs",
+          "Interface CRM sur mesure",
+          "Support dédié",
+          "Mises à jour en temps réel",
+          "Intégrations avancées",
+          "Critères de recherche illimités",
+          "Rapports de performance"
         ],
-        buttonText: "Parler à notre équipe"
+        buttonText: "Réserver une démo"
       }
     }
   },
@@ -275,16 +218,16 @@ export const fr = {
   // Legal pages
   legal: {
     terms: {
-      title: "Conditions d'utilisation",
-      updated: "Dernière mise à jour : 14 avril 2025"
+      title: "Conditions Générales",
+      updated: "Dernière mise à jour: 14 mai 2025"
     },
     privacy: {
-      title: "Politique de confidentialité",
-      updated: "Dernière mise à jour : 14 avril 2025"
+      title: "Politique de Confidentialité",
+      updated: "Dernière mise à jour: 14 mai 2025"
     },
     cookies: {
-      title: "Politique des cookies",
-      updated: "Dernière mise à jour : 14 avril 2025",
+      title: "Politique de Cookies",
+      updated: "Dernière mise à jour: 14 mai 2025",
       consent: {
         title: "Consentement aux cookies",
         description: "Nous utilisons des cookies pour améliorer votre expérience sur notre site. En cliquant sur \"Accepter tout\", vous acceptez notre utilisation des cookies à des fins d'analyse, de personnalisation et de publicité.",
@@ -303,85 +246,9 @@ export const fr = {
     }
   },
   
-  // Blog
-  blog: {
-    title: "Notre Blog",
-    subtitle: "Découvrez nos articles, mises à jour et perspectives de l'équipe GenerativSchool sur l'IA, l'automatisation et l'innovation.",
-    loadMore: "Charger plus d'articles",
-    allLoaded: "Tous les articles sont chargés",
-    endReached: "Vous avez atteint la fin de notre collection d'articles."
-  },
-  
-  // FAQ
-  faq: {
-    general: {
-      title: "Questions générales",
-      items: [
-        {
-          question: "Que sont les employés IA et comment peuvent-ils aider mon entreprise ?",
-          answer: "Les employés IA sont des assistants d'intelligence artificielle qui peuvent automatiser des tâches répétitives, gérer les communications avec les clients, analyser des données et plus encore. Ils vous aident à économiser du temps et des ressources tout en améliorant l'efficacité opérationnelle."
-        },
-        {
-          question: "Ai-je besoin de compétences techniques pour utiliser les employés IA ?",
-          answer: "Non, aucune compétence technique n'est requise. Notre plateforme est conçue pour être facile à utiliser avec une interface intuitive. Notre équipe d'intégration vous guidera à travers le processus de configuration."
-        },
-        {
-          question: "Combien de temps faut-il pour mettre en œuvre un employé IA ?",
-          answer: "La mise en œuvre d'un employé IA ne prend généralement que quelques jours. Nous nous occupons de la configuration et de l'intégration pour vous, ce qui garantit un déploiement rapide et sans problème."
-        },
-        {
-          question: "Les employés IA peuvent-ils s'intégrer à mes outils et systèmes existants ?",
-          answer: "Oui, nos employés IA s'intègrent parfaitement à la plupart des outils commerciaux populaires, y compris les CRM, les plateformes marketing, les systèmes de billetterie et autres logiciels d'entreprise."
-        },
-        {
-          question: "Quel type de support fournissez-vous pour les employés IA ?",
-          answer: "Nous offrons un support complet, y compris l'intégration, la formation, l'assistance technique continue et des optimisations régulières pour s'assurer que votre employé IA fonctionne de manière optimale."
-        },
-        {
-          question: "Les employés IA sont-ils sécurisés avec mes données d'entreprise ?",
-          answer: "Absolument. Nous prenons la sécurité très au sérieux avec un chiffrement de niveau entreprise, des audits de sécurité réguliers et une conformité stricte aux réglementations sur la protection des données."
-        }
-      ]
-    },
-    aiEmployees: {
-      title: "Questions sur les employés IA",
-      items: [
-        {
-          question: "Que sont les employés IA et comment peuvent-ils aider mon entreprise ?",
-          answer: "Nos employés IA sont des travailleurs numériques spécialisés et avancés, conçus pour gérer des tâches commerciales spécifiques 24h/24 et 7j/7. Chaque employé IA est formé pour exercer des rôles uniques comme le service client, la création de contenu, le support commercial, et plus encore - transformant le fonctionnement des entreprises en fournissant un support constant et de haute qualité."
-        },
-        {
-          question: "Ai-je besoin de compétences techniques pour utiliser les employés IA ?",
-          answer: "Absolument pas ! Nos employés IA sont conçus pour être conviviaux et intuitifs. Ils s'intègrent parfaitement dans vos flux de travail existants, nécessitant un minimum d'expertise technique. Notre équipe fournit un accompagnement et un support complets pour vous aider à maximiser leur potentiel."
-        },
-        {
-          question: "Combien de temps faut-il pour mettre en œuvre un employé IA ?",
-          answer: "La plupart des entreprises peuvent intégrer leur premier employé IA en quelques jours. Nous fournissons un processus d'implémentation clé en main, travaillant en étroite collaboration avec vous pour comprendre vos besoins spécifiques et personnaliser les capacités de l'employé IA en conséquence."
-        },
-        {
-          question: "Les employés IA peuvent-ils s'intégrer à mes outils et systèmes existants ?",
-          answer: "Oui ! Nos employés IA sont conçus pour s'intégrer facilement aux outils commerciaux populaires, notamment les CRM, les plateformes de communication, les systèmes de gestion de projet et bien plus encore. Des intégrations personnalisées sont également disponibles pour assurer une parfaite adéquation avec votre écosystème d'entreprise."
-        },
-        {
-          question: "Quel type de support fournissez-vous pour les employés IA ?",
-          answer: "Nous offrons un support complet pour différents plans. Cela comprend la configuration initiale, la formation continue, l'optimisation des performances et des canaux de support dédiés. Notre objectif est de garantir que vos employés IA s'améliorent continuellement et offrent une valeur maximale."
-        },
-        {
-          question: "Les employés IA sont-ils sécurisés avec mes données d'entreprise ?",
-          answer: "La sécurité des données est notre priorité absolue. Chaque employé IA fonctionne avec un chiffrement de niveau entreprise, suit des protocoles de protection des données stricts et est conçu avec plusieurs couches de sécurité. Nous assurons la transparence dans la gestion des données et pouvons personnaliser les mesures de sécurité pour répondre à vos exigences de conformité spécifiques."
-        }
-      ]
-    },
-    stillHaveQuestions: {
-      title: "Vous avez encore des questions ?",
-      description: "Notre équipe de support est là pour vous aider. Contactez-nous pour une assistance personnalisée concernant vos questions spécifiques."
-    },
-    lastUpdated: "Dernière mise à jour : Avril 2025"
-  },
-  
   // Other pages
   notFound: {
-    title: "Page non trouvée (404)",
+    title: "Page introuvable (404)",
     message: "Nous sommes désolés, mais la page que vous recherchez n'existe pas ou a été déplacée.",
     button: "Retour à l'accueil"
   }

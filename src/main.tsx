@@ -3,6 +3,9 @@ import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
 
+// Set document title
+document.title = "chyll.ai - La prospection B2B, automatisée";
+
 // Performance monitoring helper
 const reportWebVitals = () => {
   if (typeof window !== 'undefined' && 'performance' in window && 'addEventListener' in window) {

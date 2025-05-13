@@ -1,34 +1,50 @@
 
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Star } from 'lucide-react';
-
-const testimonials = [
-  {
-    quote: "My AI Employee manages our entire lead nurturing sequence. We've seen conversion rates double while I focus on strategy.",
-    author: "Emma L.",
-    title: "Founder",
-    company: "Growth Accelerator",
-    stars: 5
-  },
-  {
-    quote: "Our AI Assistant handles customer inquiries 24/7 with remarkable accuracy. It's like hiring a full support team at a fraction of the cost.",
-    author: "Michael S.",
-    title: "CEO",
-    company: "SaaS Innovations",
-    stars: 5
-  },
-  {
-    quote: "As a solo founder, my AI Content Creator produces high-quality blog posts and social media content that perfectly matches our brand voice.",
-    author: "Sarah J.",
-    title: "Founder",
-    company: "Digital First",
-    stars: 5
-  }
-];
+import { useLanguage } from '@/context/LanguageContext';
 
 const TestimonialCarousel = () => {
   const [activeIndex, setActiveIndex] = useState(0);
+  const { language, t } = useLanguage();
 
+  // Default testimonials for fallback
+  const defaultTestimonials = [
+    {
+      quote: "Notre agent chyll.ai a multiplié par 3 notre pipeline commercial en seulement 2 mois. C'est comme avoir un SDR qui travaille 24/7 sans jamais se fatiguer.",
+      author: "Thomas M.",
+      title: "Fondateur",
+      company: "TechStart",
+      stars: 5
+    },
+    {
+      quote: "En tant que responsable croissance, chyll.ai a complètement transformé notre approche de la prospection. Plus besoin de passer des heures sur LinkedIn, tout est automatisé.",
+      author: "Sophie D.",
+      title: "Growth Lead",
+      company: "SaaS Solutions",
+      stars: 5
+    },
+    {
+      quote: "Avec chyll.ai, nous avons réduit de 70% le temps consacré à la recherche de leads. Mon équipe commerciale peut maintenant se concentrer sur la conversion.",
+      author: "Marc L.",
+      title: "Directeur Commercial",
+      company: "B2B Factory",
+      stars: 5
+    }
+  ];
+
+  // Get testimonials from translations if available
+  const testimonials = language === 'fr' && t.home?.testimonials?.quotes ? 
+    t.home.testimonials.quotes.map((quote: any) => ({
+      quote: quote.text,
+      author: quote.author.split(' ')[0] + ' ' + quote.author.split(' ')[1].charAt(0) + '.',
+      title: quote.handle?.includes('ceo') ? 'CEO' : 
+             quote.handle?.includes('growth') ? 'Growth Lead' :
+             quote.handle?.includes('fondateur') ? 'Fondateur' : 'Directeur',
+      company: '',
+      stars: 5
+    })) 
+    : defaultTestimonials;
+    
   const nextSlide = () => {
     setActiveIndex((current) => (current === testimonials.length - 1 ? 0 : current + 1));
   };
@@ -64,7 +80,7 @@ const TestimonialCarousel = () => {
               <blockquote className="text-xl text-gray-700 italic mb-6">"{testimonial.quote}"</blockquote>
               <div>
                 <p className="font-medium text-gray-900">{testimonial.author}</p>
-                <p className="text-gray-600">{testimonial.title}, {testimonial.company}</p>
+                <p className="text-gray-600">{testimonial.title}{testimonial.company ? ', ' + testimonial.company : ''}</p>
               </div>
             </div>
           </div>

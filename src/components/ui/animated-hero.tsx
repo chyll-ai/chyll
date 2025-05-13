@@ -10,14 +10,11 @@ function Hero() {
   const { language, t } = useLanguage();
   const [titleNumber, setTitleNumber] = useState(0);
   const titles = t.home.hero.actions || [
-    "automate workflows",
-    "write content", 
-    "analyze data",
-    "handle support",
-    "manage projects",
-    "generate leads",
-    "process documents",
-    "schedule meetings"
+    "automatisée.",
+    "simplifiée.",
+    "efficace.",
+    "sans effort.",
+    "optimisée."
   ];
 
   useEffect(() => {
@@ -73,13 +70,13 @@ function Hero() {
             </p>
           </div>
           <div className="flex flex-row gap-3">
-            <Button size="lg" className="gap-4" variant="outline" asChild>
-              <a href="https://cal.com/generativschool/30min?overlayCalendar=true" target="_blank" rel="noopener noreferrer">
-                {t.common.bookDemo} <PhoneCall className="w-4 h-4" />
-              </a>
-            </Button>
             <Button size="lg" className="gap-4" variant="rainbow" asChild>
               <a href="https://cal.com/generativschool/30min?overlayCalendar=true" target="_blank" rel="noopener noreferrer">
+                {t.home.hero.buttons.bookDemo} <PhoneCall className="w-4 h-4" />
+              </a>
+            </Button>
+            <Button size="lg" className="gap-4" variant="outline" asChild>
+              <a href="#pricing">
                 {t.home.hero.buttons.hireNow} <MoveRight className="w-4 h-4" />
               </a>
             </Button>

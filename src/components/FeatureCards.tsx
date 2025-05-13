@@ -1,49 +1,49 @@
 
 import React from 'react';
 import { 
-  Phone, MessageSquare, Star, FileText, Workflow, LineChart 
+  Search, Mail, CreditCard, LineChart, Users, Database
 } from 'lucide-react';
 
 const features = [
   {
-    title: "Voice AI",
-    starWarsName: "BASTIEN, THE VOICE AI",
-    description: "Never miss a call with 24/7 automated phone reception",
-    icon: Phone,
+    title: "Recherche LinkedIn",
+    starWarsName: "RECHERCHE AUTOMATISÉE",
+    description: "Trouve les prospects sur LinkedIn via mots-clés ou entreprises ciblées",
+    icon: Search,
     color: "bg-blue-50 text-blue-600"
   },
   {
-    title: "Conversation AI",
-    starWarsName: "MARIE, THE CONVERSATION AI",
-    description: "Natural live chat across SMS, web, and social media",
-    icon: MessageSquare,
+    title: "Enrichissement de données",
+    starWarsName: "ENRICHISSEMENT",
+    description: "Obtiens emails professionnels et numéros des prospects identifiés",
+    icon: Mail,
     color: "bg-purple-50 text-purple-600"
   },
   {
-    title: "Reviews AI",
-    starWarsName: "LOUIS, THE REVIEWS AI",
-    description: "Reputation management and review automation",
-    icon: Star,
+    title: "Mise à jour CRM",
+    starWarsName: "CRM SIMPLE",
+    description: "Interface Airtable personnalisée et automatiquement mise à jour",
+    icon: Database,
     color: "bg-yellow-50 text-yellow-600"
   },
   {
-    title: "Content AI",
-    starWarsName: "VOLTAIRE, THE CONTENT AI",
-    description: "Generate blogs, social posts, emails, and images",
-    icon: FileText,
+    title: "Sans code",
+    starWarsName: "ZÉRO CODE",
+    description: "Aucune compétence technique requise, prêt en 48h",
+    icon: CreditCard,
     color: "bg-green-50 text-green-600"
   },
   {
-    title: "Workflow AI Assistant",
-    starWarsName: "NAPOLEON, THE WORKFLOW AI",
-    description: "Build and master business automation workflows",
-    icon: Workflow,
+    title: "Support continu",
+    starWarsName: "SUPPORT DÉDIÉ",
+    description: "Une équipe pour t'accompagner et optimiser ton agent",
+    icon: Users,
     color: "bg-indigo-50 text-indigo-600"
   },
   {
-    title: "Funnel AI",
-    starWarsName: "JEAN, THE FUNNEL AI",
-    description: "Create high-converting pages and funnels quickly",
+    title: "Analytics B2B",
+    starWarsName: "ANALYTICS",
+    description: "Mesure et optimise tes performances de prospection",
     icon: LineChart,
     color: "bg-red-50 text-red-600"
   }
@@ -61,7 +61,7 @@ const FeatureCards = () => {
             <feature.icon className="h-6 w-6" />
           </div>
           <h3 className="text-lg font-bold text-gray-900 mb-1">
-            {feature.starWarsName.toUpperCase()}
+            {feature.starWarsName}
           </h3>
           <p className="text-gray-600">{feature.description}</p>
         </div>
