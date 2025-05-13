@@ -7,9 +7,9 @@ import { Zap, Mic, TrendingUp, Rocket, Bot, MessageCircle } from "lucide-react";
 const featuresCards = [
   {
     icon: <Zap className="size-4 text-yellow-300" />,
-    title: "NAPOLEON, THE AI AUTOMATION",
-    description: "Automate repetitive tasks",
-    date: "Save 20+ hours/week",
+    title: "NAPOLEON, L'AUTOMATISATION IA",
+    description: "Automatisez les tâches répétitives",
+    date: "Gagnez 20+ heures/semaine",
     iconClassName: "text-yellow-500",
     titleClassName: "text-yellow-500",
     className:
@@ -17,9 +17,9 @@ const featuresCards = [
   },
   {
     icon: <Mic className="size-4 text-blue-300" />,
-    title: "BASTIEN, THE VOICE CALLS",
-    description: "AI-powered voice assistant",
-    date: "24/7 availability",
+    title: "BASTIEN, LES APPELS VOCAUX",
+    description: "Assistant vocal propulsé par IA",
+    date: "Disponibilité 24/7",
     iconClassName: "text-blue-500",
     titleClassName: "text-blue-500",
     className:
@@ -27,9 +27,9 @@ const featuresCards = [
   },
   {
     icon: <Rocket className="size-4 text-purple-300" />,
-    title: "VOLTAIRE, THE WORKFLOW BUILDER",
-    description: "Create custom workflows",
-    date: "No coding required",
+    title: "VOLTAIRE, LE CRÉATEUR DE FLUX",
+    description: "Créez des workflows personnalisés",
+    date: "Sans programmation requise",
     iconClassName: "text-purple-500",
     titleClassName: "text-purple-500",
     className:
@@ -37,9 +37,9 @@ const featuresCards = [
   },
   {
     icon: <TrendingUp className="size-4 text-green-300" />,
-    title: "LOUIS, THE COMPETITIVE EDGE",
-    description: "Stay ahead of competitors",
-    date: "Market advantage",
+    title: "LOUIS, L'AVANTAGE COMPÉTITIF",
+    description: "Gardez une longueur d'avance",
+    date: "Avantage sur le marché",
     iconClassName: "text-green-500",
     titleClassName: "text-green-500",
     className:
@@ -47,9 +47,9 @@ const featuresCards = [
   },
   {
     icon: <Bot className="size-4 text-indigo-300" />,
-    title: "MARIE, THE CHATBOT INTEGRATION",
-    description: "Custom chatbot solutions",
-    date: "Instant response",
+    title: "MARIE, L'INTÉGRATION CHATBOT",
+    description: "Solutions chatbot personnalisées",
+    date: "Réponse instantanée",
     iconClassName: "text-indigo-500",
     titleClassName: "text-indigo-500",
     className:
@@ -57,9 +57,9 @@ const featuresCards = [
   },
   {
     icon: <MessageCircle className="size-4 text-red-300" />,
-    title: "JEAN, THE MULTI-CHANNEL SUPPORT",
-    description: "Support across platforms",
-    date: "Seamless integration",
+    title: "JEAN, LE SUPPORT MULTI-CANAL",
+    description: "Support sur toutes plateformes",
+    date: "Intégration transparente",
     iconClassName: "text-red-500",
     titleClassName: "text-red-500",
     className:

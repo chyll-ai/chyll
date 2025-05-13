@@ -3,44 +3,48 @@ import React from 'react';
 import { 
   DollarSign, Zap, PlayCircle, Clock, Globe, ArrowUpRight 
 } from 'lucide-react';
-
-const benefits = [
-  {
-    title: "Cost-Efficient",
-    icon: DollarSign,
-    color: "bg-green-50 text-green-600"
-  },
-  {
-    title: "Boosted Productivity",
-    icon: Zap,
-    color: "bg-yellow-50 text-yellow-600"
-  },
-  {
-    title: "Effortless Automation",
-    icon: PlayCircle,
-    color: "bg-blue-50 text-blue-600"
-  },
-  {
-    title: "24/7 Support",
-    icon: Clock,
-    color: "bg-purple-50 text-purple-600"
-  },
-  {
-    title: "Multi-Channel Engagement",
-    icon: Globe,
-    color: "bg-indigo-50 text-indigo-600"
-  },
-  {
-    title: "Infinitely Scalable",
-    icon: ArrowUpRight,
-    color: "bg-red-50 text-red-600"
-  }
-];
+import { useLanguage } from '@/context/LanguageContext';
 
 const Benefits = () => {
+  const { t } = useLanguage();
+
+  // Default French benefits if no translations are available
+  const defaultBenefits = [
+    {
+      title: "Rentabilité",
+      icon: DollarSign,
+      color: "bg-green-50 text-green-600"
+    },
+    {
+      title: "Productivité accrue",
+      icon: Zap,
+      color: "bg-yellow-50 text-yellow-600"
+    },
+    {
+      title: "Automatisation simple",
+      icon: PlayCircle,
+      color: "bg-blue-50 text-blue-600"
+    },
+    {
+      title: "Support 24/7",
+      icon: Clock,
+      color: "bg-purple-50 text-purple-600"
+    },
+    {
+      title: "Engagement multi-canal",
+      icon: Globe,
+      color: "bg-indigo-50 text-indigo-600"
+    },
+    {
+      title: "Infiniment évolutif",
+      icon: ArrowUpRight,
+      color: "bg-red-50 text-red-600"
+    }
+  ];
+
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-      {benefits.map((benefit, index) => (
+      {defaultBenefits.map((benefit, index) => (
         <div 
           key={index} 
           className="flex flex-col items-center text-center p-4 hover-lift"
