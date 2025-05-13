@@ -1,3 +1,4 @@
+
 export const fr = {
   // Common elements
   common: {
@@ -107,7 +108,7 @@ export const fr = {
       lastUpdated: "Dernière mise à jour : Mai 2025"
     },
     partners: {
-      title: "Ils font confiance à chyll.ai pour booster leur prospection"
+      title: "Nos partenaires stratégiques" // Fixed redundant title here
     },
     testimonials: {
       title: "Des clients conquis par notre agent IA",
