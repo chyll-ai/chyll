@@ -1,4 +1,3 @@
-
 export const fr = {
   // Common elements
   common: {
@@ -108,7 +107,7 @@ export const fr = {
       lastUpdated: "Dernière mise à jour : Mai 2025"
     },
     partners: {
-      title: "Nos partenaires stratégiques" // Fixed redundant title here
+      title: "Nos partenaires stratégiques"
     },
     testimonials: {
       title: "Des clients conquis par notre agent IA",
@@ -170,7 +169,7 @@ export const fr = {
       once: {
         name: "Starter",
         price: "99",
-        period: "/mois",
+        period: "mois",
         description: "Parfait pour les petites équipes",
         features: [
           "50 enrichissements par mois",
@@ -184,7 +183,7 @@ export const fr = {
       automate: {
         name: "Growth",
         price: "200",
-        period: "/mois",
+        period: "mois",
         description: "Pour les équipes en croissance",
         features: [
           "100 enrichissements par mois",
@@ -199,7 +198,7 @@ export const fr = {
       integrate: {
         name: "Scale",
         price: "300",
-        period: "/mois",
+        period: "mois",
         description: "Pour les équipes commerciales établies",
         features: [
           "200 enrichissements par mois",

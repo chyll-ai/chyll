@@ -70,8 +70,8 @@ export function Pricing({
     }
   };
 
-  // Currency symbol based on language
-  const currencySymbol = language === "fr" ? "€" : "$";
+  // Always use Euro symbol for this application
+  const currencySymbol = "€";
 
   return (
     <div className="container py-20">
@@ -159,35 +159,14 @@ export function Pricing({
               </p>
               <div className="mt-6 flex items-center justify-center gap-x-2">
                 <span className="text-5xl font-bold tracking-tight text-foreground">
-                  {language === "fr" ? (
-                    // French format: 99€, 199€, etc.
-                    <span>
-                      {isMonthly ? plan.price : plan.yearlyPrice}{currencySymbol}
-                    </span>
-                  ) : (
-                    // English format: $99, $199, etc.
-                    <NumberFlow
-                      value={
-                        isMonthly ? Number(plan.price) : Number(plan.yearlyPrice)
-                      }
-                      format={{
-                        style: "currency",
-                        currency: "USD",
-                        minimumFractionDigits: 0,
-                        maximumFractionDigits: 0,
-                      }}
-                      transformTiming={{
-                        duration: 500,
-                        easing: "ease-out",
-                      }}
-                      willChange
-                      className="font-variant-numeric: tabular-nums"
-                    />
-                  )}
+                  {/* Always display prices with Euro symbol */}
+                  <span>
+                    {isMonthly ? plan.price : plan.yearlyPrice}{currencySymbol}
+                  </span>
                 </span>
                 {plan.period !== "Next 3 months" && (
                   <span className="text-sm font-semibold leading-6 tracking-wide text-muted-foreground">
-                    / {plan.period}
+                    {plan.period}
                   </span>
                 )}
               </div>

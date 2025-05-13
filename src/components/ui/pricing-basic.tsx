@@ -7,7 +7,7 @@ import { useLanguage } from "@/context/LanguageContext";
 function PricingBasic() {
   const { t } = useLanguage();
   
-  // French pricing plans
+  // French pricing plans with Euro symbol and clean period display
   const pricingPlans = [
     {
       name: t.pricing.plans.once.name,
@@ -50,6 +50,7 @@ function PricingBasic() {
         plans={pricingPlans}
         title={t.pricing.title || "Tarifs simples et transparents"}
         description={t.pricing.description || "Essai gratuit de 14 jours sans carte bancaire"}
+        language="fr"
       />
     </div>
   );
