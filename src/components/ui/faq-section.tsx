@@ -54,15 +54,15 @@ export function FAQSection() {
     : defaultFaqItems;
   
   return (
-    <div className="w-full max-w-4xl mx-auto">
+    <div className="w-full max-w-4xl mx-auto px-4 sm:px-0">
       <Accordion type="single" collapsible className="w-full">
         {faqItems.map((item, index) => (
           <AccordionItem key={index} value={`item-${index}`} className="border-b border-gray-200">
-            <AccordionTrigger className="text-lg font-medium text-gray-800 hover:text-brand-blue py-5">
+            <AccordionTrigger className="text-base sm:text-lg font-medium text-gray-800 hover:text-brand-blue py-4 sm:py-5 text-left">
               {item.question}
             </AccordionTrigger>
-            <AccordionContent className="text-gray-600 pb-5">
-              {item.answer}
+            <AccordionContent className="text-gray-600 pb-4 sm:pb-5">
+              <div className="text-sm sm:text-base">{item.answer}</div>
             </AccordionContent>
           </AccordionItem>
         ))}

@@ -33,9 +33,9 @@ export function FaqAccordion({
   const [openItem, setOpenItem] = React.useState<string | null>(null);
 
   return (
-    <div className={cn("p-4", className)}>
+    <div className={cn("p-2 sm:p-4 max-w-full", className)}>
       {timestamp && (
-        <div className="mb-4 text-sm text-muted-foreground">{timestamp}</div>
+        <div className="mb-4 text-xs sm:text-sm text-muted-foreground">{timestamp}</div>
       )}
 
       <Accordion.Root
@@ -51,10 +51,10 @@ export function FaqAccordion({
             className="mb-2"
           >
             <Accordion.Header>
-              <Accordion.Trigger className="flex w-full items-center justify-start gap-x-4">
+              <Accordion.Trigger className="flex w-full items-center justify-between gap-x-2 sm:gap-x-4 px-1 sm:px-2">
                 <div
                   className={cn(
-                    "relative flex items-center space-x-2 rounded-xl p-2 transition-colors",
+                    "relative flex items-center space-x-2 rounded-xl p-2 transition-colors text-left",
                     openItem === item.id.toString() 
                       ? "bg-primary/20 text-primary" 
                       : "bg-muted hover:bg-primary/10",
@@ -76,19 +76,19 @@ export function FaqAccordion({
                       {item.icon}
                     </span>
                   )}
-                  <span className="font-medium">{item.question}</span>
+                  <span className="font-medium text-sm sm:text-base">{item.question}</span>
                 </div>
 
                 <span 
                   className={cn(
-                    "text-muted-foreground",
+                    "text-muted-foreground flex-none",
                     openItem === item.id.toString() && "text-primary"
                   )}
                 >
                   {openItem === item.id.toString() ? (
-                    <Minus className="h-5 w-5" />
+                    <Minus className="h-4 w-4 sm:h-5 sm:w-5" />
                   ) : (
-                    <Plus className="h-5 w-5" />
+                    <Plus className="h-4 w-4 sm:h-5 sm:w-5" />
                   )}
                 </span>
               </Accordion.Trigger>
@@ -104,10 +104,10 @@ export function FaqAccordion({
                 transition={{ duration: 0.4 }}
                 className="overflow-hidden"
               >
-                <div className="ml-7 mt-1 md:ml-16">
+                <div className="ml-3 mt-1 sm:ml-7 md:ml-16">
                   <div
                     className={cn(
-                      "relative max-w-xs rounded-2xl bg-primary px-4 py-2 text-primary-foreground",
+                      "relative max-w-xs rounded-2xl bg-primary px-3 py-2 sm:px-4 sm:py-2 text-primary-foreground text-xs sm:text-sm",
                       answerClassName
                     )}
                   >
