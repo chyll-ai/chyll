@@ -52,7 +52,7 @@ export function Footer2({
   bottomLinks = [
     { text: "Conditions Générales", url: "/terms" },
     { text: "Politique de Confidentialité", url: "/privacy" },
-    { text: "Politique de Cookies", url: "/cookies" },
+    { text: "Politique des Cookies", url: "/cookies" },
   ],
 }: Footer2Props) {
   const { t } = useLanguage();

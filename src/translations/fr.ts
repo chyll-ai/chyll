@@ -145,7 +145,7 @@ export const fr = {
     links: {
       terms: "Conditions Générales",
       privacy: "Politique de Confidentialité",
-      cookies: "Politique de Cookies",
+      cookies: "Politique des Cookies",
       overview: "Aperçu",
       aboutUs: "À propos",
       careers: "Carrières"
@@ -226,8 +226,8 @@ export const fr = {
       updated: "Dernière mise à jour: 14 mai 2025"
     },
     cookies: {
-      title: "Politique de Cookies",
-      updated: "Dernière mise à jour: 14 mai 2025",
+      title: "Politique des Cookies",
+      updated: "Dernière mise à jour: 13 mai 2025",
       consent: {
         title: "Consentement aux cookies",
         description: "Nous utilisons des cookies pour améliorer votre expérience sur notre site. En cliquant sur \"Accepter tout\", vous acceptez notre utilisation des cookies à des fins d'analyse, de personnalisation et de publicité.",

@@ -1,84 +1,167 @@
 
 import React from 'react';
 import Navbar from '@/components/Navbar';
-import { Footer2Demo } from '@/components/ui/footer2-demo';
+import { Footer2 } from '@/components/ui/footer2';
+import SEOMetadata from '@/components/SEOMetadata';
+import { useLanguage } from '@/context/LanguageContext';
 
 const Cookies = () => {
+  const { language } = useLanguage();
+  
   return (
     <div className="min-h-screen flex flex-col">
+      <SEOMetadata 
+        title="Politique des Cookies" 
+        description="La politique des cookies de chyll.ai explique comment nous utilisons les cookies pour améliorer votre expérience de navigation."
+        canonicalUrl="/cookies"
+      />
+      
       <Navbar />
       
       <section className="flex-grow py-16 bg-white">
         <div className="container-custom">
           <div className="max-w-4xl mx-auto">
-            <h1 className="text-3xl md:text-4xl font-bold mb-8">Cookie Policy</h1>
+            <h1 className="text-3xl md:text-4xl font-bold mb-8">Politique des Cookies</h1>
+            <p className="text-sm text-gray-500 mb-8">Dernière mise à jour : 13 mai 2025</p>
             
             <div className="prose max-w-none">
-              <h2 className="text-2xl font-semibold mt-8 mb-4">1. Introduction</h2>
               <p>
-                This Cookie Policy explains how GenerativSchool uses cookies and similar technologies to recognize you when you visit our website.
-                It explains what these technologies are and why we use them, as well as your rights to control our use of them.
+                Chez chyll.ai, une marque de GenerativSchool SAS, nous utilisons des cookies et des technologies similaires pour améliorer votre expérience de navigation, analyser l'utilisation de nos services, personnaliser notre contenu et améliorer la performance de notre plateforme.
               </p>
               
-              <h2 className="text-2xl font-semibold mt-8 mb-4">2. Company Information</h2>
               <p>
-                <strong>Company Name:</strong> GENERATIVSCHOOL<br />
-                <strong>Legal Form:</strong> SAS, société par actions simplifiée<br />
-                <strong>SIREN:</strong> 938 422 896<br />
-                <strong>SIRET:</strong> 938 422 896 00010<br />
-                <strong>VAT Number:</strong> FR64 938 422 896<br />
-                <strong>Main Activity (NAF/APE):</strong> Autres enseignements (85.59B)<br />
-                <strong>Address:</strong> 60 RUE FRANCOIS IER 75008 PARIS<br />
-                <strong>Date of Creation:</strong> 10/12/2024
+                Cette politique vous explique ce que sont les cookies, comment nous les utilisons et comment vous pouvez les gérer.
               </p>
               
-              <h2 className="text-2xl font-semibold mt-8 mb-4">3. What Are Cookies?</h2>
+              <h2 className="text-2xl font-semibold mt-8 mb-4">1. Qu'est-ce qu'un cookie ?</h2>
               <p>
-                Cookies are small data files that are placed on your computer or mobile device when you visit a website.
-                Cookies are widely used by website owners in order to make their websites work, or to work more efficiently,
-                as well as to provide reporting information.
+                Un cookie est un petit fichier texte qui est déposé sur votre appareil (ordinateur, tablette, smartphone) lors de la navigation sur un site web. Les cookies permettent au site web de se souvenir de vos actions et préférences (comme votre identifiant de connexion ou votre langue) pendant un certain temps, ce qui vous évite de devoir les saisir à chaque fois que vous revenez sur le site ou que vous naviguez d'une page à l'autre.
               </p>
               
-              <h2 className="text-2xl font-semibold mt-8 mb-4">4. Types of Cookies We Use</h2>
+              <h2 className="text-2xl font-semibold mt-8 mb-4">2. Types de cookies utilisés</h2>
               <p>
-                We use the following types of cookies:
+                Nous utilisons plusieurs types de cookies pour différentes finalités :
+              </p>
+              
+              <h3 className="text-xl font-semibold mt-6 mb-3">Cookies essentiels</h3>
+              <p>
+                Ces cookies sont nécessaires au fonctionnement de notre plateforme. Ils vous permettent de naviguer sur le site et d'utiliser les fonctionnalités de base, telles que la gestion de votre compte ou la sécurisation de votre session.
+              </p>
+              <p>
+                Exemples :
               </p>
               <ul className="list-disc ml-6 mb-4">
-                <li><strong>Essential Cookies:</strong> These cookies are necessary for the website to function and cannot be switched off in our systems.</li>
-                <li><strong>Performance Cookies:</strong> These cookies allow us to count visits and traffic sources so we can measure and improve the performance of our site.</li>
-                <li><strong>Functionality Cookies:</strong> These cookies enable the website to provide enhanced functionality and personalization.</li>
-                <li><strong>Targeting Cookies:</strong> These cookies may be set through our site by our advertising partners to build a profile of your interests.</li>
+                <li>Cookies de session</li>
+                <li>Cookies d'authentification</li>
               </ul>
               
-              <h2 className="text-2xl font-semibold mt-8 mb-4">5. How to Control Cookies</h2>
+              <h3 className="text-xl font-semibold mt-6 mb-3">Cookies de performance</h3>
               <p>
-                You can set or amend your web browser controls to accept or refuse cookies. If you choose to reject cookies, you may still use our website though your access to some functionality and areas of our website may be restricted.
+                Ces cookies collectent des informations sur la manière dont vous utilisez notre site, comme les pages que vous consultez et les liens sur lesquels vous cliquez. Ces informations sont utilisées pour améliorer le fonctionnement du site et pour comprendre comment les utilisateurs interagissent avec notre plateforme.
+              </p>
+              <p>
+                Exemples :
+              </p>
+              <ul className="list-disc ml-6 mb-4">
+                <li>Cookies de Google Analytics</li>
+                <li>Cookies de performance de navigation</li>
+              </ul>
+              
+              <h3 className="text-xl font-semibold mt-6 mb-3">Cookies de fonctionnalité</h3>
+              <p>
+                Ces cookies permettent au site de mémoriser vos préférences et de vous offrir une expérience personnalisée. Par exemple, ces cookies peuvent se souvenir de la langue que vous avez choisie ou de vos paramètres d'affichage.
+              </p>
+              <p>
+                Exemples :
+              </p>
+              <ul className="list-disc ml-6 mb-4">
+                <li>Cookies de personnalisation de l'interface utilisateur</li>
+                <li>Cookies de langue</li>
+              </ul>
+              
+              <h3 className="text-xl font-semibold mt-6 mb-3">Cookies publicitaires et de ciblage</h3>
+              <p>
+                Ces cookies sont utilisés pour vous proposer des publicités adaptées à vos intérêts, en fonction de votre navigation sur notre site et d'autres sites. Ils peuvent également être utilisés pour limiter le nombre de fois où vous voyez une annonce.
+              </p>
+              <p>
+                Exemples :
+              </p>
+              <ul className="list-disc ml-6 mb-4">
+                <li>Cookies de retargeting (publicité ciblée)</li>
+                <li>Cookies de réseaux sociaux (comme Facebook, LinkedIn)</li>
+              </ul>
+              
+              <h2 className="text-2xl font-semibold mt-8 mb-4">3. Comment nous utilisons les cookies</h2>
+              <p>
+                Les cookies nous permettent de :
+              </p>
+              <ul className="list-disc ml-6 mb-4">
+                <li>Améliorer la performance et la fonctionnalité de notre site</li>
+                <li>Analyser l'utilisation de notre plateforme pour l'améliorer</li>
+                <li>Vous offrir une expérience personnalisée (préférences, langue, etc.)</li>
+                <li>Gérer des campagnes publicitaires adaptées à vos intérêts</li>
+              </ul>
+              
+              <h2 className="text-2xl font-semibold mt-8 mb-4">4. Gestion des cookies</h2>
+              <p>
+                Vous avez la possibilité de gérer vos préférences en matière de cookies à tout moment. Vous pouvez choisir de désactiver certains cookies ou de modifier les paramètres de votre navigateur pour refuser tous les cookies.
               </p>
               
-              <h2 className="text-2xl font-semibold mt-8 mb-4">6. Third-Party Cookies</h2>
+              <h3 className="text-xl font-semibold mt-6 mb-3">Comment gérer vos cookies dans votre navigateur ?</h3>
               <p>
-                In addition to our own cookies, we may also use various third-party cookies to report usage statistics of the website and deliver advertisements on and through the website.
+                La plupart des navigateurs vous permettent de refuser ou d'accepter les cookies. Vous pouvez configurer votre navigateur pour qu'il vous avertisse lorsqu'un cookie est envoyé, ou bien pour les désactiver complètement.
+              </p>
+              <p>
+                Voici comment gérer les cookies dans les principaux navigateurs :
+              </p>
+              <ul className="list-disc ml-6 mb-4">
+                <li>Google Chrome : Paramètres &gt; Confidentialité et sécurité &gt; Cookies et autres données de site</li>
+                <li>Mozilla Firefox : Options &gt; Vie privée et sécurité &gt; Cookies et données de site</li>
+                <li>Safari : Préférences &gt; Confidentialité &gt; Cookies et données de site</li>
+                <li>Microsoft Edge : Paramètres &gt; Cookies et autorisations de site</li>
+              </ul>
+              
+              <h3 className="text-xl font-semibold mt-6 mb-3">Refuser les cookies publicitaires</h3>
+              <p>
+                Vous pouvez également refuser les cookies publicitaires de certaines plateformes en visitant des sites tels que :
+              </p>
+              <ul className="list-disc ml-6 mb-4">
+                <li>YourOnlineChoices : <a href="https://www.youronlinechoices.com" target="_blank" rel="noopener noreferrer" className="text-brand-blue hover:underline">www.youronlinechoices.com</a></li>
+                <li>Network Advertising Initiative : <a href="https://www.networkadvertising.org" target="_blank" rel="noopener noreferrer" className="text-brand-blue hover:underline">www.networkadvertising.org</a></li>
+              </ul>
+              
+              <h2 className="text-2xl font-semibold mt-8 mb-4">5. Cookies tiers</h2>
+              <p>
+                Lorsque vous utilisez notre site, des cookies tiers peuvent également être déposés par des services externes, tels que Google Analytics, Facebook, ou LinkedIn. Ces cookies sont utilisés pour analyser votre navigation, vous offrir des publicités personnalisées, ou vous permettre de partager du contenu sur les réseaux sociaux. Nous n'avons pas de contrôle sur l'utilisation de ces cookies, et vous devez consulter les politiques de confidentialité de ces services tiers pour plus d'informations.
               </p>
               
-              <h2 className="text-2xl font-semibold mt-8 mb-4">7. Changes to This Cookie Policy</h2>
+              <h2 className="text-2xl font-semibold mt-8 mb-4">6. Conservation des cookies</h2>
               <p>
-                We may update this Cookie Policy from time to time in order to reflect changes to the cookies we use or for other operational, legal, or regulatory reasons.
-                Please therefore re-visit this Cookie Policy regularly to stay informed about our use of cookies and related technologies.
+                La durée de conservation des cookies dépend du type de cookie :
+              </p>
+              <ul className="list-disc ml-6 mb-4">
+                <li>Cookies de session : ces cookies sont conservés uniquement pendant la durée de votre session de navigation et sont supprimés dès que vous fermez votre navigateur.</li>
+                <li>Cookies permanents : ces cookies restent sur votre appareil pendant une durée maximale de 13 mois.</li>
+              </ul>
+              
+              <h2 className="text-2xl font-semibold mt-8 mb-4">7. Modifications de la politique des cookies</h2>
+              <p>
+                Nous pouvons mettre à jour cette Politique des Cookies de temps à autre. Toute modification sera publiée sur cette page avec la date de mise à jour. Nous vous encourageons à consulter régulièrement cette politique pour être informé de toute modification.
               </p>
               
-              <h2 className="text-2xl font-semibold mt-8 mb-4">8. Contact Us</h2>
+              <h2 className="text-2xl font-semibold mt-8 mb-4">8. Contact</h2>
               <p>
-                If you have any questions about our use of cookies or other technologies, please contact us at:<br />
-                <a href="mailto:cookies@generativschool.com" className="text-brand-blue hover:underline">cookies@generativschool.com</a>
+                Si vous avez des questions concernant notre Politique des Cookies ou si vous souhaitez exercer vos droits en matière de cookies, vous pouvez nous contacter à l'adresse suivante :<br />
+                <strong>GenerativSchool SAS</strong><br />
+                Email de contact : <a href="mailto:contact@generativschool.com" className="text-brand-blue hover:underline">contact@generativschool.com</a><br />
+                Adresse : 60 rue François Premier, 75008 Paris, France
               </p>
-              
-              <p className="text-sm mt-12">Last updated: April 14, 2025</p>
             </div>
           </div>
         </div>
       </section>
       
-      <Footer2Demo />
+      <Footer2 />
     </div>
   );
 };
