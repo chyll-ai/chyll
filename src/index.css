@@ -137,4 +137,16 @@
   .hover-lift {
     @apply transition-transform duration-300 hover:-translate-y-1;
   }
+
+  .rainbow-text {
+    @apply bg-gradient-to-r from-[hsl(var(--color-1))] via-[hsl(var(--color-2))] to-[hsl(var(--color-5))] bg-clip-text text-transparent animate-rainbow bg-[length:200%];
+  }
+  
+  .rainbow-text-static {
+    @apply bg-gradient-to-r from-[hsl(var(--color-1))] via-[hsl(var(--color-3))] to-[hsl(var(--color-4))] bg-clip-text text-transparent;
+  }
+  
+  .section-title {
+    @apply text-3xl md:text-4xl font-bold mb-4;
+  }
 }

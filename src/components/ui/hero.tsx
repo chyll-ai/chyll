@@ -50,8 +50,8 @@ export function Hero() {
 
         <div className="mb-6 md:mb-10">
           <div className="typography-h1 font-extrabold leading-tight tracking-tight text-center">
-            <span className="block text-5xl xl:text-8xl">{t.home.hero.title}</span>
-            <div className="inline-block bg-gradient-to-r from-[#61DAFB] via-[#1fc0f1] to-[#03a3d7] bg-clip-text text-transparent text-5xl xl:text-8xl">
+            <span className="block text-5xl xl:text-8xl rainbow-text-static">{t.home.hero.title}</span>
+            <div className="inline-block rainbow-text text-5xl xl:text-8xl">
               {rotatingWords[wordIndex]}
             </div>
           </div>

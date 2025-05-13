@@ -64,7 +64,7 @@ const Index = () => {
       <section id="features" className="section-padding bg-white">
         <div className="container-custom">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">{t.home.features.title}</h2>
+            <h2 className="section-title rainbow-text-static">{t.home.features.title}</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               {t.home.features.subtitle}
             </p>
@@ -77,7 +77,7 @@ const Index = () => {
       <section id="how-it-works" className="section-padding gradient-bg">
         <div className="container-custom">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">{t.home.howItWorks.title}</h2>
+            <h2 className="section-title rainbow-text-static">{t.home.howItWorks.title}</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               {t.home.howItWorks.subtitle}
             </p>
@@ -97,7 +97,7 @@ const Index = () => {
       <section className="py-10 bg-gray-50 border-y border-gray-100">
         <div className="container-custom">
           <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold mb-4">{t.home.partners.title}</h2>
+            <h2 className="text-3xl font-bold mb-4 rainbow-text-static">{t.home.partners.title}</h2>
           </div>
           <PartnerCompaniesDemo />
         </div>
@@ -107,7 +107,7 @@ const Index = () => {
       <section className="section-padding bg-white">
         <div className="container-custom">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">{t.home.testimonials.title}</h2>
+            <h2 className="section-title rainbow-text-static">{t.home.testimonials.title}</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               {t.home.testimonials.subtitle}
             </p>
@@ -120,7 +120,7 @@ const Index = () => {
       <section id="faq" className="section-padding gradient-bg">
         <div className="container-custom">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">{t.home.faq.title}</h2>
+            <h2 className="section-title rainbow-text-static">{t.home.faq.title}</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               {t.home.faq.subtitle}
             </p>
