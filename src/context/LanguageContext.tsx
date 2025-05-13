@@ -13,10 +13,43 @@ interface LanguageContextType {
 
 const defaultLanguage: SupportedLanguage = 'fr'; // Changed to French by default
 
+// Create empty placeholder objects for missing required properties in TranslationKeys
+const placeholderData = {
+  about: {
+    title: "",
+    story: {
+      title: "",
+      text1: "",
+      text2: ""
+    },
+    mission: {
+      title: "",
+      text1: "",
+      text2: ""
+    },
+    unique: {
+      title: "",
+      items: [""]
+    },
+    cta: {
+      title: "",
+      text: "",
+      button: ""
+    }
+  },
+  blog: {
+    title: "",
+    subtitle: "",
+    loadMore: "",
+    allLoaded: "",
+    endReached: ""
+  }
+};
+
 const LanguageContext = createContext<LanguageContextType>({
   language: defaultLanguage,
   setLanguage: () => {},
-  t: translations[defaultLanguage],
+  t: { ...translations[defaultLanguage], ...placeholderData },
   toggleLanguage: () => {},
   isDetectingLanguage: false,
 });
@@ -70,11 +103,17 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
     setLanguage(prevLang => prevLang === 'en' ? 'fr' : 'en');
   };
 
+  // Add missing properties to ensure TranslationKeys compatibility
+  const translationWithDefaults = {
+    ...translations[language],
+    ...placeholderData
+  };
+
   return (
     <LanguageContext.Provider value={{ 
       language, 
       setLanguage, 
-      t: translations[language],
+      t: translationWithDefaults as TranslationKeys,
       toggleLanguage,
       isDetectingLanguage
     }}>
