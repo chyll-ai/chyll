@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { Menu, X, Home } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useLanguage } from '@/context/LanguageContext';
-import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 interface NavbarProps {
   currentPath?: string;
@@ -41,7 +40,7 @@ const Navbar = ({ currentPath = '/' }: NavbarProps) => {
       <div className="container-custom flex justify-between items-center py-4">
         <div className="flex items-center gap-4">
           <Link to="/" className="text-2xl font-bold text-gray-800">
-            GenerativSchool
+            chyll.ai
           </Link>
           
           {/* Home button - only show when not on home page */}
@@ -66,9 +65,8 @@ const Navbar = ({ currentPath = '/' }: NavbarProps) => {
           </Link>
           
           <div className="flex items-center space-x-4">
-            <LanguageSwitcher variant="minimal" />
             <Button variant="rainbow" asChild>
-              <a href="https://cal.com/generativschool/30min?overlayCalendar=true" target="_blank" rel="noopener noreferrer">
+              <a href="https://cal.com/chyll-ai/30min?overlayCalendar=true" target="_blank" rel="noopener noreferrer">
                 {t.nav.bookDemo}
               </a>
             </Button>
@@ -77,7 +75,6 @@ const Navbar = ({ currentPath = '/' }: NavbarProps) => {
 
         {/* Mobile Menu Button */}
         <div className="md:hidden flex items-center gap-2">
-          <LanguageSwitcher variant="icon" />
           <button 
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             className="text-gray-700 hover:text-brand-blue"
@@ -130,7 +127,7 @@ const Navbar = ({ currentPath = '/' }: NavbarProps) => {
               onClick={() => setIsMenuOpen(false)}
               asChild
             >
-              <a href="https://cal.com/generativschool/30min?overlayCalendar=true" target="_blank" rel="noopener noreferrer">
+              <a href="https://cal.com/chyll-ai/30min?overlayCalendar=true" target="_blank" rel="noopener noreferrer">
                 {t.nav.bookDemo}
               </a>
             </Button>

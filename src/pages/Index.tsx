@@ -112,7 +112,21 @@ const Index = () => {
               {t.home.testimonials.subtitle}
             </p>
           </div>
-          <TestimonialsCarousel />
+          <TestimonialsCarousel 
+            title={t.home.testimonials.title}
+            description={t.home.testimonials.subtitle}
+            testimonials={
+              t.home.testimonials.quotes?.map(quote => ({
+                author: {
+                  name: quote.author,
+                  handle: quote.handle,
+                  avatar: getAvatarForName(quote.author)
+                },
+                text: quote.text,
+                href: "#"
+              })) || []
+            }
+          />
         </div>
       </section>
       
@@ -135,5 +149,16 @@ const Index = () => {
     </div>
   );
 };
+
+// Helper function to get avatar based on name
+function getAvatarForName(name: string) {
+  const avatarMap: {[key: string]: string} = {
+    "Thomas Martin": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
+    "Sophie Dubois": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=face",
+    "Marc Leroy": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face"
+  };
+  
+  return avatarMap[name] || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face";
+}
 
 export default Index;

@@ -1,4 +1,4 @@
-import { en } from './en';
+
 import { fr } from './fr';
 
 // Define a more complete type structure for our translations
@@ -246,7 +246,6 @@ export interface TranslationKeys {
 }
 
 export const translations = {
-  en,
   fr,
 };
 
