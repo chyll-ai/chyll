@@ -112,21 +112,7 @@ const Index = () => {
               {t.home.testimonials.subtitle}
             </p>
           </div>
-          <TestimonialsCarousel 
-            title={t.home.testimonials.title}
-            description={t.home.testimonials.subtitle}
-            testimonials={
-              t.home.testimonials.quotes?.map(quote => ({
-                author: {
-                  name: quote.author,
-                  handle: quote.handle,
-                  avatar: getAvatarForName(quote.author)
-                },
-                text: quote.text,
-                href: "#"
-              })) || []
-            }
-          />
+          <TestimonialsCarousel />
         </div>
       </section>
       
@@ -160,5 +146,3 @@ function getAvatarForName(name: string) {
   
   return avatarMap[name] || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face";
 }
-
-export default Index;

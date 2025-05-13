@@ -61,8 +61,6 @@ const testimonials = [
 export function TestimonialsCarouselDemo() {
   return (
     <TestimonialsCarousel
-      title="Des clients conquis par notre agent IA"
-      description="Rejoins les entreprises qui ont transformé leur prospection grâce à chyll.ai"
       testimonials={testimonials}
     />
   );

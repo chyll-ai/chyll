@@ -49,14 +49,8 @@ export function TestimonialsSectionDemo() {
       }))
     : defaultTestimonials;
   
-  // Default titles in case translations are missing
-  const defaultTitle = "AI Employees Transforming Founder-Led Businesses";
-  const defaultDescription = "See how founders and CEOs are using AI team members to scale faster with fewer resources";
-  
   return (
     <TestimonialsSection
-      title={language === 'fr' && t.home?.testimonials?.title ? t.home.testimonials.title : defaultTitle}
-      description={language === 'fr' && t.home?.testimonials?.subtitle ? t.home.testimonials.subtitle : defaultDescription}
       testimonials={testimonials}
     />
   )

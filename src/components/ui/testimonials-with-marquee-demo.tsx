@@ -51,18 +51,8 @@ export function TestimonialsWithMarqueeDemo() {
       }))
     : defaultTestimonials;
   
-  // Default titles in case translations are missing
-  const defaultTitle = "Founders love our AI Employees";
-  const defaultDescription = "Join thousands of business owners who are scaling their operations with our tireless AI team members";
-  
-  // Check if French titles are available
-  const hasFrenchTitles = language === 'fr' && t.home?.testimonials?.title !== undefined;
-  const hasFrenchSubtitle = language === 'fr' && t.home?.testimonials?.subtitle !== undefined;
-  
   return (
     <TestimonialsSection
-      title={hasFrenchTitles ? t.home?.testimonials?.title || "" : defaultTitle}
-      description={hasFrenchSubtitle ? t.home?.testimonials?.subtitle || "" : defaultDescription}
       testimonials={testimonials || []}
     />
   );
