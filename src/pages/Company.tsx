@@ -16,7 +16,7 @@ const Company = () => {
             
             <div className="prose max-w-none">
               <p className="text-lg mb-6">
-                GenerativSchool is a leading provider of AI-driven solutions designed to transform how businesses operate. 
+                chyll.ai is a leading provider of AI-driven solutions designed to transform how businesses operate. 
                 Founded in 2024, we're on a mission to help organizations leverage the power of artificial intelligence 
                 to streamline operations, enhance customer experiences, and drive growth.
               </p>

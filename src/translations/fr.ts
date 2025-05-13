@@ -1,3 +1,4 @@
+
 export const fr = {
   // Common elements
   common: {
@@ -135,7 +136,7 @@ export const fr = {
   // Footer
   footer: {
     tagline: "Automatisation intelligente de ta prospection B2B.",
-    copyright: "© 2024 GenerativSchool. Tous droits réservés.",
+    copyright: "© 2024 chyll.ai. Tous droits réservés.",
     menuTitles: {
       product: "Produit",
       company: "Entreprise",

@@ -20,10 +20,10 @@ export const en = {
   // Homepage sections
   home: {
     hero: {
-      introducing: "Introducing GenerativSchool.",
+      introducing: "Introducing chyll.ai.",
       title: "Hire AI employees that",
       actions: ["sell", "design", "write", "support", "automate"],
-      subtitle: "Work smarter, not harder with GenerativSchool",
+      subtitle: "Work smarter, not harder with chyll.ai",
       description: "Transform your business with AI employees that never sleep, never take vacations, and consistently deliver exceptional results. Streamline operations, reduce costs, and scale your business like never before.",
       buttons: {
         bookDemo: "Book a Demo",
@@ -122,7 +122,7 @@ export const en = {
   // Footer
   footer: {
     tagline: "Intelligent automation for your business.",
-    copyright: "© 2024 GenerativSchool. All rights reserved.",
+    copyright: "© 2024 chyll.ai. All rights reserved.",
     menuTitles: {
       product: "Product",
       company: "Company",
@@ -144,12 +144,12 @@ export const en = {
     title: "About Us",
     story: {
       title: "Our Story",
-      text1: "Founded in 2024, GenerativSchool was born from a simple yet powerful idea: what if businesses could have AI employees that work alongside human teams? Our founders, having worked in the AI industry for years, saw firsthand how fragmented and complex implementing AI solutions could be for most companies.",
+      text1: "Founded in 2024, chyll.ai was born from a simple yet powerful idea: what if businesses could have AI employees that work alongside human teams? Our founders, having worked in the AI industry for years, saw firsthand how fragmented and complex implementing AI solutions could be for most companies.",
       text2: "We set out to build a platform that would make AI implementation straightforward and accessible, allowing businesses of all sizes to benefit from the advances in artificial intelligence without requiring specialized technical knowledge."
     },
     mission: {
       title: "Our Mission",
-      text1: "At GenerativSchool, our mission is to democratize access to AI-powered automation and enable businesses to deploy AI employees that transform how they operate, serve customers, and grow their operations.",
+      text1: "At chyll.ai, our mission is to democratize access to AI-powered automation and enable businesses to deploy AI employees that transform how they operate, serve customers, and grow their operations.",
       text2: "We believe that by making AI accessible and practical, we can help businesses become more efficient, innovative, and customer-focused, allowing them to thrive in an increasingly digital world."
     },
     unique: {

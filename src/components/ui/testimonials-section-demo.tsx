@@ -13,7 +13,7 @@ export function TestimonialsSectionDemo() {
         handle: "@rebecca_founder",
         avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=face"
       },
-      text: "Our AI Communications Employee writes all our marketing copy, social posts, and email campaigns. The quality is amazing, and it's saved me 25 hours every week.",
+      text: "Our chyll.ai agent writes all our marketing copy, social posts, and email campaigns. The quality is amazing, and it's saved me 25 hours every week.",
       href: "#"
     },
     {
@@ -22,7 +22,7 @@ export function TestimonialsSectionDemo() {
         handle: "@jason_startup",
         avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face"
       },
-      text: "The AI Sales Employee handles our entire outbound process - from prospecting to follow-ups. We've tripled our pipeline with zero additional headcount.",
+      text: "The chyll.ai agent handles our entire outbound process - from prospecting to follow-ups. We've tripled our pipeline with zero additional headcount.",
       href: "#"
     },
     {
@@ -31,7 +31,7 @@ export function TestimonialsSectionDemo() {
         handle: "@maria_ceo",
         avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face"
       },
-      text: "My AI Customer Success Employee monitors customer health scores and proactively reaches out to at-risk accounts. Our retention rate has improved by 35%.",
+      text: "My chyll.ai agent monitors customer health scores and proactively reaches out to at-risk accounts. Our retention rate has improved by 35%.",
       href: "#"
     },
   ];
