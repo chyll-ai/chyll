@@ -1,6 +1,7 @@
 
 import { Footer2 } from "@/components/ui/footer2";
 import { useLanguage } from "@/context/LanguageContext";
+import { Link } from 'react-router-dom';
 
 function Footer2Demo() {
   const { t } = useLanguage();

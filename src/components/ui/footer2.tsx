@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { useLanguage } from '@/context/LanguageContext';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 
@@ -49,9 +50,9 @@ export function Footer2({
   ],
   copyright = "© 2025 chyll.ai",
   bottomLinks = [
-    { text: "Conditions Générales", url: "#" },
-    { text: "Politique de Confidentialité", url: "#" },
-    { text: "Politique de Cookies", url: "#" },
+    { text: "Conditions Générales", url: "/terms" },
+    { text: "Politique de Confidentialité", url: "/privacy" },
+    { text: "Politique de Cookies", url: "/cookies" },
   ],
 }: Footer2Props) {
   const { t } = useLanguage();
@@ -102,7 +103,11 @@ export function Footer2({
                       key={linkIdx}
                       className="font-medium hover:text-[#9b87f5] transition-colors"
                     >
-                      <a href={link.url}>{link.text}</a>
+                      {link.url.startsWith("#") || link.url.startsWith("http") ? (
+                        <a href={link.url}>{link.text}</a>
+                      ) : (
+                        <Link to={link.url}>{link.text}</Link>
+                      )}
                     </li>
                   ))}
                 </ul>
@@ -114,7 +119,11 @@ export function Footer2({
             <ul className="flex flex-wrap gap-4">
               {displayBottomLinks.map((link, linkIdx) => (
                 <li key={linkIdx} className="hover:text-[#9b87f5] transition-colors">
-                  <a href={link.url}>{link.text}</a>
+                  {link.url.startsWith("#") || link.url.startsWith("http") ? (
+                    <a href={link.url}>{link.text}</a>
+                  ) : (
+                    <Link to={link.url}>{link.text}</Link>
+                  )}
                 </li>
               ))}
             </ul>
