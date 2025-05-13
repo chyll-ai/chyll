@@ -1,40 +1,54 @@
 
 # chyll.ai - Agent SDR automatisé - Robots.txt
+# Main directives
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /wp-admin/
+Disallow: /wp-login/
+Disallow: /private/
+Disallow: /account/
+
+# Allow search engines
 User-agent: Googlebot
 Allow: /
+Disallow: /admin/
 
 User-agent: Bingbot
 Allow: /
+Disallow: /admin/
 
+User-agent: DuckDuckBot
+Allow: /
+Disallow: /admin/
+
+# AI Crawlers - Important content for AI models
+User-agent: GPTBot
+Allow: /
+Allow: /about-us
+Allow: /faq
+Allow: /blog
+Disallow: /admin/
+
+User-agent: ChatGPT-User
+Allow: /
+Disallow: /admin/
+
+User-agent: GoogleOther
+Allow: /
+
+# Social Media Crawlers
 User-agent: Twitterbot
 Allow: /
 
 User-agent: facebookexternalhit
 Allow: /
 
-User-agent: GPTBot
-Allow: /
-# Important content for GPT models
-Allow: /about-us
-Allow: /faq
-Allow: /blog
-
-User-agent: ChatGPT-User
-Allow: /
-
-User-agent: GoogleOther
-Allow: /
-
-User-agent: AdsBot-Google
-Allow: /
-
+# International search engines
 User-agent: Baiduspider
 Allow: /
 
 User-agent: YandexBot
-Allow: /
-
-User-agent: DuckDuckBot
 Allow: /
 
 User-agent: Slurp
@@ -43,15 +57,10 @@ Allow: /
 User-agent: Applebot
 Allow: /
 
-User-agent: *
-Allow: /
+# Crawl delays to prevent server overload
+Crawl-delay: 1
 
-# Disallow admin areas
-Disallow: /admin/
-Disallow: /wp-admin/
-Disallow: /wp-login/
-
-# Sitemap location
+# Sitemap locations
 Sitemap: https://chyll.ai/sitemap.xml
 
-# Brand keywords: chyll.ai, chyll, prospection B2B, SDR agent, automation
+# Brand keywords: chyll.ai, chyll, prospection B2B, SDR agent, automation, leads B2B, enrichissement de leads

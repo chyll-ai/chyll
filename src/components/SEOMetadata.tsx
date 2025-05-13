@@ -14,6 +14,7 @@ interface SEOMetadataProps {
   keywords?: string[];
   author?: string;
   language?: 'fr' | 'en';
+  pageUrl?: string;
 }
 
 const SEOMetadata = ({
@@ -21,17 +22,19 @@ const SEOMetadata = ({
   description,
   canonicalUrl,
   ogType = 'website',
-  ogImage = '/lovable-uploads/860cdec8-1919-4afc-928c-cbfa116c2f7b.png', // Updated to use the new image
+  ogImage = '/lovable-uploads/860cdec8-1919-4afc-928c-cbfa116c2f7b.png',
   articlePublishedTime,
   articleModifiedTime,
   structuredData,
   keywords = ['chyll.ai', 'chyll', 'prospection B2B', 'SDR agent', 'enrichissement de leads'],
   author = 'chyll.ai',
   language = 'fr',
+  pageUrl,
 }: SEOMetadataProps) => {
   const fullTitle = title ? `${title} | chyll.ai` : 'chyll.ai | La prospection B2B, automatisée';
   const siteUrl = 'https://chyll.ai';
   const fullCanonicalUrl = canonicalUrl ? `${siteUrl}${canonicalUrl}` : undefined;
+  const fullPageUrl = pageUrl || fullCanonicalUrl || siteUrl;
   
   // Default structured data for WebSite
   const websiteStructuredData = {
@@ -88,7 +91,7 @@ const SEOMetadata = ({
       <meta property="og:title" content={fullTitle} />
       <meta property="og:description" content={description} />
       <meta property="og:image" content={ogImage} />
-      {fullCanonicalUrl && <meta property="og:url" content={fullCanonicalUrl} />}
+      <meta property="og:url" content={fullPageUrl} />
       <meta property="og:site_name" content="chyll.ai" />
       <meta property="og:locale" content={language === 'fr' ? 'fr_FR' : 'en_US'} />
       
@@ -98,7 +101,7 @@ const SEOMetadata = ({
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={ogImage} />
-      {fullCanonicalUrl && <meta name="twitter:url" content={fullCanonicalUrl} />}
+      <meta name="twitter:url" content={fullPageUrl} />
       
       {/* Article Specific Metadata */}
       {ogType === 'article' && articlePublishedTime && (
@@ -134,6 +137,14 @@ const SEOMetadata = ({
       <meta property="linkedin:title" content={fullTitle} />
       <meta property="linkedin:description" content={description} />
       <meta property="linkedin:image" content={ogImage} />
+      
+      {/* Additional Google-specific tags */}
+      <meta name="google" content="nositelinkssearchbox" />
+      <meta name="google-site-verification" content="XXXXXXXXXXXXXXXXXXXXXXXX" /> {/* Replace with actual verification code */}
+      
+      {/* Mobile app relation (if you have one) */}
+      <meta name="apple-itunes-app" content="app-id=XXXXXXXXXXXXX" /> {/* Replace with actual app ID */}
+      <meta name="google-play-app" content="app-id=com.chyll.ai" /> {/* Replace with actual app ID */}
       
       {/* Structured Data / JSON-LD */}
       {Object.values(combinedStructuredData).map((data, index) => (

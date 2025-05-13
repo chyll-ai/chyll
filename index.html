@@ -8,7 +8,7 @@
     <meta name="description" content="chyll.ai - La prospection B2B, automatisée. Notre agent SDR trouve les bons prospects, les enrichit, et met à jour votre CRM." />
     <meta name="author" content="chyll.ai" />
     <meta name="theme-color" content="#4f46e5" />
-    <meta name="robots" content="index, follow" />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
     
     <link rel="icon" href="/favicon.png" type="image/png">
     <link rel="apple-touch-icon" href="/favicon.png">
@@ -29,14 +29,43 @@
     <meta property="og:type" content="website" />
     <meta property="og:image" content="/lovable-uploads/860cdec8-1919-4afc-928c-cbfa116c2f7b.png" />
     <meta property="og:site_name" content="chyll.ai" />
+    <meta property="og:locale" content="fr_FR" />
+    <meta property="og:url" content="https://chyll.ai" />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@chyllai" />
+    <meta name="twitter:title" content="chyll.ai | La prospection B2B, automatisée" />
+    <meta name="twitter:description" content="chyll.ai - La prospection B2B, automatisée. Notre agent SDR trouve les bons prospects, les enrichit, et met à jour votre CRM." />
     <meta name="twitter:image" content="/lovable-uploads/860cdec8-1919-4afc-928c-cbfa116c2f7b.png" />
     
     <!-- Canonical URL -->
     <link rel="canonical" href="https://chyll.ai" />
+    
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-XXXXXXXXXX');
+    </script>
+    
+    <!-- Structured data for website -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "url": "https://chyll.ai",
+        "name": "chyll.ai",
+        "description": "La prospection B2B, automatisée. Notre agent SDR trouve les bons prospects, les enrichit, et met à jour votre CRM.",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://chyll.ai/search?q={search_term_string}",
+          "query-input": "required name=search_term_string"
+        }
+      }
+    </script>
     
     <!-- Add Inter font -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">

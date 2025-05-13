@@ -9,4 +9,8 @@
     <loc>https://chyll.ai/sitemaps/legal-sitemap.xml</loc>
     <lastmod>2025-05-13</lastmod>
   </sitemap>
+  <sitemap>
+    <loc>https://chyll.ai/sitemaps/blog-sitemap.xml</loc>
+    <lastmod>2025-05-13</lastmod>
+  </sitemap>
 </sitemapindex>

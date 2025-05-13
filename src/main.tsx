@@ -22,7 +22,46 @@ const reportWebVitals = () => {
 
 // Initialize the app
 const init = () => {
-  createRoot(document.getElementById("root")!).render(<App />);
+  const rootElement = document.getElementById("root");
+  if (!rootElement) {
+    console.error("Root element not found");
+    return;
+  }
+  
+  // Create MutationObserver for runtime SEO improvements
+  if (process.env.NODE_ENV === 'production') {
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.type === 'childList') {
+          // Add missing alt attributes to images
+          document.querySelectorAll('img:not([alt])').forEach((img) => {
+            img.alt = img.src.split('/').pop()?.split('.')[0] || 'Image chyll.ai';
+          });
+          
+          // Add ARIA labels to interactive elements without labels
+          document.querySelectorAll('button:not([aria-label]):not(:has(*))').forEach((button) => {
+            if (!button.textContent?.trim()) {
+              button.setAttribute('aria-label', 'Bouton');
+            }
+          });
+          
+          // Add title attributes to iframes
+          document.querySelectorAll('iframe:not([title])').forEach((iframe) => {
+            iframe.title = 'Contenu intégré';
+          });
+        }
+      });
+    });
+    
+    // Start observing the document
+    observer.observe(document.documentElement, {
+      childList: true,
+      subtree: true
+    });
+  }
+  
+  // Render the app
+  createRoot(rootElement).render(<App />);
   
   // Monitor performance in non-production environments
   if (process.env.NODE_ENV !== 'production') {

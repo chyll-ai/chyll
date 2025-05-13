@@ -27,6 +27,14 @@ const faqData = [
   {
     question: "Quelles données vais-je recevoir exactement ?",
     answer: "Des profils LinkedIn enrichis avec emails professionnels, numéros de téléphone, taille d'entreprise, secteur et autres informations pertinentes pour ta prospection."
+  },
+  {
+    question: "Comment chyll.ai trouve-t-il mes prospects ?",
+    answer: "Notre agent utilise l'IA pour identifier les entreprises et décideurs correspondant à tes critères, puis enrichit les données avec des emails et numéros vérifiés."
+  },
+  {
+    question: "Est-ce que chyll.ai s'intègre avec mon CRM ?",
+    answer: "Oui, chyll.ai s'intègre nativement avec HubSpot, Pipedrive, Salesforce et d'autres CRM majeurs pour une synchronisation automatique des données."
   }
 ];
 
@@ -50,15 +58,20 @@ const Index = () => {
     'génération de leads B2B',
     'numéros de téléphone professionnels',
     'emails professionnels',
-    'personas LinkedIn'
+    'personas LinkedIn',
+    'trouver des prospects B2B',
+    'automation prospection',
+    'leads qualifiés B2B',
+    'intégration CRM'
   ];
   
   return (
     <div className="min-h-screen flex flex-col">
       <SEOMetadata 
         title="chyll.ai - La prospection B2B, automatisée"
-        description="chyll.ai trouve les bons prospects, les enrichit, et met à jour ton CRM pendant que tu bosses sur autre chose."
+        description="chyll.ai trouve les bons prospects, les enrichit avec emails et téléphones vérifiés, et met à jour ton CRM pendant que tu bosses sur autre chose."
         canonicalUrl="/"
+        pageUrl="https://chyll.ai/"
         keywords={seoKeywords}
         structuredData={{
           organization: organizationSchema,
@@ -70,16 +83,17 @@ const Index = () => {
       <Navbar />
       
       {/* Hero Section */}
-      <section id="home">
+      <section id="home" aria-label="Accueil">
         <Hero />
         <canvas
           className="bg-skin-base pointer-events-none absolute inset-0 mx-auto -z-10"
           id="canvas"
+          aria-hidden="true"
         ></canvas>
       </section>
       
       {/* Features Section */}
-      <section id="features" className="section-padding bg-white">
+      <section id="features" className="section-padding bg-white" aria-label="Fonctionnalités">
         <div className="container-custom">
           <div className="text-center mb-12">
             <h2 className="section-title rainbow-text-static">{t.home.features.title}</h2>
@@ -92,7 +106,7 @@ const Index = () => {
       </section>
       
       {/* How It Works Section */}
-      <section id="how-it-works" className="section-padding gradient-bg">
+      <section id="how-it-works" className="section-padding gradient-bg" aria-label="Comment ça marche">
         <div className="container-custom">
           <div className="text-center mb-12">
             <h2 className="section-title rainbow-text-static">{t.home.howItWorks.title}</h2>
@@ -105,21 +119,21 @@ const Index = () => {
       </section>
       
       {/* Pricing Section */}
-      <section id="pricing" className="section-padding bg-white">
+      <section id="pricing" className="section-padding bg-white" aria-label="Tarifs">
         <div className="container-custom">
           <PricingBasic />
         </div>
       </section>
 
       {/* Partner Companies Section */}
-      <section className="py-10 bg-gray-50 border-y border-gray-100">
+      <section className="py-10 bg-gray-50 border-y border-gray-100" aria-label="Nos clients">
         <div className="container-custom">
           <PartnerCompaniesDemo />
         </div>
       </section>
       
       {/* Testimonials Section */}
-      <section className="section-padding bg-white">
+      <section className="section-padding bg-white" aria-label="Témoignages">
         <div className="container-custom">
           <div className="text-center mb-12">
             <h2 className="section-title rainbow-text-static">{t.home.testimonials.title}</h2>
@@ -132,7 +146,7 @@ const Index = () => {
       </section>
       
       {/* FAQ Section */}
-      <section id="faq" className="section-padding gradient-bg">
+      <section id="faq" className="section-padding gradient-bg" aria-label="Questions fréquentes">
         <div className="container-custom">
           <div className="text-center mb-12">
             <h2 className="section-title rainbow-text-static">{t.home.faq.title}</h2>
@@ -150,16 +164,5 @@ const Index = () => {
     </div>
   );
 };
-
-// Helper function to get avatar based on name
-function getAvatarForName(name: string) {
-  const avatarMap: {[key: string]: string} = {
-    "Thomas Martin": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
-    "Sophie Dubois": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=face",
-    "Marc Leroy": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face"
-  };
-  
-  return avatarMap[name] || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face";
-}
 
 export default Index;

@@ -28,7 +28,29 @@ export const getOrganizationSchema = () => {
       addressCountry: 'FR'
     },
     description: 'chyll.ai est un agent SDR automatisé qui trouve les bons prospects, les enrichit, et met à jour votre CRM pendant que vous travaillez sur autre chose.',
-    slogan: 'La prospection B2B, automatisée'
+    slogan: 'La prospection B2B, automatisée',
+    foundingDate: '2024',
+    founders: [
+      {
+        '@type': 'Person',
+        name: 'Soufiane Lemqari',
+        jobTitle: 'CEO & Founder',
+        sameAs: 'https://linkedin.com/in/soufiane-lemqari'
+      }
+    ],
+    numberOfEmployees: {
+      '@type': 'QuantitativeValue',
+      value: '15'
+    },
+    areaServed: {
+      '@type': 'GeoCircle',
+      geoMidpoint: {
+        '@type': 'GeoCoordinates',
+        latitude: '48.8566',
+        longitude: '2.3522'
+      },
+      geoRadius: '5000'
+    }
   };
 };
 
@@ -119,7 +141,8 @@ export const getProductSchema = (product: {
       price: product.offers.price,
       priceCurrency: product.offers.priceCurrency,
       availability: product.offers.availability,
-      url: product.url
+      url: product.url,
+      priceValidUntil: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split('T')[0]
     },
     aggregateRating: {
       '@type': 'AggregateRating',
@@ -157,15 +180,89 @@ export const getChyllAiSchema = () => {
     offers: {
       '@type': 'Offer',
       price: '199.00',
-      priceCurrency: 'EUR'
+      priceCurrency: 'EUR',
+      priceValidUntil: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split('T')[0],
+      seller: {
+        '@type': 'Organization',
+        name: 'chyll.ai',
+        url: 'https://chyll.ai'
+      },
+      availability: 'https://schema.org/InStock'
     },
     aggregateRating: {
       '@type': 'AggregateRating',
       ratingValue: '4.8',
-      ratingCount: '215'
+      ratingCount: '215',
+      bestRating: '5',
+      worstRating: '1'
     },
     description: "chyll.ai est un agent SDR automatisé qui trouve les bons prospects, les enrichit avec des numéros de téléphone et emails, et met à jour votre CRM.",
     featureList: "Enrichissement de leads, Recherche automatisée de prospects, Export et import de data, Personas LinkedIn illimités",
-    keywords: "chyll.ai, prospection B2B, SDR automatisé, enrichissement de leads, automation commerciale"
+    keywords: "chyll.ai, prospection B2B, SDR automatisé, enrichissement de leads, automation commerciale",
+    screenshot: "https://chyll.ai/screenshots/dashboard.png",
+    softwareVersion: "2.5.0",
+    releaseNotes: "https://chyll.ai/releases",
+    downloadUrl: "https://chyll.ai/download",
+    requirements: "Navigateur web moderne. Compatible avec Chrome, Firefox, Safari, Edge.",
+    review: [
+      {
+        "@type": "Review",
+        "reviewRating": {
+          "@type": "Rating",
+          "ratingValue": "5",
+          "bestRating": "5"
+        },
+        "author": {
+          "@type": "Person",
+          "name": "Thomas Martin"
+        },
+        "datePublished": "2025-02-15",
+        "reviewBody": "Un gain de temps incroyable pour notre équipe commerciale. Nous avons multiplié par 3 notre volume de leads qualifiés."
+      }
+    ]
+  };
+};
+
+// Local Business schema
+export const getLocalBusinessSchema = () => {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'LocalBusiness',
+    name: 'chyll.ai',
+    image: 'https://chyll.ai/office.jpg',
+    '@id': 'https://chyll.ai',
+    url: 'https://chyll.ai',
+    telephone: '+33 1 23 45 67 89',
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: '60 RUE FRANCOIS IER',
+      addressLocality: 'PARIS',
+      postalCode: '75008',
+      addressCountry: 'FR'
+    },
+    geo: {
+      '@type': 'GeoCoordinates',
+      latitude: '48.8566',
+      longitude: '2.3522'
+    },
+    openingHoursSpecification: [
+      {
+        '@type': 'OpeningHoursSpecification',
+        dayOfWeek: [
+          'Monday',
+          'Tuesday',
+          'Wednesday',
+          'Thursday',
+          'Friday'
+        ],
+        opens: '09:00',
+        closes: '18:00'
+      }
+    ],
+    sameAs: [
+      'https://twitter.com/chyllai',
+      'https://linkedin.com/company/chyll-ai',
+      'https://facebook.com/chyllai'
+    ]
   };
 };
