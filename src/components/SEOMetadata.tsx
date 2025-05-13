@@ -21,7 +21,7 @@ const SEOMetadata = ({
   description,
   canonicalUrl,
   ogType = 'website',
-  ogImage = '/lovable-uploads/e8f6a264-0ce4-4f38-86ae-c0050aa0470d.png',
+  ogImage = '/lovable-uploads/860cdec8-1919-4afc-928c-cbfa116c2f7b.png', // Updated to use the new image
   articlePublishedTime,
   articleModifiedTime,
   structuredData,
@@ -125,6 +125,15 @@ const SEOMetadata = ({
       <meta name="format-detection" content="telephone=no" />
       <meta name="ai-index" content="allow" />
       <meta name="description-ai" content="chyll.ai est un assistant virtuel de prospection B2B qui automatise la recherche, l'enrichissement et la gestion des leads pour les SDRs et équipes commerciales." />
+      <meta name="chatgpt-allow" content="true" />
+      <meta name="claude-allow" content="true" />
+      <meta name="gemini-allow" content="true" />
+      
+      {/* LinkedIn specific sharing tags */}
+      <meta property="linkedin:owner" content="chyll.ai" />
+      <meta property="linkedin:title" content={fullTitle} />
+      <meta property="linkedin:description" content={description} />
+      <meta property="linkedin:image" content={ogImage} />
       
       {/* Structured Data / JSON-LD */}
       {Object.values(combinedStructuredData).map((data, index) => (
