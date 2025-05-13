@@ -7,12 +7,12 @@ import { useLanguage } from "@/context/LanguageContext";
 function PricingBasic() {
   const { t } = useLanguage();
   
-  // French pricing plans with Euro symbol and clean period display
+  // Pricing plans with both monthly and annual pricing
   const pricingPlans = [
     {
       name: t.pricing.plans.once.name,
       price: t.pricing.plans.once.price,
-      yearlyPrice: t.pricing.plans.once.price,
+      yearlyPrice: t.pricing.plans.once.price, // One-time price stays the same
       period: t.pricing.plans.once.period,
       features: t.pricing.plans.once.features || [],
       description: t.pricing.plans.once.description,
@@ -23,7 +23,7 @@ function PricingBasic() {
     {
       name: t.pricing.plans.automate.name,
       price: t.pricing.plans.automate.price,
-      yearlyPrice: t.pricing.plans.automate.price,
+      yearlyPrice: t.pricing.plans.automate.yearlyPrice || "159",
       period: t.pricing.plans.automate.period,
       features: t.pricing.plans.automate.features || [],
       description: t.pricing.plans.automate.description,
@@ -34,7 +34,7 @@ function PricingBasic() {
     {
       name: t.pricing.plans.integrate.name,
       price: t.pricing.plans.integrate.price,
-      yearlyPrice: t.pricing.plans.integrate.price,
+      yearlyPrice: t.pricing.plans.integrate.yearlyPrice || "559",
       period: t.pricing.plans.integrate.period,
       features: t.pricing.plans.integrate.features || [],
       description: t.pricing.plans.integrate.description,
