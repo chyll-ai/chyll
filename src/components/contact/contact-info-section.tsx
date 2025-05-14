@@ -35,8 +35,8 @@ export const ContactInfoSection = () => {
           icon={<Mail className="w-6 h-6 text-indigo-600" />}
           title="Email Address"
           details={
-            <a href="mailto:contact@generativschool.com" className="hover:text-indigo-600 transition-colors">
-              contact@generativschool.com
+            <a href="mailto:contact@chyll.ai" className="hover:text-indigo-600 transition-colors">
+              contact@chyll.ai
             </a>
           }
         />
@@ -59,7 +59,7 @@ export const ContactInfoSection = () => {
           See our AI employees in action. Schedule a personalized demo with our team.
         </p>
         <a 
-          href="https://tally.so/r/wA0pJl" 
+          href="https://cal.com/chyll.ai/30min" 
           target="_blank" 
           rel="noopener noreferrer"
           className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 transition-colors"

@@ -72,7 +72,7 @@ export function Hero() {
             className="inline-flex items-center justify-center whitespace-nowrap gap-1"
             asChild
           >
-            <a href="https://tally.so/r/wA0pJl" target="_blank" rel="noopener noreferrer">
+            <a href="https://cal.com/chyll.ai/30min" target="_blank" rel="noopener noreferrer">
               <PhoneCall className="size-5" />
               {t.home.hero.buttons.bookDemo}
             </a>

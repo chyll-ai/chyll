@@ -36,7 +36,7 @@ export const ContactForm = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('https://formsubmit.co/contact@generativschool.com', {
+      const response = await fetch('https://formsubmit.co/contact@chyll.ai', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -22,7 +22,7 @@ const DemoForm = () => {
     setIsSubmitting(true);
     
     // Redirect to new booking page
-    window.location.href = "https://tally.so/r/wA0pJl";
+    window.location.href = "https://cal.com/chyll.ai/30min";
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

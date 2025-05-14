@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Check } from 'lucide-react';
@@ -188,7 +189,7 @@ const PricingCards = () => {
               asChild
             >
               <a 
-                href={index === 0 ? "https://buy.stripe.com/5kAeWh18h6cOenSeUV" : "https://tally.so/r/wA0pJl"} 
+                href={index === 0 ? "https://buy.stripe.com/5kAeWh18h6cOenSeUV" : "https://cal.com/chyll.ai/30min"} 
                 target="_blank" 
                 rel="noopener noreferrer"
               >

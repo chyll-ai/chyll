@@ -94,7 +94,7 @@ const Navbar = ({ currentPath = '/' }: NavbarProps) => {
           
           <div className="flex items-center space-x-4">
             <Button variant="rainbow" size="sm" className="md:size-default" asChild>
-              <a href="https://tally.so/r/wA0pJl" target="_blank" rel="noopener noreferrer">
+              <a href="https://cal.com/chyll.ai/30min" target="_blank" rel="noopener noreferrer">
                 {t.nav.bookDemo}
               </a>
             </Button>
@@ -161,7 +161,7 @@ const Navbar = ({ currentPath = '/' }: NavbarProps) => {
               onClick={() => setIsMenuOpen(false)}
               asChild
             >
-              <a href="https://tally.so/r/wA0pJl" target="_blank" rel="noopener noreferrer">
+              <a href="https://cal.com/chyll.ai/30min" target="_blank" rel="noopener noreferrer">
                 {t.nav.bookDemo}
               </a>
             </Button>
@@ -170,6 +170,6 @@ const Navbar = ({ currentPath = '/' }: NavbarProps) => {
       )}
     </nav>
   );
-};
+}
 
 export default Navbar;
