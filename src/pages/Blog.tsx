@@ -4,11 +4,11 @@ import Navbar from '@/components/Navbar';
 import { Footer2Demo } from '@/components/ui/footer2-demo';
 import { useLocation } from 'react-router-dom';
 import { useToast } from "@/components/ui/use-toast";
-import { BlogList } from '@/components/blog/blog-list';
 import { initialBlogPosts, additionalBlogPosts, finalBlogPosts } from '@/components/blog/blog-data';
 import { BlogPost } from '@/components/blog/blog-card';
 import { useLanguage } from '@/context/LanguageContext';
 import SEOMetadata from '@/components/SEOMetadata';
+import { BlogSectionWithRichPreview } from "@/components/ui/blog-section-with-rich-preview";
 
 const Blog = () => {
   const allPosts: BlogPost[] = [...initialBlogPosts, ...additionalBlogPosts, ...finalBlogPosts];
@@ -40,23 +40,8 @@ const Blog = () => {
         </div>
       </section>
       
-      <section className="py-16">
-        <div className="container-custom">
-          {allPosts.length > 0 ? (
-            <BlogList 
-              posts={allPosts} 
-              isLoading={isLoading} 
-              hasMore={false}
-              onLoadMore={() => {}} 
-            />
-          ) : (
-            <div className="text-center py-20">
-              <h2 className="text-2xl font-medium text-gray-600">No articles available</h2>
-              <p className="text-gray-500 mt-2">Check back soon for new content!</p>
-            </div>
-          )}
-        </div>
-      </section>
+      {/* Replace the BlogList component with the BlogSectionWithRichPreview */}
+      <BlogSectionWithRichPreview />
       
       <Footer2Demo />
     </div>
