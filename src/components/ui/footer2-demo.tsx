@@ -1,4 +1,5 @@
 
+import React from 'react';
 import { Footer2 } from "@/components/ui/footer2";
 import { Link } from 'react-router-dom';
 
@@ -49,7 +50,8 @@ function Footer2Demo() {
     ],
   };
 
-  return <Footer2 {...demoData} />;
+  // Directly render the Footer2 component without passing props
+  return <Footer2 />;
 }
 
 export { Footer2Demo };

@@ -20,7 +20,7 @@ const FAQ = () => {
   
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar currentPath={location.pathname} />
+      <Navbar />
       
       <section className="bg-indigo-50 py-12 sm:py-20">
         <div className="container-custom">
