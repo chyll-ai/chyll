@@ -192,8 +192,8 @@ const Index = () => {
       
       <Navbar />
       
-      {/* Hero Section */}
-      <section id="home" aria-label="Accueil">
+      {/* Hero Section with Canvas */}
+      <section id="home" aria-label="Accueil" className="relative">
         <Hero />
         <canvas
           className="bg-skin-base pointer-events-none absolute inset-0 mx-auto -z-10"

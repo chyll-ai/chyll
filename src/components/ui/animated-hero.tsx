@@ -31,7 +31,12 @@ function Hero() {
   }, [titleNumber, titles.length]);
 
   useEffect(() => {
-    renderCanvas();
+    // Small delay to ensure DOM is fully rendered
+    const timer = setTimeout(() => {
+      renderCanvas();
+    }, 100);
+    
+    return () => clearTimeout(timer);
   }, []);
 
   return (

@@ -151,7 +151,7 @@ function onMousemove(e) {
 
 function render() {
   // @ts-ignore
-  if (ctx.running) {
+  if (ctx && ctx.running) {
     // @ts-ignore
     ctx.globalCompositeOperation = "source-over";
     // @ts-ignore
@@ -175,9 +175,12 @@ function render() {
 
 function resizeCanvas() {
   // @ts-ignore
-  ctx.canvas.width = window.innerWidth - 20;
-  // @ts-ignore
-  ctx.canvas.height = window.innerHeight;
+  if (ctx && ctx.canvas) {
+    // @ts-ignore
+    ctx.canvas.width = window.innerWidth - 20;
+    // @ts-ignore
+    ctx.canvas.height = window.innerHeight;
+  }
 }
 
 // @ts-ignore
@@ -205,31 +208,59 @@ function Node() {
 }
 
 export const renderCanvas = function () {
-  // @ts-ignore
-  ctx = document.getElementById("canvas").getContext("2d");
-  ctx.running = true;
-  ctx.frame = 1;
-  f = new n({
-    phase: Math.random() * 2 * Math.PI,
-    amplitude: 85,
-    frequency: 0.0015,
-    offset: 285,
-  });
-  document.addEventListener("mousemove", onMousemove);
-  document.addEventListener("touchstart", onMousemove);
-  document.body.addEventListener("orientationchange", resizeCanvas);
-  window.addEventListener("resize", resizeCanvas);
-  window.addEventListener("focus", () => {
+  // Wait for DOM to be ready
+  const canvasElement = document.getElementById("canvas");
+  
+  if (!canvasElement) {
+    console.warn("Canvas element with id 'canvas' not found. Canvas rendering will be skipped.");
+    return;
+  }
+  
+  try {
     // @ts-ignore
-    if (!ctx.running) {
+    ctx = canvasElement.getContext("2d");
+    
+    if (!ctx) {
+      console.warn("Could not get 2D context from canvas element.");
+      return;
+    }
+    
+    ctx.running = true;
+    ctx.frame = 1;
+    f = new n({
+      phase: Math.random() * 2 * Math.PI,
+      amplitude: 85,
+      frequency: 0.0015,
+      offset: 285,
+    });
+    
+    document.addEventListener("mousemove", onMousemove);
+    document.addEventListener("touchstart", onMousemove);
+    document.body.addEventListener("orientationchange", resizeCanvas);
+    window.addEventListener("resize", resizeCanvas);
+    window.addEventListener("focus", () => {
+      // @ts-ignore
+      if (!ctx.running) {
+        // @ts-ignore
+        ctx.running = true;
+        render();
+      }
+    });
+    window.addEventListener("blur", () => {
       // @ts-ignore
       ctx.running = true;
-      render();
+    });
+    resizeCanvas();
+    
+    // Initialize lines and start rendering
+    lines = [];
+    for (let i = 0; i < E.trails; i++) {
+      lines.push(new Line({ spring: 0.45 + (i / E.trails) * 0.025 }));
     }
-  });
-  window.addEventListener("blur", () => {
-    // @ts-ignore
-    ctx.running = true;
-  });
-  resizeCanvas();
+    render();
+    
+    console.log("Canvas rendering initialized successfully");
+  } catch (error) {
+    console.error("Error initializing canvas:", error);
+  }
 };
