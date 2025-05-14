@@ -33,10 +33,10 @@ const AboutUs = () => {
   return (
     <div className="min-h-screen flex flex-col bg-white">
       <SEOMetadata 
-        title="À propos | chyll.ai"
-        description="Découvrez l'histoire de chyll.ai, notre mission et ce qui nous rend uniques dans le domaine de la prospection B2B automatisée."
+        title="Pourquoi nous avons créé chyll"
+        description="chyll est né d'un constat simple : les équipes commerciales perdent un temps précieux sur des tâches répétitives. Notre mission est d'automatiser la prospection B2B avec une solution IA intuitive, éthique et efficace."
         canonicalUrl="/about-us"
-        keywords={["à propos chyll.ai", "histoire chyll.ai", "mission chyll.ai", "équipe chyll.ai"]}
+        keywords={["chyll", "à propos chyll", "histoire chyll", "mission chyll", "équipe chyll", "plateforme chyll", "assistant commercial chyll"]}
         structuredData={getOrganizationSchema()}
       />
       
@@ -52,7 +52,7 @@ const AboutUs = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
-              {t.about.title}
+              Pourquoi nous avons créé chyll
             </motion.h1>
             <motion.div
               className="h-1 w-20 bg-indigo-600 mx-auto mb-8"
@@ -66,7 +66,7 @@ const AboutUs = () => {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.4 }}
             >
-              Révolutionner la prospection B2B avec l'intelligence artificielle
+              La vision de chyll : révolutionner la prospection B2B grâce à l'intelligence artificielle
             </motion.p>
           </div>
         </div>
@@ -89,13 +89,13 @@ const AboutUs = () => {
                   <AspectRatio ratio={16 / 9}>
                     <img 
                       src="https://images.unsplash.com/photo-1533750516457-a7f992034fec?q=80&w=1200" 
-                      alt="L'équipe fondatrice de chyll.ai" 
+                      alt="L'équipe fondatrice de chyll - plateforme d'assistance commerciale IA" 
                       className="w-full h-full object-cover"
                     />
                   </AspectRatio>
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                   <div className="absolute bottom-0 left-0 p-6 text-white">
-                    <span className="px-3 py-1 bg-indigo-600 text-white text-sm font-medium rounded-full">Équipe fondatrice</span>
+                    <span className="px-3 py-1 bg-indigo-600 text-white text-sm font-medium rounded-full">Équipe fondatrice de chyll</span>
                   </div>
                 </div>
               </div>
@@ -104,25 +104,25 @@ const AboutUs = () => {
                 className="text-2xl md:text-3xl font-semibold mb-6 text-gray-900"
                 variants={itemVariants}
               >
-                Notre Histoire
+                L'histoire de chyll
               </motion.h2>
               <motion.p 
                 className="text-lg text-gray-700 mb-4"
                 variants={itemVariants}
               >
-                Fondée en 2023 par une équipe d'experts en IA et en développement commercial, chyll.ai est née d'un constat simple : la prospection B2B traditionnelle est chronophage, inefficace et souvent frustrante pour les équipes commerciales.
+                Fondé en 2023 par une équipe d'experts en IA et en développement commercial, chyll est né d'un constat simple : la prospection B2B traditionnelle est chronophage, inefficace et souvent frustrante pour les équipes de vente modernes.
               </motion.p>
               <motion.p 
                 className="text-lg text-gray-700 mb-4"
                 variants={itemVariants}
               >
-                Après des années passées à travailler dans le secteur de la vente B2B, nos fondateurs ont identifié un besoin crucial : celui d'une solution qui automatiserait intelligemment la prospection tout en s'intégrant parfaitement aux processus existants des entreprises.
+                Après des années passées à travailler dans le secteur de la vente B2B, nos fondateurs ont identifié un besoin crucial : celui d'un assistant commercial IA qui automatiserait intelligemment la prospection tout en s'intégrant parfaitement aux processus existants des entreprises.
               </motion.p>
               <motion.p 
                 className="text-lg text-gray-700"
                 variants={itemVariants}
               >
-                Aujourd'hui, chyll.ai représente l'aboutissement de cette vision : un agent IA dédié à la prospection B2B qui trouve, qualifie et enrichit les profils de prospects pertinents, permettant aux équipes commerciales de se concentrer sur ce qu'elles font de mieux - convertir et vendre.
+                Aujourd'hui, chyll représente l'aboutissement de cette vision : un assistant commercial IA dédié à la prospection B2B qui trouve, qualifie et enrichit les profils de prospects pertinents, permettant aux startups et PME de se concentrer sur ce qu'elles font de mieux - convertir et vendre.
               </motion.p>
             </motion.div>
             
@@ -138,14 +138,14 @@ const AboutUs = () => {
                 className="text-2xl md:text-3xl font-semibold mb-6 text-gray-900"
                 variants={itemVariants}
               >
-                Notre Mission
+                La mission de chyll
               </motion.h2>
               <div className="bg-gradient-to-r from-purple-50 to-indigo-50 p-8 rounded-xl mb-6">
                 <motion.p 
                   className="text-lg text-gray-700 mb-4"
                   variants={itemVariants}
                 >
-                  Chez chyll.ai, notre mission est claire : libérer le potentiel des équipes commerciales en automatisant les tâches répétitives et chronophages de la prospection B2B.
+                  Chez chyll, notre mission est claire : libérer le potentiel des équipes commerciales en automatisant les tâches répétitives et chronophages de la prospection B2B.
                 </motion.p>
                 <motion.p 
                   className="text-lg text-gray-700 mb-4"
@@ -157,7 +157,7 @@ const AboutUs = () => {
                   className="text-lg text-gray-700"
                   variants={itemVariants}
                 >
-                  Notre ambition? Devenir le standard de la prospection B2B automatisée en Europe, en offrant une solution qui combine puissance technologique et facilité d'utilisation.
+                  Notre ambition? Faire de chyll le standard de l'assistance commerciale automatisée en Europe, en offrant une plateforme qui combine puissance technologique et facilité d'utilisation pour les startups et PME.
                 </motion.p>
               </div>
             </motion.div>
@@ -174,13 +174,13 @@ const AboutUs = () => {
                 className="text-2xl md:text-3xl font-semibold mb-6 text-gray-900"
                 variants={itemVariants}
               >
-                Notre Approche
+                L'approche unique de chyll
               </motion.h2>
               <motion.p 
                 className="text-lg text-gray-700 mb-8"
                 variants={itemVariants}
               >
-                Notre approche de la prospection B2B se distingue par sa méthodologie unique et complète, basée sur quatre piliers fondamentaux :
+                L'approche de chyll pour la prospection B2B se distingue par sa méthodologie unique et complète, basée sur quatre piliers fondamentaux qui font de notre assistant commercial IA une solution véritablement différenciante :
               </motion.p>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
@@ -192,10 +192,10 @@ const AboutUs = () => {
                     <div className="bg-indigo-100 p-3 rounded-full">
                       <Target className="h-6 w-6 text-indigo-600" />
                     </div>
-                    <h3 className="ml-4 text-lg font-medium">Ciblage intelligent</h3>
+                    <h3 className="ml-4 text-lg font-medium">Ciblage intelligent par chyll</h3>
                   </div>
                   <p className="text-gray-700">
-                    Notre technologie analyse des millions de profils professionnels pour identifier précisément les décideurs qui correspondent à votre ICP (Ideal Customer Profile). Nous ne vous fournissons que des prospects qualifiés qui ont une réelle probabilité d'achat.
+                    La technologie chyll analyse des millions de profils professionnels pour identifier précisément les décideurs qui correspondent à votre ICP (Ideal Customer Profile). Notre assistant ne vous fournit que des prospects qualifiés qui ont une réelle probabilité d'achat.
                   </p>
                 </motion.div>
                 
@@ -207,10 +207,10 @@ const AboutUs = () => {
                     <div className="bg-indigo-100 p-3 rounded-full">
                       <Database className="h-6 w-6 text-indigo-600" />
                     </div>
-                    <h3 className="ml-4 text-lg font-medium">Enrichissement complet</h3>
+                    <h3 className="ml-4 text-lg font-medium">Enrichissement complet chyll</h3>
                   </div>
                   <p className="text-gray-700">
-                    Pour chaque prospect identifié, nous collectons et vérifions une multitude de données : email professionnel, numéro de téléphone direct, historique professionnel, signaux d'achat récents, technologies utilisées et bien plus encore.
+                    Pour chaque prospect identifié, chyll collecte et vérifie une multitude de données : email professionnel, numéro de téléphone direct, historique professionnel, signaux d'achat récents, technologies utilisées et bien plus encore.
                   </p>
                 </motion.div>
                 
@@ -222,10 +222,10 @@ const AboutUs = () => {
                     <div className="bg-indigo-100 p-3 rounded-full">
                       <Bot className="h-6 w-6 text-indigo-600" />
                     </div>
-                    <h3 className="ml-4 text-lg font-medium">Intelligence artificielle</h3>
+                    <h3 className="ml-4 text-lg font-medium">Intelligence artificielle chyll</h3>
                   </div>
                   <p className="text-gray-700">
-                    Notre agent IA spécialisé ne se contente pas de collecter des données - il analyse les interactions, identifie les modèles comportementaux et prédit la propension à l'achat, vous permettant de prioriser les leads avec le plus haut potentiel de conversion.
+                    L'assistant chyll ne se contente pas de collecter des données - il analyse les interactions, identifie les modèles comportementaux et prédit la propension à l'achat, vous permettant de prioriser les leads avec le plus haut potentiel de conversion.
                   </p>
                 </motion.div>
                 
@@ -237,10 +237,10 @@ const AboutUs = () => {
                     <div className="bg-indigo-100 p-3 rounded-full">
                       <Clock className="h-6 w-6 text-indigo-600" />
                     </div>
-                    <h3 className="ml-4 text-lg font-medium">Automatisation continue</h3>
+                    <h3 className="ml-4 text-lg font-medium">Automatisation continue chyll</h3>
                   </div>
                   <p className="text-gray-700">
-                    Notre système fonctionne 24h/24, 7j/7, garantissant un flux constant de nouveaux prospects qualifiés. Chaque matin, vous découvrez de nouvelles opportunités commerciales directement dans votre CRM, prêtes à être contactées.
+                    Le système chyll fonctionne 24h/24, 7j/7, garantissant un flux constant de nouveaux prospects qualifiés. Chaque matin, vous découvrez de nouvelles opportunités commerciales directement dans votre CRM, prêtes à être contactées.
                   </p>
                 </motion.div>
               </div>
@@ -254,26 +254,26 @@ const AboutUs = () => {
                     <Sparkles className="h-6 w-6 text-indigo-600" />
                   </div>
                   <div className="ml-4">
-                    <h3 className="text-lg font-medium mb-2">Méthodologie AIDA adaptée au B2B</h3>
+                    <h3 className="text-lg font-medium mb-2">Méthodologie chyll adaptée au B2B moderne</h3>
                     <p className="text-gray-700">
-                      Notre processus s'inspire du modèle AIDA (Attention, Intérêt, Désir, Action) mais repensé pour le cycle de vente B2B moderne :
+                      Le processus chyll s'inspire du modèle AIDA (Attention, Intérêt, Désir, Action) mais repensé pour le cycle de vente B2B moderne :
                     </p>
                     <ul className="mt-3 space-y-2">
                       <li className="flex items-center">
                         <span className="h-6 w-6 flex items-center justify-center rounded-full bg-indigo-600 text-white text-sm mr-3">1</span>
-                        <span><strong>Identification</strong> : Nous localisons les décideurs correspondant précisément à votre persona idéal.</span>
+                        <span><strong>Identification par chyll</strong> : Nous localisons les décideurs correspondant précisément à votre persona idéal.</span>
                       </li>
                       <li className="flex items-center">
                         <span className="h-6 w-6 flex items-center justify-center rounded-full bg-indigo-600 text-white text-sm mr-3">2</span>
-                        <span><strong>Qualification</strong> : Nous analysons leur correspondance avec vos critères et leur probabilité d'intérêt.</span>
+                        <span><strong>Qualification chyll</strong> : Nous analysons leur correspondance avec vos critères et leur probabilité d'intérêt.</span>
                       </li>
                       <li className="flex items-center">
                         <span className="h-6 w-6 flex items-center justify-center rounded-full bg-indigo-600 text-white text-sm mr-3">3</span>
-                        <span><strong>Enrichissement</strong> : Nous collectons toutes les données pertinentes pour faciliter votre approche commerciale.</span>
+                        <span><strong>Enrichissement chyll</strong> : Nous collectons toutes les données pertinentes pour faciliter votre approche commerciale.</span>
                       </li>
                       <li className="flex items-center">
                         <span className="h-6 w-6 flex items-center justify-center rounded-full bg-indigo-600 text-white text-sm mr-3">4</span>
-                        <span><strong>Activation</strong> : Nous vous fournissons un tableau de bord CRM prêt à l'emploi pour engager la conversation.</span>
+                        <span><strong>Activation chyll</strong> : Nous vous fournissons un tableau de bord CRM prêt à l'emploi pour engager la conversation.</span>
                       </li>
                     </ul>
                   </div>
@@ -293,7 +293,7 @@ const AboutUs = () => {
                 className="text-2xl md:text-3xl font-semibold mb-8 text-gray-900"
                 variants={itemVariants}
               >
-                Ce Qui Nous Différencie
+                Ce Qui Différencie chyll
               </motion.h2>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -305,9 +305,9 @@ const AboutUs = () => {
                     <div className="bg-indigo-100 p-3 rounded-full">
                       <Users className="h-6 w-6 text-indigo-600" />
                     </div>
-                    <h3 className="ml-4 text-lg font-medium">Service Complet</h3>
+                    <h3 className="ml-4 text-lg font-medium">Service complet chyll</h3>
                   </div>
-                  <p className="text-gray-600">Nous gérons tout de A à Z : configuration, maintenance, optimisations continues. Vous n'avez qu'à utiliser les données enrichies.</p>
+                  <p className="text-gray-600">Notre équipe chyll gère tout de A à Z : configuration, maintenance, optimisations continues. Vous n'avez qu'à utiliser les données enrichies par votre assistant.</p>
                 </motion.div>
                 
                 <motion.div 
@@ -318,9 +318,9 @@ const AboutUs = () => {
                     <div className="bg-indigo-100 p-3 rounded-full">
                       <Globe className="h-6 w-6 text-indigo-600" />
                     </div>
-                    <h3 className="ml-4 text-lg font-medium">Respect du RGPD</h3>
+                    <h3 className="ml-4 text-lg font-medium">chyll respecte le RGPD</h3>
                   </div>
-                  <p className="text-gray-600">Notre approche est 100% conforme au RGPD. Nous utilisons uniquement des sources publiques et professionnelles pour enrichir les données.</p>
+                  <p className="text-gray-600">L'approche chyll est 100% conforme au RGPD. Notre assistant utilise uniquement des sources publiques et professionnelles pour enrichir les données.</p>
                 </motion.div>
                 
                 <motion.div 
@@ -331,9 +331,9 @@ const AboutUs = () => {
                     <div className="bg-indigo-100 p-3 rounded-full">
                       <Star className="h-6 w-6 text-indigo-600" />
                     </div>
-                    <h3 className="ml-4 text-lg font-medium">Qualité des Données</h3>
+                    <h3 className="ml-4 text-lg font-medium">Qualité des données chyll</h3>
                   </div>
-                  <p className="text-gray-600">Nous privilégions la qualité à la quantité. Chaque prospect est soigneusement vérifié pour garantir la pertinence et l'exactitude des informations.</p>
+                  <p className="text-gray-600">chyll privilégie la qualité à la quantité. Chaque prospect est soigneusement vérifié pour garantir la pertinence et l'exactitude des informations fournies à nos clients.</p>
                 </motion.div>
                 
                 <motion.div 
@@ -344,9 +344,9 @@ const AboutUs = () => {
                     <div className="bg-indigo-100 p-3 rounded-full">
                       <Heart className="h-6 w-6 text-indigo-600" />
                     </div>
-                    <h3 className="ml-4 text-lg font-medium">Support Dédié</h3>
+                    <h3 className="ml-4 text-lg font-medium">Support dédié chyll</h3>
                   </div>
-                  <p className="text-gray-600">Chaque client bénéficie d'un support personnalisé et réactif. Nous sommes là pour vous aider à maximiser votre ROI.</p>
+                  <p className="text-gray-600">Chaque client chyll bénéficie d'un support personnalisé et réactif. Notre équipe est là pour vous aider à maximiser votre ROI avec notre assistant commercial.</p>
                 </motion.div>
                 
                 <motion.div 
@@ -357,9 +357,9 @@ const AboutUs = () => {
                     <div className="bg-indigo-100 p-3 rounded-full">
                       <Shield className="h-6 w-6 text-indigo-600" />
                     </div>
-                    <h3 className="ml-4 text-lg font-medium">Tarification Transparente</h3>
+                    <h3 className="ml-4 text-lg font-medium">Tarification transparente chyll</h3>
                   </div>
-                  <p className="text-gray-600">Pas de surprises désagréables. Nos forfaits sont clairs, sans frais cachés, et vous ne payez que pour ce dont vous avez réellement besoin.</p>
+                  <p className="text-gray-600">Pas de surprises désagréables avec chyll. Nos forfaits sont clairs, sans frais cachés, et vous ne payez que pour les fonctionnalités de l'assistant commercial chyll dont vous avez réellement besoin.</p>
                 </motion.div>
               </div>
             </motion.div>
@@ -373,10 +373,10 @@ const AboutUs = () => {
               transition={{ duration: 0.8 }}
             >
               <h3 className="text-2xl md:text-3xl font-bold mb-4">
-                Prêt à transformer votre prospection B2B?
+                Prêt à découvrir l'assistant commercial chyll?
               </h3>
               <p className="text-lg opacity-90 mb-8">
-                Découvrez comment chyll.ai peut vous aider à trouver et convertir plus de clients qualifiés, tout en réduisant votre charge de travail.
+                Découvrez comment chyll peut vous aider à trouver et convertir plus de clients qualifiés, tout en réduisant la charge de travail de votre équipe commerciale.
               </p>
               <Button 
                 size="lg" 
@@ -385,7 +385,7 @@ const AboutUs = () => {
                 asChild
               >
                 <a href="https://cal.com/chyll.ai/30min" target="_blank" rel="noopener noreferrer">
-                  Réserver une démo gratuite
+                  Réserver une démo gratuite de chyll
                 </a>
               </Button>
             </motion.div>
@@ -399,4 +399,3 @@ const AboutUs = () => {
 };
 
 export default AboutUs;
-

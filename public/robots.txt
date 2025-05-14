@@ -1,5 +1,5 @@
 
-# chyll.ai - Agent SDR automatisé - Robots.txt
+# chyll - Assistant commercial IA - Robots.txt
 
 # Main directives
 User-agent: *
@@ -96,5 +96,5 @@ Allow: /
 Allow: /api/offers.json
 
 # Brand keywords and SEO hints
-# chyll.ai, chyll, agent SDR automatisé, prospection B2B
-# enrichissement de leads, SDR automatisation, IA pour la vente
+# chyll, chyll.ai, assistant commercial chyll, logiciel chyll
+# automatisation des ventes, outil IA pour la prospection, assistant de vente intelligent

@@ -17,24 +17,24 @@ import { TestimonialsCarousel } from '@/components/ui/testimonials-carousel';
 // Sample FAQ data for structured data
 const faqData = [
   {
-    question: "Ai-je besoin de savoir coder pour utiliser chyll.ai ?",
-    answer: "Non, aucune compétence technique n'est nécessaire. Notre équipe s'occupe de toute la configuration pour toi."
+    question: "C'est quoi chyll ?",
+    answer: "chyll est un assistant commercial IA pour les entreprises modernes. Il automatise votre prospection B2B sans nécessiter de compétences techniques."
   },
   {
-    question: "Combien de temps faut-il pour mettre en place chyll.ai ?",
-    answer: "Ton agent chyll.ai est prêt en 48h maximum. Nous nous occupons de toute la configuration et l'intégration."
+    question: "Combien de temps faut-il pour déployer chyll ?",
+    answer: "Votre assistant chyll est prêt en 48h maximum. Notre équipe s'occupe de toute la configuration et l'intégration pour vous."
   },
   {
-    question: "Quelles données vais-je recevoir exactement ?",
-    answer: "Des profils LinkedIn enrichis avec emails professionnels, numéros de téléphone, taille d'entreprise, secteur et autres informations pertinentes pour ta prospection."
+    question: "Quelles données vais-je recevoir avec chyll ?",
+    answer: "chyll enrichit les profils professionnels avec emails, numéros de téléphone, taille d'entreprise, secteur et autres informations pertinentes pour votre prospection."
   },
   {
-    question: "Comment chyll.ai trouve-t-il mes prospects ?",
-    answer: "Notre agent utilise l'IA pour identifier les entreprises et décideurs correspondant à tes critères, puis enrichit les données avec des emails et numéros vérifiés."
+    question: "Comment chyll trouve-t-il mes prospects ?",
+    answer: "L'assistant chyll utilise l'IA pour identifier les entreprises et décideurs correspondant à vos critères, puis enrichit les données avec des emails et numéros vérifiés."
   },
   {
-    question: "Est-ce que chyll.ai s'intègre avec mon CRM ?",
-    answer: "Oui, chyll.ai s'intègre nativement avec HubSpot, Pipedrive, Salesforce et d'autres CRM majeurs pour une synchronisation automatique des données."
+    question: "Est-ce que chyll s'intègre avec mon CRM ?",
+    answer: "Oui, chyll s'intègre nativement avec HubSpot, Pipedrive, Salesforce et d'autres CRM majeurs pour une synchronisation automatique des données."
   }
 ];
 
@@ -44,24 +44,24 @@ const offersData = [
     name: "Une fois",
     price: "99€",
     period: "unique",
-    description: "Une tâche, entièrement réalisée pour vous.",
+    description: "Une tâche commerciale, entièrement automatisée par chyll.",
     features: [
-      "Construction et livraison d'une automatisation pour votre cas d'utilisation",
+      "Construction et livraison d'une automatisation chyll pour votre cas d'utilisation",
       "Interface simple (Airtable ou Notion)",
       "Configuration, paramétrage et test inclus",
       "Idéal pour une preuve de concept"
     ],
     url: "https://chyll.ai/offres/une-fois",
     action: "https://buy.stripe.com/5kAeWh18h6cOenSeUV",
-    actionText: "Commencer"
+    actionText: "Essayer chyll"
   },
   {
     name: "Automatiser",
     price: "199€",
     period: "/mois",
-    description: "Un assistant IA que vous pouvez contrôler.",
+    description: "Un assistant commercial chyll que vous contrôlez.",
     features: [
-      "Interface IA personnalisée",
+      "Interface chyll personnalisée",
       "200 actions mensuelles alimentées par l'IA",
       "Configuration clé en main sans compétence technique",
       "Support continu et améliorations"
@@ -74,16 +74,16 @@ const offersData = [
     name: "Intégrer",
     price: "699€",
     period: "/mois",
-    description: "Configuration IA complète à travers vos opérations.",
+    description: "Plateforme chyll complète à travers vos opérations.",
     features: [
-      "Flux de travail personnalisés",
+      "Flux de travail chyll personnalisés",
       "Intégration avec votre pile technologique existante",
       "1 000 actions d'automatisation mensuelles",
       "Support prioritaire et accès stratégique"
     ],
     url: "https://chyll.ai/offres/integrer",
     action: "https://cal.com/chyll.ai/30min",
-    actionText: "Contacter l'équipe"
+    actionText: "Contacter l'équipe chyll"
   }
 ];
 
@@ -97,28 +97,28 @@ const Index = () => {
   
   // SEO keywords focused on brand and B2B prospection
   const seoKeywords = [
-    'chyll.ai', 
     'chyll', 
-    'agent SDR', 
+    'chyll.ai', 
+    'assistant commercial chyll',
+    'logiciel chyll',
+    'automatisation des ventes',
+    'outil IA pour la prospection',
+    'assistant de vente intelligent',
+    'plateforme chyll',
     'prospection B2B',
     'enrichissement de leads',
-    'automation commerciale',
-    'SDR automatisé',
+    'IA commerciale',
     'génération de leads B2B',
-    'numéros de téléphone professionnels',
-    'emails professionnels',
-    'personas LinkedIn',
-    'trouver des prospects B2B',
-    'automation prospection',
-    'leads qualifiés B2B',
-    'intégration CRM'
+    'startups',
+    'PME',
+    'équipes commerciales'
   ];
   
   return (
     <div className="min-h-screen flex flex-col">
       <SEOMetadata 
-        title="chyll.ai - La prospection B2B, automatisée"
-        description="chyll.ai trouve les bons prospects, les enrichit avec emails et téléphones vérifiés, et met à jour ton CRM pendant que tu bosses sur autre chose."
+        title="chyll - Assistant commercial IA pour les startups et PME"
+        description="chyll automatise la génération de leads et les relances commerciales grâce à l'intelligence artificielle. Accélérez vos ventes avec chyll."
         canonicalUrl="/"
         pageUrl="https://chyll.ai/"
         keywords={seoKeywords}
@@ -134,12 +134,12 @@ const Index = () => {
       <noscript>
         <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto', fontFamily: 'Arial, sans-serif' }}>
           <header style={{ textAlign: 'center', margin: '20px 0' }}>
-            <h1>chyll.ai - La prospection B2B, automatisée</h1>
-            <p>chyll.ai trouve les bons prospects, les enrichit avec emails et téléphones vérifiés, et met à jour ton CRM.</p>
+            <h1>chyll - Assistant commercial IA pour les startups et PME</h1>
+            <p>chyll automatise la génération de leads et les relances commerciales grâce à l'intelligence artificielle.</p>
           </header>
           
           <section style={{ margin: '30px 0' }}>
-            <h2 style={{ textAlign: 'center' }}>Nos offres</h2>
+            <h2 style={{ textAlign: 'center' }}>Les offres chyll</h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
               {offersData.map((offer, index) => (
                 <div key={index} style={{ border: '1px solid #ddd', padding: '20px', borderRadius: '8px' }}>
@@ -161,17 +161,17 @@ const Index = () => {
           </section>
           
           <section style={{ margin: '30px 0' }}>
-            <h2 style={{ textAlign: 'center' }}>Comment ça marche</h2>
+            <h2 style={{ textAlign: 'center' }}>Comment fonctionne chyll</h2>
             <ol>
-              <li>Nous configurons votre agent SDR basé sur l'IA selon vos besoins</li>
-              <li>L'agent identifie et enrichit automatiquement les prospects pertinents</li>
+              <li>Nous configurons votre assistant commercial chyll selon vos besoins</li>
+              <li>L'assistant chyll identifie et enrichit automatiquement les prospects pertinents</li>
               <li>Les données enrichies sont synchronisées avec votre CRM</li>
               <li>Vous concentrez votre temps sur les conversations qui comptent</li>
             </ol>
           </section>
           
           <section style={{ margin: '30px 0' }}>
-            <h2 style={{ textAlign: 'center' }}>FAQ</h2>
+            <h2 style={{ textAlign: 'center' }}>Questions fréquentes sur chyll</h2>
             <dl>
               {faqData.map((faq, index) => (
                 <div key={index} style={{ margin: '10px 0' }}>
@@ -185,7 +185,7 @@ const Index = () => {
           <footer style={{ textAlign: 'center', margin: '30px 0', padding: '20px', borderTop: '1px solid #ddd' }}>
             <p>Contact: contact@chyll.ai | +33 1 23 45 67 89</p>
             <p>60 RUE FRANCOIS IER, 75008 PARIS</p>
-            <p>© 2025 chyll.ai - Tous droits réservés</p>
+            <p>© 2025 chyll - Tous droits réservés</p>
           </footer>
         </div>
       </noscript>
@@ -206,9 +206,9 @@ const Index = () => {
       <section id="features" className="section-padding bg-white" aria-label="Fonctionnalités">
         <div className="container-custom">
           <div className="text-center mb-12">
-            <h2 className="section-title rainbow-text-static">{t.home.features.title}</h2>
+            <h2 className="section-title rainbow-text-static">chyll révolutionne votre prospection B2B</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              {t.home.features.subtitle}
+              Une solution complète pour automatiser votre prospection B2B et maximiser votre productivité commerciale
             </p>
           </div>
           <FeaturesSectionWithHoverEffectsDemo />
@@ -219,9 +219,9 @@ const Index = () => {
       <section id="how-it-works" className="section-padding gradient-bg" aria-label="Comment ça marche">
         <div className="container-custom">
           <div className="text-center mb-12">
-            <h2 className="section-title rainbow-text-static">{t.home.howItWorks.title}</h2>
+            <h2 className="section-title rainbow-text-static">Comment fonctionne chyll</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              {t.home.howItWorks.subtitle}
+              Démarrer avec chyll est simple. Suivez ces étapes pour transformer votre approche commerciale.
             </p>
           </div>
           <HowItWorks />
@@ -246,9 +246,9 @@ const Index = () => {
       <section className="section-padding bg-white" aria-label="Témoignages">
         <div className="container-custom">
           <div className="text-center mb-12">
-            <h2 className="section-title rainbow-text-static">{t.home.testimonials.title}</h2>
+            <h2 className="section-title rainbow-text-static">Des clients conquis par chyll</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              {t.home.testimonials.subtitle}
+              Rejoignez les startups et PME qui ont transformé leur prospection grâce à chyll
             </p>
           </div>
           <TestimonialsCarousel />
@@ -259,9 +259,9 @@ const Index = () => {
       <section id="faq" className="section-padding gradient-bg" aria-label="Questions fréquentes">
         <div className="container-custom">
           <div className="text-center mb-12">
-            <h2 className="section-title rainbow-text-static">{t.home.faq.title}</h2>
+            <h2 className="section-title rainbow-text-static">C'est quoi chyll ?</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              {t.home.faq.subtitle}
+              Tout ce que vous devez savoir sur notre assistant commercial IA et comment il transforme la prospection B2B.
             </p>
           </div>
           <div className="flex justify-center">
