@@ -37,7 +37,10 @@ const placeholderData = {
     subtitle: "",
     loadMore: "",
     allLoaded: "",
-    endReached: ""
+    endReached: "",
+    postNotFound: "",      // Added missing property
+    postNotFoundDesc: "",  // Added missing property
+    backToBlog: ""         // Added missing property
   }
 };
 
