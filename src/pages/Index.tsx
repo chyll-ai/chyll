@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import HowItWorks from '@/components/HowItWorks';
@@ -11,7 +10,6 @@ import { PartnerCompaniesDemo } from '@/components/ui/partner-companies-demo';
 import SEOMetadata from '@/components/SEOMetadata';
 import { getOrganizationSchema, getFAQSchema, getChyllAiSchema } from '@/utils/structuredData';
 import { Suspense } from 'react';
-import { useLanguage } from '@/context/LanguageContext';
 import { TestimonialsCarousel } from '@/components/ui/testimonials-carousel';
 
 // Sample FAQ data for structured data
@@ -88,8 +86,9 @@ const offersData = [
 ];
 
 const Index = () => {
-  const { t } = useLanguage();
-  
+  // Suppression du hook de langue
+  // Texte français en dur directement
+
   // Generate structured data
   const organizationSchema = getOrganizationSchema();
   const faqSchema = getFAQSchema(faqData);
@@ -206,9 +205,9 @@ const Index = () => {
       <section id="features" className="section-padding bg-white" aria-label="Fonctionnalités">
         <div className="container-custom">
           <div className="text-center mb-12">
-            <h2 className="section-title rainbow-text-static">{t.home.features.title}</h2>
+            <h2 className="section-title rainbow-text-static">Un agent IA qui révolutionne ta prospection</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              {t.home.features.subtitle}
+              Une solution complète pour automatiser ta prospection B2B et maximiser ton temps productif.
             </p>
           </div>
           <FeaturesSectionWithHoverEffectsDemo />
@@ -219,9 +218,9 @@ const Index = () => {
       <section id="how-it-works" className="section-padding gradient-bg" aria-label="Comment ça marche">
         <div className="container-custom">
           <div className="text-center mb-12">
-            <h2 className="section-title rainbow-text-static">{t.home.howItWorks.title}</h2>
+            <h2 className="section-title rainbow-text-static">Comment ça marche</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              {t.home.howItWorks.subtitle}
+              Démarrer avec chyll.ai est simple. Suis ces étapes pour transformer ta prospection commerciale.
             </p>
           </div>
           <HowItWorks />
@@ -246,9 +245,9 @@ const Index = () => {
       <section className="section-padding bg-white" aria-label="Témoignages">
         <div className="container-custom">
           <div className="text-center mb-12">
-            <h2 className="section-title rainbow-text-static">{t.home.testimonials.title}</h2>
+            <h2 className="section-title rainbow-text-static">Des clients conquis par notre agent IA</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              {t.home.testimonials.subtitle}
+              Rejoins les entreprises qui ont transformé leur prospection grâce à chyll.ai
             </p>
           </div>
           <TestimonialsCarousel />
@@ -259,9 +258,9 @@ const Index = () => {
       <section id="faq" className="section-padding gradient-bg" aria-label="Questions fréquentes">
         <div className="container-custom">
           <div className="text-center mb-12">
-            <h2 className="section-title rainbow-text-static">{t.home.faq.title}</h2>
+            <h2 className="section-title rainbow-text-static">Questions fréquentes</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              {t.home.faq.subtitle}
+              Tout ce que tu dois savoir sur chyll.ai et comment il peut transformer ta prospection commerciale.
             </p>
           </div>
           <div className="flex justify-center">
