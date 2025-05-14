@@ -77,15 +77,20 @@ const Navbar = ({ currentPath = '/' }: NavbarProps) => {
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center space-x-8">
-          <Link to={getSectionLink("features")} className="text-gray-700 hover:text-brand-blue transition-colors">
-            {t.nav.features}
-          </Link>
-          <Link to={getSectionLink("how-it-works")} className="text-gray-700 hover:text-brand-blue transition-colors">
-            {t.nav.howItWorks}
-          </Link>
-          <Link to={getSectionLink("pricing")} className="text-gray-700 hover:text-brand-blue transition-colors">
-            {t.nav.pricing}
-          </Link>
+          {/* Only show feature links on home page */}
+          {isHomePage && (
+            <>
+              <Link to={getSectionLink("features")} className="text-gray-700 hover:text-brand-blue transition-colors">
+                {t.nav.features}
+              </Link>
+              <Link to={getSectionLink("how-it-works")} className="text-gray-700 hover:text-brand-blue transition-colors">
+                {t.nav.howItWorks}
+              </Link>
+              <Link to={getSectionLink("pricing")} className="text-gray-700 hover:text-brand-blue transition-colors">
+                {t.nav.pricing}
+              </Link>
+            </>
+          )}
           
           <div className="flex items-center space-x-4">
             <Button variant="rainbow" size="sm" className="md:size-default" asChild>
@@ -123,27 +128,32 @@ const Navbar = ({ currentPath = '/' }: NavbarProps) => {
               </Link>
             )}
             
-            <Link 
-              to={getSectionLink("features")}
-              className="text-gray-700 hover:text-brand-blue py-2 transition-colors"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              {t.nav.features}
-            </Link>
-            <Link 
-              to={getSectionLink("how-it-works")}
-              className="text-gray-700 hover:text-brand-blue py-2 transition-colors"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              {t.nav.howItWorks}
-            </Link>
-            <Link 
-              to={getSectionLink("pricing")}
-              className="text-gray-700 hover:text-brand-blue py-2 transition-colors"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              {t.nav.pricing}
-            </Link>
+            {/* Only show feature links on home page */}
+            {isHomePage && (
+              <>
+                <Link 
+                  to={getSectionLink("features")}
+                  className="text-gray-700 hover:text-brand-blue py-2 transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  {t.nav.features}
+                </Link>
+                <Link 
+                  to={getSectionLink("how-it-works")}
+                  className="text-gray-700 hover:text-brand-blue py-2 transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  {t.nav.howItWorks}
+                </Link>
+                <Link 
+                  to={getSectionLink("pricing")}
+                  className="text-gray-700 hover:text-brand-blue py-2 transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  {t.nav.pricing}
+                </Link>
+              </>
+            )}
             
             <Button 
               variant="rainbow"

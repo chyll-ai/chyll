@@ -35,6 +35,24 @@ export function Footer2({
   const { t } = useLanguage();
   const location = useLocation();
   const isBlogPage = location.pathname === '/blog' || location.pathname.startsWith('/blog/');
+  const isFAQPage = location.pathname === '/faq';
+  
+  // Define simplified menu items for FAQ page
+  const defaultFAQMenuItems = [
+    {
+      title: "Entreprise",
+      links: [
+        { text: "À propos", url: "/about-us" },
+        { text: "Contact", url: "/contact" },
+      ],
+    },
+    {
+      title: "Ressources",
+      links: [
+        { text: "Blog", url: "/blog" },
+      ],
+    },
+  ];
   
   // Define simplified menu items for blog pages
   const defaultBlogMenuItems = [
@@ -82,7 +100,7 @@ export function Footer2({
   ];
   
   // Use provided menu items or fallback to defaults based on page type
-  const displayMenuItems = menuItems || (isBlogPage ? defaultBlogMenuItems : defaultMenuItems);
+  const displayMenuItems = menuItems || (isFAQPage ? defaultFAQMenuItems : (isBlogPage ? defaultBlogMenuItems : defaultMenuItems));
   
   // Use provided props or fallback to translations
   const displayTagline = tagline || t.footer.tagline;
