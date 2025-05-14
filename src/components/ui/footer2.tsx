@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '@/context/LanguageContext';
@@ -30,6 +31,7 @@ export function Footer2({
         { text: "Fonctionnalités", url: "#features" },
         { text: "Comment ça marche", url: "#how-it-works" },
         { text: "Tarifs", url: "#pricing" },
+        { text: "Blog", url: "/blog" },
       ],
     },
     {
@@ -42,6 +44,7 @@ export function Footer2({
     {
       title: "Ressources",
       links: [
+        { text: "Blog", url: "/blog" },
         { text: "FAQ", url: "#faq" },
         { text: "Support", url: "#" },
       ],
