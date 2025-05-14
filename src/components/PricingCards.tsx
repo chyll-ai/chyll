@@ -1,63 +1,11 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Check } from 'lucide-react';
 import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card';
-import { useLanguage } from '@/context/LanguageContext';
 
+// Plans de tarification en français
 const pricingPlans = [
-  {
-    name: "Once",
-    price: "$99",
-    period: "one-time",
-    description: "One task, fully done-for-you.",
-    features: [
-      "We build and deliver 1 automation for your use case",
-      "Delivered with a simple interface (Airtable or Notion)",
-      "Includes setup, configuration, and test run",
-      "Great for proof-of-concept or small need"
-    ],
-    highlight: false,
-    color: "blue",
-    trial: null,
-    buttonText: "Start Free Trial",
-    href: "https://buy.stripe.com/5kAeWh18h6cOenSeUV"
-  },
-  {
-    name: "Automate",
-    price: "$199",
-    period: "/month",
-    description: "An AI assistant you can control.",
-    features: [
-      "Access a custom interface connected to your AI workflows",
-      "Includes 200 automation actions/month",
-      "Tasks include scraping, enrichment, messaging, CRM updates, alerts",
-      "No technical setup required – we handle everything",
-      "Ongoing support and upgrades included"
-    ],
-    highlight: true,
-    color: "yellow",
-    trial: "14-day free trial"
-  },
-  {
-    name: "Integrate",
-    price: "$699",
-    period: "/month",
-    description: "Full-stack AI setup across your operations.",
-    features: [
-      "Custom-built workflows across departments",
-      "Works with your stack (CRM, HR, project tools, etc.)",
-      "Up to 1,000 automation actions/month",
-      "Personalized onboarding, support & strategy",
-      "SLA, reporting, and dedicated expert sessions"
-    ],
-    highlight: false,
-    color: "red",
-    trial: null
-  }
-];
-
-// French pricing plans
-const frPricingPlans = [
   {
     name: "Une fois",
     price: "99€",
@@ -113,7 +61,7 @@ const frPricingPlans = [
     ],
     highlight: false,
     color: "red",
-    trial: "Essai gratuit de 14 jours"
+    trial: null
   }
 ];
 
@@ -131,12 +79,9 @@ const getPlanIcon = (color: string) => {
 };
 
 const PricingCards = () => {
-  const { language } = useLanguage();
-  const plans = language === 'fr' ? frPricingPlans : pricingPlans;
-
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-      {plans.map((plan, index) => (
+      {pricingPlans.map((plan, index) => (
         <Card 
           key={index} 
           className={`pricing-card flex flex-col h-full border-2 ${
@@ -149,7 +94,7 @@ const PricingCards = () => {
         >
           {plan.highlight && (
             <div className="absolute -top-4 left-0 right-0 mx-auto w-max px-4 py-1 bg-yellow-400 text-white text-sm font-medium rounded-full">
-              {language === 'fr' ? 'Le plus populaire' : 'Most Popular'}
+              Le plus populaire
             </div>
           )}
           
@@ -192,9 +137,7 @@ const PricingCards = () => {
                 target="_blank" 
                 rel="noopener noreferrer"
               >
-                {index === 0 
-                  ? (language === 'fr' ? 'Commencer l\'essai gratuit' : 'Start Free Trial') 
-                  : (language === 'fr' ? 'Réserver une démo' : 'Book a Demo')}
+                {index === 0 ? 'Commencer l\'essai gratuit' : 'Réserver une démo'}
               </a>
             </Button>
           </CardFooter>

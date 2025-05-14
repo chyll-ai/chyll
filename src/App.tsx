@@ -12,27 +12,23 @@ import Privacy from '@/pages/Privacy';
 import Cookies from '@/pages/Cookies';
 import FAQ from '@/pages/FAQ';
 
-import { LanguageProvider } from '@/context/LanguageContext';
-
 function App() {
   return (
     <HelmetProvider>
-      <LanguageProvider>
-        <Router>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/terms" element={<Terms />} />
-            <Route path="/privacy" element={<Privacy />} />
-            <Route path="/cookies" element={<Cookies />} />
-            <Route path="/faq" element={<FAQ />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-          <Toaster />
-          <SonnerToaster position="bottom-right" />
-          <CookieConsent />
-        </Router>
-      </LanguageProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Index />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/cookies" element={<Cookies />} />
+          <Route path="/faq" element={<FAQ />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+        <Toaster />
+        <SonnerToaster position="bottom-right" />
+        <CookieConsent />
+      </Router>
     </HelmetProvider>
   );
 }

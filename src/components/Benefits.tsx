@@ -3,12 +3,9 @@ import React from 'react';
 import { 
   DollarSign, Zap, PlayCircle, Clock, Globe, ArrowUpRight 
 } from 'lucide-react';
-import { useLanguage } from '@/context/LanguageContext';
 
 const Benefits = () => {
-  const { t } = useLanguage();
-
-  // Default French benefits if no translations are available
+  // Default French benefits
   const defaultBenefits = [
     {
       title: "Rentabilité",

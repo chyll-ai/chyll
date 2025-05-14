@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Menu, X, Home } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
-import { useLanguage } from '@/context/LanguageContext';
 import { useResponsive } from '@/hooks/use-responsive';
 
 interface NavbarProps {
@@ -15,7 +14,6 @@ const Navbar = ({ currentPath = '/' }: NavbarProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const isHomePage = location.pathname === '/';
-  const { t } = useLanguage();
   const { isMobile } = useResponsive();
 
   // Handle scroll effect for navbar
@@ -70,7 +68,7 @@ const Navbar = ({ currentPath = '/' }: NavbarProps) => {
           {!isHomePage && !isMobile && (
             <Link to="/" className="text-gray-700 hover:text-brand-blue transition-colors flex items-center gap-1">
               <Home size={18} />
-              <span>{t.nav.home}</span>
+              <span>Accueil</span>
             </Link>
           )}
         </div>
@@ -78,19 +76,19 @@ const Navbar = ({ currentPath = '/' }: NavbarProps) => {
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center space-x-8">
           <Link to={getSectionLink("features")} className="text-gray-700 hover:text-brand-blue transition-colors">
-            {t.nav.features}
+            Fonctionnalités
           </Link>
           <Link to={getSectionLink("how-it-works")} className="text-gray-700 hover:text-brand-blue transition-colors">
-            {t.nav.howItWorks}
+            Comment ça marche
           </Link>
           <Link to={getSectionLink("pricing")} className="text-gray-700 hover:text-brand-blue transition-colors">
-            {t.nav.pricing}
+            Tarifs
           </Link>
           
           <div className="flex items-center space-x-4">
             <Button variant="rainbow" size="sm" className="md:size-default" asChild>
               <a href="https://tally.so/r/wA0pJl" target="_blank" rel="noopener noreferrer">
-                {t.nav.bookDemo}
+                Réserver une démo
               </a>
             </Button>
           </div>
@@ -101,7 +99,7 @@ const Navbar = ({ currentPath = '/' }: NavbarProps) => {
           <button 
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             className="text-gray-700 hover:text-brand-blue p-1 focus:outline-none"
-            aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+            aria-label={isMenuOpen ? "Fermer le menu" : "Ouvrir le menu"}
           >
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
@@ -119,7 +117,7 @@ const Navbar = ({ currentPath = '/' }: NavbarProps) => {
                 onClick={() => setIsMenuOpen(false)}
               >
                 <Home size={18} />
-                {t.nav.home}
+                Accueil
               </Link>
             )}
             
@@ -128,21 +126,21 @@ const Navbar = ({ currentPath = '/' }: NavbarProps) => {
               className="text-gray-700 hover:text-brand-blue py-2 transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
-              {t.nav.features}
+              Fonctionnalités
             </Link>
             <Link 
               to={getSectionLink("how-it-works")}
               className="text-gray-700 hover:text-brand-blue py-2 transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
-              {t.nav.howItWorks}
+              Comment ça marche
             </Link>
             <Link 
               to={getSectionLink("pricing")}
               className="text-gray-700 hover:text-brand-blue py-2 transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
-              {t.nav.pricing}
+              Tarifs
             </Link>
             
             <Button 
@@ -152,7 +150,7 @@ const Navbar = ({ currentPath = '/' }: NavbarProps) => {
               asChild
             >
               <a href="https://tally.so/r/wA0pJl" target="_blank" rel="noopener noreferrer">
-                {t.nav.bookDemo}
+                Réserver une démo
               </a>
             </Button>
           </div>

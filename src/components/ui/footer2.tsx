@@ -1,7 +1,6 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useLanguage } from '@/context/LanguageContext';
-import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 interface MenuItem {
   title: string;
@@ -22,7 +21,7 @@ interface Footer2Props {
 }
 
 export function Footer2({
-  tagline,
+  tagline = "L'agent IA qui transforme votre prospection B2B. Identifiez les bons prospects, obtenez leurs coordonnées complètes, suivez vos actions - automatiquement.",
   menuItems = [
     {
       title: "Produit",
@@ -54,26 +53,6 @@ export function Footer2({
     { text: "Politique des Cookies", url: "/cookies" },
   ],
 }: Footer2Props) {
-  const { t } = useLanguage();
-  
-  // Use provided props or fallback to translations
-  const displayTagline = tagline || t.footer.tagline;
-  const displayCopyright = copyright || "© 2025 chyll.ai";
-
-  // Map bottom links to translations if not provided explicitly
-  const displayBottomLinks = bottomLinks.map(link => {
-    if (link.text === "Terms of Service" || link.text === "Conditions Générales") {
-      return { ...link, text: t.footer.links.terms };
-    }
-    if (link.text === "Privacy Policy" || link.text === "Politique de Confidentialité") {
-      return { ...link, text: t.footer.links.privacy };
-    }
-    if (link.text === "Cookie Policy" || link.text === "Politique de Cookies") {
-      return { ...link, text: t.footer.links.cookies };
-    }
-    return link;
-  });
-
   return (
     <section className="py-16 bg-[#1A1F2C] text-white">
       <div className="container">
@@ -87,21 +66,12 @@ export function Footer2({
                   className="h-12 mb-4" 
                 />
               </Link>
-              <p className="mt-4 font-bold text-[#aaadb0]">{displayTagline}</p>
+              <p className="mt-4 font-bold text-[#aaadb0]">{tagline}</p>
               <p className="mt-2 text-[#8E9196]">hello@chyll.ai</p>
-              <div className="mt-4">
-                <LanguageSwitcher />
-              </div>
             </div>
             {menuItems.map((section, sectionIdx) => (
               <div key={sectionIdx}>
-                <h3 className="mb-4 font-bold text-white">{
-                  section.title === "Product" || section.title === "Produit" ? t.footer.menuTitles.product :
-                  section.title === "Company" || section.title === "Entreprise" ? t.footer.menuTitles.company :
-                  section.title === "Resources" || section.title === "Ressources" ? t.footer.menuTitles.resources :
-                  section.title === "Connect" || section.title === "Contact" ? t.footer.menuTitles.connect :
-                  section.title
-                }</h3>
+                <h3 className="mb-4 font-bold text-white">{section.title}</h3>
                 <ul className="space-y-4 text-[#8E9196]">
                   {section.links.map((link, linkIdx) => (
                     <li
@@ -120,9 +90,9 @@ export function Footer2({
             ))}
           </div>
           <div className="mt-16 flex flex-col justify-between gap-4 border-t border-gray-700 pt-8 text-sm font-medium text-[#8E9196] md:flex-row md:items-center">
-            <p>{displayCopyright}</p>
+            <p>{copyright}</p>
             <ul className="flex flex-wrap gap-4">
-              {displayBottomLinks.map((link, linkIdx) => (
+              {bottomLinks.map((link, linkIdx) => (
                 <li key={linkIdx} className="hover:text-[#9b87f5] transition-colors">
                   {link.url.startsWith("#") || link.url.startsWith("http") ? (
                     <a href={link.url}>{link.text}</a>

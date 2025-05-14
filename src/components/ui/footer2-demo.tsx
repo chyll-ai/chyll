@@ -1,33 +1,30 @@
 
 import { Footer2 } from "@/components/ui/footer2";
-import { useLanguage } from "@/context/LanguageContext";
 import { Link } from 'react-router-dom';
 
 function Footer2Demo() {
-  const { t } = useLanguage();
-  
   const demoData = {
-    tagline: t.footer.tagline,
+    tagline: "L'agent IA qui transforme votre prospection B2B. Identifiez les bons prospects, obtenez leurs coordonnées complètes, suivez vos actions - automatiquement.",
     menuItems: [
       {
-        title: t.footer.menuTitles.product,
+        title: "Produit",
         links: [
-          { text: t.footer.links.overview, url: "#" },
-          { text: t.nav.features, url: "#features" },
-          { text: t.nav.howItWorks, url: "#how-it-works" },
-          { text: t.nav.pricing, url: "#pricing" },
+          { text: "Présentation", url: "#" },
+          { text: "Fonctionnalités", url: "#features" },
+          { text: "Comment ça marche", url: "#how-it-works" },
+          { text: "Tarifs", url: "#pricing" },
         ],
       },
       {
-        title: t.footer.menuTitles.company,
+        title: "Entreprise",
         links: [
-          { text: t.footer.links.aboutUs, url: "/about-us" },
-          { text: t.footer.links.careers, url: "/careers" },
-          { text: t.common.contactUs, url: "/contact" },
+          { text: "À propos", url: "/about-us" },
+          { text: "Carrières", url: "/careers" },
+          { text: "Contact", url: "/contact" },
         ],
       },
       {
-        title: t.footer.menuTitles.resources,
+        title: "Ressources",
         links: [
           { text: "Blog", url: "/blog" },
           { text: "FAQ", url: "/faq" },
@@ -35,7 +32,7 @@ function Footer2Demo() {
         ],
       },
       {
-        title: t.footer.menuTitles.connect,
+        title: "Connexion",
         links: [
           { text: "Twitter", url: "#" },
           { text: "LinkedIn", url: "#" },
@@ -44,11 +41,11 @@ function Footer2Demo() {
         ],
       },
     ],
-    copyright: t.footer.copyright,
+    copyright: "© 2025 chyll.ai",
     bottomLinks: [
-      { text: t.footer.links.terms, url: "/terms" },
-      { text: t.footer.links.privacy, url: "/privacy" },
-      { text: t.footer.links.cookies, url: "/cookies" },
+      { text: "Conditions", url: "/terms" },
+      { text: "Confidentialité", url: "/privacy" },
+      { text: "Cookies", url: "/cookies" },
     ],
   };
 

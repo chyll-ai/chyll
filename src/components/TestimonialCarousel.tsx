@@ -1,13 +1,12 @@
+
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Star } from 'lucide-react';
-import { useLanguage } from '@/context/LanguageContext';
 
 const TestimonialCarousel = () => {
   const [activeIndex, setActiveIndex] = useState(0);
-  const { t, language } = useLanguage();
 
-  // Default testimonials for fallback
-  const defaultTestimonials = [
+  // Testimonials en français
+  const testimonials = [
     {
       quote: "Notre agent chyll.ai a multiplié par 3 notre pipeline commercial en seulement 2 mois. C'est comme avoir un SDR qui travaille 24/7 sans jamais se fatiguer.",
       author: "Thomas M.",
@@ -30,19 +29,6 @@ const TestimonialCarousel = () => {
       stars: 5
     }
   ];
-
-  // Get testimonials from translations if available
-  const testimonials = t.home?.testimonials?.quotes ? 
-    t.home.testimonials.quotes.map((quote: any) => ({
-      quote: quote.text,
-      author: quote.author.split(' ')[0] + ' ' + quote.author.split(' ')[1].charAt(0) + '.',
-      title: quote.handle?.includes('ceo') ? 'CEO' : 
-             quote.handle?.includes('growth') ? 'Growth Lead' :
-             quote.handle?.includes('fondateur') ? 'Fondateur' : 'Directeur',
-      company: '',
-      stars: 5
-    })) 
-    : defaultTestimonials;
     
   const nextSlide = () => {
     setActiveIndex((current) => (current === testimonials.length - 1 ? 0 : current + 1));

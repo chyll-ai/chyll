@@ -1,11 +1,9 @@
 
 import { FaqAccordion } from "@/components/ui/faq-chat-accordion";
-import { useLanguage } from "@/context/LanguageContext";
 
 function DefaultDemo() {
-  const { language, t } = useLanguage();
-  
-  const defaultData = [
+  // Données FAQ en français
+  const frenchItems = [
     {
       answer: "chyll.ai trouve les bons prospects, les enrichit, et met à jour ton CRM pendant que tu bosses sur autre chose. Il identifie automatiquement les bons profils à contacter en fonction de ton secteur, de tes mots-clés ou des entreprises que tu vises.",
       icon: "🤖",
@@ -44,28 +42,12 @@ function DefaultDemo() {
     },
   ];
   
-  // Check if French FAQ translations are available
-  const hasFrenchFaqItems = language === 'fr' && t.faq?.aiEmployees?.items !== undefined;
-  
-  // Use French translations if available
-  const frenchItems = hasFrenchFaqItems 
-    ? t.faq?.aiEmployees?.items?.map((item, index) => ({
-        answer: item.answer,
-        icon: index === 0 ? "🤖" : index === 3 ? "⚙️" : index === 5 ? "🔒" : undefined,
-        iconPosition: index === 0 || index === 5 ? "right" as const : index === 3 ? "left" as const : undefined,
-        id: index + 1,
-        question: item.question,
-      }))
-    : defaultData;
-    
-  // Get the last updated text
-  const lastUpdated = language === 'fr' && t.faq?.lastUpdated 
-    ? t.faq.lastUpdated 
-    : "Last updated: May 2025";
+  // Date de mise à jour
+  const lastUpdated = "Dernière mise à jour : Mai 2025";
 
   return (
     <FaqAccordion 
-      data={frenchItems || defaultData}
+      data={frenchItems}
       className="max-w-[700px]"
       timestamp={lastUpdated}
     />
@@ -86,42 +68,42 @@ function CustomStyleDemo() {
 
 export { DefaultDemo, CustomStyleDemo };
 
-// Default data for reference
+// Données par défaut pour référence
 const defaultData = [
   {
-    answer: "Our AI Employees are advanced, specialized digital workers designed to handle specific business tasks 24/7. Each AI Employee is trained to perform unique roles like customer service, content creation, sales support, and more - transforming how businesses operate by providing constant, high-quality support.",
+    answer: "Nos employés IA sont des travailleurs numériques avancés et spécialisés conçus pour gérer des tâches commerciales spécifiques 24h/24 et 7j/7. Chaque employé IA est formé pour remplir des rôles uniques comme le service client, la création de contenu, le support commercial, et plus encore - transformant ainsi le fonctionnement des entreprises en fournissant un support constant et de haute qualité.",
     icon: "🤖",
     iconPosition: "right" as const,
     id: 1,
-    question: "What are AI Employees and how can they help my business?",
+    question: "Que sont les employés IA et comment peuvent-ils aider mon entreprise ?",
   },
   {
-    answer: "Absolutely not! Our AI Employees are designed to be user-friendly and intuitive. They seamlessly integrate into your existing workflows, requiring minimal technical expertise. Our team provides comprehensive onboarding and support to help you maximize their potential.",
+    answer: "Absolument pas ! Nos employés IA sont conçus pour être conviviaux et intuitifs. Ils s'intègrent parfaitement dans vos flux de travail existants, nécessitant un minimum d'expertise technique. Notre équipe fournit une intégration et un support complets pour vous aider à maximiser leur potentiel.",
     id: 2,
-    question: "Do I need technical skills to use AI Employees?",
+    question: "Ai-je besoin de compétences techniques pour utiliser les employés IA ?",
   },
   {
-    answer: "Most businesses can onboard their first AI Employee within days. We provide a white-glove implementation process, working closely with you to understand your specific needs and customize the AI Employee's capabilities accordingly.",
+    answer: "La plupart des entreprises peuvent intégrer leur premier employé IA en quelques jours. Nous proposons un processus d'implémentation personnalisé, travaillant en étroite collaboration avec vous pour comprendre vos besoins spécifiques et personnaliser les capacités de l'employé IA en conséquence.",
     id: 3,
-    question: "How quickly can I implement an AI Employee?",
+    question: "À quelle vitesse puis-je mettre en œuvre un employé IA ?",
   },
   {
-    answer: "Yes! Our AI Employees are built to integrate smoothly with popular business tools including CRMs, communication platforms, project management systems, and more. Custom integrations are also available to ensure a perfect fit for your business ecosystem.",
+    answer: "Oui ! Nos employés IA sont conçus pour s'intégrer facilement aux outils d'entreprise populaires, y compris les CRM, les plateformes de communication, les systèmes de gestion de projet, etc. Des intégrations personnalisées sont également disponibles pour garantir une adaptation parfaite à votre écosystème d'entreprise.",
     icon: "⚙️",
     iconPosition: "left" as const,
     id: 4,
-    question: "Can AI Employees integrate with my existing tools and systems?",
+    question: "Les employés IA peuvent-ils s'intégrer à mes outils et systèmes existants ?",
   },
   {
-    answer: "We offer comprehensive support across different plans. This includes initial setup, ongoing training, performance optimization, and dedicated support channels. Our goal is to ensure your AI Employees continuously improve and deliver maximum value.",
+    answer: "Nous offrons un support complet pour différents forfaits. Cela comprend la configuration initiale, la formation continue, l'optimisation des performances et des canaux d'assistance dédiés. Notre objectif est de garantir que vos employés IA s'améliorent continuellement et offrent une valeur maximale.",
     id: 5,
-    question: "What kind of support do you provide for AI Employees?",
+    question: "Quel type de support fournissez-vous pour les employés IA ?",
   },
   {
-    answer: "Data security is our top priority. Each AI Employee operates with enterprise-grade encryption, follows strict data protection protocols, and is designed with multiple layers of security. We provide transparency in data handling and can customize security measures to meet your specific compliance requirements.",
+    answer: "La sécurité des données est notre priorité absolue. Chaque employé IA fonctionne avec un chiffrement de niveau entreprise, suit des protocoles stricts de protection des données et est conçu avec plusieurs couches de sécurité. Nous assurons la transparence dans la gestion des données et pouvons personnaliser les mesures de sécurité pour répondre à vos exigences de conformité spécifiques.",
     icon: "🔒",
     iconPosition: "right" as const,
     id: 6,
-    question: "How secure are AI Employees with my business data?",
+    question: "Les employés IA sont-ils sécurisés avec mes données d'entreprise ?",
   },
 ];

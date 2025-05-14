@@ -1,7 +1,6 @@
 
 import React from "react";
 import TestimonialCarousel from "@/components/TestimonialCarousel";
-import { useLanguage } from "@/context/LanguageContext";
 
 interface TestimonialsCarouselProps {
   className?: string;
@@ -20,8 +19,6 @@ export function TestimonialsCarousel({
   className,
   testimonials,
 }: TestimonialsCarouselProps = {}) {
-  const { t } = useLanguage();
-  
   return (
     <div className={className}>
       <TestimonialCarousel />
