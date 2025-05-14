@@ -113,46 +113,56 @@ export const fr = {
     description: "Choisissez l'offre qui correspond le mieux à votre entreprise",
     joinText: "Rejoignez les entreprises qui utilisent chyll pour transformer leur prospection",
     plans: {
-      once: {
-        name: "Une fois",
+      starter: {
+        name: "Starter",
         price: "99€",
-        period: "unique",
-        description: "Une tâche commerciale, entièrement automatisée par chyll.",
-        features: [
-          "Construction et livraison d'une automatisation chyll pour votre cas d'utilisation",
-          "Interface simple (Airtable ou Notion)",
-          "Configuration, paramétrage et test inclus",
-          "Idéal pour une preuve de concept"
-        ],
-        buttonText: "Essayer chyll"
-      },
-      automate: {
-        name: "Automatiser",
-        price: "199€",
         period: "/mois",
-        description: "Un assistant commercial chyll que vous contrôlez.",
+        description: "Parfait pour les petites équipes",
+        features: [
+          "50 numéros de téléphone ET adresses email par mois",
+          "Personas illimités (LinkedIn)",
+          "2 utilisateurs",
+          "Interface CRM personnalisée",
+          "Support par email",
+          "Mise à jour quotidienne"
+        ],
+        buttonText: "Commencer l'essai"
+      },
+      growth: {
+        name: "Growth",
+        price: "200€",
+        period: "/mois",
+        description: "Pour les équipes en croissance",
         badge: "Le plus populaire",
         trial: "Essai de 14 jours",
         features: [
-          "Interface chyll personnalisée",
-          "200 actions mensuelles alimentées par l'IA",
-          "Configuration clé en main sans compétence technique",
-          "Support continu et améliorations"
+          "100 numéros de téléphone ET adresses email par mois",
+          "Personas illimités (LinkedIn)",
+          "3 utilisateurs",
+          "Interface CRM personnalisée",
+          "Support prioritaire",
+          "Mises à jour en temps réel",
+          "Export et import de data"
         ],
         buttonText: "Réserver une démo"
       },
-      integrate: {
-        name: "Intégrer",
-        price: "699€",
+      scale: {
+        name: "Scale",
+        price: "300€",
         period: "/mois",
-        description: "Plateforme chyll complète à travers vos opérations.",
+        description: "Pour les équipes commerciales établies",
         features: [
-          "Flux de travail chyll personnalisés",
-          "Intégration avec votre pile technologique existante",
-          "1 000 actions d'automatisation mensuelles",
-          "Support prioritaire et accès stratégique"
+          "200 numéros de téléphone ET adresses email par mois",
+          "Personas illimités (LinkedIn)",
+          "5 utilisateurs",
+          "Interface CRM sur mesure",
+          "Support dédié",
+          "Mises à jour en temps réel",
+          "Export et import de data",
+          "Critères de recherche illimités",
+          "Rapports de performance"
         ],
-        buttonText: "Contacter l'équipe chyll"
+        buttonText: "Réserver une démo"
       }
     }
   },
