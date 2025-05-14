@@ -5,6 +5,7 @@ import type { TranslationKeys } from '@/translations';
 
 interface LanguageContextType {
   t: TranslationKeys;
+  language: string; // Add the language property
 }
 
 // Add required properties for the pricing.plans.automate
@@ -24,7 +25,8 @@ const translationWithRequiredFields = {
 } as TranslationKeys;
 
 const LanguageContext = createContext<LanguageContextType>({
-  t: translationWithRequiredFields
+  t: translationWithRequiredFields,
+  language: 'fr' // Set default language to French
 });
 
 export const useLanguage = () => useContext(LanguageContext);
@@ -32,7 +34,8 @@ export const useLanguage = () => useContext(LanguageContext);
 export const LanguageProvider = ({ children }: { children: ReactNode }) => {
   return (
     <LanguageContext.Provider value={{ 
-      t: translationWithRequiredFields
+      t: translationWithRequiredFields,
+      language: 'fr' // Since we're keeping French only
     }}>
       {children}
     </LanguageContext.Provider>
