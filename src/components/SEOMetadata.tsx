@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 
@@ -69,7 +68,7 @@ const SEOMetadata = ({
     operatingSystem: 'Web',
     offers: {
       '@type': 'Offer',
-      price: '199.00',
+      price: '99.00',
       priceCurrency: 'EUR'
     },
     aggregateRating: {
@@ -100,6 +99,28 @@ const SEOMetadata = ({
       }
     }))
   } : null;
+  
+  // Update pricing information for structured data
+  const pricingPlans = [
+    {
+      name: "Starter",
+      price: "99€",
+      description: "Parfait pour les petites équipes",
+      url: "https://chyll.ai/offres/starter"
+    },
+    {
+      name: "Growth",
+      price: "200€",
+      description: "Pour les équipes en croissance",
+      url: "https://chyll.ai/offres/growth"
+    },
+    {
+      name: "Scale",
+      price: "300€",
+      description: "Pour les équipes commerciales établies",
+      url: "https://chyll.ai/offres/scale"
+    }
+  ];
   
   // Business info structured data
   const businessStructuredData = {
@@ -153,18 +174,38 @@ const SEOMetadata = ({
     }
   };
   
-  // Pricing specification structured data
-  const pricingStructuredData = offers ? {
+  // Pricing specification structured data with updated pricing information
+  const pricingStructuredData = {
     '@context': 'https://schema.org',
     '@type': 'PriceSpecification',
     priceCurrency: 'EUR',
-    price: offers[1].price.replace('€', ''), // Using the main "Automate" price
+    price: '200', // Using the main "Growth" price
     validFrom: '2025-01-01',
     validThrough: '2025-12-31',
     valueAddedTaxIncluded: true,
     eligibleCustomerType: 'Business',
     description: 'Tarification mensuelle standard pour chyll.ai'
-  } : null;
+  };
+  
+  // Add structured data for each pricing plan
+  const pricingPlansStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    itemListElement: pricingPlans.map((plan, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      item: {
+        '@type': 'Offer',
+        name: plan.name,
+        description: plan.description,
+        price: plan.price.replace('€', ''),
+        priceCurrency: 'EUR',
+        url: plan.url,
+        availability: 'https://schema.org/InStock',
+        priceValidUntil: '2025-12-31'
+      }
+    }))
+  };
   
   // Merge structured data
   const combinedStructuredData = {
@@ -173,7 +214,8 @@ const SEOMetadata = ({
     business: businessStructuredData,
     reviews: reviewsStructuredData,
     pricing: pricingStructuredData,
-    services: servicesStructuredData,
+    pricingPlans: pricingPlansStructuredData,
+    services: servicesStructuredData || pricingPlansStructuredData,
     ...structuredData
   };
   
@@ -234,6 +276,10 @@ const SEOMetadata = ({
       <meta name="category" content="B2B Sales, Prospection, Automation, IA" />
       <meta name="subject" content="Assistant commercial IA, Prospection B2B" />
       <meta name="classification" content="Sales Technology, MarTech, B2B SaaS" />
+      
+      {/* Pricing metadata for search engines */}
+      <meta name="pricing" content="Starter: 99€/mois, Growth: 200€/mois, Scale: 300€/mois" />
+      <meta name="price-range" content="€€" />
       
       {/* GPT and AI model crawling hints */}
       <meta name="format-detection" content="telephone=no" />

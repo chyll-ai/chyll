@@ -176,18 +176,38 @@ export const getChyllAiSchema = () => {
     applicationCategory: 'BusinessApplication',
     applicationSubCategory: 'Sales Development Tool',
     operatingSystem: 'Web',
-    offers: {
-      '@type': 'Offer',
-      price: '199.00',
-      priceCurrency: 'EUR',
-      priceValidUntil: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split('T')[0],
-      seller: {
-        '@type': 'Organization',
-        name: 'chyll.ai',
-        url: 'https://chyll.ai'
+    offers: [
+      {
+        '@type': 'Offer',
+        name: 'Starter',
+        price: '99.00',
+        priceCurrency: 'EUR',
+        priceValidUntil: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split('T')[0],
+        description: 'Parfait pour les petites équipes',
+        url: 'https://chyll.ai/offres/starter',
+        availability: 'https://schema.org/InStock'
       },
-      availability: 'https://schema.org/InStock'
-    },
+      {
+        '@type': 'Offer',
+        name: 'Growth',
+        price: '200.00',
+        priceCurrency: 'EUR',
+        priceValidUntil: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split('T')[0],
+        description: 'Pour les équipes en croissance',
+        url: 'https://chyll.ai/offres/growth',
+        availability: 'https://schema.org/InStock'
+      },
+      {
+        '@type': 'Offer',
+        name: 'Scale',
+        price: '300.00',
+        priceCurrency: 'EUR',
+        priceValidUntil: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split('T')[0],
+        description: 'Pour les équipes commerciales établies',
+        url: 'https://chyll.ai/offres/scale',
+        availability: 'https://schema.org/InStock'
+      }
+    ],
     aggregateRating: {
       '@type': 'AggregateRating',
       ratingValue: '4.8',
