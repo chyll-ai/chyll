@@ -46,8 +46,8 @@ const Footer = () => {
           <div>
             <h3 className="text-gray-800 font-medium mb-4">{t.footer.menuTitles.company}</h3>
             <ul className="space-y-2">
-              <li><Link to="/about-us" className="text-gray-600 hover:text-brand-blue transition-colors">About Us</Link></li>
-              <li><Link to="/careers" className="text-gray-600 hover:text-brand-blue transition-colors">Careers</Link></li>
+              <li><Link to="/about-us" className="text-gray-600 hover:text-brand-blue transition-colors">À propos</Link></li>
+              <li><Link to="/careers" className="text-gray-600 hover:text-brand-blue transition-colors">Carrières</Link></li>
               <li><Link to="/contact" className="text-gray-600 hover:text-brand-blue transition-colors">{t.common.contactUs}</Link></li>
               <li><Link to="/blog" className="text-gray-600 hover:text-brand-blue transition-colors">Blog</Link></li>
               {!isFAQPage && (

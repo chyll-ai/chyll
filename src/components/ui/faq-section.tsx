@@ -13,7 +13,7 @@ import { useLanguage } from '@/context/LanguageContext';
 export function FAQSection() {
   const { language, t } = useLanguage();
   
-  // Default FAQ items in case translations are missing
+  // Default FAQ items for the homepage
   const defaultFaqItems = [
     {
       question: "📈 Quel type de résultats puis-je attendre ?",
@@ -21,19 +21,19 @@ export function FAQSection() {
     },
     {
       question: "🔄 Est-ce que les leads sont mis à jour automatiquement ?",
-      answer: "Oui. chyll.ai met à jour votre base chaque semaine, en évitant les doublons, en détectant les nouveaux contacts intéressants, et en maintenant un suivi à jour."
+      answer: "Oui. chyll met à jour votre base chaque semaine, en évitant les doublons, en détectant les nouveaux contacts intéressants, et en maintenant un suivi à jour."
     },
     {
       question: "🤖 Est-ce que c'est un chatbot ou un outil de messagerie ?",
-      answer: "Non. chyll.ai n'écrit pas aux leads à votre place. C'est un outil d'aide à la prospection, pas un outil d'email automation. Il vous fournit des leads enrichis, organisés, et suivis — à vous de décider comment les contacter."
+      answer: "Non. chyll n'écrit pas aux leads à votre place. C'est un outil d'aide à la prospection, pas un outil d'email automation. Il vous fournit des leads enrichis, organisés, et suivis — à vous de décider comment les contacter."
     },
     {
-      question: "👥 À qui s'adresse chyll.ai ?",
-      answer: "chyll.ai est conçu pour : Les fondateurs de startups, les freelances en B2B, les commerciaux en PME ou agences, les équipes marketing/growth qui veulent gagner du temps et scaler sans recruter."
+      question: "👥 À qui s'adresse chyll ?",
+      answer: "chyll est conçu pour : Les fondateurs de startups, les freelances en B2B, les commerciaux en PME ou agences, les équipes marketing/growth qui veulent gagner du temps et scaler sans recruter."
     },
     {
       question: "💼 Combien de leads puis-je recevoir par mois ?",
-      answer: "Le volume dépend de votre plan. Nos offres commencent à 50 leads enrichis/mois, et sont adaptables à vos besoins selon votre rythme de prospection."
+      answer: "Le volume dépend de votre plan. Nos offres commencent à 50 leads enrichis/mois avec notre offre Starter, et sont adaptables à vos besoins selon votre rythme de prospection avec Growth ou Scale."
     },
     {
       question: "🔐 Mes données sont-elles sécurisées ?",
@@ -45,13 +45,8 @@ export function FAQSection() {
     }
   ];
   
-  // Check if French FAQ translations are available
-  const hasFrenchFaq = language === 'fr' && t.faq?.general?.items !== undefined;
-  
-  // Use the translations from the language context if available, otherwise use defaults
-  const faqItems = hasFrenchFaq
-    ? t.faq?.general?.items 
-    : defaultFaqItems;
+  // Use the default FAQ items
+  const faqItems = defaultFaqItems;
   
   return (
     <div className="w-full max-w-4xl mx-auto px-4 sm:px-0">

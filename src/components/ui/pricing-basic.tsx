@@ -10,41 +10,50 @@ function PricingBasic() {
   // Pricing plans with both monthly and annual pricing
   const pricingPlans = [
     {
-      name: t.pricing.plans.once.name,
-      price: t.pricing.plans.once.price,
-      yearlyPrice: t.pricing.plans.once.price, // One-time price stays the same
-      period: t.pricing.plans.once.period,
-      features: t.pricing.plans.once.features || [],
-      description: t.pricing.plans.once.description,
-      buttonText: t.pricing.plans.once.buttonText || "Commencer",
+      name: "chyll Starter",
+      price: "99€",
+      yearlyPrice: "99€", // One-time price stays the same
+      period: "unique",
+      features: [
+        "Construction et livraison d'une automatisation chyll pour votre cas d'utilisation",
+        "Interface simple (Airtable ou Notion)",
+        "Configuration, paramétrage et test inclus",
+        "Idéal pour une preuve de concept"
+      ],
+      description: "chyll pour les petites équipes",
+      buttonText: "Essayer chyll",
       href: "https://buy.stripe.com/5kAeWh18h6cOenSeUV",
       isPopular: false,
     },
     {
-      name: t.pricing.plans.automate.name,
-      price: t.pricing.plans.automate.price,
-      // Use price as fallback if yearlyPrice doesn't exist in translations
-      yearlyPrice: t.pricing.plans.automate.price ? 
-        (parseFloat(t.pricing.plans.automate.price.replace('€', '')) * 12 * 0.8).toFixed(0) + '€' : 
-        "159€",
-      period: t.pricing.plans.automate.period,
-      features: t.pricing.plans.automate.features || [],
-      description: t.pricing.plans.automate.description,
-      buttonText: t.pricing.plans.automate.buttonText || "Réserver une démo",
+      name: "chyll Growth",
+      price: "200€",
+      yearlyPrice: "1920€", // Annual price with 20% discount
+      period: "/mois",
+      features: [
+        "Interface chyll personnalisée",
+        "200 actions mensuelles alimentées par l'IA",
+        "Configuration clé en main sans compétence technique",
+        "Support continu et améliorations"
+      ],
+      description: "chyll pour les équipes en croissance",
+      buttonText: "Réserver une démo",
       href: "https://cal.com/chyll.ai/30min",
       isPopular: true,
     },
     {
-      name: t.pricing.plans.integrate.name,
-      price: t.pricing.plans.integrate.price,
-      // Use price as fallback if yearlyPrice doesn't exist in translations
-      yearlyPrice: t.pricing.plans.integrate.price ? 
-        (parseFloat(t.pricing.plans.integrate.price.replace('€', '')) * 12 * 0.8).toFixed(0) + '€' : 
-        "559€",
-      period: t.pricing.plans.integrate.period,
-      features: t.pricing.plans.integrate.features || [],
-      description: t.pricing.plans.integrate.description,
-      buttonText: t.pricing.plans.integrate.buttonText || "Contacter l'équipe",
+      name: "chyll Scale",
+      price: "300€",
+      yearlyPrice: "2880€", // Annual price with 20% discount
+      period: "/mois",
+      features: [
+        "Flux de travail chyll personnalisés",
+        "Intégration avec votre pile technologique existante",
+        "1 000 actions d'automatisation mensuelles",
+        "Support prioritaire et accès stratégique"
+      ],
+      description: "chyll pour les équipes commerciales établies",
+      buttonText: "Contacter l'équipe chyll",
       href: "https://cal.com/chyll.ai/30min",
       isPopular: false,
     }
@@ -54,8 +63,8 @@ function PricingBasic() {
     <div className="overflow-y-auto">
       <Pricing 
         plans={pricingPlans}
-        title={t.pricing.title || "Tarifs simples et transparents"}
-        description={t.pricing.description || "Essai sans engagement"}
+        title="Tarifs simples et transparents"
+        description="Essai sans engagement"
         language="fr"
       />
     </div>

@@ -13,6 +13,7 @@ import { getOrganizationSchema, getFAQSchema, getChyllAiSchema } from '@/utils/s
 import { Suspense } from 'react';
 import { useLanguage } from '@/context/LanguageContext';
 import { TestimonialsCarousel } from '@/components/ui/testimonials-carousel';
+import { FAQSection } from '@/components/ui/faq-section';
 
 // Sample FAQ data for structured data
 const faqData = [
@@ -41,47 +42,47 @@ const faqData = [
 // Offres pour le SEO et le contenu sans JavaScript
 const offersData = [
   {
-    name: "Une fois",
+    name: "chyll Starter",
     price: "99€",
     period: "unique",
-    description: "Une tâche commerciale, entièrement automatisée par chyll.",
+    description: "chyll pour les petites équipes",
     features: [
       "Construction et livraison d'une automatisation chyll pour votre cas d'utilisation",
       "Interface simple (Airtable ou Notion)",
       "Configuration, paramétrage et test inclus",
       "Idéal pour une preuve de concept"
     ],
-    url: "https://chyll.ai/offres/une-fois",
+    url: "https://chyll.ai/offres/starter",
     action: "https://buy.stripe.com/5kAeWh18h6cOenSeUV",
     actionText: "Essayer chyll"
   },
   {
-    name: "Automatiser",
-    price: "199€",
+    name: "chyll Growth",
+    price: "200€",
     period: "/mois",
-    description: "Un assistant commercial chyll que vous contrôlez.",
+    description: "chyll pour les équipes en croissance",
     features: [
       "Interface chyll personnalisée",
       "200 actions mensuelles alimentées par l'IA",
       "Configuration clé en main sans compétence technique",
       "Support continu et améliorations"
     ],
-    url: "https://chyll.ai/offres/automatiser",
+    url: "https://chyll.ai/offres/growth",
     action: "https://cal.com/chyll.ai/30min",
     actionText: "Réserver une démo"
   },
   {
-    name: "Intégrer",
-    price: "699€",
+    name: "chyll Scale",
+    price: "300€",
     period: "/mois",
-    description: "Plateforme chyll complète à travers vos opérations.",
+    description: "chyll pour les équipes commerciales établies",
     features: [
       "Flux de travail chyll personnalisés",
       "Intégration avec votre pile technologique existante",
       "1 000 actions d'automatisation mensuelles",
       "Support prioritaire et accès stratégique"
     ],
-    url: "https://chyll.ai/offres/integrer",
+    url: "https://chyll.ai/offres/scale",
     action: "https://cal.com/chyll.ai/30min",
     actionText: "Contacter l'équipe chyll"
   }
@@ -259,13 +260,13 @@ const Index = () => {
       <section id="faq" className="section-padding gradient-bg" aria-label="Questions fréquentes">
         <div className="container-custom">
           <div className="text-center mb-12">
-            <h2 className="section-title rainbow-text-static">C'est quoi chyll ?</h2>
+            <h2 className="section-title rainbow-text-static">Questions fréquentes</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Tout ce que vous devez savoir sur notre assistant commercial IA et comment il transforme la prospection B2B.
             </p>
           </div>
           <div className="flex justify-center">
-            <FaqAccordionDemo />
+            <FAQSection />
           </div>
         </div>
       </section>

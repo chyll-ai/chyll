@@ -1,69 +1,16 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Check } from 'lucide-react';
 import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card';
 import { useLanguage } from '@/context/LanguageContext';
 
-const pricingPlans = [
-  {
-    name: "Once",
-    price: "$99",
-    period: "one-time",
-    description: "One task, fully done-for-you.",
-    features: [
-      "We build and deliver 1 automation for your use case",
-      "Delivered with a simple interface (Airtable or Notion)",
-      "Includes setup, configuration, and test run",
-      "Great for proof-of-concept or small need"
-    ],
-    highlight: false,
-    color: "blue",
-    trial: null,
-    buttonText: "Start Free Trial",
-    href: "https://buy.stripe.com/5kAeWh18h6cOenSeUV"
-  },
-  {
-    name: "Automate",
-    price: "$199",
-    period: "/month",
-    description: "An AI assistant you can control.",
-    features: [
-      "Access a custom interface connected to your AI workflows",
-      "Includes 200 automation actions/month",
-      "Tasks include scraping, enrichment, messaging, CRM updates, alerts",
-      "No technical setup required – we handle everything",
-      "Ongoing support and upgrades included"
-    ],
-    highlight: true,
-    color: "yellow",
-    trial: "14-day free trial"
-  },
-  {
-    name: "Integrate",
-    price: "$699",
-    period: "/month",
-    description: "Full-stack AI setup across your operations.",
-    features: [
-      "Custom-built workflows across departments",
-      "Works with your stack (CRM, HR, project tools, etc.)",
-      "Up to 1,000 automation actions/month",
-      "Personalized onboarding, support & strategy",
-      "SLA, reporting, and dedicated expert sessions"
-    ],
-    highlight: false,
-    color: "red",
-    trial: null
-  }
-];
-
 // French pricing plans
 const frPricingPlans = [
   {
-    name: "Une fois",
+    name: "chyll Starter",
     price: "99€",
     period: "unique",
-    description: "Une tâche, entièrement réalisée pour vous.",
+    description: "chyll pour les petites équipes",
     features: [
       "Nous construisons et livrons 1 automatisation pour votre cas d'utilisation",
       "Livré avec une interface simple (Airtable ou Notion)",
@@ -73,14 +20,14 @@ const frPricingPlans = [
     highlight: false,
     color: "blue",
     trial: null,
-    buttonText: "Commencer l'essai gratuit",
+    buttonText: "Essayer chyll",
     href: "https://buy.stripe.com/5kAeWh18h6cOenSeUV"
   },
   {
-    name: "Automatiser",
-    price: "199€",
+    name: "chyll Growth",
+    price: "200€",
     period: "/mois",
-    description: "Un assistant IA que vous pouvez contrôler.",
+    description: "chyll pour les équipes en croissance",
     features: [
       "Interface IA personnalisée",
       "Obtenez un tableau de bord sur mesure où vous pouvez interagir avec votre agent et suivre ses performances",
@@ -96,10 +43,10 @@ const frPricingPlans = [
     trial: "Essai gratuit de 14 jours"
   },
   {
-    name: "Intégrer",
-    price: "699€",
+    name: "chyll Scale",
+    price: "300€",
     period: "/mois",
-    description: "Configuration IA complète à travers vos opérations.",
+    description: "chyll pour les équipes commerciales établies",
     features: [
       "Flux de travail personnalisés",
       "Nous concevons et déployons des flux de travail intelligents adaptés à vos besoins commerciaux uniques, à vos processus et à la structure de votre équipe",
@@ -133,7 +80,7 @@ const getPlanIcon = (color: string) => {
 
 const PricingCards = () => {
   const { language } = useLanguage();
-  const plans = language === 'fr' ? frPricingPlans : pricingPlans;
+  const plans = frPricingPlans;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -150,7 +97,7 @@ const PricingCards = () => {
         >
           {plan.highlight && (
             <div className="absolute -top-4 left-0 right-0 mx-auto w-max px-4 py-1 bg-yellow-400 text-white text-sm font-medium rounded-full">
-              {language === 'fr' ? 'Le plus populaire' : 'Most Popular'}
+              Le plus populaire
             </div>
           )}
           
@@ -194,8 +141,8 @@ const PricingCards = () => {
                 rel="noopener noreferrer"
               >
                 {index === 0 
-                  ? (language === 'fr' ? 'Commencer l\'essai gratuit' : 'Start Free Trial') 
-                  : (language === 'fr' ? 'Réserver une démo' : 'Book a Demo')}
+                  ? "Essayer chyll" 
+                  : (index === 1 ? "Réserver une démo" : "Contacter l'équipe chyll")}
               </a>
             </Button>
           </CardFooter>
