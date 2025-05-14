@@ -3,30 +3,30 @@
   "offres": [
     {
       "id": "starter",
-      "nom": "chyll Starter",
+      "nom": "Starter",
       "prix": "99€",
-      "description": "chyll pour les petites équipes",
+      "description": "Parfait pour les petites équipes",
       "url": "https://chyll.ai/offres/starter",
       "action": "https://buy.stripe.com/5kAeWh18h6cOenSeUV",
-      "texteAction": "Essayer chyll"
+      "texteAction": "Commencer l'essai"
     },
     {
       "id": "growth",
-      "nom": "chyll Growth",
+      "nom": "Growth",
       "prix": "200€",
-      "description": "chyll pour les équipes en croissance",
+      "description": "Pour les équipes en croissance",
       "url": "https://chyll.ai/offres/growth",
       "action": "https://cal.com/chyll.ai/30min",
-      "texteAction": "Réserver une démo chyll"
+      "texteAction": "Réserver une démo"
     },
     {
       "id": "scale",
-      "nom": "chyll Scale",
+      "nom": "Scale",
       "prix": "300€",
-      "description": "chyll pour les équipes commerciales établies",
+      "description": "Pour les équipes commerciales établies",
       "url": "https://chyll.ai/offres/scale",
       "action": "https://cal.com/chyll.ai/30min",
-      "texteAction": "Contacter l'équipe chyll"
+      "texteAction": "Réserver une démo"
     }
   ]
 }

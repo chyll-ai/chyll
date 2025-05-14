@@ -20,8 +20,12 @@ export function FAQSection() {
       answer: "Nos utilisateurs constatent en moyenne : Un temps de prospection divisé par 5, une baisse significative du coût par lead, une meilleure priorisation des prospects réellement activables."
     },
     {
-      question: "🔄 Est-ce que les leads sont mis à jour automatiquement ?",
-      answer: "Oui. chyll met à jour votre base chaque semaine, en évitant les doublons, en détectant les nouveaux contacts intéressants, et en maintenant un suivi à jour."
+      question: "🔍 Comment utiliser efficacement les personas LinkedIn ?",
+      answer: "Nos personas vous permettent de définir précisément votre cible idéale selon le poste, l'industrie, la taille d'entreprise et d'autres critères pertinents. Vous pouvez créer autant de personas que nécessaire pour vos différentes campagnes."
+    },
+    {
+      question: "📱 Comment sont actualisées les données de contact ?",
+      answer: "Selon votre forfait, nous mettons à jour les informations quotidiennement ou en temps réel, garantissant que vous travaillez toujours avec les contacts les plus récents et précis pour votre prospection."
     },
     {
       question: "🤖 Est-ce que c'est un chatbot ou un outil de messagerie ?",
@@ -32,8 +36,8 @@ export function FAQSection() {
       answer: "chyll est conçu pour : Les fondateurs de startups, les freelances en B2B, les commerciaux en PME ou agences, les équipes marketing/growth qui veulent gagner du temps et scaler sans recruter."
     },
     {
-      question: "💼 Combien de leads puis-je recevoir par mois ?",
-      answer: "Le volume dépend de votre plan. Nos offres commencent à 50 leads enrichis/mois avec notre offre Starter, et sont adaptables à vos besoins selon votre rythme de prospection avec Growth ou Scale."
+      question: "💼 Combien de contacts puis-je générer par mois ?",
+      answer: "Le volume dépend de votre forfait : 50 contacts par mois avec Starter, 100 avec Growth et 200 avec Scale. Chaque contact comprend à la fois un email vérifié et un numéro de téléphone direct."
     },
     {
       question: "🔐 Mes données sont-elles sécurisées ?",
@@ -41,7 +45,7 @@ export function FAQSection() {
     },
     {
       question: "💳 Comment s'abonner ?",
-      answer: "Il vous suffit de remplir notre formulaire de qualification pour vérifier votre éligibilité. Une fois validé, vous accédez à votre espace personnalisé et commencez à recevoir vos leads."
+      answer: "Il vous suffit de démarrer l'essai gratuit de 14 jours. Notre équipe vous accompagnera dans la configuration de vos personas et la mise en place de votre interface CRM personnalisée."
     }
   ];
   

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Check } from 'lucide-react';
@@ -7,61 +8,65 @@ import { useLanguage } from '@/context/LanguageContext';
 // French pricing plans
 const frPricingPlans = [
   {
-    name: "chyll Starter",
+    name: "Starter",
     price: "99€",
-    period: "unique",
-    description: "chyll pour les petites équipes",
+    period: "/mois",
+    description: "Parfait pour les petites équipes",
     features: [
-      "Nous construisons et livrons 1 automatisation pour votre cas d'utilisation",
-      "Livré avec une interface simple (Airtable ou Notion)",
-      "Comprend la configuration, le paramétrage et le test",
-      "Parfait pour une preuve de concept ou un besoin spécifique"
+      "50 numéros de téléphone ET adresses email par mois",
+      "Personas illimités (LinkedIn)",
+      "2 utilisateurs",
+      "Interface CRM personnalisée",
+      "Support par email",
+      "Mise à jour quotidienne"
     ],
     highlight: false,
     color: "blue",
-    trial: null,
-    buttonText: "Essayer chyll",
+    trial: "Essai gratuit de 14 jours",
+    buttonText: "Commencer l'essai",
     href: "https://buy.stripe.com/5kAeWh18h6cOenSeUV"
   },
   {
-    name: "chyll Growth",
+    name: "Growth",
     price: "200€",
     period: "/mois",
-    description: "chyll pour les équipes en croissance",
+    description: "Pour les équipes en croissance",
     features: [
-      "Interface IA personnalisée",
-      "Obtenez un tableau de bord sur mesure où vous pouvez interagir avec votre agent et suivre ses performances",
-      "200 actions mensuelles alimentées par l'IA",
-      "Votre agent peut automatiser des tâches comme la prospection, le suivi, la planification, la création de contenu, les mises à jour CRM, les alertes, et plus — selon son rôle",
-      "Configuration clé en main : Aucune compétence technique requise",
-      "Nous construisons, connectons et lançons votre employé IA pour vous",
-      "Support continu et améliorations",
-      "Nous fournissons des mises à jour continues, une surveillance et un support pratique pour garder votre agent performant et aligné avec vos objectifs commerciaux"
+      "100 numéros de téléphone ET adresses email par mois",
+      "Personas illimités (LinkedIn)",
+      "3 utilisateurs",
+      "Interface CRM personnalisée",
+      "Support prioritaire",
+      "Mises à jour en temps réel",
+      "Export et import de data"
     ],
     highlight: true,
     color: "yellow",
-    trial: "Essai gratuit de 14 jours"
+    trial: "Essai gratuit de 14 jours",
+    buttonText: "Réserver une démo",
+    href: "https://cal.com/chyll.ai/30min"
   },
   {
-    name: "chyll Scale",
+    name: "Scale",
     price: "300€",
     period: "/mois",
-    description: "chyll pour les équipes commerciales établies",
+    description: "Pour les équipes commerciales établies",
     features: [
-      "Flux de travail personnalisés",
-      "Nous concevons et déployons des flux de travail intelligents adaptés à vos besoins commerciaux uniques, à vos processus et à la structure de votre équipe",
-      "S'intègre à votre pile technologique existante",
-      "Vos agents IA se connectent facilement à votre CRM, ATS, service d'assistance, outils de gestion de projet et systèmes internes — sans perturbation",
-      "1 000 actions d'automatisation mensuelles",
-      "Développez vos opérations avec une exécution de tâches à haut volume dans tous les départements — ventes, support, RH, marketing, et au-delà",
-      "Intégration personnalisée haut de gamme",
-      "Sessions de configuration dédiées pour cartographier vos flux de travail, installer vos employés IA et assurer une transition en douceur avec votre équipe",
-      "Support prioritaire et accès stratégique",
-      "Vous obtenez une ligne directe vers nos experts en automatisation pour le dépannage, l'optimisation des performances et les révisions stratégiques trimestrielles"
+      "200 numéros de téléphone ET adresses email par mois",
+      "Personas illimités (LinkedIn)",
+      "5 utilisateurs",
+      "Interface CRM sur mesure",
+      "Support dédié",
+      "Mises à jour en temps réel",
+      "Export et import de data",
+      "Critères de recherche illimités",
+      "Rapports de performance"
     ],
     highlight: false,
     color: "red",
-    trial: "Essai gratuit de 14 jours"
+    trial: "Essai gratuit de 14 jours",
+    buttonText: "Réserver une démo",
+    href: "https://cal.com/chyll.ai/30min"
   }
 ];
 
@@ -97,7 +102,7 @@ const PricingCards = () => {
         >
           {plan.highlight && (
             <div className="absolute -top-4 left-0 right-0 mx-auto w-max px-4 py-1 bg-yellow-400 text-white text-sm font-medium rounded-full">
-              Le plus populaire
+              Populaire
             </div>
           )}
           
@@ -136,13 +141,11 @@ const PricingCards = () => {
               asChild
             >
               <a 
-                href={index === 0 ? "https://buy.stripe.com/5kAeWh18h6cOenSeUV" : "https://cal.com/chyll.ai/30min"} 
+                href={plan.href} 
                 target="_blank" 
                 rel="noopener noreferrer"
               >
-                {index === 0 
-                  ? "Essayer chyll" 
-                  : (index === 1 ? "Réserver une démo" : "Contacter l'équipe chyll")}
+                {plan.buttonText}
               </a>
             </Button>
           </CardFooter>

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import HowItWorks from '@/components/HowItWorks';
@@ -27,64 +26,74 @@ const faqData = [
   },
   {
     question: "Quelles données vais-je recevoir avec chyll ?",
-    answer: "chyll enrichit les profils professionnels avec emails, numéros de téléphone, taille d'entreprise, secteur et autres informations pertinentes pour votre prospection."
+    answer: "chyll enrichit les profils professionnels avec emails, numéros de téléphone directs et autres informations pertinentes pour votre prospection."
   },
   {
-    question: "Comment chyll trouve-t-il mes prospects ?",
-    answer: "L'assistant chyll utilise l'IA pour identifier les entreprises et décideurs correspondant à vos critères, puis enrichit les données avec des emails et numéros vérifiés."
+    question: "Comment fonctionne la création de personas LinkedIn ?",
+    answer: "chyll vous permet de créer des personas précis en définissant des critères comme le poste, l'industrie, la taille d'entreprise et d'autres attributs professionnels pertinents."
   },
   {
     question: "Est-ce que chyll s'intègre avec mon CRM ?",
-    answer: "Oui, chyll s'intègre nativement avec HubSpot, Pipedrive, Salesforce et d'autres CRM majeurs pour une synchronisation automatique des données."
+    answer: "Oui, chyll propose une interface CRM personnalisée ou s'intègre avec les principaux CRM du marché pour une synchronisation automatique des données."
   }
 ];
 
 // Offres pour le SEO et le contenu sans JavaScript
 const offersData = [
   {
-    name: "chyll Starter",
+    name: "Starter",
     price: "99€",
-    period: "unique",
-    description: "chyll pour les petites équipes",
+    period: "/mois",
+    description: "Parfait pour les petites équipes",
     features: [
-      "Construction et livraison d'une automatisation chyll pour votre cas d'utilisation",
-      "Interface simple (Airtable ou Notion)",
-      "Configuration, paramétrage et test inclus",
-      "Idéal pour une preuve de concept"
+      "50 numéros de téléphone ET adresses email par mois",
+      "Personas illimités (LinkedIn)",
+      "2 utilisateurs",
+      "Interface CRM personnalisée",
+      "Support par email",
+      "Mise à jour quotidienne"
     ],
     url: "https://chyll.ai/offres/starter",
     action: "https://buy.stripe.com/5kAeWh18h6cOenSeUV",
-    actionText: "Essayer chyll"
+    actionText: "Commencer l'essai"
   },
   {
-    name: "chyll Growth",
+    name: "Growth",
     price: "200€",
     period: "/mois",
-    description: "chyll pour les équipes en croissance",
+    description: "Pour les équipes en croissance",
     features: [
-      "Interface chyll personnalisée",
-      "200 actions mensuelles alimentées par l'IA",
-      "Configuration clé en main sans compétence technique",
-      "Support continu et améliorations"
+      "100 numéros de téléphone ET adresses email par mois",
+      "Personas illimités (LinkedIn)",
+      "3 utilisateurs",
+      "Interface CRM personnalisée",
+      "Support prioritaire",
+      "Mises à jour en temps réel",
+      "Export et import de data"
     ],
     url: "https://chyll.ai/offres/growth",
     action: "https://cal.com/chyll.ai/30min",
     actionText: "Réserver une démo"
   },
   {
-    name: "chyll Scale",
+    name: "Scale",
     price: "300€",
     period: "/mois",
-    description: "chyll pour les équipes commerciales établies",
+    description: "Pour les équipes commerciales établies",
     features: [
-      "Flux de travail chyll personnalisés",
-      "Intégration avec votre pile technologique existante",
-      "1 000 actions d'automatisation mensuelles",
-      "Support prioritaire et accès stratégique"
+      "200 numéros de téléphone ET adresses email par mois",
+      "Personas illimités (LinkedIn)",
+      "5 utilisateurs",
+      "Interface CRM sur mesure",
+      "Support dédié",
+      "Mises à jour en temps réel",
+      "Export et import de data",
+      "Critères de recherche illimités",
+      "Rapports de performance"
     ],
     url: "https://chyll.ai/offres/scale",
     action: "https://cal.com/chyll.ai/30min",
-    actionText: "Contacter l'équipe chyll"
+    actionText: "Réserver une démo"
   }
 ];
 

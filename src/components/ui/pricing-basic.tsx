@@ -10,50 +10,60 @@ function PricingBasic() {
   // Pricing plans with both monthly and annual pricing
   const pricingPlans = [
     {
-      name: "chyll Starter",
+      name: "Starter",
       price: "99€",
-      yearlyPrice: "99€", // One-time price stays the same
-      period: "unique",
+      yearlyPrice: "950€", // Annual price with discount
+      period: "/mois",
       features: [
-        "Construction et livraison d'une automatisation chyll pour votre cas d'utilisation",
-        "Interface simple (Airtable ou Notion)",
-        "Configuration, paramétrage et test inclus",
-        "Idéal pour une preuve de concept"
+        "50 numéros de téléphone ET adresses email par mois",
+        "Personas illimités (LinkedIn)",
+        "2 utilisateurs",
+        "Interface CRM personnalisée",
+        "Support par email",
+        "Mise à jour quotidienne"
       ],
-      description: "chyll pour les petites équipes",
-      buttonText: "Essayer chyll",
+      description: "Parfait pour les petites équipes",
+      buttonText: "Commencer l'essai",
       href: "https://buy.stripe.com/5kAeWh18h6cOenSeUV",
       isPopular: false,
     },
     {
-      name: "chyll Growth",
+      name: "Growth",
       price: "200€",
       yearlyPrice: "1920€", // Annual price with 20% discount
       period: "/mois",
       features: [
-        "Interface chyll personnalisée",
-        "200 actions mensuelles alimentées par l'IA",
-        "Configuration clé en main sans compétence technique",
-        "Support continu et améliorations"
+        "100 numéros de téléphone ET adresses email par mois",
+        "Personas illimités (LinkedIn)",
+        "3 utilisateurs",
+        "Interface CRM personnalisée",
+        "Support prioritaire",
+        "Mises à jour en temps réel",
+        "Export et import de data"
       ],
-      description: "chyll pour les équipes en croissance",
+      description: "Pour les équipes en croissance",
       buttonText: "Réserver une démo",
       href: "https://cal.com/chyll.ai/30min",
       isPopular: true,
     },
     {
-      name: "chyll Scale",
+      name: "Scale",
       price: "300€",
       yearlyPrice: "2880€", // Annual price with 20% discount
       period: "/mois",
       features: [
-        "Flux de travail chyll personnalisés",
-        "Intégration avec votre pile technologique existante",
-        "1 000 actions d'automatisation mensuelles",
-        "Support prioritaire et accès stratégique"
+        "200 numéros de téléphone ET adresses email par mois",
+        "Personas illimités (LinkedIn)",
+        "5 utilisateurs",
+        "Interface CRM sur mesure",
+        "Support dédié",
+        "Mises à jour en temps réel",
+        "Export et import de data",
+        "Critères de recherche illimités",
+        "Rapports de performance"
       ],
-      description: "chyll pour les équipes commerciales établies",
-      buttonText: "Contacter l'équipe chyll",
+      description: "Pour les équipes commerciales établies",
+      buttonText: "Réserver une démo",
       href: "https://cal.com/chyll.ai/30min",
       isPopular: false,
     }
