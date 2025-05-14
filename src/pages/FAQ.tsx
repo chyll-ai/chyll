@@ -67,7 +67,7 @@ const FAQ = () => {
               </p>
               <div className="flex flex-wrap gap-4">
                 <a 
-                  href="/support" 
+                  href="/contact" 
                   className="inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors font-medium text-sm sm:text-base"
                 >
                   {t.common.contactUs} <ArrowRight size={16} className="ml-2" />

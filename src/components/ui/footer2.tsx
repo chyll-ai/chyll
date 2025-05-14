@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useLanguage } from '@/context/LanguageContext';
@@ -76,7 +77,6 @@ export function Footer2({
       links: [
         { text: "Blog", url: "/blog" },
         { text: "FAQ", url: "/faq" },
-        { text: "Support", url: "/support" },
       ],
     },
   ];

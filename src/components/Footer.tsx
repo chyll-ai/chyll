@@ -47,7 +47,6 @@ const Footer = () => {
               <li><Link to="/contact" className="text-gray-600 hover:text-brand-blue transition-colors">{t.common.contactUs}</Link></li>
               <li><Link to="/blog" className="text-gray-600 hover:text-brand-blue transition-colors">Blog</Link></li>
               <li><Link to="/faq" className="text-gray-600 hover:text-brand-blue transition-colors">FAQ</Link></li>
-              <li><Link to="/support" className="text-gray-600 hover:text-brand-blue transition-colors">Support</Link></li>
               <li><Link to="/privacy" className="text-gray-600 hover:text-brand-blue transition-colors">{t.footer.links.privacy}</Link></li>
               <li><Link to="/terms" className="text-gray-600 hover:text-brand-blue transition-colors">{t.footer.links.terms}</Link></li>
             </ul>
