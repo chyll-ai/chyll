@@ -236,7 +236,7 @@ export const fr = {
         description: "Nous utilisons des cookies pour améliorer votre expérience sur notre site. En cliquant sur \"Accepter tout\", vous acceptez notre utilisation des cookies à des fins d'analyse, de personnalisation et de publicité.",
         learnMore: "Vous pouvez personnaliser vos préférences ou en savoir plus dans notre",
         buttons: {
-          essentialOnly: "Essentiels uniquement",
+          essentialOnly: "Refuser",
           acceptAll: "Accepter tout"
         },
         toast: {
