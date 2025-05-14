@@ -2,31 +2,31 @@
 {
   "offres": [
     {
-      "id": "une-fois",
-      "nom": "Une fois",
+      "id": "starter",
+      "nom": "chyll Starter",
       "prix": "99€",
-      "description": "Une tâche, entièrement réalisée pour vous.",
-      "url": "https://chyll.ai/offres/une-fois",
+      "description": "chyll pour les petites équipes",
+      "url": "https://chyll.ai/offres/starter",
       "action": "https://buy.stripe.com/5kAeWh18h6cOenSeUV",
-      "texteAction": "Commencer l'essai"
+      "texteAction": "Essayer chyll"
     },
     {
-      "id": "automatiser",
-      "nom": "Automatiser",
-      "prix": "199€",
-      "description": "Un assistant IA que vous pouvez contrôler.",
-      "url": "https://chyll.ai/offres/automatiser",
+      "id": "growth",
+      "nom": "chyll Growth",
+      "prix": "200€",
+      "description": "chyll pour les équipes en croissance",
+      "url": "https://chyll.ai/offres/growth",
       "action": "https://cal.com/chyll.ai/30min",
-      "texteAction": "Réserver une démo"
+      "texteAction": "Réserver une démo chyll"
     },
     {
-      "id": "integrer",
-      "nom": "Intégrer",
-      "prix": "699€",
-      "description": "Configuration IA complète à travers vos opérations.",
-      "url": "https://chyll.ai/offres/integrer",
+      "id": "scale",
+      "nom": "chyll Scale",
+      "prix": "300€",
+      "description": "chyll pour les équipes commerciales établies",
+      "url": "https://chyll.ai/offres/scale",
       "action": "https://cal.com/chyll.ai/30min",
-      "texteAction": "Contacter l'équipe"
+      "texteAction": "Contacter l'équipe chyll"
     }
   ]
 }
