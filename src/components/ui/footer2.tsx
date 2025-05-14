@@ -1,186 +1,73 @@
 
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useLanguage } from '@/context/LanguageContext';
-import LanguageSwitcher from '@/components/LanguageSwitcher';
+import { Globe, Mail, MessageCircle } from "lucide-react";
 
-interface MenuItem {
-  title: string;
-  links: {
-    text: string;
-    url: string;
-  }[];
-}
-
-interface Footer2Props {
-  tagline?: string;
-  menuItems?: MenuItem[];
-  copyright?: string;
-  bottomLinks?: {
-    text: string;
-    url: string;
-  }[];
-}
-
-export function Footer2({
-  tagline,
-  menuItems,
-  copyright = "© 2025 chyll.ai",
-  bottomLinks = [
-    { text: "Conditions Générales", url: "/terms" },
-    { text: "Politique de Confidentialité", url: "/privacy" },
-    { text: "Politique des Cookies", url: "/cookies" },
-  ],
-}: Footer2Props) {
+export function Footer2() {
   const { t } = useLanguage();
-  const location = useLocation();
-  const isBlogPage = location.pathname === '/blog' || location.pathname.startsWith('/blog/');
-  const isFAQPage = location.pathname === '/faq';
+  const currentYear = new Date().getFullYear();
   
-  // Define simplified menu items for FAQ page
-  const defaultFAQMenuItems = [
-    {
-      title: "Entreprise",
-      links: [
-        { text: "À propos", url: "/about-us" },
-        { text: "Contact", url: "/contact" },
-      ],
-    },
-    {
-      title: "Ressources",
-      links: [
-        { text: "Blog", url: "/blog" },
-      ],
-    },
-  ];
-  
-  // Define simplified menu items for blog pages
-  const defaultBlogMenuItems = [
-    {
-      title: "Entreprise",
-      links: [
-        { text: "À propos", url: "/about-us" },
-        { text: "Contact", url: "/contact" },
-      ],
-    },
-    {
-      title: "Ressources",
-      links: [
-        { text: "Blog", url: "/blog" },
-        { text: "FAQ", url: "/faq" },
-      ],
-    },
-  ];
-  
-  // Define default menu items for other pages
-  const defaultMenuItems = [
-    {
-      title: "Produit",
-      links: [
-        { text: "Fonctionnalités", url: "#features" },
-        { text: "Comment ça marche", url: "#how-it-works" },
-        { text: "Tarifs", url: "#pricing" },
-        { text: "Blog", url: "/blog" },
-      ],
-    },
-    {
-      title: "Entreprise",
-      links: [
-        { text: "À propos", url: "/about-us" },
-        { text: "Contact", url: "/contact" },
-      ],
-    },
-    {
-      title: "Ressources",
-      links: [
-        { text: "Blog", url: "/blog" },
-        { text: "FAQ", url: "/faq" },
-      ],
-    },
-  ];
-  
-  // Use provided menu items or fallback to defaults based on page type
-  const displayMenuItems = menuItems || (isFAQPage ? defaultFAQMenuItems : (isBlogPage ? defaultBlogMenuItems : defaultMenuItems));
-  
-  // Use provided props or fallback to translations
-  const displayTagline = tagline || t.footer.tagline;
-  const displayCopyright = copyright || "© 2025 chyll.ai";
-
-  // Map bottom links to translations if not provided explicitly
-  const displayBottomLinks = bottomLinks.map(link => {
-    if (link.text === "Terms of Service" || link.text === "Conditions Générales") {
-      return { ...link, text: t.footer.links.terms };
-    }
-    if (link.text === "Privacy Policy" || link.text === "Politique de Confidentialité") {
-      return { ...link, text: t.footer.links.privacy };
-    }
-    if (link.text === "Cookie Policy" || link.text === "Politique de Cookies") {
-      return { ...link, text: t.footer.links.cookies };
-    }
-    return link;
-  });
-
   return (
-    <section className="py-16 bg-[#1A1F2C] text-white">
-      <div className="container">
-        <footer>
-          <div className="grid grid-cols-2 gap-8 lg:grid-cols-6">
-            <div className="col-span-2 mb-8 lg:mb-0">
-              <Link to="/" className="inline-block">
+    <footer className="bg-gray-900 text-white">
+      <div className="container-custom py-12 md:py-16">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div className="col-span-1 md:col-span-2">
+            <div className="mb-6">
+              <Link to="/">
                 <img 
                   src="/lovable-uploads/6aebfbfd-ba13-4ef3-91a5-c262bd385900.png" 
                   alt="chyll.ai logo" 
-                  className="h-12 mb-4" 
+                  className="h-10" 
                 />
               </Link>
-              <p className="mt-4 font-bold text-[#aaadb0]">{displayTagline}</p>
-              <p className="mt-2 text-[#8E9196]">hello@chyll.ai</p>
-              <div className="mt-4">
-                <LanguageSwitcher />
-              </div>
             </div>
-            {displayMenuItems.map((section, sectionIdx) => (
-              <div key={sectionIdx}>
-                <h3 className="mb-4 font-bold text-white">{
-                  section.title === "Product" || section.title === "Produit" ? t.footer.menuTitles.product :
-                  section.title === "Company" || section.title === "Entreprise" ? t.footer.menuTitles.company :
-                  section.title === "Resources" || section.title === "Ressources" ? t.footer.menuTitles.resources :
-                  section.title === "Connect" || section.title === "Contact" ? t.footer.menuTitles.connect :
-                  section.title
-                }</h3>
-                <ul className="space-y-4 text-[#8E9196]">
-                  {section.links.map((link, linkIdx) => (
-                    <li
-                      key={linkIdx}
-                      className="font-medium hover:text-[#9b87f5] transition-colors"
-                    >
-                      {link.url.startsWith("#") || link.url.startsWith("http") ? (
-                        <a href={link.url}>{link.text}</a>
-                      ) : (
-                        <Link to={link.url}>{link.text}</Link>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
+            <p className="text-gray-300 mb-6 max-w-md">
+              {t.footer.tagline}
+            </p>
+            <div className="flex space-x-4">
+              <a href="https://twitter.com/chyllai" className="text-gray-400 hover:text-white transition-colors">
+                <span className="sr-only">Twitter</span>
+                <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" />
+                </svg>
+              </a>
+              <a href="https://linkedin.com/company/chyll-ai" className="text-gray-400 hover:text-white transition-colors">
+                <span className="sr-only">LinkedIn</span>
+                <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
+                </svg>
+              </a>
+            </div>
+            <p className="text-gray-500 mt-6 text-sm">
+              {t.footer.copyright}
+            </p>
           </div>
-          <div className="mt-16 flex flex-col justify-between gap-4 border-t border-gray-700 pt-8 text-sm font-medium text-[#8E9196] md:flex-row md:items-center">
-            <p>{displayCopyright}</p>
-            <ul className="flex flex-wrap gap-4">
-              {displayBottomLinks.map((link, linkIdx) => (
-                <li key={linkIdx} className="hover:text-[#9b87f5] transition-colors">
-                  {link.url.startsWith("#") || link.url.startsWith("http") ? (
-                    <a href={link.url}>{link.text}</a>
-                  ) : (
-                    <Link to={link.url}>{link.text}</Link>
-                  )}
-                </li>
-              ))}
+
+          <div>
+            <h3 className="text-lg font-medium mb-4">{t.footer.menuTitles.product}</h3>
+            <ul className="space-y-3">
+              <li><a href="/#features" className="text-gray-300 hover:text-white transition-colors">{t.nav.features}</a></li>
+              <li><a href="/#how-it-works" className="text-gray-300 hover:text-white transition-colors">{t.nav.howItWorks}</a></li>
+              <li><a href="/#pricing" className="text-gray-300 hover:text-white transition-colors">{t.nav.pricing}</a></li>
+              <li><Link to="/blog" className="text-gray-300 hover:text-white transition-colors">Blog</Link></li>
             </ul>
           </div>
-        </footer>
+
+          <div>
+            <h3 className="text-lg font-medium mb-4">{t.footer.menuTitles.company}</h3>
+            <ul className="space-y-3">
+              <li><Link to="/about-us" className="text-gray-300 hover:text-white transition-colors">{t.footer.links.aboutUs}</Link></li>
+              <li><Link to="/contact" className="text-gray-300 hover:text-white transition-colors">{t.common.contactUs}</Link></li>
+              <li><Link to="/privacy" className="text-gray-300 hover:text-white transition-colors">{t.footer.links.privacy}</Link></li>
+              <li><Link to="/terms" className="text-gray-300 hover:text-white transition-colors">{t.footer.links.terms}</Link></li>
+              <li><Link to="/cookies" className="text-gray-300 hover:text-white transition-colors">{t.footer.links.cookies}</Link></li>
+            </ul>
+          </div>
+        </div>
       </div>
-    </section>
+    </footer>
   );
 }
+
+export default Footer2;
