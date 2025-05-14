@@ -71,7 +71,7 @@ const BlogPostPage = () => {
   const articleSchema = formattedDate ? getArticleSchema({
     title: post.title,
     description: post.excerpt,
-    url: `https://generativschool.com/blog/${post.id}`,
+    url: `https://chyll.com/blog/${post.id}`,
     imageUrl: post.imageUrl,
     publishDate: formattedDate,
     authorName: 'Soufiane Lemqari'
@@ -79,9 +79,9 @@ const BlogPostPage = () => {
   
   // Generate breadcrumb schema
   const breadcrumbSchema = getBreadcrumbSchema([
-    { name: language === 'fr' ? 'Accueil' : 'Home', url: 'https://generativschool.com' },
-    { name: 'Blog', url: 'https://generativschool.com/blog' },
-    { name: post.title, url: `https://generativschool.com/blog/${post.id}` }
+    { name: language === 'fr' ? 'Accueil' : 'Home', url: 'https://chyll.com' },
+    { name: 'Blog', url: 'https://chyll.com/blog' },
+    { name: post.title, url: `https://chyll.com/blog/${post.id}` }
   ]);
   
   return (
@@ -152,7 +152,7 @@ const BlogPostPage = () => {
                   </div>
                   <div>
                     <h4 className="font-bold">Soufiane Lemqari</h4>
-                    <p className="text-gray-600">CEO & Founder, GenerativSchool</p>
+                    <p className="text-gray-600">CEO & Founder, chyll</p>
                   </div>
                 </div>
               </div>
@@ -177,33 +177,33 @@ const BlogPostPage = () => {
 const generateBlogContent = (post: BlogPostType, language: 'en' | 'fr') => {
   // Create consistent content based on the post ID and language
   const paragraphs = language === 'fr' ? [
-    `Dans le paysage technologique en constante évolution d'aujourd'hui, ${post.category} est à l'avant-garde de l'innovation et de la transformation. Chez GenerativSchool, nous suivons de près les développements dans ce domaine et mettons en œuvre des solutions de pointe pour nos clients.`,
+    `Dans le paysage technologique en constante évolution d'aujourd'hui, ${post.category} est à l'avant-garde de l'innovation et de la transformation. Chez chyll, nous suivons de près les développements dans ce domaine et mettons en œuvre des solutions de pointe pour nos clients.`,
     
-    `L'importance de ${post.category} ne peut être surestimée. Alors que les entreprises continuent de naviguer dans les complexités de la transformation numérique, celles qui adoptent ces technologies acquièrent un avantage concurrentiel significatif. Notre équipe chez GenerativSchool a développé un cadre complet pour aider les organisations à mettre en œuvre efficacement les solutions ${post.category}.`,
+    `L'importance de ${post.category} ne peut être surestimée. Alors que les entreprises continuent de naviguer dans les complexités de la transformation numérique, celles qui adoptent ces technologies acquièrent un avantage concurrentiel significatif. Notre équipe chez chyll a développé un cadre complet pour aider les organisations à mettre en œuvre efficacement les solutions ${post.category}.`,
     
-    `L'un des principaux défis dans l'adoption de ${post.category} est de trouver le bon équilibre entre innovation et praticité. De nombreuses entreprises se précipitent pour mettre en œuvre de nouvelles technologies sans comprendre clairement comment elles s'alignent sur leurs objectifs stratégiques. Chez GenerativSchool, nous préconisons une approche mesurée qui commence par identifier les problèmes commerciaux spécifiques pouvant être résolus grâce à ${post.category}.`,
+    `L'un des principaux défis dans l'adoption de ${post.category} est de trouver le bon équilibre entre innovation et praticité. De nombreuses entreprises se précipitent pour mettre en œuvre de nouvelles technologies sans comprendre clairement comment elles s'alignent sur leurs objectifs stratégiques. Chez chyll, nous préconisons une approche mesurée qui commence par identifier les problèmes commerciaux spécifiques pouvant être résolus grâce à ${post.category}.`,
     
     `Prenons l'exemple de l'un de nos clients, une entreprise de taille moyenne qui luttait contre des inefficacités opérationnelles. En mettant en œuvre notre solution ${post.category}, ils ont pu automatiser les tâches routinières, libérant ainsi de précieuses ressources humaines pour des initiatives plus stratégiques. Le résultat a été une augmentation de 40 % de la productivité et une amélioration significative de la satisfaction des employés.`,
     
     `Pour l'avenir, nous prévoyons plusieurs développements importants dans l'espace ${post.category}. Premièrement, nous nous attendons à voir une intégration plus sophistiquée entre différentes technologies d'IA, créant des solutions plus complètes et plus puissantes. Deuxièmement, à mesure que les cadres réglementaires évoluent, l'accent sera mis davantage sur les considérations éthiques et la transparence des algorithmes d'IA.`,
     
-    `Chez GenerativSchool, nous restons engagés à rester à la pointe de ${post.category} tout en veillant à ce que nos solutions soient accessibles, pratiques et alignées sur les objectifs commerciaux de nos clients. Nous croyons que le véritable potentiel de ces technologies ne réside pas dans leur complexité, mais dans leur capacité à résoudre des problèmes du monde réel et à créer une valeur tangible.`,
+    `Chez chyll, nous restons engagés à rester à la pointe de ${post.category} tout en veillant à ce que nos solutions soient accessibles, pratiques et alignées sur les objectifs commerciaux de nos clients. Nous croyons que le véritable potentiel de ces technologies ne réside pas dans leur complexité, mais dans leur capacité à résoudre des problèmes du monde réel et à créer une valeur tangible.`,
     
-    `Alors que nous continuons d'innover et d'étendre nos offres, nous invitons les entreprises de toutes tailles à nous rejoindre dans ce voyage de transformation numérique. Que vous commenciez tout juste à explorer les possibilités de ${post.category} ou que vous cherchiez à améliorer vos capacités existantes, GenerativSchool est là pour vous aider à naviguer vers l'avenir.`
+    `Alors que nous continuons d'innover et d'étendre nos offres, nous invitons les entreprises de toutes tailles à nous rejoindre dans ce voyage de transformation numérique. Que vous commenciez tout juste à explorer les possibilités de ${post.category} ou que vous cherchiez à améliorer vos capacités existantes, chyll est là pour vous aider à naviguer vers l'avenir.`
   ] : [
-    `In today's rapidly evolving technological landscape, ${post.category} stands at the forefront of innovation and transformation. At GenerativSchool, we've been closely monitoring the developments in this field and implementing cutting-edge solutions for our clients.`,
+    `In today's rapidly evolving technological landscape, ${post.category} stands at the forefront of innovation and transformation. At chyll, we've been closely monitoring the developments in this field and implementing cutting-edge solutions for our clients.`,
     
-    `The importance of ${post.category} cannot be overstated. As businesses continue to navigate the complexities of digital transformation, those who embrace these technologies gain a significant competitive advantage. Our team at GenerativSchool has developed a comprehensive framework to help organizations implement ${post.category} solutions effectively.`,
+    `The importance of ${post.category} cannot be overstated. As businesses continue to navigate the complexities of digital transformation, those who embrace these technologies gain a significant competitive advantage. Our team at chyll has developed a comprehensive framework to help organizations implement ${post.category} solutions effectively.`,
     
-    `One of the key challenges in adopting ${post.category} is finding the right balance between innovation and practicality. Many businesses rush to implement new technologies without a clear understanding of how they align with their strategic objectives. At GenerativSchool, we advocate for a measured approach that begins with identifying specific business problems that can be addressed through ${post.category}.`,
+    `One of the key challenges in adopting ${post.category} is finding the right balance between innovation and practicality. Many businesses rush to implement new technologies without a clear understanding of how they align with their strategic objectives. At chyll, we advocate for a measured approach that begins with identifying specific business problems that can be addressed through ${post.category}.`,
     
     `Consider the case of one of our clients, a mid-sized enterprise that was struggling with operational inefficiencies. By implementing our ${post.category} solution, they were able to automate routine tasks, freeing up valuable human resources for more strategic initiatives. The result was a 40% increase in productivity and a significant improvement in employee satisfaction.`,
     
     `Looking ahead, we anticipate several important developments in the ${post.category} space. First, we expect to see more sophisticated integration between different AI technologies, creating more comprehensive and powerful solutions. Second, as regulatory frameworks evolve, there will be an increased focus on ethical considerations and transparency in AI algorithms.`,
     
-    `At GenerativSchool, we remain committed to staying at the cutting edge of ${post.category} while ensuring our solutions are accessible, practical, and aligned with our clients' business objectives. We believe that the true potential of these technologies lies not in their complexity, but in their ability to solve real-world problems and create tangible value.`,
+    `At chyll, we remain committed to staying at the cutting edge of ${post.category} while ensuring our solutions are accessible, practical, and aligned with our clients' business objectives. We believe that the true potential of these technologies lies not in their complexity, but in their ability to solve real-world problems and create tangible value.`,
     
-    `As we continue to innovate and expand our offerings, we invite businesses of all sizes to join us on this journey of digital transformation. Whether you're just beginning to explore the possibilities of ${post.category} or looking to enhance your existing capabilities, GenerativSchool is here to help you navigate the path forward.`
+    `As we continue to innovate and expand our offerings, we invite businesses of all sizes to join us on this journey of digital transformation. Whether you're just beginning to explore the possibilities of ${post.category} or looking to enhance your existing capabilities, chyll is here to help you navigate the path forward.`
   ];
 
   // Return paragraphs with proper spacing

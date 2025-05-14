@@ -32,8 +32,8 @@ export const initialBlogPosts: BlogPost[] = [
   },
   {
     id: 4,
-    title: "Case Study: How Decathlon Boosted Sales by 300% with AI Analytics",
-    excerpt: "Discover how Decathlon leveraged AI-powered customer insights and inventory management to transform their retail operations and triple their sales.",
+    title: "Case Study: How Decathlon Boosted Sales by 300% with chyll",
+    excerpt: "Discover how Decathlon leveraged chyll's AI-powered customer insights and inventory management to transform their retail operations and triple their sales.",
     date: "20 mars 2025",
     readTime: "12 min de lecture",
     category: "Étude de cas",
@@ -50,8 +50,8 @@ export const initialBlogPosts: BlogPost[] = [
   },
   {
     id: 6,
-    title: "Getting Started with GenerativSchool: A Beginner's Guide",
-    excerpt: "A step-by-step guide to implementing GenerativSchool solutions in your business, from initial setup to your first automation.",
+    title: "Getting Started with chyll: A Beginner's Guide",
+    excerpt: "A step-by-step guide to implementing chyll solutions in your business, from initial setup to your first automation.",
     date: "8 mars 2025",
     readTime: "7 min de lecture",
     category: "Tutoriel",
@@ -62,8 +62,8 @@ export const initialBlogPosts: BlogPost[] = [
 export const additionalBlogPosts: BlogPost[] = [
   {
     id: 7,
-    title: "How Sorbonne University Revolutionized Learning with AI",
-    excerpt: "Explore how Sorbonne University implemented AI-powered personalized learning paths, resulting in a 40% improvement in student engagement.",
+    title: "How Sorbonne University Revolutionized Learning with chyll",
+    excerpt: "Explore how Sorbonne University implemented chyll's AI-powered personalized learning paths, resulting in a 40% improvement in student engagement.",
     date: "5 mars 2025",
     readTime: "11 min de lecture",
     category: "Éducation",
@@ -71,8 +71,8 @@ export const additionalBlogPosts: BlogPost[] = [
   },
   {
     id: 8,
-    title: "Orange's Innovation Culture: AI as a Catalyst",
-    excerpt: "How Orange fostered a culture of innovation by integrating AI tools across departments, leading to 50+ successful internal ventures.",
+    title: "Orange's Innovation Culture: chyll as a Catalyst",
+    excerpt: "How Orange fostered a culture of innovation by integrating chyll tools across departments, leading to 50+ successful internal ventures.",
     date: "28 février 2025",
     readTime: "9 min de lecture",
     category: "Innovation",
@@ -80,8 +80,8 @@ export const additionalBlogPosts: BlogPost[] = [
   },
   {
     id: 9,
-    title: "SNCF's Journey with Autonomous AI Agents",
-    excerpt: "How SNCF deployed AI agents to optimize train scheduling and maintenance, reducing delays by 60% and maintenance costs by 40%.",
+    title: "SNCF's Journey with chyll Autonomous Agents",
+    excerpt: "How SNCF deployed chyll agents to optimize train scheduling and maintenance, reducing delays by 60% and maintenance costs by 40%.",
     date: "22 février 2025",
     readTime: "13 min de lecture",
     category: "IA Autonome",
@@ -98,8 +98,8 @@ export const additionalBlogPosts: BlogPost[] = [
   },
   {
     id: 11,
-    title: "How Monoprix Transformed Customer Experience with AI",
-    excerpt: "A detailed analysis of how Monoprix used our AI platform to create personalized shopping experiences, resulting in 85% customer satisfaction.",
+    title: "How Monoprix Transformed Customer Experience with chyll",
+    excerpt: "A detailed analysis of how Monoprix used chyll to create personalized shopping experiences, resulting in 85% customer satisfaction.",
     date: "8 février 2025",
     readTime: "12 min de lecture",
     category: "Étude de cas",
@@ -107,7 +107,7 @@ export const additionalBlogPosts: BlogPost[] = [
   },
   {
     id: 12,
-    title: "Total's AI Implementation: ROI Analysis",
+    title: "Total's chyll Implementation: ROI Analysis",
     excerpt: "A data-driven approach to calculating ROI on AI projects, featuring Total's successful implementation across operations.",
     date: "1 février 2025",
     readTime: "14 min de lecture",
@@ -119,8 +119,8 @@ export const additionalBlogPosts: BlogPost[] = [
 export const finalBlogPosts: BlogPost[] = [
   {
     id: 13,
-    title: "Veolia's Green AI Initiative: Building Sustainable Solutions",
-    excerpt: "How Veolia leveraged AI to reduce energy consumption by 45% and optimize waste management operations across Europe.",
+    title: "Veolia's Green AI Initiative: Building Sustainable Solutions with chyll",
+    excerpt: "How Veolia leveraged chyll to reduce energy consumption by 45% and optimize waste management operations across Europe.",
     date: "25 janvier 2025",
     readTime: "8 min de lecture",
     category: "Durabilité",
@@ -128,8 +128,8 @@ export const finalBlogPosts: BlogPost[] = [
   },
   {
     id: 14,
-    title: "Société Générale's AI-Driven Marketing Revolution",
-    excerpt: "How Société Générale achieved 200% higher engagement rates using AI-powered personalized marketing campaigns.",
+    title: "Société Générale's chyll-Driven Marketing Revolution",
+    excerpt: "How Société Générale achieved 200% higher engagement rates using chyll's AI-powered personalized marketing campaigns.",
     date: "18 janvier 2025",
     readTime: "7 min de lecture",
     category: "Marketing",
@@ -137,8 +137,8 @@ export const finalBlogPosts: BlogPost[] = [
   },
   {
     id: 15,
-    title: "Air France-KLM: Balancing Human Expertise with AI",
-    excerpt: "How Air France-KLM successfully integrated AI solutions while maintaining the crucial human element in customer service.",
+    title: "Air France-KLM: Balancing Human Expertise with chyll",
+    excerpt: "How Air France-KLM successfully integrated chyll solutions while maintaining the crucial human element in customer service.",
     date: "10 janvier 2025",
     readTime: "9 min de lecture",
     category: "Ressources Humaines",
@@ -168,4 +168,3 @@ export const initialBlogPostsFr: BlogPost[] = [
   },
   // ... remaining French translations follow the same pattern
 ];
-

@@ -11,6 +11,8 @@ import Terms from '@/pages/Terms';
 import Privacy from '@/pages/Privacy';
 import Cookies from '@/pages/Cookies';
 import FAQ from '@/pages/FAQ';
+import Blog from '@/pages/Blog';
+import BlogPostPage from '@/pages/BlogPostPage';
 
 import { LanguageProvider } from '@/context/LanguageContext';
 
@@ -26,6 +28,8 @@ function App() {
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/cookies" element={<Cookies />} />
             <Route path="/faq" element={<FAQ />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/blog/:id" element={<BlogPostPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <Toaster />
