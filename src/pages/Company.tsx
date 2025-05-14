@@ -1,7 +1,7 @@
 
 import React from 'react';
 import Navbar from '@/components/Navbar';
-import { Footer2Demo } from '@/components/ui/footer2-demo';
+import { Footer2 } from '@/components/ui/footer2';
 import { Building, Users, Award, Target } from 'lucide-react';
 
 const Company = () => {
@@ -94,7 +94,7 @@ const Company = () => {
         </div>
       </section>
       
-      <Footer2Demo />
+      <Footer2 />
     </div>
   );
 };

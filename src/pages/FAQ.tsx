@@ -1,7 +1,7 @@
 
 import React from 'react';
 import Navbar from '@/components/Navbar';
-import { Footer2Demo } from '@/components/ui/footer2-demo';
+import { Footer2 } from '@/components/ui/footer2';
 import { DefaultDemo } from '@/components/ui/faq-chat-accordion-demo';
 import { FAQSection } from '@/components/ui/faq-section';
 import { ArrowRight } from 'lucide-react';
@@ -78,7 +78,7 @@ const FAQ = () => {
         </div>
       </section>
       
-      <Footer2Demo />
+      <Footer2 />
     </div>
   );
 };

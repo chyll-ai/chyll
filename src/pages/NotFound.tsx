@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { NotFoundPage } from "@/components/ui/404-page-not-found";
 import SEOMetadata from "@/components/SEOMetadata";
 import { useLanguage } from '@/context/LanguageContext';
+import { Footer2 } from '@/components/ui/footer2';
 
 const NotFound = () => {
   const location = useLocation();
@@ -45,6 +46,7 @@ const NotFound = () => {
         structuredData={structuredData}
       />
       <NotFoundPage />
+      <Footer2 />
     </>
   );
 };

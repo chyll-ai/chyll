@@ -2,7 +2,7 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
-import { Footer2Demo } from '@/components/ui/footer2-demo';
+import { Footer2 } from '@/components/ui/footer2';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { initialBlogPosts, additionalBlogPosts, finalBlogPosts } from '@/components/blog/blog-data';
@@ -29,7 +29,7 @@ const BlogPostPage = () => {
             {t.blog?.backToBlog || "Retour au Blog"}
           </Button>
         </div>
-        <Footer2Demo />
+        <Footer2 />
       </div>
     );
   }
@@ -77,7 +77,7 @@ const BlogPostPage = () => {
         </div>
       </article>
       
-      <Footer2Demo />
+      <Footer2 />
     </div>
   );
 };

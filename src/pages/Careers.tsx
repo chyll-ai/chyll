@@ -1,6 +1,7 @@
+
 import React from 'react';
 import Navbar from '@/components/Navbar';
-import { Footer2Demo } from '@/components/ui/footer2-demo';
+import { Footer2 } from '@/components/ui/footer2';
 import { ArrowRight, Coffee, Zap, Heart, Globe } from 'lucide-react';
 
 const JobListing = ({ title, department, location, type }: {
@@ -166,7 +167,7 @@ const Careers = () => {
         </div>
       </section>
       
-      <Footer2Demo />
+      <Footer2 />
     </div>
   );
 };

@@ -1,7 +1,7 @@
 
 import React from 'react';
 import Navbar from '@/components/Navbar';
-import { Footer2Demo } from '@/components/ui/footer2-demo';
+import { Footer2 } from '@/components/ui/footer2';
 import { useLanguage } from '@/context/LanguageContext';
 
 const AboutUs = () => {
@@ -57,7 +57,7 @@ const AboutUs = () => {
         </div>
       </section>
       
-      <Footer2Demo />
+      <Footer2 />
     </div>
   );
 };

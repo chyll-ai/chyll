@@ -1,7 +1,7 @@
 
 import React from 'react';
 import Navbar from '@/components/Navbar';
-import { Footer2Demo } from '@/components/ui/footer2-demo';
+import { Footer2 } from '@/components/ui/footer2';
 import { useLocation } from 'react-router-dom';
 import { useLanguage } from '@/context/LanguageContext';
 import SEOMetadata from '@/components/SEOMetadata';
@@ -49,14 +49,14 @@ const Blog = () => {
         </div>
       </section>
       
-      {/* Use the new Blog8 component instead of BlogSectionWithRichPreview */}
+      {/* Use the Blog8 component */}
       <Blog8 
         heading="Nos articles récents"
         description="Découvrez nos dernières ressources sur la prospection B2B automatisée, l'enrichissement de leads et l'IA commerciale"
         posts={transformedPosts}
       />
       
-      <Footer2Demo />
+      <Footer2 />
     </div>
   );
 };
