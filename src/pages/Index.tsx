@@ -212,6 +212,13 @@ const Index = () => {
         ></canvas>
       </section>
       
+      {/* Pricing Section - Moved up to be right after hero */}
+      <section id="pricing" className="section-padding bg-white" aria-label="Tarifs">
+        <div className="container-custom">
+          <PricingBasic />
+        </div>
+      </section>
+      
       {/* Features Section */}
       <section id="features" className="section-padding bg-white" aria-label="Fonctionnalités">
         <div className="container-custom">
@@ -238,13 +245,6 @@ const Index = () => {
         </div>
       </section>
       
-      {/* Pricing Section */}
-      <section id="pricing" className="section-padding bg-white" aria-label="Tarifs">
-        <div className="container-custom">
-          <PricingBasic />
-        </div>
-      </section>
-
       {/* Partner Companies Section */}
       <section className="py-10 bg-gray-50 border-y border-gray-100" aria-label="Nos clients">
         <div className="container-custom">
