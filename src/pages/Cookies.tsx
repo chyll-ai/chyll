@@ -110,16 +110,16 @@ const Cookies = () => {
               </p>
               <ul className="list-disc ml-6 mb-4">
                 <li>
-                  <strong>Chrome</strong> : Menu > Paramètres > Afficher les paramètres avancés > Confidentialité > Paramètres de contenu > Cookies
+                  <strong>Chrome</strong> : Menu {'>'}  Paramètres {'>'}  Afficher les paramètres avancés {'>'}  Confidentialité {'>'}  Paramètres de contenu {'>'}  Cookies
                 </li>
                 <li>
-                  <strong>Firefox</strong> : Menu > Options > Vie privée > Historique > Paramètres pour l'historique > Cookies
+                  <strong>Firefox</strong> : Menu {'>'}  Options {'>'}  Vie privée {'>'}  Historique {'>'}  Paramètres pour l'historique {'>'}  Cookies
                 </li>
                 <li>
-                  <strong>Safari</strong> : Préférences > Confidentialité > Cookies et données de site
+                  <strong>Safari</strong> : Préférences {'>'}  Confidentialité {'>'}  Cookies et données de site
                 </li>
                 <li>
-                  <strong>Edge</strong> : Menu > Paramètres > Effacer les données de navigation > Cookies et données de sites web enregistrés
+                  <strong>Edge</strong> : Menu {'>'}  Paramètres {'>'}  Effacer les données de navigation {'>'}  Cookies et données de sites web enregistrés
                 </li>
               </ul>
               <p>
