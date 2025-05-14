@@ -1,110 +1,60 @@
 
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React from "react";
+import { Link } from "react-router-dom";
 
-interface MenuItem {
-  title: string;
-  links: {
-    text: string;
-    url: string;
-  }[];
-}
-
-interface Footer2Props {
-  tagline?: string;
-  menuItems?: MenuItem[];
-  copyright?: string;
-  bottomLinks?: {
-    text: string;
-    url: string;
-  }[];
-}
-
-export function Footer2({
-  tagline = "L'agent IA qui transforme votre prospection B2B. Identifiez les bons prospects, obtenez leurs coordonnées complètes, suivez vos actions - automatiquement.",
-  menuItems = [
-    {
-      title: "Produit",
-      links: [
-        { text: "Fonctionnalités", url: "#features" },
-        { text: "Comment ça marche", url: "#how-it-works" },
-        { text: "Tarifs", url: "#pricing" },
-      ],
-    },
-    {
-      title: "Entreprise",
-      links: [
-        { text: "À propos", url: "#" },
-        { text: "Contact", url: "#" },
-      ],
-    },
-    {
-      title: "Ressources",
-      links: [
-        { text: "FAQ", url: "#faq" },
-        { text: "Support", url: "#" },
-      ],
-    },
-  ],
-  copyright = "© 2025 chyll.ai",
-  bottomLinks = [
-    { text: "Conditions Générales", url: "/terms" },
-    { text: "Politique de Confidentialité", url: "/privacy" },
-    { text: "Politique des Cookies", url: "/cookies" },
-  ],
-}: Footer2Props) {
+export function Footer2() {
   return (
-    <section className="py-16 bg-[#1A1F2C] text-white">
-      <div className="container">
-        <footer>
-          <div className="grid grid-cols-2 gap-8 lg:grid-cols-6">
-            <div className="col-span-2 mb-8 lg:mb-0">
-              <Link to="/" className="inline-block">
-                <img 
-                  src="/lovable-uploads/6aebfbfd-ba13-4ef3-91a5-c262bd385900.png" 
-                  alt="chyll.ai logo" 
-                  className="h-12 mb-4" 
-                />
-              </Link>
-              <p className="mt-4 font-bold text-[#aaadb0]">{tagline}</p>
-              <p className="mt-2 text-[#8E9196]">hello@chyll.ai</p>
-            </div>
-            {menuItems.map((section, sectionIdx) => (
-              <div key={sectionIdx}>
-                <h3 className="mb-4 font-bold text-white">{section.title}</h3>
-                <ul className="space-y-4 text-[#8E9196]">
-                  {section.links.map((link, linkIdx) => (
-                    <li
-                      key={linkIdx}
-                      className="font-medium hover:text-[#9b87f5] transition-colors"
-                    >
-                      {link.url.startsWith("#") || link.url.startsWith("http") ? (
-                        <a href={link.url}>{link.text}</a>
-                      ) : (
-                        <Link to={link.url}>{link.text}</Link>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
+    <footer className="bg-white border-t border-gray-200">
+      <div className="container-custom py-12">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div className="col-span-1 md:col-span-2">
+            <Link to="/" className="inline-block mb-4">
+              <span className="text-2xl font-bold text-blue-600">chyll.ai</span>
+            </Link>
+            <p className="text-gray-600 mb-4">
+              chyll.ai est une solution d'automatisation de prospection commerciale qui trouve les bons prospects, 
+              les enrichit avec emails et téléphones vérifiés, et met à jour votre CRM.
+            </p>
+            <p className="text-gray-500 text-sm">
+              © {new Date().getFullYear()} chyll.ai. Tous droits réservés.
+            </p>
           </div>
-          <div className="mt-16 flex flex-col justify-between gap-4 border-t border-gray-700 pt-8 text-sm font-medium text-[#8E9196] md:flex-row md:items-center">
-            <p>{copyright}</p>
-            <ul className="flex flex-wrap gap-4">
-              {bottomLinks.map((link, linkIdx) => (
-                <li key={linkIdx} className="hover:text-[#9b87f5] transition-colors">
-                  {link.url.startsWith("#") || link.url.startsWith("http") ? (
-                    <a href={link.url}>{link.text}</a>
-                  ) : (
-                    <Link to={link.url}>{link.text}</Link>
-                  )}
-                </li>
-              ))}
+          
+          <div>
+            <h3 className="font-semibold mb-4">Mentions légales</h3>
+            <ul className="space-y-2">
+              <li>
+                <Link to="/terms" className="text-gray-600 hover:text-blue-600">
+                  Conditions d'utilisation
+                </Link>
+              </li>
+              <li>
+                <Link to="/privacy" className="text-gray-600 hover:text-blue-600">
+                  Politique de confidentialité
+                </Link>
+              </li>
+              <li>
+                <Link to="/cookies" className="text-gray-600 hover:text-blue-600">
+                  Politique des cookies
+                </Link>
+              </li>
             </ul>
           </div>
-        </footer>
+          
+          <div>
+            <h3 className="font-semibold mb-4">Contact</h3>
+            <address className="not-italic text-gray-600">
+              <p>60 RUE FRANCOIS IER</p>
+              <p>75008 PARIS, FRANCE</p>
+              <p className="mt-2">
+                <a href="mailto:contact@chyll.ai" className="hover:text-blue-600">
+                  contact@chyll.ai
+                </a>
+              </p>
+            </address>
+          </div>
+        </div>
       </div>
-    </section>
+    </footer>
   );
 }
