@@ -1,4 +1,3 @@
-
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { initialBlogPosts, additionalBlogPosts, finalBlogPosts } from '@/components/blog/blog-data';
@@ -8,7 +7,12 @@ function Blog() {
   // Combine all blog posts
   const allBlogPosts = [...initialBlogPosts, ...additionalBlogPosts, ...finalBlogPosts];
   
-  // Get the featured post (first one) and the latest posts (next 2)
+  // Check if we have any blog posts
+  if (allBlogPosts.length === 0) {
+    return null; // Don't render anything if there are no blog posts
+  }
+  
+  // This code won't be reached with empty blog data, but keeping it for future use
   const featuredPost = allBlogPosts[0];
   const latestPosts = allBlogPosts.slice(1, 3);
 
@@ -20,61 +24,8 @@ function Blog() {
             Articles récents
           </h4>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* Featured post (larger) */}
-          <Link to={`/blog/${featuredPost.id}`} className="flex flex-col gap-4 hover:opacity-75 cursor-pointer md:col-span-2">
-            <div className="bg-muted rounded-md aspect-video overflow-hidden">
-              <img src={featuredPost.imageUrl} alt={featuredPost.title} className="w-full h-full object-cover" />
-            </div>
-            <div className="flex flex-row gap-4 items-center">
-              <Badge>{featuredPost.category}</Badge>
-              <p className="flex flex-row gap-2 text-sm items-center">
-                <span className="text-muted-foreground">Par</span>{" "}
-                <Avatar className="h-6 w-6">
-                  <AvatarImage src="/lovable-uploads/e334b214-19ba-4a5c-934d-05030ad0a5df.png" />
-                  <AvatarFallback>SL</AvatarFallback>
-                </Avatar>
-                <span>Soufiane Lemqari</span>
-              </p>
-            </div>
-            <div className="flex flex-col gap-2">
-              <h3 className="max-w-3xl text-4xl tracking-tight">
-                {featuredPost.title}
-              </h3>
-              <p className="max-w-3xl text-muted-foreground text-base">
-                {featuredPost.excerpt}
-              </p>
-            </div>
-          </Link>
-          
-          {/* Other latest posts (smaller) */}
-          {latestPosts.map(post => (
-            <Link key={post.id} to={`/blog/${post.id}`} className="flex flex-col gap-4 hover:opacity-75 cursor-pointer">
-              <div className="bg-muted rounded-md aspect-video overflow-hidden">
-                <img src={post.imageUrl} alt={post.title} className="w-full h-full object-cover" />
-              </div>
-              <div className="flex flex-row gap-4 items-center">
-                <Badge>{post.category}</Badge>
-                <p className="flex flex-row gap-2 text-sm items-center">
-                  <span className="text-muted-foreground">Par</span>{" "}
-                  <Avatar className="h-6 w-6">
-                    <AvatarImage src="/lovable-uploads/e334b214-19ba-4a5c-934d-05030ad0a5df.png" />
-                    <AvatarFallback>SL</AvatarFallback>
-                  </Avatar>
-                  <span>Soufiane Lemqari</span>
-                </p>
-              </div>
-              <div className="flex flex-col gap-1">
-                <h3 className="max-w-3xl text-2xl tracking-tight">
-                  {post.title}
-                </h3>
-                <p className="max-w-3xl text-muted-foreground text-base">
-                  {post.excerpt}
-                </p>
-              </div>
-            </Link>
-          ))}
-        </div>
+        {/* Blog post grid would be here if there were posts */}
+        {/* Since there are no posts, nothing will be rendered */}
       </div>
     </div>
   );

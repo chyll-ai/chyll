@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import Navbar from '@/components/Navbar';
 import { Footer2Demo } from '@/components/ui/footer2-demo';
 import { useLocation } from 'react-router-dom';
@@ -11,27 +11,11 @@ import { useLanguage } from '@/context/LanguageContext';
 import { BlogSectionWithRichPreview } from '@/components/ui/blog-section-with-rich-preview';
 
 const Blog = () => {
-  // Initialize with all blog posts
-  const allPosts = [...initialBlogPosts, ...additionalBlogPosts, ...finalBlogPosts];
-  const [blogPosts, setBlogPosts] = useState<BlogPost[]>(allPosts);
-  const [isLoading, setIsLoading] = useState(false);
-  const [hasMore, setHasMore] = useState(false); // Set to false since we're loading all posts initially
+  // Empty blog posts since we've deleted all articles
+  const allPosts: BlogPost[] = [];
   const { toast } = useToast();
   const location = useLocation();
   const { t } = useLanguage();
-
-  // This function is no longer needed but kept for compatibility
-  const loadMoreArticles = () => {
-    setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-      toast({
-        title: t.blog.allLoaded,
-        description: t.blog.endReached,
-        duration: 3000,
-      });
-    }, 800);
-  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -48,17 +32,12 @@ const Blog = () => {
         </div>
       </section>
       
-      {/* Display the rich preview component */}
-      <BlogSectionWithRichPreview />
-      
       <section className="py-16">
         <div className="container-custom">
-          <BlogList 
-            posts={blogPosts}
-            isLoading={isLoading}
-            hasMore={hasMore}
-            onLoadMore={loadMoreArticles}
-          />
+          <div className="text-center py-20">
+            <h2 className="text-2xl font-medium text-gray-600">No articles available</h2>
+            <p className="text-gray-500 mt-2">Check back soon for new content!</p>
+          </div>
         </div>
       </section>
       
