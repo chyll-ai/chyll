@@ -1,6 +1,6 @@
 
 <svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-  <rect width="512" height="512" fill="black"/>
+  <rect width="512" height="512" fill="#F2FCE2"/>
   <text 
     x="256" 
     y="256" 
@@ -9,8 +9,8 @@
     font-weight="bold" 
     text-anchor="middle" 
     alignment-baseline="middle" 
-    fill="white"
+    fill="#4CAF50"
   >
-    G
+    C
   </text>
 </svg>
