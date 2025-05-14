@@ -11,34 +11,25 @@ import { useLanguage } from '@/context/LanguageContext';
 import { BlogSectionWithRichPreview } from '@/components/ui/blog-section-with-rich-preview';
 
 const Blog = () => {
-  const [blogPosts, setBlogPosts] = useState<BlogPost[]>(initialBlogPosts);
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
+  // Initialize with all blog posts
+  const allPosts = [...initialBlogPosts, ...additionalBlogPosts, ...finalBlogPosts];
+  const [blogPosts, setBlogPosts] = useState<BlogPost[]>(allPosts);
   const [isLoading, setIsLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(false); // Set to false since we're loading all posts initially
   const { toast } = useToast();
   const location = useLocation();
   const { t } = useLanguage();
 
+  // This function is no longer needed but kept for compatibility
   const loadMoreArticles = () => {
     setIsLoading(true);
-
-    // Simulate a network request
     setTimeout(() => {
-      if (page === 1) {
-        setBlogPosts([...blogPosts, ...additionalBlogPosts]);
-        setPage(2);
-        setIsLoading(false);
-      } else if (page === 2) {
-        setBlogPosts([...blogPosts, ...finalBlogPosts]);
-        setPage(3);
-        setHasMore(false);
-        setIsLoading(false);
-        toast({
-          title: t.blog.allLoaded,
-          description: t.blog.endReached,
-          duration: 3000,
-        });
-      }
+      setIsLoading(false);
+      toast({
+        title: t.blog.allLoaded,
+        description: t.blog.endReached,
+        duration: 3000,
+      });
     }, 800);
   };
 
@@ -57,7 +48,7 @@ const Blog = () => {
         </div>
       </section>
       
-      {/* Replace the old blog list with the new rich preview section */}
+      {/* Display the rich preview component */}
       <BlogSectionWithRichPreview />
       
       <section className="py-16">

@@ -1,12 +1,16 @@
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { initialBlogPosts, additionalBlogPosts } from '@/components/blog/blog-data';
+import { initialBlogPosts, additionalBlogPosts, finalBlogPosts } from '@/components/blog/blog-data';
 import { Link } from 'react-router-dom';
 
 function Blog() {
+  // Combine all blog posts
+  const allBlogPosts = [...initialBlogPosts, ...additionalBlogPosts, ...finalBlogPosts];
+  
   // Get the featured post (first one) and the latest posts (next 2)
-  const featuredPost = initialBlogPosts[0];
-  const latestPosts = initialBlogPosts.slice(1, 3);
+  const featuredPost = allBlogPosts[0];
+  const latestPosts = allBlogPosts.slice(1, 3);
 
   return (
     <div className="w-full py-20 lg:py-40">
