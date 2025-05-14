@@ -62,41 +62,4 @@
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
-  <!-- New Product-Focused Blog Posts -->
-  <url>
-    <loc>https://chyll.ai/blog/10</loc>
-    <lastmod>2025-03-20</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://chyll.ai/blog/11</loc>
-    <lastmod>2025-03-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://chyll.ai/blog/12</loc>
-    <lastmod>2025-03-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://chyll.ai/blog/13</loc>
-    <lastmod>2025-03-05</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://chyll.ai/blog/14</loc>
-    <lastmod>2025-02-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://chyll.ai/blog/15</loc>
-    <lastmod>2025-02-20</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
 </urlset>
