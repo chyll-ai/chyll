@@ -8,17 +8,17 @@ interface LanguageContextType {
   language: string; // Add the language property
 }
 
-// Add required properties for the pricing.plans.automate
+// Add required properties for the pricing.plans.growth (which replaced automate)
 const translationWithRequiredFields = {
   ...fr,
   pricing: {
     ...fr.pricing,
     plans: {
       ...fr.pricing.plans,
-      automate: {
-        ...fr.pricing.plans.automate,
-        badge: fr.pricing.plans.automate.badge || "Plus populaire", 
-        trial: fr.pricing.plans.automate.trial || "Essai gratuit de 14 jours"
+      growth: {
+        ...fr.pricing.plans.growth,
+        badge: fr.pricing.plans.growth.badge || "Plus populaire", 
+        trial: fr.pricing.plans.growth.trial || "Essai gratuit de 14 jours"
       }
     }
   }

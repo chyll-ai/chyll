@@ -1,3 +1,4 @@
+
 import { fr } from './fr';
 
 // Define a more complete type structure for our translations
@@ -151,7 +152,7 @@ export interface TranslationKeys {
     description?: string;
     joinText?: string;
     plans: {
-      once: {
+      starter: {
         name: string;
         price: string;
         period: string;
@@ -159,17 +160,17 @@ export interface TranslationKeys {
         features?: string[];
         buttonText?: string;
       };
-      automate: {
+      growth: {
         name: string;
         price: string;
         period: string;
         description: string;
-        badge: string;
-        trial: string;
+        badge?: string;
+        trial?: string;
         features?: string[];
         buttonText?: string;
       };
-      integrate: {
+      scale: {
         name: string;
         price: string;
         period: string;
