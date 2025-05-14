@@ -12,6 +12,7 @@ export interface BlogPost {
   readTime: string;
   category: string;
   imageUrl: string;
+  url: string; // Added the url property
 }
 
 export const BlogCard = ({ post }: { post: BlogPost }) => {
@@ -42,7 +43,7 @@ export const BlogCard = ({ post }: { post: BlogPost }) => {
         <h3 className="text-xl font-bold mb-2">{post.title}</h3>
         <p className="text-gray-600 mb-4">{post.excerpt}</p>
         <Link 
-          to={`/blog/${post.id}`}
+          to={post.url}
           className="text-indigo-600 font-medium hover:text-indigo-800 transition-colors"
         >
           {language === 'fr' ? 'Lire la suite →' : 'Read more →'}
