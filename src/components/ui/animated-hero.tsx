@@ -78,7 +78,7 @@ function Hero() {
           </div>
           <div className="flex flex-col sm:flex-row gap-3 w-full justify-center items-center">
             <Button size={isMobile ? "default" : "lg"} className="gap-2 w-full sm:w-auto" variant="rainbow" asChild>
-              <a href="https://tally.so/r/wA0pJl" target="_blank" rel="noopener noreferrer">
+              <a href="https://cal.com/chyll.ai/30min" target="_blank" rel="noopener noreferrer">
                 {t.home.hero.buttons.bookDemo} <PhoneCall className="w-4 h-4" />
               </a>
             </Button>

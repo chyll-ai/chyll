@@ -31,7 +31,7 @@ function PricingBasic() {
       features: t.pricing.plans.automate.features || [],
       description: t.pricing.plans.automate.description,
       buttonText: t.pricing.plans.automate.buttonText || "Réserver une démo",
-      href: "https://tally.so/r/wA0pJl",
+      href: "https://cal.com/chyll.ai/30min",
       isPopular: true,
     },
     {
@@ -45,7 +45,7 @@ function PricingBasic() {
       features: t.pricing.plans.integrate.features || [],
       description: t.pricing.plans.integrate.description,
       buttonText: t.pricing.plans.integrate.buttonText || "Contacter l'équipe",
-      href: "https://tally.so/r/wA0pJl",
+      href: "https://cal.com/chyll.ai/30min",
       isPopular: false,
     }
   ];
