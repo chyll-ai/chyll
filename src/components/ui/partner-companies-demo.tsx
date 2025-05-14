@@ -1,16 +1,13 @@
 
 import React from "react";
 import { InfiniteSlider } from "@/components/ui/infinite-slider";
-import { useLanguage } from "@/context/LanguageContext";
 
 export function PartnerCompaniesDemo() {
-  const { t } = useLanguage();
-  
   return (
     <div className="py-12">
       <div className="text-center mb-8">
         <h3 className="text-xl md:text-2xl font-semibold text-gray-800">
-          {t.home.partners.title}
+          Nos partenaires
         </h3>
       </div>
       
