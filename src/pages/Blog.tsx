@@ -8,6 +8,7 @@ import { BlogList } from '@/components/blog/blog-list';
 import { initialBlogPosts, additionalBlogPosts, finalBlogPosts } from '@/components/blog/blog-data';
 import { BlogPost } from '@/components/blog/blog-card';
 import { useLanguage } from '@/context/LanguageContext';
+import { BlogSectionWithRichPreview } from '@/components/ui/blog-section-with-rich-preview';
 
 const Blog = () => {
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>(initialBlogPosts);
@@ -55,6 +56,9 @@ const Blog = () => {
           </div>
         </div>
       </section>
+      
+      {/* Replace the old blog list with the new rich preview section */}
+      <BlogSectionWithRichPreview />
       
       <section className="py-16">
         <div className="container-custom">
