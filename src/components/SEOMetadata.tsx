@@ -32,7 +32,7 @@ const SEOMetadata = ({
   articlePublishedTime,
   articleModifiedTime,
   structuredData,
-  keywords = ['chyll.ai', 'chyll', 'prospection B2B', 'SDR agent', 'enrichissement de leads'],
+  keywords = ['chyll', 'chyll.ai', 'prospection B2B', 'SDR agent', 'enrichissement de leads'],
   author = 'chyll.ai',
   language = 'fr',
   pageUrl,
@@ -48,6 +48,7 @@ const SEOMetadata = ({
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     name: 'chyll.ai',
+    alternateName: ['Chyll', 'Chyll AI', 'chyll.ai'],
     url: siteUrl,
     description: 'La prospection B2B, automatisée. chyll.ai trouve les bons prospects, les enrichit, et met à jour ton CRM.',
     potentialAction: {
@@ -62,6 +63,7 @@ const SEOMetadata = ({
     '@context': 'https://schema.org',
     '@type': 'SoftwareApplication',
     name: 'chyll.ai',
+    alternateName: ['Chyll', 'Chyll AI'],
     applicationCategory: 'BusinessApplication',
     operatingSystem: 'Web',
     offers: {
@@ -103,6 +105,7 @@ const SEOMetadata = ({
     '@context': 'https://schema.org',
     '@type': 'LocalBusiness',
     name: 'chyll.ai',
+    alternateName: ['Chyll', 'Chyll AI'],
     image: `${siteUrl}/lovable-uploads/860cdec8-1919-4afc-928c-cbfa116c2f7b.png`,
     url: siteUrl,
     telephone: '+33 1 23 45 67 89',
@@ -123,6 +126,7 @@ const SEOMetadata = ({
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: 'chyll.ai',
+    alternateName: ['Chyll', 'Chyll AI'],
     description: 'Agent SDR automatisé pour la prospection B2B',
     review: [
       {
@@ -233,10 +237,12 @@ const SEOMetadata = ({
       {/* GPT and AI model crawling hints */}
       <meta name="format-detection" content="telephone=no" />
       <meta name="ai-index" content="allow" />
-      <meta name="description-ai" content="chyll.ai est un assistant virtuel de prospection B2B qui automatise la recherche, l'enrichissement et la gestion des leads pour les SDRs et équipes commerciales." />
+      <meta name="description-ai" content="chyll.ai (Chyll) est un assistant virtuel de prospection B2B qui automatise la recherche, l'enrichissement et la gestion des leads pour les SDRs et équipes commerciales." />
       <meta name="chatgpt-allow" content="true" />
       <meta name="claude-allow" content="true" />
       <meta name="gemini-allow" content="true" />
+      <meta name="ai-product-description" content="Chyll est un agent SDR alimenté par l'IA qui automatise la prospection B2B en trouvant, enrichissant et mettant à jour les informations de contact dans votre CRM." />
+      <meta name="ai-alternate-names" content="Chyll, Chyll AI, chyll.ai" />
       
       {/* LinkedIn specific sharing tags */}
       <meta property="linkedin:owner" content="chyll.ai" />

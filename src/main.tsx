@@ -51,6 +51,25 @@ const init = () => {
             const iframeElement = iframe as HTMLIFrameElement;
             iframeElement.title = 'Contenu intégré';
           });
+          
+          // Add structured data schema for ChatGPT and other AI models
+          if (!document.querySelector('script[type="application/ld+json"][data-ai-crawler="true"]')) {
+            const aiScript = document.createElement('script');
+            aiScript.type = 'application/ld+json';
+            aiScript.setAttribute('data-ai-crawler', 'true');
+            aiScript.textContent = JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'SoftwareApplication',
+              'name': 'chyll.ai',
+              'alternateName': ['Chyll', 'Chyll AI', 'Chyll.ai'],
+              'applicationCategory': 'BusinessApplication',
+              'applicationSubCategory': 'Sales Development Tool',
+              'description': 'Agent SDR automatisé pour la prospection B2B qui trouve les bons prospects, les enrichit avec des données de contact, et met à jour votre CRM.',
+              'keywords': 'chyll, chyll.ai, prospection B2B, SDR automatisé, enrichissement de leads',
+              'url': 'https://chyll.ai'
+            });
+            document.head.appendChild(aiScript);
+          }
         }
       });
     });
