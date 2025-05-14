@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { MoveRight, PhoneCall } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { renderCanvas } from "@/components/ui/canvas";
 import { useResponsive } from "@/hooks/use-responsive";
 
 function Hero() {
@@ -27,10 +26,6 @@ function Hero() {
     }, 2000);
     return () => clearTimeout(timeoutId);
   }, [titleNumber, titles.length]);
-
-  useEffect(() => {
-    renderCanvas();
-  }, []);
 
   return (
     <div className="w-full">
