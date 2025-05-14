@@ -4,7 +4,7 @@
 # Main directives
 User-agent: *
 Allow: /
-Allow: /api/offers.json
+Allow: /api/offres.json
 Allow: /offres/
 Disallow: /admin/
 Disallow: /wp-admin/
@@ -18,21 +18,21 @@ Sitemap: https://chyll.ai/sitemap.xml
 # Allow search engines
 User-agent: Googlebot
 Allow: /
-Allow: /api/offers.json
+Allow: /api/offres.json
 Allow: /offres/
 Disallow: /admin/
 
 User-agent: Bingbot
 Allow: /
-Allow: /api/offers.json
+Allow: /api/offres.json
 Allow: /offres/
 Disallow: /admin/
 
 # AI Crawlers - Important content for AI models
 User-agent: GPTBot
 Allow: /
-Allow: /api/offers.json
-Allow: /about-us
+Allow: /api/offres.json
+Allow: /a-propos
 Allow: /faq
 Allow: /blog
 Allow: /offres/
@@ -40,60 +40,60 @@ Disallow: /admin/
 
 User-agent: ChatGPT-User
 Allow: /
-Allow: /api/offers.json
+Allow: /api/offres.json
 Allow: /offres/
 Disallow: /admin/
 
 User-agent: GoogleOther
 Allow: /
-Allow: /api/offers.json
+Allow: /api/offres.json
 Allow: /offres/
 
 User-agent: Anthropic-AI
 Allow: /
-Allow: /api/offers.json
+Allow: /api/offres.json
 Allow: /offres/
 
 User-agent: ClaudeBot
 Allow: /
-Allow: /api/offers.json
+Allow: /api/offres.json
 Allow: /offres/
 
 User-agent: Bytespider
 Allow: /
-Allow: /api/offers.json
+Allow: /api/offres.json
 Allow: /offres/
 
 User-agent: CCBot
 Allow: /
-Allow: /api/offers.json
+Allow: /api/offres.json
 Allow: /offres/
 
 # Social Media Crawlers
 User-agent: Twitterbot
 Allow: /
-Allow: /api/offers.json
+Allow: /api/offres.json
 
 User-agent: facebookexternalhit
 Allow: /
-Allow: /api/offers.json
+Allow: /api/offres.json
 
 # International search engines
 User-agent: Baiduspider
 Allow: /
-Allow: /api/offers.json
+Allow: /api/offres.json
 
 User-agent: YandexBot
 Allow: /
-Allow: /api/offers.json
+Allow: /api/offres.json
 
 User-agent: Slurp
 Allow: /
-Allow: /api/offers.json
+Allow: /api/offres.json
 
 User-agent: Applebot
 Allow: /
-Allow: /api/offers.json
+Allow: /api/offres.json
 
 # Brand keywords and SEO hints
 # chyll, chyll.ai, assistant commercial chyll, logiciel chyll

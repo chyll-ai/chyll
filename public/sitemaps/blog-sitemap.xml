@@ -1,7 +1,7 @@
 
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <!-- Blog Posts -->
+  <!-- Articles de Blog -->
   <url>
     <loc>https://chyll.ai/blog</loc>
     <lastmod>2025-05-14</lastmod>
@@ -9,25 +9,25 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://chyll.ai/blog/1</loc>
+    <loc>https://chyll.ai/blog/cest-quoi-chyll</loc>
     <lastmod>2025-05-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://chyll.ai/blog/2</loc>
+    <loc>https://chyll.ai/blog/chyll-revolution-prospection-b2b-ia</loc>
     <lastmod>2025-05-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://chyll.ai/blog/3</loc>
+    <loc>https://chyll.ai/blog/top-outils-automatisation-commerciale-2025</loc>
     <lastmod>2025-05-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://chyll.ai/blog/4</loc>
+    <loc>https://chyll.ai/blog/pourquoi-nous-avons-cree-chyll</loc>
     <lastmod>2025-04-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>

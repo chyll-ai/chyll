@@ -1,21 +1,21 @@
 
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <!-- Legal Pages -->
+  <!-- Pages Légales -->
   <url>
-    <loc>https://chyll.ai/terms</loc>
+    <loc>https://chyll.ai/conditions-generales</loc>
     <lastmod>2025-05-13</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://chyll.ai/privacy</loc>
+    <loc>https://chyll.ai/politique-confidentialite</loc>
     <lastmod>2025-05-13</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://chyll.ai/cookies</loc>
+    <loc>https://chyll.ai/politique-cookies</loc>
     <lastmod>2025-05-13</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.5</priority>

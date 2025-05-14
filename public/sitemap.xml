@@ -29,9 +29,9 @@
     <priority>0.9</priority>
   </url>
   
-  <!-- Autres pages -->
+  <!-- Pages principales -->
   <url>
-    <loc>https://chyll.ai/about-us</loc>
+    <loc>https://chyll.ai/a-propos</loc>
     <lastmod>2025-05-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -55,33 +55,33 @@
     <priority>0.8</priority>
   </url>
   
-  <!-- Blog posts optimisés pour chyll -->
+  <!-- Articles de blog optimisés pour chyll -->
   <url>
-    <loc>https://chyll.ai/blog/101</loc>
+    <loc>https://chyll.ai/blog/cest-quoi-chyll</loc>
     <lastmod>2025-05-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://chyll.ai/blog/102</loc>
+    <loc>https://chyll.ai/blog/chyll-revolution-prospection-b2b-ia</loc>
     <lastmod>2025-05-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://chyll.ai/blog/103</loc>
+    <loc>https://chyll.ai/blog/top-outils-automatisation-commerciale-2025</loc>
     <lastmod>2025-05-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://chyll.ai/blog/104</loc>
+    <loc>https://chyll.ai/blog/pourquoi-nous-avons-cree-chyll</loc>
     <lastmod>2025-05-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   
-  <!-- Blog posts existants -->
+  <!-- Articles de blog existants -->
   <url>
     <loc>https://chyll.ai/blog/1</loc>
     <lastmod>2025-05-14</lastmod>
@@ -97,19 +97,19 @@
   
   <!-- Pages légales -->
   <url>
-    <loc>https://chyll.ai/terms</loc>
+    <loc>https://chyll.ai/conditions-generales</loc>
     <lastmod>2025-05-14</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
-    <loc>https://chyll.ai/privacy</loc>
+    <loc>https://chyll.ai/politique-confidentialite</loc>
     <lastmod>2025-05-14</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
-    <loc>https://chyll.ai/cookies</loc>
+    <loc>https://chyll.ai/politique-cookies</loc>
     <lastmod>2025-05-14</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>
@@ -117,7 +117,7 @@
   
   <!-- API JSON -->
   <url>
-    <loc>https://chyll.ai/api/offers.json</loc>
+    <loc>https://chyll.ai/api/offres.json</loc>
     <lastmod>2025-05-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
