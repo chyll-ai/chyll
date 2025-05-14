@@ -3,12 +3,15 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { MoveRight, PhoneCall } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { renderCanvas } from "@/components/ui/canvas";
+import { useLanguage } from "@/context/LanguageContext";
 import { useResponsive } from "@/hooks/use-responsive";
 
 function Hero() {
+  const { language, t } = useLanguage();
   const { isMobile } = useResponsive();
   const [titleNumber, setTitleNumber] = useState(0);
-  const titles = [
+  const titles = t.home.hero.actions || [
     "automatisée.",
     "simplifiée.",
     "efficace.",
@@ -27,13 +30,17 @@ function Hero() {
     return () => clearTimeout(timeoutId);
   }, [titleNumber, titles.length]);
 
+  useEffect(() => {
+    renderCanvas();
+  }, []);
+
   return (
     <div className="w-full">
       <div className="container mx-auto px-4">
         <div className="flex gap-6 py-12 md:py-20 lg:py-40 items-center justify-center flex-col">
           <div className="flex gap-4 flex-col">
             <h1 className="text-4xl sm:text-5xl md:text-7xl max-w-2xl tracking-tighter text-center font-regular">
-              <span className="rainbow-text-static">La prospection</span>
+              <span className="rainbow-text-static">{t.home.hero.title}</span>
               <span className="relative flex w-full justify-center overflow-hidden text-center md:pb-4 pt-1">
                 &nbsp;
                 {titles.map((title, index) => (
@@ -61,18 +68,18 @@ function Hero() {
             </h1>
 
             <p className="text-base md:text-lg lg:text-xl leading-relaxed tracking-tight text-muted-foreground max-w-2xl text-center">
-              Ciblez précisément les bonnes entreprises, obtenez instantanément les contacts décisionnaires avec leurs coordonnées complètes, et suivez vos opportunités sans aucune tâche manuelle.
+              {t.home.hero.description}
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-3 w-full justify-center items-center">
             <Button size={isMobile ? "default" : "lg"} className="gap-2 w-full sm:w-auto" variant="rainbow" asChild>
               <a href="https://tally.so/r/wA0pJl" target="_blank" rel="noopener noreferrer">
-                Réserver une démo <PhoneCall className="w-4 h-4" />
+                {t.home.hero.buttons.bookDemo} <PhoneCall className="w-4 h-4" />
               </a>
             </Button>
             <Button size={isMobile ? "default" : "lg"} className="gap-2 w-full sm:w-auto mt-2 sm:mt-0" variant="outline" asChild>
               <a href="#pricing">
-                Voir les tarifs <MoveRight className="w-4 h-4" />
+                {t.home.hero.buttons.hireNow} <MoveRight className="w-4 h-4" />
               </a>
             </Button>
           </div>

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { buttonVariants } from "@/components/ui/button";
@@ -34,7 +35,7 @@ export function Pricing({
   plans,
   title = "",
   description = "",
-  language = "fr"
+  language = "en"
 }: PricingProps) {
   const [isMonthly, setIsMonthly] = useState(true);
   const isDesktop = useMediaQuery("(min-width: 768px)");
@@ -111,7 +112,10 @@ export function Pricing({
           </Label>
         </label>
         <span className="ml-2 font-semibold">
-          Facturation annuelle <span className="text-primary">(Économisez 20%)</span>
+          {language === "fr" ? "Facturation annuelle " : "Annual billing "}
+          <span className="text-primary">
+            {language === "fr" ? "(Économisez 20%)" : "(Save 20%)"}
+          </span>
         </span>
       </div>
 
@@ -161,7 +165,7 @@ export function Pricing({
                 <div className="absolute top-0 right-0 bg-primary py-0.5 px-2 rounded-bl-xl rounded-tr-xl flex items-center">
                   <Star className="text-primary-foreground h-4 w-4 fill-current" />
                   <span className="text-primary-foreground ml-1 font-sans font-semibold">
-                    Populaire
+                    {language === "fr" ? "Populaire" : "Popular"}
                   </span>
                 </div>
               )}
@@ -177,21 +181,23 @@ export function Pricing({
                     <span className="text-sm font-semibold leading-6 tracking-wide text-muted-foreground">
                       {isMonthly 
                         ? plan.period 
-                        : "/mois"}
+                        : language === "fr" ? "/mois" : "/month"}
                     </span>
                   )}
                 </div>
 
                 {!isMonthly && (
                   <div className="mt-1 text-xs text-green-600 font-medium">
-                    Engagement 1 an
+                    {language === "fr" 
+                      ? "Engagement 1 an" 
+                      : "1 year commitment"}
                   </div>
                 )}
 
                 {plan.name !== "ONCE" && plan.name !== "Une fois" && (
                   <div className="mt-2">
                     <p className="text-sm font-medium text-green-600">
-                      Essai gratuit de 14 jours
+                      {language === "fr" ? "Essai gratuit de 14 jours" : "14-day free trial"}
                     </p>
                   </div>
                 )}

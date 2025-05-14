@@ -1,20 +1,24 @@
-
 import React, { useState } from 'react';
 import Navbar from '@/components/Navbar';
 import { Footer2Demo } from '@/components/ui/footer2-demo';
 import { useLocation } from 'react-router-dom';
 import { useToast } from "@/components/ui/use-toast";
 import { BlogList } from '@/components/blog/blog-list';
-import { initialBlogPostsFr, additionalBlogPosts, finalBlogPosts } from '@/components/blog/blog-data';
+import { initialBlogPosts, additionalBlogPosts, finalBlogPosts, initialBlogPostsFr } from '@/components/blog/blog-data';
 import { BlogPost } from '@/components/blog/blog-card';
+import { useLanguage } from '@/context/LanguageContext';
 
 const Blog = () => {
-  const [blogPosts, setBlogPosts] = useState<BlogPost[]>(initialBlogPostsFr);
+  const { language } = useLanguage();
+  const [blogPosts, setBlogPosts] = useState<BlogPost[]>(
+    language === 'fr' ? initialBlogPostsFr : initialBlogPosts
+  );
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const location = useLocation();
+  const { t } = useLanguage();
 
   const loadMoreArticles = () => {
     setIsLoading(true);
@@ -31,8 +35,8 @@ const Blog = () => {
         setHasMore(false);
         setIsLoading(false);
         toast({
-          title: "Tous les articles ont été chargés",
-          description: "Vous avez atteint la fin de notre blog.",
+          title: t.blog.allLoaded,
+          description: t.blog.endReached,
           duration: 3000,
         });
       }
@@ -41,14 +45,14 @@ const Blog = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar />
+      <Navbar currentPath={location.pathname} />
       
       <section className="bg-indigo-50 py-20">
         <div className="container-custom">
           <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-3xl md:text-5xl font-bold mb-4">Blog</h1>
+            <h1 className="text-3xl md:text-5xl font-bold mb-4">{t.blog.title}</h1>
             <p className="text-lg text-gray-700">
-              Découvrez nos dernières actualités, conseils et ressources pour optimiser votre prospection et développer votre business.
+              {t.blog.subtitle}
             </p>
           </div>
         </div>

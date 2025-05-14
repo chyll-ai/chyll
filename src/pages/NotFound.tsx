@@ -3,9 +3,11 @@ import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import { NotFoundPage } from "@/components/ui/404-page-not-found";
 import SEOMetadata from "@/components/SEOMetadata";
+import { useLanguage } from '@/context/LanguageContext';
 
 const NotFound = () => {
   const location = useLocation();
+  const { t } = useLanguage();
 
   useEffect(() => {
     console.error(
@@ -22,13 +24,13 @@ const NotFound = () => {
       {
         "@type": "ListItem",
         "position": 1,
-        "name": "Accueil",
+        "name": "Home",
         "item": "https://generativschool.com/"
       },
       {
         "@type": "ListItem",
         "position": 2,
-        "name": "Page Non Trouvée",
+        "name": "Page Not Found",
         "item": `https://generativschool.com${location.pathname}`
       }
     ]
@@ -37,8 +39,8 @@ const NotFound = () => {
   return (
     <>
       <SEOMetadata
-        title="Page Non Trouvée"
-        description="Désolé, la page que vous recherchez n'existe pas ou a été déplacée."
+        title={t.notFound.title}
+        description={t.notFound.message}
         canonicalUrl={location.pathname}
         structuredData={structuredData}
       />

@@ -2,65 +2,49 @@
 "use client";
 
 import { Pricing } from "@/components/ui/pricing";
+import { useLanguage } from "@/context/LanguageContext";
 
 function PricingBasic() {
-  // Tarifs avec contenu en français uniquement
+  const { t } = useLanguage();
+  
+  // Pricing plans with both monthly and annual pricing
   const pricingPlans = [
     {
-      name: "Starter",
-      price: "99",
-      yearlyPrice: (99 * 12 * 0.8).toFixed(0) + "€",
-      period: "mois",
-      features: [
-        "50 numéros de téléphone ET adresses email par mois",
-        "Personas illimités (LinkedIn)",
-        "2 utilisateurs",
-        "Interface CRM personnalisée",
-        "Support par email",
-        "Mise à jour quotidienne"
-      ],
-      description: "Parfait pour les petites équipes",
-      buttonText: "Commencer l'essai",
+      name: t.pricing.plans.once.name,
+      price: t.pricing.plans.once.price,
+      yearlyPrice: t.pricing.plans.once.price, // One-time price stays the same
+      period: t.pricing.plans.once.period,
+      features: t.pricing.plans.once.features || [],
+      description: t.pricing.plans.once.description,
+      buttonText: t.pricing.plans.once.buttonText || "Commencer",
       href: "https://buy.stripe.com/5kAeWh18h6cOenSeUV",
       isPopular: false,
     },
     {
-      name: "Growth",
-      price: "200",
-      yearlyPrice: (200 * 12 * 0.8).toFixed(0) + "€",
-      period: "mois",
-      features: [
-        "100 numéros de téléphone ET adresses email par mois",
-        "Personas illimités (LinkedIn)",
-        "3 utilisateurs",
-        "Interface CRM personnalisée",
-        "Support prioritaire",
-        "Mises à jour en temps réel",
-        "Export et import de data"
-      ],
-      description: "Pour les équipes en croissance",
-      buttonText: "Réserver une démo",
+      name: t.pricing.plans.automate.name,
+      price: t.pricing.plans.automate.price,
+      // Use price as fallback if yearlyPrice doesn't exist in translations
+      yearlyPrice: t.pricing.plans.automate.price ? 
+        (parseFloat(t.pricing.plans.automate.price.replace('€', '')) * 12 * 0.8).toFixed(0) + '€' : 
+        "159€",
+      period: t.pricing.plans.automate.period,
+      features: t.pricing.plans.automate.features || [],
+      description: t.pricing.plans.automate.description,
+      buttonText: t.pricing.plans.automate.buttonText || "Réserver une démo",
       href: "https://tally.so/r/wA0pJl",
       isPopular: true,
     },
     {
-      name: "Scale",
-      price: "300",
-      yearlyPrice: (300 * 12 * 0.8).toFixed(0) + "€",
-      period: "mois",
-      features: [
-        "200 numéros de téléphone ET adresses email par mois",
-        "Personas illimités (LinkedIn)",
-        "5 utilisateurs",
-        "Interface CRM sur mesure",
-        "Support dédié",
-        "Mises à jour en temps réel",
-        "Export et import de data",
-        "Critères de recherche illimités",
-        "Rapports de performance"
-      ],
-      description: "Pour les équipes commerciales établies",
-      buttonText: "Réserver une démo",
+      name: t.pricing.plans.integrate.name,
+      price: t.pricing.plans.integrate.price,
+      // Use price as fallback if yearlyPrice doesn't exist in translations
+      yearlyPrice: t.pricing.plans.integrate.price ? 
+        (parseFloat(t.pricing.plans.integrate.price.replace('€', '')) * 12 * 0.8).toFixed(0) + '€' : 
+        "559€",
+      period: t.pricing.plans.integrate.period,
+      features: t.pricing.plans.integrate.features || [],
+      description: t.pricing.plans.integrate.description,
+      buttonText: t.pricing.plans.integrate.buttonText || "Contacter l'équipe",
       href: "https://tally.so/r/wA0pJl",
       isPopular: false,
     }
@@ -70,8 +54,8 @@ function PricingBasic() {
     <div className="overflow-y-auto">
       <Pricing 
         plans={pricingPlans}
-        title="Tarifs simples et transparents"
-        description="Essai sans engagement"
+        title={t.pricing.title || "Tarifs simples et transparents"}
+        description={t.pricing.description || "Essai sans engagement"}
         language="fr"
       />
     </div>

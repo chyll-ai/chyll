@@ -1,13 +1,14 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/sonner';
 import { Cookie } from 'lucide-react';
 import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Link } from 'react-router-dom';
+import { useLanguage } from '@/context/LanguageContext';
 
 const CookieConsent = () => {
   const [open, setOpen] = useState(false);
+  const { t } = useLanguage();
 
   useEffect(() => {
     // Check if user has already accepted cookies
@@ -24,8 +25,8 @@ const CookieConsent = () => {
   const acceptCookies = () => {
     localStorage.setItem('cookiesAccepted', 'true');
     setOpen(false);
-    toast("Cookies acceptés", {
-      description: "Merci d'avoir accepté tous les cookies pour une expérience optimale.",
+    toast(t.legal.cookies.consent.toast.accepted, {
+      description: t.legal.cookies.consent.toast.description,
       duration: 3000,
     });
   };
@@ -33,8 +34,8 @@ const CookieConsent = () => {
   const acceptEssentialOnly = () => {
     localStorage.setItem('cookiesAccepted', 'essential');
     setOpen(false);
-    toast("Cookies essentiels uniquement", {
-      description: "Seuls les cookies essentiels au fonctionnement du site seront utilisés.",
+    toast(t.legal.cookies.consent.toast.essential, {
+      description: t.legal.cookies.consent.toast.essentialDescription,
       duration: 3000,
     });
   };
@@ -50,17 +51,17 @@ const CookieConsent = () => {
         <div className="p-6 max-w-5xl mx-auto">
           <SheetHeader className="flex flex-row items-center gap-3 mb-4">
             <Cookie className="h-5 w-5 text-brand-blue" />
-            <SheetTitle className="text-xl">Nous utilisons des cookies</SheetTitle>
+            <SheetTitle className="text-xl">{t.legal.cookies.consent.title}</SheetTitle>
           </SheetHeader>
           
           <div className="mb-4 text-sm text-gray-600">
             <p>
-              En naviguant sur ce site, vous acceptez l'utilisation de cookies pour améliorer votre expérience, personnaliser le contenu et analyser le trafic.
+              {t.legal.cookies.consent.description}
             </p>
             <p className="mt-2">
-              Pour en savoir plus, consultez notre{' '}
+              {t.legal.cookies.consent.learnMore}{' '}
               <Link to="/cookies" className="text-brand-blue hover:underline" onClick={() => setOpen(false)}>
-                Politique des Cookies
+                {t.footer.links.cookies}
               </Link>.
             </p>
           </div>
@@ -70,10 +71,10 @@ const CookieConsent = () => {
               variant="outline"
               onClick={acceptEssentialOnly}
             >
-              Refuser
+              {t.legal.cookies.consent.buttons.essentialOnly}
             </Button>
             <Button onClick={acceptCookies}>
-              Tout accepter
+              {t.legal.cookies.consent.buttons.acceptAll}
             </Button>
           </SheetFooter>
         </div>

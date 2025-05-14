@@ -2,12 +2,15 @@
 import React from 'react';
 import DisplayCards from '@/components/ui/display-cards';
 import { Search, Database, LineChart } from 'lucide-react';
+import { useLanguage } from '@/context/LanguageContext';
 
 const HowItWorks = () => {
+  const { t, language } = useLanguage();
+  
   const stepsCards = [
     {
       icon: <Search className="size-4 text-indigo-300" />,
-      title: "Définissez vos cibles",
+      title: t.home.howItWorks.steps[0],
       description: "",
       date: "Étape 1",
       iconClassName: "text-indigo-500",
@@ -17,7 +20,7 @@ const HowItWorks = () => {
     },
     {
       icon: <Database className="size-4 text-blue-300" />,
-      title: "L'agent identifie et enrichit",
+      title: t.home.howItWorks.steps[1],
       description: "",
       date: "Étape 2",
       iconClassName: "text-blue-500",
@@ -27,7 +30,7 @@ const HowItWorks = () => {
     },
     {
       icon: <LineChart className="size-4 text-green-300" />,
-      title: "Vous pilotez vos actions",
+      title: t.home.howItWorks.steps[2],
       description: "",
       date: "Étape 3",
       iconClassName: "text-green-500",

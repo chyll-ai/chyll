@@ -10,6 +10,7 @@ import { BlogPost as BlogPostType } from './blog-card';
 import SEOMetadata from '@/components/SEOMetadata';
 import { getArticleSchema, getBreadcrumbSchema } from '@/utils/structuredData';
 import { Suspense, lazy } from 'react';
+import { useLanguage } from '@/context/LanguageContext';
 
 // Lazy load images for performance
 const LazyImage = lazy(() => import('@/components/common/LazyImage'));
@@ -29,10 +30,11 @@ const parseAndFormatDate = (dateString: string) => {
 const BlogPostPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { language } = useLanguage();
   
-  // Use French blog posts
+  // Combine all blog posts to find the one with matching ID
   const allPosts = [
-    ...initialBlogPostsFr,
+    ...(language === 'fr' ? initialBlogPostsFr : initialBlogPosts),
     ...additionalBlogPosts,
     ...finalBlogPosts
   ];
@@ -42,17 +44,19 @@ const BlogPostPage = () => {
   if (!post) {
     return (
       <div className="min-h-screen flex flex-col">
-        <Navbar />
+        <Navbar currentPath="/blog" />
         <div className="flex-1 container-custom py-20 flex flex-col items-center justify-center">
           <h1 className="text-3xl font-bold mb-4">
-            Article non trouvé
+            {language === 'fr' ? 'Article non trouvé' : 'Blog Post Not Found'}
           </h1>
           <p className="mb-8">
-            L'article que vous recherchez n'existe pas ou a été supprimé.
+            {language === 'fr' 
+              ? "L'article que vous recherchez n'existe pas ou a été supprimé."
+              : "The blog post you're looking for doesn't exist or has been removed."}
           </p>
           <Button onClick={() => navigate('/blog')}>
             <ArrowLeft className="mr-2" size={16} />
-            Retour au Blog
+            {language === 'fr' ? 'Retour au Blog' : 'Back to Blog'}
           </Button>
         </div>
         <Footer2Demo />
@@ -75,7 +79,7 @@ const BlogPostPage = () => {
   
   // Generate breadcrumb schema
   const breadcrumbSchema = getBreadcrumbSchema([
-    { name: 'Accueil', url: 'https://generativschool.com' },
+    { name: language === 'fr' ? 'Accueil' : 'Home', url: 'https://generativschool.com' },
     { name: 'Blog', url: 'https://generativschool.com/blog' },
     { name: post.title, url: `https://generativschool.com/blog/${post.id}` }
   ]);
@@ -95,7 +99,7 @@ const BlogPostPage = () => {
         }}
       />
       
-      <Navbar />
+      <Navbar currentPath="/blog" />
       
       <article className="flex-1">
         <div className="w-full h-[400px] relative">
@@ -124,7 +128,7 @@ const BlogPostPage = () => {
                   {post.category}
                 </span>
                 <span className="flex items-center">
-                  Par Soufiane Lemqari, CEO
+                  {language === 'fr' ? 'Par' : 'By'} Soufiane Lemqari, CEO
                 </span>
               </div>
             </div>
@@ -136,11 +140,11 @@ const BlogPostPage = () => {
             <div className="prose prose-lg max-w-none">
               <p className="lead text-xl mb-6">{post.excerpt}</p>
               
-              {generateBlogContent(post)}
+              {generateBlogContent(post, language)}
               
               <div className="mt-12 pt-6 border-t">
                 <h3 className="text-xl font-bold mb-3">
-                  À propos de l'auteur
+                  {language === 'fr' ? "À propos de l'auteur" : 'About the Author'}
                 </h3>
                 <div className="flex items-center">
                   <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-800 font-bold text-xl mr-4">
@@ -157,7 +161,7 @@ const BlogPostPage = () => {
             <div className="mt-10">
               <Button onClick={() => navigate('/blog')} variant="outline">
                 <ArrowLeft className="mr-2" size={16} />
-                Retour au Blog
+                {language === 'fr' ? 'Retour au Blog' : 'Back to Blog'}
               </Button>
             </div>
           </div>
@@ -170,9 +174,9 @@ const BlogPostPage = () => {
 };
 
 // Generate detailed blog content based on the blog post
-const generateBlogContent = (post: BlogPostType) => {
-  // Create consistent content based on the post ID
-  const paragraphs = [
+const generateBlogContent = (post: BlogPostType, language: 'en' | 'fr') => {
+  // Create consistent content based on the post ID and language
+  const paragraphs = language === 'fr' ? [
     `Dans le paysage technologique en constante évolution d'aujourd'hui, ${post.category} est à l'avant-garde de l'innovation et de la transformation. Chez GenerativSchool, nous suivons de près les développements dans ce domaine et mettons en œuvre des solutions de pointe pour nos clients.`,
     
     `L'importance de ${post.category} ne peut être surestimée. Alors que les entreprises continuent de naviguer dans les complexités de la transformation numérique, celles qui adoptent ces technologies acquièrent un avantage concurrentiel significatif. Notre équipe chez GenerativSchool a développé un cadre complet pour aider les organisations à mettre en œuvre efficacement les solutions ${post.category}.`,
@@ -186,6 +190,20 @@ const generateBlogContent = (post: BlogPostType) => {
     `Chez GenerativSchool, nous restons engagés à rester à la pointe de ${post.category} tout en veillant à ce que nos solutions soient accessibles, pratiques et alignées sur les objectifs commerciaux de nos clients. Nous croyons que le véritable potentiel de ces technologies ne réside pas dans leur complexité, mais dans leur capacité à résoudre des problèmes du monde réel et à créer une valeur tangible.`,
     
     `Alors que nous continuons d'innover et d'étendre nos offres, nous invitons les entreprises de toutes tailles à nous rejoindre dans ce voyage de transformation numérique. Que vous commenciez tout juste à explorer les possibilités de ${post.category} ou que vous cherchiez à améliorer vos capacités existantes, GenerativSchool est là pour vous aider à naviguer vers l'avenir.`
+  ] : [
+    `In today's rapidly evolving technological landscape, ${post.category} stands at the forefront of innovation and transformation. At GenerativSchool, we've been closely monitoring the developments in this field and implementing cutting-edge solutions for our clients.`,
+    
+    `The importance of ${post.category} cannot be overstated. As businesses continue to navigate the complexities of digital transformation, those who embrace these technologies gain a significant competitive advantage. Our team at GenerativSchool has developed a comprehensive framework to help organizations implement ${post.category} solutions effectively.`,
+    
+    `One of the key challenges in adopting ${post.category} is finding the right balance between innovation and practicality. Many businesses rush to implement new technologies without a clear understanding of how they align with their strategic objectives. At GenerativSchool, we advocate for a measured approach that begins with identifying specific business problems that can be addressed through ${post.category}.`,
+    
+    `Consider the case of one of our clients, a mid-sized enterprise that was struggling with operational inefficiencies. By implementing our ${post.category} solution, they were able to automate routine tasks, freeing up valuable human resources for more strategic initiatives. The result was a 40% increase in productivity and a significant improvement in employee satisfaction.`,
+    
+    `Looking ahead, we anticipate several important developments in the ${post.category} space. First, we expect to see more sophisticated integration between different AI technologies, creating more comprehensive and powerful solutions. Second, as regulatory frameworks evolve, there will be an increased focus on ethical considerations and transparency in AI algorithms.`,
+    
+    `At GenerativSchool, we remain committed to staying at the cutting edge of ${post.category} while ensuring our solutions are accessible, practical, and aligned with our clients' business objectives. We believe that the true potential of these technologies lies not in their complexity, but in their ability to solve real-world problems and create tangible value.`,
+    
+    `As we continue to innovate and expand our offerings, we invite businesses of all sizes to join us on this journey of digital transformation. Whether you're just beginning to explore the possibilities of ${post.category} or looking to enhance your existing capabilities, GenerativSchool is here to help you navigate the path forward.`
   ];
 
   // Return paragraphs with proper spacing

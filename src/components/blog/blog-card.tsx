@@ -2,6 +2,7 @@
 import React from 'react';
 import { CalendarIcon, Clock, Tag } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useLanguage } from '@/context/LanguageContext';
 
 export interface BlogPost {
   id: number;
@@ -14,6 +15,8 @@ export interface BlogPost {
 }
 
 export const BlogCard = ({ post }: { post: BlogPost }) => {
+  const { language } = useLanguage();
+  
   return (
     <div className="bg-white rounded-lg overflow-hidden shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
       <img 
@@ -42,7 +45,7 @@ export const BlogCard = ({ post }: { post: BlogPost }) => {
           to={`/blog/${post.id}`}
           className="text-indigo-600 font-medium hover:text-indigo-800 transition-colors"
         >
-          Lire la suite →
+          {language === 'fr' ? 'Lire la suite →' : 'Read more →'}
         </Link>
       </div>
     </div>

@@ -2,8 +2,11 @@
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import { Footer2Demo } from '@/components/ui/footer2-demo';
+import { useLanguage } from '@/context/LanguageContext';
 
 const Terms = () => {
+  const { t } = useLanguage();
+  
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />

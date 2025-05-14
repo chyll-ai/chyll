@@ -8,10 +8,13 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { useLanguage } from '@/context/LanguageContext';
 
 export function FAQSection() {
-  // FAQ items en français
-  const faqItems = [
+  const { language, t } = useLanguage();
+  
+  // Default FAQ items in case translations are missing
+  const defaultFaqItems = [
     {
       question: "📈 Quel type de résultats puis-je attendre ?",
       answer: "Nos utilisateurs constatent en moyenne : Un temps de prospection divisé par 5, une baisse significative du coût par lead, une meilleure priorisation des prospects réellement activables."
@@ -41,6 +44,14 @@ export function FAQSection() {
       answer: "Il vous suffit de remplir notre formulaire de qualification pour vérifier votre éligibilité. Une fois validé, vous accédez à votre espace personnalisé et commencez à recevoir vos leads."
     }
   ];
+  
+  // Check if French FAQ translations are available
+  const hasFrenchFaq = language === 'fr' && t.faq?.general?.items !== undefined;
+  
+  // Use the translations from the language context if available, otherwise use defaults
+  const faqItems = hasFrenchFaq
+    ? t.faq?.general?.items 
+    : defaultFaqItems;
   
   return (
     <div className="w-full max-w-4xl mx-auto px-4 sm:px-0">

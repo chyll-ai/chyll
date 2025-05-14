@@ -1,4 +1,3 @@
-
 import { 
   Search,
   Settings,
@@ -10,6 +9,7 @@ import {
   Shield
 } from "lucide-react";
 import React from "react";
+import { useLanguage } from "@/context/LanguageContext";
 
 export interface FeatureItem {
   title: string;
@@ -18,7 +18,12 @@ export interface FeatureItem {
 }
 
 export const useFeatureItems = (): FeatureItem[] => {
-  // Les fonctionnalités en français
+  const { t } = useLanguage();
+  
+  // Check if French translations are available for benefits
+  const hasFrenchFeatures = t.home?.benefits?.items !== undefined;
+  
+  // French feature items
   const frenchFeatures: FeatureItem[] = [
     {
       title: "Prospection automatisée et ciblée",
@@ -66,6 +71,20 @@ export const useFeatureItems = (): FeatureItem[] => {
       icon: <Shield className="w-6 h-6" />,
     },
   ];
+
+  // If we have French translations from the benefits section, use those instead
+  if (hasFrenchFeatures && Array.isArray(t.home?.benefits?.items)) {
+    // Map icons in the same order as the French version
+    const icons = [Search, Settings, ClipboardList, RefreshCcw, DollarSign, TrendingUp, Compass, Shield];
+    
+    // Make sure we have exactly 8 items by using all items from the French translation
+    return t.home?.benefits?.items.map((item, index) => ({
+      title: item.title,
+      description: item.description,
+      icon: <React.Fragment>{React.createElement(icons[index], { className: "w-6 h-6" })}</React.Fragment>
+    }));
+  }
   
+  // Otherwise return the French features
   return frenchFeatures;
 };

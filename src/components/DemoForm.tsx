@@ -4,8 +4,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
 import { Calendar, Mail, Phone, User } from 'lucide-react';
+import { useLanguage } from '@/context/LanguageContext';
 
 const DemoForm = () => {
+  const { t } = useLanguage();
   const { toast } = useToast();
   const [formData, setFormData] = useState({
     name: '',
@@ -33,7 +35,7 @@ const DemoForm = () => {
       <div className="relative">
         <User className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
         <Input
-          placeholder="Nom complet"
+          placeholder="Full Name"
           name="name"
           value={formData.name}
           onChange={handleChange}
@@ -46,7 +48,7 @@ const DemoForm = () => {
         <Mail className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
         <Input
           type="email"
-          placeholder="Email professionnel"
+          placeholder="Work Email"
           name="email"
           value={formData.email}
           onChange={handleChange}
@@ -59,7 +61,7 @@ const DemoForm = () => {
         <Phone className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
         <Input
           type="tel"
-          placeholder="Numéro de téléphone"
+          placeholder="Phone Number"
           name="phone"
           value={formData.phone}
           onChange={handleChange}
@@ -70,7 +72,7 @@ const DemoForm = () => {
       <div className="relative">
         <Calendar className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
         <Input
-          placeholder="Entreprise"
+          placeholder="Company"
           name="company"
           value={formData.company}
           onChange={handleChange}
@@ -84,11 +86,11 @@ const DemoForm = () => {
         className="w-full bg-brand-blue hover:bg-brand-blue-dark"
         disabled={isSubmitting}
       >
-        {isSubmitting ? "Redirection..." : "Réserver une démo"}
+        {isSubmitting ? "Redirecting..." : t.common.bookDemo}
       </Button>
       
       <p className="text-xs text-gray-500 text-center">
-        En soumettant, vous acceptez notre Politique de Confidentialité et nos Conditions d'Utilisation.
+        By submitting, you agree to our Privacy Policy and Terms of Service.
       </p>
     </form>
   );

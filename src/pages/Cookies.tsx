@@ -3,8 +3,11 @@ import React from 'react';
 import Navbar from '@/components/Navbar';
 import { Footer2 } from '@/components/ui/footer2';
 import SEOMetadata from '@/components/SEOMetadata';
+import { useLanguage } from '@/context/LanguageContext';
 
 const Cookies = () => {
+  const { language } = useLanguage();
+  
   return (
     <div className="min-h-screen flex flex-col">
       <SEOMetadata 
@@ -106,51 +109,52 @@ const Cookies = () => {
               
               <h3 className="text-xl font-semibold mt-6 mb-3">Comment gérer vos cookies dans votre navigateur ?</h3>
               <p>
-                La plupart des navigateurs vous permettent de consulter et supprimer les cookies :
+                La plupart des navigateurs vous permettent de refuser ou d'accepter les cookies. Vous pouvez configurer votre navigateur pour qu'il vous avertisse lorsqu'un cookie est envoyé, ou bien pour les désactiver complètement.
+              </p>
+              <p>
+                Voici comment gérer les cookies dans les principaux navigateurs :
               </p>
               <ul className="list-disc ml-6 mb-4">
-                <li>
-                  <strong>Chrome</strong> : Menu {'>'}  Paramètres {'>'}  Afficher les paramètres avancés {'>'}  Confidentialité {'>'}  Paramètres de contenu {'>'}  Cookies
-                </li>
-                <li>
-                  <strong>Firefox</strong> : Menu {'>'}  Options {'>'}  Vie privée {'>'}  Historique {'>'}  Paramètres pour l'historique {'>'}  Cookies
-                </li>
-                <li>
-                  <strong>Safari</strong> : Préférences {'>'}  Confidentialité {'>'}  Cookies et données de site
-                </li>
-                <li>
-                  <strong>Edge</strong> : Menu {'>'}  Paramètres {'>'}  Effacer les données de navigation {'>'}  Cookies et données de sites web enregistrés
-                </li>
+                <li>Google Chrome : Paramètres &gt; Confidentialité et sécurité &gt; Cookies et autres données de site</li>
+                <li>Mozilla Firefox : Options &gt; Vie privée et sécurité &gt; Cookies et données de site</li>
+                <li>Safari : Préférences &gt; Confidentialité &gt; Cookies et données de site</li>
+                <li>Microsoft Edge : Paramètres &gt; Cookies et autorisations de site</li>
               </ul>
-              <p>
-                Veuillez noter que la désactivation de certains cookies peut affecter votre expérience sur notre site et limiter votre accès à certaines fonctionnalités.
-              </p>
               
-              <h2 className="text-2xl font-semibold mt-8 mb-4">5. Durée de conservation des cookies</h2>
+              <h3 className="text-xl font-semibold mt-6 mb-3">Refuser les cookies publicitaires</h3>
               <p>
-                La durée de conservation des cookies varie selon leur type :
+                Vous pouvez également refuser les cookies publicitaires de certaines plateformes en visitant des sites tels que :
               </p>
               <ul className="list-disc ml-6 mb-4">
-                <li>Les cookies de session expirent à la fin de votre session de navigation</li>
-                <li>Les cookies permanents peuvent être conservés pendant plusieurs jours, mois ou années, selon leur configuration</li>
+                <li>YourOnlineChoices : <a href="https://www.youronlinechoices.com" target="_blank" rel="noopener noreferrer" className="text-brand-blue hover:underline">www.youronlinechoices.com</a></li>
+                <li>Network Advertising Initiative : <a href="https://www.networkadvertising.org" target="_blank" rel="noopener noreferrer" className="text-brand-blue hover:underline">www.networkadvertising.org</a></li>
               </ul>
               
-              <h2 className="text-2xl font-semibold mt-8 mb-4">6. Cookies tiers</h2>
+              <h2 className="text-2xl font-semibold mt-8 mb-4">5. Cookies tiers</h2>
               <p>
-                Certains de nos partenaires peuvent également installer des cookies sur votre appareil lorsque vous visitez notre site. Ces cookies tiers permettent à ces partenaires de vous proposer des publicités ciblées ou de suivre votre activité en ligne sur d'autres sites.
+                Lorsque vous utilisez notre site, des cookies tiers peuvent également être déposés par des services externes, tels que Google Analytics, Facebook, ou LinkedIn. Ces cookies sont utilisés pour analyser votre navigation, vous offrir des publicités personnalisées, ou vous permettre de partager du contenu sur les réseaux sociaux. Nous n'avons pas de contrôle sur l'utilisation de ces cookies, et vous devez consulter les politiques de confidentialité de ces services tiers pour plus d'informations.
               </p>
+              
+              <h2 className="text-2xl font-semibold mt-8 mb-4">6. Conservation des cookies</h2>
               <p>
-                Nous n'avons pas de contrôle direct sur ces cookies tiers. Nous vous encourageons à consulter les politiques de confidentialité de ces partenaires pour comprendre comment ils utilisent les cookies.
+                La durée de conservation des cookies dépend du type de cookie :
               </p>
+              <ul className="list-disc ml-6 mb-4">
+                <li>Cookies de session : ces cookies sont conservés uniquement pendant la durée de votre session de navigation et sont supprimés dès que vous fermez votre navigateur.</li>
+                <li>Cookies permanents : ces cookies restent sur votre appareil pendant une durée maximale de 13 mois.</li>
+              </ul>
               
               <h2 className="text-2xl font-semibold mt-8 mb-4">7. Modifications de la politique des cookies</h2>
               <p>
-                Nous nous réservons le droit de modifier cette politique des cookies à tout moment. Les modifications prendront effet dès leur publication sur notre site. Nous vous encourageons à consulter régulièrement cette page pour rester informé des mises à jour.
+                Nous pouvons mettre à jour cette Politique des Cookies de temps à autre. Toute modification sera publiée sur cette page avec la date de mise à jour. Nous vous encourageons à consulter régulièrement cette politique pour être informé de toute modification.
               </p>
               
               <h2 className="text-2xl font-semibold mt-8 mb-4">8. Contact</h2>
               <p>
-                Si vous avez des questions concernant notre utilisation des cookies, n'hésitez pas à nous contacter à l'adresse suivante : <a href="mailto:privacy@chyll.ai" className="text-brand-blue hover:underline">privacy@chyll.ai</a>
+                Si vous avez des questions concernant notre Politique des Cookies ou si vous souhaitez exercer vos droits en matière de cookies, vous pouvez nous contacter à l'adresse suivante :<br />
+                <strong>GenerativSchool SAS</strong><br />
+                Email de contact : <a href="mailto:contact@generativschool.com" className="text-brand-blue hover:underline">contact@generativschool.com</a><br />
+                Adresse : 60 rue François Premier, 75008 Paris, France
               </p>
             </div>
           </div>
