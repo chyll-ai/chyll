@@ -4,14 +4,14 @@ import Navbar from '@/components/Navbar';
 import { Footer2Demo } from '@/components/ui/footer2-demo';
 import { useLocation } from 'react-router-dom';
 import { useToast } from "@/components/ui/use-toast";
-import { initialBlogPosts, additionalBlogPosts, finalBlogPosts } from '@/components/blog/blog-data';
+import { initialBlogPosts, additionalBlogPosts, finalBlogPosts, productBlogPosts } from '@/components/blog/blog-data';
 import { BlogPost } from '@/components/blog/blog-card';
 import { useLanguage } from '@/context/LanguageContext';
 import SEOMetadata from '@/components/SEOMetadata';
-import { BlogSectionWithRichPreview } from "@/components/ui/blog-section-with-rich-preview";
+import { BlogCard } from '@/components/blog/blog-card';
 
 const Blog = () => {
-  const allPosts: BlogPost[] = [...initialBlogPosts, ...additionalBlogPosts, ...finalBlogPosts];
+  const allPosts: BlogPost[] = [...initialBlogPosts, ...additionalBlogPosts, ...finalBlogPosts, ...productBlogPosts];
   const { toast } = useToast();
   const location = useLocation();
   const { t } = useLanguage();
@@ -40,8 +40,16 @@ const Blog = () => {
         </div>
       </section>
       
-      {/* Replace the BlogList component with the BlogSectionWithRichPreview */}
-      <BlogSectionWithRichPreview />
+      {/* Display all articles in a grid */}
+      <section className="py-20">
+        <div className="container mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {allPosts.map((post) => (
+              <BlogCard key={post.id} post={post} />
+            ))}
+          </div>
+        </div>
+      </section>
       
       <Footer2Demo />
     </div>

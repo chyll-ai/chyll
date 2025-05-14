@@ -1,12 +1,12 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { initialBlogPosts, additionalBlogPosts, finalBlogPosts } from '@/components/blog/blog-data';
+import { initialBlogPosts, additionalBlogPosts, finalBlogPosts, productBlogPosts } from '@/components/blog/blog-data';
 import { Link } from 'react-router-dom';
 
 function Blog() {
   // Combine all blog posts
-  const allBlogPosts = [...initialBlogPosts, ...additionalBlogPosts, ...finalBlogPosts];
+  const allBlogPosts = [...initialBlogPosts, ...additionalBlogPosts, ...finalBlogPosts, ...productBlogPosts];
   
   // Check if we have any blog posts
   if (allBlogPosts.length === 0) {
