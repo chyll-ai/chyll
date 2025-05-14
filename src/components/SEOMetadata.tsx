@@ -65,7 +65,7 @@ const SEOMetadata = ({
     name: 'chyll',
     alternateName: ['chyll.ai', 'Chyll AI', 'plateforme chyll'],
     applicationCategory: 'BusinessApplication',
-    applicationSubCategory': 'Sales Development Tool',
+    applicationSubCategory: 'Sales Development Tool',
     operatingSystem: 'Web',
     offers: {
       '@type': 'Offer',
