@@ -1,141 +1,64 @@
+
 export const fr = {
-  // Common elements
   common: {
-    bookDemo: "Réserver une démo de chyll",
-    learnMore: "En savoir plus sur chyll",
+    bookDemo: "Réserver une démo",
+    learnMore: "En savoir plus",
     contactUs: "Nous contacter",
     viewDetails: "Voir les détails",
-    availableNow: "chyll disponible",
+    availableNow: "Disponible maintenant"
   },
-  
-  // Navigation
   nav: {
     features: "Fonctionnalités",
-    howItWorks: "Comment fonctionne chyll",
+    howItWorks: "Comment ça marche",
     pricing: "Tarifs",
     bookDemo: "Réserver une démo",
-    home: "Accueil",
+    home: "Accueil"
   },
-  
-  // Homepage sections
   home: {
     hero: {
-      introducing: "Voici chyll.",
-      title: "Assistant commercial IA pour",
-      actions: ["startups.", "PME.", "équipes de vente.", "entrepreneurs.", "SDRs."],
-      subtitle: "Boostez votre prospection B2B avec chyll",
-      description: "chyll trouve les bons prospects, les enrichit, et met à jour votre CRM pendant que vous vous concentrez sur la conversion.",
+      introducing: "Découvrez",
+      title: "chyll, l'assistant commercial IA",
+      actions: ["Appels", "Emails", "Données"],
+      subtitle: "Assistant commercial IA",
+      description: "chyll automatise la prospection B2B et enrichit vos données pour vous permettre de vous concentrer sur les conversations qui comptent.",
       buttons: {
         bookDemo: "Réserver une démo",
-        hireNow: "Essai gratuit 14 jours",
+        hireNow: "Essayer maintenant"
       }
     },
     features: {
-      title: "chyll révolutionne votre prospection",
-      subtitle: "Une solution complète pour automatiser votre prospection B2B et maximiser votre temps productif."
+      title: "Libérez votre potentiel de vente avec chyll",
+      subtitle: "Comment chyll aide les équipes commerciales"
     },
     meetTeam: {
-      title: "chyll travaille pour vous",
-      subtitle: "chyll n'est pas juste un outil – c'est votre assistant commercial virtuel prêt à transformer votre prospection."
+      title: "Rencontrez nos IA",
+      subtitle: "Une équipe dédiée pour chaque besoin"
     },
     howItWorks: {
       title: "Comment fonctionne chyll",
-      subtitle: "Démarrer avec chyll est simple. Suivez ces étapes pour transformer votre approche commerciale.",
+      subtitle: "Intégrer chyll à votre workflow est simple",
       steps: [
-        "Définissez vos critères de recherche",
-        "chyll trouve et enrichit les profils",
-        "Votre CRM est automatiquement mis à jour"
+        "Nous configurons votre assistant commercial chyll selon vos besoins",
+        "L'assistant identifie et enrichit automatiquement les prospects pertinents",
+        "Les données enrichies sont synchronisées avec votre CRM",
+        "Concentrez-vous sur les conversations qui comptent"
       ]
     },
     faq: {
-      title: "C'est quoi chyll ?",
-      subtitle: "Tout ce que vous devez savoir sur notre assistant commercial IA et comment il peut transformer votre prospection.",
-      general: {
-        title: "Questions générales sur chyll",
-        items: [
-          {
-            question: "Ai-je besoin de savoir coder pour utiliser chyll ?",
-            answer: "Absolument pas ! chyll est conçu pour être utilisé sans aucune compétence technique. Notre équipe s'occupe de toute la configuration et de l'intégration pour vous."
-          },
-          {
-            question: "Combien de temps faut-il pour mettre en place chyll ?",
-            answer: "Votre assistant chyll est prêt en 48h maximum. Nous nous occupons de toute la configuration et l'intégration pour vous, ce qui garantit un déploiement rapide et sans tracas."
-          },
-          {
-            question: "Quelles données exactes vais-je recevoir avec chyll ?",
-            answer: "chyll enrichit les profils LinkedIn avec des emails professionnels, des numéros de téléphone, la taille de l'entreprise, le secteur, et d'autres informations pertinentes pour votre prospection. Toutes ces données sont organisées dans un CRM simple et intuitif."
-          },
-          {
-            question: "chyll est-il sécurisé ?",
-            answer: "Absolument. chyll prend la sécurité très au sérieux avec un chiffrement des données de niveau professionnel, des audits réguliers et une stricte conformité avec les réglementations de protection des données comme le RGPD."
-          }
-        ]
-      },
-      aiEmployees: {
-        title: "Questions sur l'assistant commercial chyll",
-        items: [
-          {
-            question: "Comment chyll trouve-t-il des prospects ?",
-            answer: "chyll recherche des prospects sur LinkedIn en fonction de vos critères (mots-clés, entreprises, titres de poste, secteur, etc.). Il identifie les profils pertinents qui correspondent exactement à votre cible."
-          },
-          {
-            question: "Comment se fait l'enrichissement des données avec chyll ?",
-            answer: "Une fois les prospects identifiés, chyll utilise des technologies avancées pour enrichir les profils avec des emails professionnels, des numéros de téléphone et d'autres informations pertinentes, tout en respectant la réglementation sur la protection des données."
-          },
-          {
-            question: "Comment puis-je accéder aux données de mes prospects avec chyll ?",
-            answer: "Toutes les données sont automatiquement organisées dans une interface CRM simple basée sur Airtable. Vous recevez un tableau de bord chyll personnalisé, accessible à tout moment, que vous pouvez facilement partager avec votre équipe."
-          },
-          {
-            question: "Quelles intégrations sont disponibles avec chyll ?",
-            answer: "chyll s'intègre nativement avec Airtable pour le CRM. Nous pouvons également configurer des connexions avec d'autres outils CRM populaires, des plateformes de communication, ou des systèmes de gestion de projet sur demande."
-          },
-          {
-            question: "Quel type de support est inclus avec chyll ?",
-            answer: "Nous offrons un support complet pour tous nos plans chyll. Cela inclut la configuration initiale, des ajustements continus, et des canaux de support dédiés. Notre objectif est de garantir que votre assistant chyll génère un maximum de valeur pour votre entreprise."
-          },
-          {
-            question: "Puis-je personnaliser les critères de recherche de chyll ?",
-            answer: "Oui ! Vous définissez exactement les critères que vous souhaitez cibler : secteurs d'activité, taille d'entreprise, fonctions, localisation, etc. L'assistant chyll s'adapte parfaitement à vos besoins spécifiques de prospection."
-          }
-        ]
-      },
-      stillHaveQuestions: {
-        title: "D'autres questions sur chyll ?",
-        description: "Notre équipe support est là pour vous aider. Contactez-nous pour une assistance personnalisée."
-      },
-      lastUpdated: "Dernière mise à jour : Mai 2025"
+      title: "Vos questions sur chyll",
+      subtitle: "Tout ce que vous devez savoir"
+    },
+    testimonials: {
+      title: "Ce que nos clients disent",
+      subtitle: "Découvrez comment chyll transforme leur approche commerciale"
     },
     partners: {
       title: "Ils font confiance à chyll"
-    },
-    testimonials: {
-      title: "Des clients conquis par chyll",
-      subtitle: "Rejoignez les entreprises qui ont transformé leur prospection grâce à notre assistant commercial IA",
-      quotes: [
-        {
-          author: "Thomas Martin",
-          handle: "@thomasceo",
-          text: "Notre assistant chyll a multiplié par 3 notre pipeline commercial en seulement 2 mois. C'est comme avoir un SDR qui travaille 24/7 sans jamais se fatiguer."
-        },
-        {
-          author: "Sophie Dubois",
-          handle: "@sophiegrowthlead",
-          text: "En tant que responsable croissance, chyll a complètement transformé notre approche de la prospection. Plus besoin de passer des heures sur LinkedIn, tout est automatisé et notre CRM est toujours à jour."
-        },
-        {
-          author: "Marc Leroy",
-          handle: "@marcfondateur",
-          text: "Avec chyll, nous avons réduit de 70% le temps consacré à la recherche de leads. Mon équipe commerciale peut maintenant se concentrer uniquement sur la conversion des prospects qualifiés."
-        }
-      ]
     }
   },
-  
-  // Footer
   footer: {
-    tagline: "chyll - Automatisation intelligente de votre prospection B2B.",
-    copyright: "© 2025 chyll. Tous droits réservés.",
+    tagline: "Automatisez votre prospection B2B",
+    copyright: "© 2025 chyll - Tous droits réservés",
     menuTitles: {
       product: "Produit",
       company: "Entreprise",
@@ -143,138 +66,170 @@ export const fr = {
       connect: "Contact"
     },
     links: {
-      terms: "Conditions Générales",
-      privacy: "Politique de Confidentialité",
-      cookies: "Politique des Cookies",
-      overview: "Découvrir chyll",
-      aboutUs: "À propos de chyll",
-      careers: "Carrières chez chyll"
+      terms: "Conditions d'utilisation",
+      privacy: "Politique de confidentialité",
+      cookies: "Politique des cookies",
+      overview: "Présentation",
+      aboutUs: "À propos de nous",
+      careers: "Carrières"
     }
   },
-  
-  // Contact page
+  about: {
+    title: "À propos de chyll",
+    story: {
+      title: "Notre histoire",
+      text1: "Chyll a été créé en 2024 par une équipe passionnée par la technologie et l'intelligence artificielle.",
+      text2: "Nous avons constaté que les équipes commerciales passaient trop de temps sur des tâches répétitives et pas assez sur les interactions humaines qui font la différence."
+    },
+    mission: {
+      title: "Notre mission",
+      text1: "Notre mission est de révolutionner la prospection B2B en utilisant l'intelligence artificielle pour automatiser les tâches chronophages.",
+      text2: "Nous voulons permettre aux équipes commerciales de se concentrer sur ce qui compte vraiment : créer des relations et conclure des affaires."
+    },
+    unique: {
+      title: "Notre approche unique",
+      items: [
+        "Une IA spécialement formée pour la prospection B2B",
+        "Une intégration fluide avec les outils que vous utilisez déjà",
+        "Une configuration personnalisée pour répondre à vos besoins spécifiques",
+        "Un support humain pour vous accompagner à chaque étape"
+      ]
+    },
+    cta: {
+      title: "Prêt à transformer votre approche commerciale ?",
+      text: "Découvrez comment chyll peut vous aider à générer plus de leads qualifiés et à augmenter vos ventes.",
+      button: "Réserver une démo"
+    }
+  },
   contact: {
-    title: "Contacter chyll",
-    subtitle: "Des questions sur notre assistant commercial IA ? Prêt à transformer votre approche commerciale ? Contactez notre équipe chyll et nous serons ravis de vous aider.",
+    title: "Contactez-nous",
+    subtitle: "Notre équipe est là pour vous aider",
     form: {
-      title: "Envoyer un message à l'équipe chyll"
+      title: "Envoyez-nous un message"
     }
   },
-  
-  // Pricing content
   pricing: {
-    title: "Tarifs chyll simples et transparents",
-    description: "Essai sans engagement",
+    title: "Des tarifs adaptés à vos besoins",
+    description: "Choisissez l'offre qui correspond le mieux à votre entreprise",
+    joinText: "Rejoignez les entreprises qui utilisent chyll pour transformer leur prospection",
     plans: {
       once: {
-        name: "chyll Starter",
-        price: "99",
-        period: "mois",
-        description: "chyll pour les petites équipes",
+        name: "Une fois",
+        price: "99€",
+        period: "unique",
+        description: "Une tâche commerciale, entièrement automatisée par chyll.",
         features: [
-          "50 numéros de téléphone ET adresses email par mois",
-          "Personas illimités (LinkedIn)",
-          "2 utilisateurs chyll",
-          "Interface CRM personnalisée",
-          "Support chyll par email",
-          "Mise à jour quotidienne"
+          "Construction et livraison d'une automatisation chyll pour votre cas d'utilisation",
+          "Interface simple (Airtable ou Notion)",
+          "Configuration, paramétrage et test inclus",
+          "Idéal pour une preuve de concept"
         ],
         buttonText: "Essayer chyll"
       },
       automate: {
-        name: "chyll Growth",
-        price: "200",
-        period: "mois",
-        description: "chyll pour les équipes en croissance",
+        name: "Automatiser",
+        price: "199€",
+        period: "/mois",
+        description: "Un assistant commercial chyll que vous contrôlez.",
+        badge: "Le plus populaire",
+        trial: "Essai de 14 jours",
         features: [
-          "100 numéros de téléphone ET adresses email par mois",
-          "Personas illimités (LinkedIn)",
-          "3 utilisateurs chyll",
-          "Interface CRM personnalisée",
-          "Support prioritaire",
-          "Mises à jour en temps réel",
-          "Export et import de data"
+          "Interface chyll personnalisée",
+          "200 actions mensuelles alimentées par l'IA",
+          "Configuration clé en main sans compétence technique",
+          "Support continu et améliorations"
         ],
-        buttonText: "Réserver une démo chyll"
+        buttonText: "Réserver une démo"
       },
       integrate: {
-        name: "chyll Scale",
-        price: "300",
-        period: "mois",
-        description: "chyll pour les équipes commerciales établies",
+        name: "Intégrer",
+        price: "699€",
+        period: "/mois",
+        description: "Plateforme chyll complète à travers vos opérations.",
         features: [
-          "200 numéros de téléphone ET adresses email par mois",
-          "Personas illimités (LinkedIn)",
-          "5 utilisateurs chyll",
-          "Interface CRM sur mesure",
-          "Support dédié chyll",
-          "Mises à jour en temps réel",
-          "Export et import de data",
-          "Critères de recherche illimités",
-          "Rapports de performance"
+          "Flux de travail chyll personnalisés",
+          "Intégration avec votre pile technologique existante",
+          "1 000 actions d'automatisation mensuelles",
+          "Support prioritaire et accès stratégique"
         ],
         buttonText: "Contacter l'équipe chyll"
       }
     }
   },
-  
-  // Legal pages
   legal: {
     terms: {
-      title: "Conditions Générales",
-      updated: "Dernière mise à jour: 14 mai 2025"
+      title: "Conditions d'utilisation",
+      updated: "Dernière mise à jour : 13 mai 2025"
     },
     privacy: {
-      title: "Politique de Confidentialité",
-      updated: "Dernière mise à jour: 14 mai 2025"
+      title: "Politique de confidentialité",
+      updated: "Dernière mise à jour : 13 mai 2025"
     },
     cookies: {
       title: "Politique des Cookies",
-      updated: "Dernière mise à jour: 13 mai 2025",
+      updated: "Dernière mise à jour : 13 mai 2025",
       consent: {
-        title: "Consentement aux cookies",
-        description: "Nous utilisons des cookies pour améliorer votre expérience sur notre site. En cliquant sur \"Accepter tout\", vous acceptez notre utilisation des cookies à des fins d'analyse, de personnalisation et de publicité.",
-        learnMore: "Vous pouvez personnaliser vos préférences ou en savoir plus dans notre",
+        title: "Gestion des cookies",
+        description: "Nous utilisons des cookies pour améliorer votre expérience sur notre site, personnaliser le contenu et les publicités, et analyser notre trafic.",
+        learnMore: "En savoir plus sur notre utilisation des cookies dans notre",
         buttons: {
-          essentialOnly: "Refuser",
-          acceptAll: "Accepter tout"
+          essentialOnly: "Cookies essentiels uniquement",
+          acceptAll: "Accepter tous les cookies",
+          refuse: "Refuser tous les cookies"
         },
         toast: {
           accepted: "Cookies acceptés",
-          essential: "Cookies essentiels acceptés",
-          description: "Vos préférences ont été enregistrées.",
-          essentialDescription: "Seuls les cookies essentiels seront utilisés."
+          essential: "Cookies essentiels uniquement",
+          refused: "Cookies refusés",
+          description: "Merci ! Vous profitez maintenant d'une expérience optimale sur notre site.",
+          essentialDescription: "Seuls les cookies nécessaires au fonctionnement du site sont activés.",
+          refusedDescription: "Aucun cookie non essentiel ne sera utilisé. Certaines fonctionnalités peuvent être limitées."
         }
       }
     }
   },
-  
-  // Blog content
   blog: {
-    title: "Blog chyll & Ressources",
-    subtitle: "Découvrez nos articles, guides et études de cas sur l'assistant commercial chyll, la prospection B2B automatisée, l'enrichissement de leads et l'optimisation commerciale.",
-    loadMore: "Charger plus d'articles chyll",
-    allLoaded: "Tous les articles chyll sont chargés",
-    endReached: "Vous avez atteint la fin de notre collection d'articles.",
-    postNotFound: "Article chyll non trouvé",
-    postNotFoundDesc: "L'article que vous recherchez n'existe pas ou a été supprimé.",
-    backToBlog: "Retour au Blog chyll"
+    title: "Le blog de chyll",
+    subtitle: "Nos derniers articles et actualités",
+    loadMore: "Charger plus d'articles",
+    allLoaded: "Tous les articles sont chargés",
+    endReached: "Vous avez atteint la fin du blog",
+    postNotFound: "Article non trouvé",
+    postNotFoundDesc: "Désolé, l'article que vous recherchez n'existe pas ou a été déplacé.",
+    backToBlog: "Retour au blog"
   },
-  
-  // About page
-  about: {
-    title: "Pourquoi nous avons créé chyll",
-    mission: "Notre mission chyll",
-    story: "L'histoire de chyll",
-    approach: "L'approche unique de chyll",
-    difference: "Ce qui différencie chyll",
-    callToAction: "Prêt à essayer chyll ?"
+  faq: {
+    general: {
+      title: "Questions générales",
+      items: [
+        {
+          question: "C'est quoi chyll ?",
+          answer: "chyll est un assistant commercial IA pour les entreprises modernes. Il automatise votre prospection B2B sans nécessiter de compétences techniques."
+        },
+        {
+          question: "Combien de temps faut-il pour déployer chyll ?",
+          answer: "Votre assistant chyll est prêt en 48h maximum. Notre équipe s'occupe de toute la configuration et l'intégration pour vous."
+        }
+      ]
+    },
+    aiEmployees: {
+      title: "Les IA de chyll",
+      items: [
+        {
+          question: "Comment sont formées les IA de chyll ?",
+          answer: "Nos IA sont formées sur des données spécifiques à votre secteur et à votre entreprise pour garantir des résultats pertinents."
+        }
+      ]
+    },
+    stillHaveQuestions: {
+      title: "Vous avez encore des questions ?",
+      description: "Contactez-nous pour en savoir plus sur chyll et comment il peut aider votre entreprise."
+    },
+    lastUpdated: "Dernière mise à jour : 13 mai 2025"
   },
-  
-  // Other pages
   notFound: {
-    title: "Page chyll introuvable (404)",
-    message: "Nous sommes désolés, mais la page que vous recherchez n'existe pas ou a été déplacée.",
-    button: "Retour à l'accueil chyll"
+    title: "Page non trouvée",
+    message: "Désolé, la page que vous recherchez n'existe pas ou a été déplacée.",
+    button: "Retour à l'accueil"
   }
 };

@@ -1,7 +1,8 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/sonner';
-import { Cookie } from 'lucide-react';
+import { Cookie, Check, X } from 'lucide-react';
 import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '@/context/LanguageContext';
@@ -11,9 +12,9 @@ const CookieConsent = () => {
   const { t } = useLanguage();
 
   useEffect(() => {
-    // Check if user has already accepted cookies
-    const cookiesAccepted = localStorage.getItem('cookiesAccepted');
-    if (!cookiesAccepted) {
+    // Check if user has already made a cookie choice
+    const cookiesChoice = localStorage.getItem('cookiesAccepted');
+    if (!cookiesChoice) {
       // Show the cookie banner after a short delay
       const timer = setTimeout(() => {
         setOpen(true);
@@ -39,8 +40,17 @@ const CookieConsent = () => {
       duration: 3000,
     });
   };
+  
+  const refuseCookies = () => {
+    localStorage.setItem('cookiesAccepted', 'refused');
+    setOpen(false);
+    toast(t.legal.cookies.consent.toast.refused, {
+      description: t.legal.cookies.consent.toast.refusedDescription,
+      duration: 3000,
+    });
+  };
 
-  // If cookies already accepted, don't render anything
+  // If cookies choice already made, don't render anything
   if (typeof window !== 'undefined' && localStorage.getItem('cookiesAccepted')) {
     return null;
   }
@@ -69,11 +79,20 @@ const CookieConsent = () => {
           <SheetFooter className="flex flex-row gap-3 justify-start sm:justify-end">
             <Button
               variant="outline"
+              onClick={refuseCookies}
+              className="border-red-200 hover:bg-red-50 hover:text-red-600 text-red-500"
+            >
+              <X className="h-4 w-4 mr-2" />
+              {t.legal.cookies.consent.buttons.refuse}
+            </Button>
+            <Button
+              variant="outline"
               onClick={acceptEssentialOnly}
             >
               {t.legal.cookies.consent.buttons.essentialOnly}
             </Button>
-            <Button onClick={acceptCookies}>
+            <Button onClick={acceptCookies} className="bg-brand-blue hover:bg-brand-blue/90">
+              <Check className="h-4 w-4 mr-2" />
               {t.legal.cookies.consent.buttons.acceptAll}
             </Button>
           </SheetFooter>

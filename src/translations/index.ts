@@ -200,12 +200,15 @@ export interface TranslationKeys {
         buttons: {
           essentialOnly: string;
           acceptAll: string;
+          refuse: string;
         };
         toast: {
           accepted: string;
           essential: string;
+          refused: string;
           description: string;
           essentialDescription: string;
+          refusedDescription: string;
         };
       };
     };
