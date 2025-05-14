@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useLanguage } from '@/context/LanguageContext';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 
@@ -24,7 +24,38 @@ interface Footer2Props {
 
 export function Footer2({
   tagline,
-  menuItems = [
+  menuItems,
+  copyright = "© 2025 chyll.ai",
+  bottomLinks = [
+    { text: "Conditions Générales", url: "/terms" },
+    { text: "Politique de Confidentialité", url: "/privacy" },
+    { text: "Politique des Cookies", url: "/cookies" },
+  ],
+}: Footer2Props) {
+  const { t } = useLanguage();
+  const location = useLocation();
+  const isBlogPage = location.pathname === '/blog' || location.pathname.startsWith('/blog/');
+  
+  // Define simplified menu items for blog pages
+  const defaultBlogMenuItems = [
+    {
+      title: "Entreprise",
+      links: [
+        { text: "À propos", url: "#" },
+        { text: "Contact", url: "#" },
+      ],
+    },
+    {
+      title: "Ressources",
+      links: [
+        { text: "Blog", url: "/blog" },
+        { text: "FAQ", url: "#faq" },
+      ],
+    },
+  ];
+  
+  // Define default menu items for other pages
+  const defaultMenuItems = [
     {
       title: "Produit",
       links: [
@@ -49,15 +80,10 @@ export function Footer2({
         { text: "Support", url: "#" },
       ],
     },
-  ],
-  copyright = "© 2025 chyll.ai",
-  bottomLinks = [
-    { text: "Conditions Générales", url: "/terms" },
-    { text: "Politique de Confidentialité", url: "/privacy" },
-    { text: "Politique des Cookies", url: "/cookies" },
-  ],
-}: Footer2Props) {
-  const { t } = useLanguage();
+  ];
+  
+  // Use provided menu items or fallback to defaults based on page type
+  const displayMenuItems = menuItems || (isBlogPage ? defaultBlogMenuItems : defaultMenuItems);
   
   // Use provided props or fallback to translations
   const displayTagline = tagline || t.footer.tagline;
@@ -96,7 +122,7 @@ export function Footer2({
                 <LanguageSwitcher />
               </div>
             </div>
-            {menuItems.map((section, sectionIdx) => (
+            {displayMenuItems.map((section, sectionIdx) => (
               <div key={sectionIdx}>
                 <h3 className="mb-4 font-bold text-white">{
                   section.title === "Product" || section.title === "Produit" ? t.footer.menuTitles.product :
@@ -141,3 +167,4 @@ export function Footer2({
     </section>
   );
 }
+
