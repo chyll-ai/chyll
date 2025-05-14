@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 
@@ -106,19 +107,22 @@ const SEOMetadata = ({
       name: "Starter",
       price: "99€",
       description: "Parfait pour les petites équipes",
-      url: "https://chyll.ai/offres/starter"
+      url: "https://chyll.ai/offres/starter",
+      actionUrl: "https://buy.stripe.com/5kAeWh18h6cOenSeUV"
     },
     {
       name: "Growth",
       price: "200€",
       description: "Pour les équipes en croissance",
-      url: "https://chyll.ai/offres/growth"
+      url: "https://chyll.ai/offres/growth",
+      actionUrl: "https://cal.com/chyll.ai/30min"
     },
     {
       name: "Scale",
       price: "300€",
       description: "Pour les équipes commerciales établies",
-      url: "https://chyll.ai/offres/scale"
+      url: "https://chyll.ai/offres/scale",
+      actionUrl: "https://cal.com/chyll.ai/30min"
     }
   ];
   
@@ -140,7 +144,14 @@ const SEOMetadata = ({
       addressCountry: 'FR'
     },
     openingHours: 'Mo-Fr 09:00-18:00',
-    priceRange: '€€'
+    priceRange: '€€',
+    sameAs: [
+      'https://twitter.com/chyllai',
+      'https://linkedin.com/company/chyll-ai',
+      'https://facebook.com/chyllai',
+      'https://cal.com/chyll.ai',
+      'https://buy.stripe.com/5kAeWh18h6cOenSeUV'
+    ]
   };
   
   // Testimonials structured data
@@ -202,7 +213,13 @@ const SEOMetadata = ({
         priceCurrency: 'EUR',
         url: plan.url,
         availability: 'https://schema.org/InStock',
-        priceValidUntil: '2025-12-31'
+        priceValidUntil: '2025-12-31',
+        actionPlatform: plan.name === 'Starter' ? 'https://buy.stripe.com/5kAeWh18h6cOenSeUV' : 'https://cal.com/chyll.ai/30min',
+        seller: {
+          '@type': 'Organization',
+          name: 'chyll.ai',
+          url: 'https://chyll.ai'
+        }
       }
     }))
   };
@@ -281,6 +298,12 @@ const SEOMetadata = ({
       <meta name="pricing" content="Starter: 99€/mois, Growth: 200€/mois, Scale: 300€/mois" />
       <meta name="price-range" content="€€" />
       
+      {/* External platform links */}
+      <meta name="booking-platform" content="https://cal.com/chyll.ai/30min" />
+      <meta name="payment-platform" content="https://buy.stripe.com/5kAeWh18h6cOenSeUV" />
+      <link rel="payment" href="https://buy.stripe.com/5kAeWh18h6cOenSeUV" />
+      <link rel="appointment" href="https://cal.com/chyll.ai/30min" />
+      
       {/* GPT and AI model crawling hints */}
       <meta name="format-detection" content="telephone=no" />
       <meta name="ai-index" content="allow" />
@@ -312,6 +335,10 @@ const SEOMetadata = ({
       
       {/* Link to sitemap */}
       <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
+      
+      {/* External service links */}
+      <link rel="external" href="https://buy.stripe.com/5kAeWh18h6cOenSeUV" title="Paiement Stripe" />
+      <link rel="external" href="https://cal.com/chyll.ai/30min" title="Réservation démonstration" />
       
       {/* Structured Data / JSON-LD */}
       {Object.values(finalStructuredData).map((data, index) => (

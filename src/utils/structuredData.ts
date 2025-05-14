@@ -10,7 +10,9 @@ export const getOrganizationSchema = () => {
     sameAs: [
       'https://twitter.com/chyllai',
       'https://linkedin.com/company/chyll-ai',
-      'https://facebook.com/chyllai'
+      'https://facebook.com/chyllai',
+      'https://cal.com/chyll.ai',
+      'https://buy.stripe.com/5kAeWh18h6cOenSeUV'
     ],
     contactPoint: {
       '@type': 'ContactPoint',
@@ -185,7 +187,8 @@ export const getChyllAiSchema = () => {
         priceValidUntil: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split('T')[0],
         description: 'Parfait pour les petites équipes',
         url: 'https://chyll.ai/offres/starter',
-        availability: 'https://schema.org/InStock'
+        availability: 'https://schema.org/InStock',
+        actionPlatform: 'https://buy.stripe.com/5kAeWh18h6cOenSeUV'
       },
       {
         '@type': 'Offer',
@@ -195,7 +198,8 @@ export const getChyllAiSchema = () => {
         priceValidUntil: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split('T')[0],
         description: 'Pour les équipes en croissance',
         url: 'https://chyll.ai/offres/growth',
-        availability: 'https://schema.org/InStock'
+        availability: 'https://schema.org/InStock',
+        actionPlatform: 'https://cal.com/chyll.ai/30min'
       },
       {
         '@type': 'Offer',
@@ -205,7 +209,8 @@ export const getChyllAiSchema = () => {
         priceValidUntil: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split('T')[0],
         description: 'Pour les équipes commerciales établies',
         url: 'https://chyll.ai/offres/scale',
-        availability: 'https://schema.org/InStock'
+        availability: 'https://schema.org/InStock',
+        actionPlatform: 'https://cal.com/chyll.ai/30min'
       }
     ],
     aggregateRating: {
@@ -237,6 +242,20 @@ export const getChyllAiSchema = () => {
         },
         "datePublished": "2025-02-15",
         "reviewBody": "Un gain de temps incroyable pour notre équipe commerciale. Nous avons multiplié par 3 notre volume de leads qualifiés."
+      }
+    ],
+    externalServices: [
+      {
+        "@type": "WebApplication",
+        "name": "Cal.com",
+        "url": "https://cal.com/chyll.ai/30min",
+        "description": "Réservation de démonstration"
+      },
+      {
+        "@type": "WebApplication",
+        "name": "Stripe",
+        "url": "https://buy.stripe.com/5kAeWh18h6cOenSeUV",
+        "description": "Plateforme de paiement"
       }
     ]
   };
@@ -282,6 +301,41 @@ export const getLocalBusinessSchema = () => {
       'https://twitter.com/chyllai',
       'https://linkedin.com/company/chyll-ai',
       'https://facebook.com/chyllai'
+    ]
+  };
+};
+
+// Update the JSON offers data in the public folder
+export const getOffersJsonData = () => {
+  return {
+    "offres": [
+      {
+        "id": "starter",
+        "nom": "Starter",
+        "prix": "99€",
+        "description": "Parfait pour les petites équipes",
+        "url": "https://chyll.ai/offres/starter",
+        "action": "https://buy.stripe.com/5kAeWh18h6cOenSeUV",
+        "texteAction": "Commencer l'essai"
+      },
+      {
+        "id": "growth",
+        "nom": "Growth",
+        "prix": "200€",
+        "description": "Pour les équipes en croissance",
+        "url": "https://chyll.ai/offres/growth",
+        "action": "https://cal.com/chyll.ai/30min",
+        "texteAction": "Réserver une démo"
+      },
+      {
+        "id": "scale",
+        "nom": "Scale",
+        "prix": "300€",
+        "description": "Pour les équipes commerciales établies",
+        "url": "https://chyll.ai/offres/scale",
+        "action": "https://cal.com/chyll.ai/30min",
+        "texteAction": "Réserver une démo"
+      }
     ]
   };
 };
