@@ -5,47 +5,10 @@ import type { TranslationKeys } from '@/translations';
 
 interface LanguageContextType {
   t: TranslationKeys;
-  language: 'fr'; // Keep language property but fix it to 'fr'
 }
 
-// Add missing properties to ensure TranslationKeys compatibility
-const placeholderData = {
-  about: {
-    title: "",
-    story: {
-      title: "",
-      text1: "",
-      text2: ""
-    },
-    mission: {
-      title: "",
-      text1: "",
-      text2: ""
-    },
-    unique: {
-      title: "",
-      items: [""]
-    },
-    cta: {
-      title: "",
-      text: "",
-      button: ""
-    }
-  },
-  blog: {
-    title: "",
-    subtitle: "",
-    loadMore: "",
-    allLoaded: "",
-    endReached: "",
-    postNotFound: "",      // Added missing property
-    postNotFoundDesc: "",  // Added missing property
-    backToBlog: ""         // Added missing property
-  }
-};
-
 // Add required properties for the pricing.plans.automate
-const frWithRequiredFields = {
+const translationWithRequiredFields = {
   ...fr,
   pricing: {
     ...fr.pricing,
@@ -53,21 +16,15 @@ const frWithRequiredFields = {
       ...fr.pricing.plans,
       automate: {
         ...fr.pricing.plans.automate,
-        badge: "Plus populaire", // Add required badge field
-        trial: "Essai gratuit de 14 jours" // Add required trial field
+        badge: fr.pricing.plans.automate.badge || "Plus populaire", 
+        trial: fr.pricing.plans.automate.trial || "Essai gratuit de 14 jours"
       }
     }
   }
-};
-
-const translationWithDefaults = {
-  ...frWithRequiredFields,
-  ...placeholderData
 } as TranslationKeys;
 
 const LanguageContext = createContext<LanguageContextType>({
-  t: translationWithDefaults,
-  language: 'fr'
+  t: translationWithRequiredFields
 });
 
 export const useLanguage = () => useContext(LanguageContext);
@@ -75,8 +32,7 @@ export const useLanguage = () => useContext(LanguageContext);
 export const LanguageProvider = ({ children }: { children: ReactNode }) => {
   return (
     <LanguageContext.Provider value={{ 
-      t: translationWithDefaults,
-      language: 'fr'
+      t: translationWithRequiredFields
     }}>
       {children}
     </LanguageContext.Provider>

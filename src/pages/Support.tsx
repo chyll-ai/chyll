@@ -28,9 +28,9 @@ const SupportOption = ({ option }: { option: SupportCard }) => (
 );
 
 const Support = () => {
-  const { language } = useLanguage();
+  const { t } = useLanguage();
 
-  const supportOptions: SupportCard[] = language === 'fr' ? [
+  const supportOptions: SupportCard[] = [
     {
       icon: <MessageCircle className="w-8 h-8 text-indigo-600" />,
       title: "Support par chat en direct",
@@ -59,35 +59,6 @@ const Support = () => {
       linkText: "Explorer les ressources",
       linkUrl: "/documentation",
     },
-  ] : [
-    {
-      icon: <MessageCircle className="w-8 h-8 text-indigo-600" />,
-      title: "Live Chat Support",
-      description: "Connect with our support team instantly for quick answers to your questions.",
-      linkText: "Start a chat",
-      linkUrl: "#",
-    },
-    {
-      icon: <Headset className="w-8 h-8 text-indigo-600" />,
-      title: "Phone Support",
-      description: "Speak directly with our technical specialists for in-depth assistance.",
-      linkText: "Call +1 (844) 594-2399",
-      linkUrl: "tel:+18445942399",
-    },
-    {
-      icon: <FileText className="w-8 h-8 text-indigo-600" />,
-      title: "Submit a Ticket",
-      description: "Create a support ticket for issues that require detailed investigation.",
-      linkText: "Open a ticket",
-      linkUrl: "#",
-    },
-    {
-      icon: <BookOpen className="w-8 h-8 text-indigo-600" />,
-      title: "Knowledge Base",
-      description: "Browse our comprehensive documentation for guides and tutorials.",
-      linkText: "Explore resources",
-      linkUrl: "/documentation",
-    },
   ];
 
   return (
@@ -98,12 +69,10 @@ const Support = () => {
         <div className="container-custom">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-3xl md:text-5xl font-bold mb-4">
-              {language === 'fr' ? "Support Client" : "Customer Support"}
+              Support Client
             </h1>
             <p className="text-lg text-gray-700 mb-8">
-              {language === 'fr' 
-                ? "Nous sommes là pour vous aider à tirer le meilleur parti de GenerativSchool. Choisissez comment vous souhaitez contacter notre équipe de support."
-                : "We're here to help you get the most out of GenerativSchool. Choose how you'd like to reach our support team."}
+              Nous sommes là pour vous aider à tirer le meilleur parti de chyll. Choisissez comment vous souhaitez contacter notre équipe de support.
             </p>
           </div>
         </div>
@@ -121,19 +90,17 @@ const Support = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div>
                 <h2 className="text-2xl font-bold mb-4">
-                  {language === 'fr' ? "Heures de support" : "Support Hours"}
+                  Heures de support
                 </h2>
                 <div className="space-y-4">
                   <div className="flex items-start">
                     <Clock className="w-5 h-5 text-indigo-600 mt-1 mr-3" />
                     <div>
                       <h3 className="font-medium">
-                        {language === 'fr' ? "Support standard" : "Standard Support"}
+                        Support standard
                       </h3>
                       <p className="text-gray-600">
-                        {language === 'fr' 
-                          ? "Lundi - Vendredi : 9h00 - 18h00 HE"
-                          : "Monday - Friday: 9:00 AM - 6:00 PM ET"}
+                        Lundi - Vendredi : 9h00 - 18h00 HE
                       </p>
                     </div>
                   </div>
@@ -141,12 +108,10 @@ const Support = () => {
                     <Clock className="w-5 h-5 text-indigo-600 mt-1 mr-3" />
                     <div>
                       <h3 className="font-medium">
-                        {language === 'fr' ? "Support premium" : "Premium Support"}
+                        Support premium
                       </h3>
                       <p className="text-gray-600">
-                        {language === 'fr' 
-                          ? "Support 24/7 pour les clients entreprise"
-                          : "24/7 support for enterprise customers"}
+                        Support 24/7 pour les clients entreprise
                       </p>
                     </div>
                   </div>
@@ -155,15 +120,13 @@ const Support = () => {
               
               <div>
                 <h2 className="text-2xl font-bold mb-4">
-                  {language === 'fr' ? "Garantie de support" : "Support Guarantee"}
+                  Garantie de support
                 </h2>
                 <div className="flex items-start">
                   <Shield className="w-5 h-5 text-indigo-600 mt-1 mr-3" />
                   <div>
                     <p className="text-gray-600">
-                      {language === 'fr' 
-                        ? "Notre engagement est de répondre à toutes les demandes de support dans les 24 heures. Les clients premium bénéficient de délais de réponse prioritaires de 4 heures ou moins."
-                        : "Our commitment is to respond to all support inquiries within 24 hours. Premium support customers receive priority response times of 4 hours or less."}
+                      Notre engagement est de répondre à toutes les demandes de support dans les 24 heures. Les clients premium bénéficient de délais de réponse prioritaires de 4 heures ou moins.
                     </p>
                   </div>
                 </div>

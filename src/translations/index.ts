@@ -1,4 +1,3 @@
-
 import { fr } from './fr';
 
 // Define a more complete type structure for our translations
@@ -255,4 +254,4 @@ export const translations = {
   fr,
 };
 
-export type SupportedLanguage = keyof typeof translations;
+export type SupportedLanguage = 'fr';

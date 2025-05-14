@@ -22,11 +22,11 @@ const BlogPostPage = () => {
       <div className="min-h-screen flex flex-col">
         <Navbar currentPath="/blog" />
         <div className="flex-1 container mx-auto py-20 flex flex-col items-center justify-center">
-          <h1 className="text-3xl font-bold mb-4">{t.blog?.postNotFound || "Article non trouvé"}</h1>
-          <p className="mb-8">{t.blog?.postNotFoundDesc || "L'article que vous recherchez n'existe pas ou a été supprimé."}</p>
+          <h1 className="text-3xl font-bold mb-4">{t.blog.postNotFound}</h1>
+          <p className="mb-8">{t.blog.postNotFoundDesc}</p>
           <Button onClick={() => navigate('/blog')}>
             <ArrowLeft className="mr-2" size={16} />
-            {t.blog?.backToBlog || "Retour au Blog"}
+            {t.blog.backToBlog}
           </Button>
         </div>
         <Footer2 />
