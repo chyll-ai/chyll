@@ -216,6 +216,9 @@ export interface TranslationKeys {
     loadMore: string;
     allLoaded: string;
     endReached: string;
+    postNotFound: string;
+    postNotFoundDesc: string;
+    backToBlog: string;
   };
   faq?: {
     general?: {

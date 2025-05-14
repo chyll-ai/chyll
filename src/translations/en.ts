@@ -241,7 +241,10 @@ export const en = {
     subtitle: "Insights, updates, and perspectives from the GenerativSchool team on AI, automation, and business innovation.",
     loadMore: "Load More Articles",
     allLoaded: "All articles loaded",
-    endReached: "You've reached the end of our article collection."
+    endReached: "You've reached the end of our article collection.",
+    postNotFound: "Post Not Found",
+    postNotFoundDesc: "The article you're looking for doesn't exist or has been removed.",
+    backToBlog: "Back to Blog"
   },
   
   // Other pages

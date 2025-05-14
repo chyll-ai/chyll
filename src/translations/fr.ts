@@ -249,6 +249,18 @@ export const fr = {
     }
   },
   
+  // Blog content
+  blog: {
+    title: "Blog & Ressources",
+    subtitle: "Découvrez nos articles, guides et études de cas sur la prospection B2B automatisée, l'enrichissement de leads et l'optimisation commerciale.",
+    loadMore: "Charger plus d'articles",
+    allLoaded: "Tous les articles sont chargés",
+    endReached: "Vous avez atteint la fin de notre collection d'articles.",
+    postNotFound: "Article non trouvé",
+    postNotFoundDesc: "L'article que vous recherchez n'existe pas ou a été supprimé.",
+    backToBlog: "Retour au Blog"
+  },
+  
   // Other pages
   notFound: {
     title: "Page introuvable (404)",
