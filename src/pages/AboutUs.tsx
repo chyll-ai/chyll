@@ -3,12 +3,20 @@ import React from 'react';
 import Navbar from '@/components/Navbar';
 import { Footer2 } from '@/components/ui/footer2';
 import { useLanguage } from '@/context/LanguageContext';
+import SEOMetadata from '@/components/SEOMetadata';
 
 const AboutUs = () => {
   const { t } = useLanguage();
   
   return (
     <div className="min-h-screen flex flex-col">
+      <SEOMetadata 
+        title="À propos | chyll.ai"
+        description="Découvrez l'histoire de chyll.ai, notre mission et ce qui nous rend uniques dans le domaine de la prospection B2B automatisée."
+        canonicalUrl="/about-us"
+        keywords={["à propos chyll.ai", "histoire chyll.ai", "mission chyll.ai", "équipe chyll.ai"]}
+      />
+      
       <Navbar />
       
       <section className="flex-grow py-16 bg-white">

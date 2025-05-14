@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useLanguage } from '@/context/LanguageContext';
@@ -41,15 +40,15 @@ export function Footer2({
     {
       title: "Entreprise",
       links: [
-        { text: "À propos", url: "#" },
-        { text: "Contact", url: "#" },
+        { text: "À propos", url: "/about-us" },
+        { text: "Contact", url: "/contact" },
       ],
     },
     {
       title: "Ressources",
       links: [
         { text: "Blog", url: "/blog" },
-        { text: "FAQ", url: "#faq" },
+        { text: "FAQ", url: "/faq" },
       ],
     },
   ];
@@ -68,16 +67,16 @@ export function Footer2({
     {
       title: "Entreprise",
       links: [
-        { text: "À propos", url: "#" },
-        { text: "Contact", url: "#" },
+        { text: "À propos", url: "/about-us" },
+        { text: "Contact", url: "/contact" },
       ],
     },
     {
       title: "Ressources",
       links: [
         { text: "Blog", url: "/blog" },
-        { text: "FAQ", url: "#faq" },
-        { text: "Support", url: "#" },
+        { text: "FAQ", url: "/faq" },
+        { text: "Support", url: "/support" },
       ],
     },
   ];
@@ -167,4 +166,3 @@ export function Footer2({
     </section>
   );
 }
-

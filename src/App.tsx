@@ -13,6 +13,7 @@ import Cookies from '@/pages/Cookies';
 import FAQ from '@/pages/FAQ';
 import Blog from '@/pages/Blog';
 import BlogPostPage from '@/pages/BlogPostPage';
+import AboutUs from '@/pages/AboutUs';
 
 import { LanguageProvider } from '@/context/LanguageContext';
 
@@ -30,6 +31,7 @@ function App() {
             <Route path="/faq" element={<FAQ />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:id" element={<BlogPostPage />} />
+            <Route path="/about-us" element={<AboutUs />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <Toaster />
