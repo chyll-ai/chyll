@@ -24,6 +24,7 @@ function PricingBasic() {
       ],
       description: "Parfait pour les petites équipes",
       buttonText: "Commencer l'essai",
+      yearlyButtonText: "S'abonner maintenant",
       href: "https://buy.stripe.com/5kAeWh18h6cOenSeUV",
       isPopular: false,
     },
@@ -43,6 +44,7 @@ function PricingBasic() {
       ],
       description: "Pour les équipes en croissance",
       buttonText: "Réserver une démo",
+      yearlyButtonText: "Réserver une démo",
       href: "https://cal.com/chyll.ai/30min",
       isPopular: true,
     },
@@ -64,6 +66,7 @@ function PricingBasic() {
       ],
       description: "Pour les équipes commerciales établies",
       buttonText: "Réserver une démo",
+      yearlyButtonText: "Réserver une démo",
       href: "https://cal.com/chyll.ai/30min",
       isPopular: false,
     }

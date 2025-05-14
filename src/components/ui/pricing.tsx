@@ -20,6 +20,7 @@ interface PricingPlan {
   features: string[];
   description: string;
   buttonText: string;
+  yearlyButtonText?: string;
   href: string;
   isPopular: boolean;
 }
@@ -125,6 +126,11 @@ export function Pricing({
           const displayedPrice = isMonthly 
             ? plan.price 
             : calculateDiscountedMonthlyPrice(plan.price) + currencySymbol;
+            
+          // Use different button text for yearly plans if provided
+          const buttonText = isMonthly 
+            ? plan.buttonText 
+            : plan.yearlyButtonText || plan.buttonText;
 
           return (
             <motion.div
@@ -194,7 +200,7 @@ export function Pricing({
                   </div>
                 )}
 
-                {plan.name !== "ONCE" && plan.name !== "Une fois" && (
+                {isMonthly && plan.name !== "ONCE" && plan.name !== "Une fois" && (
                   <div className="mt-2">
                     <p className="text-sm font-medium text-green-600">
                       {language === "fr" ? "Essai gratuit de 14 jours" : "14-day free trial"}
@@ -224,7 +230,7 @@ export function Pricing({
                     !plan.isPopular && "hover:bg-primary hover:text-primary-foreground"
                   )}
                 >
-                  {plan.buttonText}
+                  {buttonText}
                 </a>
                 <p className="mt-6 text-xs leading-5 text-muted-foreground">
                   {plan.description}
