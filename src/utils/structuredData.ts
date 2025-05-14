@@ -1,4 +1,3 @@
-
 // Organization schema
 export const getOrganizationSchema = () => {
   return {
@@ -15,7 +14,7 @@ export const getOrganizationSchema = () => {
     ],
     contactPoint: {
       '@type': 'ContactPoint',
-      telephone: '+33 1 23 45 67 89',
+      telephone: '+33 6 99 40 76 73',
       contactType: 'customer service',
       email: 'contact@chyll.ai',
       availableLanguage: ['French', 'English']
@@ -232,7 +231,7 @@ export const getLocalBusinessSchema = () => {
     image: 'https://chyll.ai/office.jpg',
     '@id': 'https://chyll.ai',
     url: 'https://chyll.ai',
-    telephone: '+33 1 23 45 67 89',
+    telephone: '+33 6 99 40 76 73',
     address: {
       '@type': 'PostalAddress',
       streetAddress: '60 RUE FRANCOIS IER',

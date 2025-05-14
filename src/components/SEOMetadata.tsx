@@ -109,7 +109,7 @@ const SEOMetadata = ({
     alternateName: ['chyll.ai', 'Chyll AI', 'plateforme chyll'],
     image: `${siteUrl}/lovable-uploads/860cdec8-1919-4afc-928c-cbfa116c2f7b.png`,
     url: siteUrl,
-    telephone: '+33 1 23 45 67 89',
+    telephone: '+33 6 99 40 76 73',
     email: 'contact@chyll.ai',
     address: {
       '@type': 'PostalAddress',

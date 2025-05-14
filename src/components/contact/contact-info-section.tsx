@@ -23,10 +23,10 @@ export const ContactInfoSection = () => {
         
         <ContactInfoItem 
           icon={<Phone className="w-6 h-6 text-indigo-600" />}
-          title="Toll-Free Phone Number"
+          title="Phone Number"
           details={
-            <a href="tel:+18445942399" className="hover:text-indigo-600 transition-colors">
-              +1 (844) 594-2399 (Toll Free)
+            <a href="tel:+33699407673" className="hover:text-indigo-600 transition-colors">
+              +33 6 99 40 76 73
             </a>
           }
         />

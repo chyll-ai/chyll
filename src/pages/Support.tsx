@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import { Footer2 } from '@/components/ui/footer2';
@@ -42,8 +41,8 @@ const Support = () => {
       icon: <Headset className="w-8 h-8 text-indigo-600" />,
       title: "Support téléphonique",
       description: "Parlez directement avec nos spécialistes techniques pour une assistance approfondie.",
-      linkText: "Appelez +1 (844) 594-2399",
-      linkUrl: "tel:+18445942399",
+      linkText: "Appelez +33 6 99 40 76 73",
+      linkUrl: "tel:+33699407673",
     },
     {
       icon: <FileText className="w-8 h-8 text-indigo-600" />,

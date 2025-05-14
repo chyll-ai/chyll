@@ -39,6 +39,16 @@ export function Footer2() {
                 </svg>
               </a>
             </div>
+            <div className="mt-6 text-gray-400">
+              <div className="flex items-center mb-2">
+                <Mail className="w-4 h-4 mr-2" />
+                <a href="mailto:contact@chyll.ai" className="hover:text-white transition-colors">contact@chyll.ai</a>
+              </div>
+              <div className="flex items-center">
+                <Globe className="w-4 h-4 mr-2" />
+                <span>+33 6 99 40 76 73</span>
+              </div>
+            </div>
             <p className="text-gray-500 mt-6 text-sm">
               {t.footer.copyright}
             </p>
