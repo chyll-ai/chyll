@@ -1,18 +1,16 @@
+
 import React, { useState } from 'react';
 import Navbar from '@/components/Navbar';
 import { Footer2Demo } from '@/components/ui/footer2-demo';
 import { useLocation } from 'react-router-dom';
 import { useToast } from "@/components/ui/use-toast";
 import { BlogList } from '@/components/blog/blog-list';
-import { initialBlogPosts, additionalBlogPosts, finalBlogPosts, initialBlogPostsFr } from '@/components/blog/blog-data';
+import { initialBlogPosts, additionalBlogPosts, finalBlogPosts } from '@/components/blog/blog-data';
 import { BlogPost } from '@/components/blog/blog-card';
 import { useLanguage } from '@/context/LanguageContext';
 
 const Blog = () => {
-  const { language } = useLanguage();
-  const [blogPosts, setBlogPosts] = useState<BlogPost[]>(
-    language === 'fr' ? initialBlogPostsFr : initialBlogPosts
-  );
+  const [blogPosts, setBlogPosts] = useState<BlogPost[]>(initialBlogPosts);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [isLoading, setIsLoading] = useState(false);

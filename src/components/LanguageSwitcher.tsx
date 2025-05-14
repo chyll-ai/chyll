@@ -2,7 +2,7 @@
 import React from 'react';
 
 const LanguageSwitcher = () => {
-  // No functionality needed as site is French-only
+  // Site is French-only, so no language switching functionality needed
   return null;
 };
 
