@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Check } from 'lucide-react';
@@ -12,7 +13,7 @@ const frPricingPlans = [
     period: "/mois",
     description: "Parfait pour les petites équipes",
     features: [
-      "50 numéros de téléphone ET adresses email par mois",
+      "50 numéros de téléphone + 50 adresses email par mois",
       "Personas illimités (LinkedIn)",
       "2 utilisateurs",
       "Interface CRM personnalisée",
@@ -27,11 +28,11 @@ const frPricingPlans = [
   },
   {
     name: "Growth",
-    price: "200€",
+    price: "199€",
     period: "/mois",
     description: "Pour les équipes en croissance",
     features: [
-      "100 numéros de téléphone ET adresses email par mois",
+      "200 numéros de téléphone + 200 adresses email par mois",
       "Personas illimités (LinkedIn)",
       "3 utilisateurs",
       "Interface CRM personnalisée",
@@ -47,11 +48,11 @@ const frPricingPlans = [
   },
   {
     name: "Scale",
-    price: "300€",
+    price: "399€",
     period: "/mois",
     description: "Pour les équipes commerciales établies",
     features: [
-      "200 numéros de téléphone ET adresses email par mois",
+      "400 numéros de téléphone + 400 adresses email par mois",
       "Personas illimités (LinkedIn)",
       "5 utilisateurs",
       "Interface CRM sur mesure",

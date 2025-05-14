@@ -15,7 +15,7 @@ function PricingBasic() {
       yearlyPrice: "950€", // Annual price with discount
       period: "/mois",
       features: [
-        "50 numéros de téléphone ET adresses email par mois",
+        "50 numéros de téléphone + 50 adresses email par mois",
         "Personas illimités (LinkedIn)",
         "2 utilisateurs",
         "Interface CRM personnalisée",
@@ -30,11 +30,11 @@ function PricingBasic() {
     },
     {
       name: "Growth",
-      price: "200€",
-      yearlyPrice: "1920€", // Annual price with 20% discount
+      price: "199€",
+      yearlyPrice: "1910€", // Annual price with 20% discount
       period: "/mois",
       features: [
-        "100 numéros de téléphone ET adresses email par mois",
+        "200 numéros de téléphone + 200 adresses email par mois",
         "Personas illimités (LinkedIn)",
         "3 utilisateurs",
         "Interface CRM personnalisée",
@@ -50,11 +50,11 @@ function PricingBasic() {
     },
     {
       name: "Scale",
-      price: "300€",
-      yearlyPrice: "2880€", // Annual price with 20% discount
+      price: "399€",
+      yearlyPrice: "3830€", // Annual price with 20% discount
       period: "/mois",
       features: [
-        "200 numéros de téléphone ET adresses email par mois",
+        "400 numéros de téléphone + 400 adresses email par mois",
         "Personas illimités (LinkedIn)",
         "5 utilisateurs",
         "Interface CRM sur mesure",
