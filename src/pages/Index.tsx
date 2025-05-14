@@ -67,7 +67,7 @@ const offersData = [
       "Support continu et améliorations"
     ],
     url: "https://chyll.ai/offres/automatiser",
-    action: "https://tally.so/r/wA0pJl",
+    action: "https://cal.com/chyll.ai/30min",
     actionText: "Réserver une démo"
   },
   {
@@ -82,7 +82,7 @@ const offersData = [
       "Support prioritaire et accès stratégique"
     ],
     url: "https://chyll.ai/offres/integrer",
-    action: "https://tally.so/r/wA0pJl",
+    action: "https://cal.com/chyll.ai/30min",
     actionText: "Contacter l'équipe"
   }
 ];
