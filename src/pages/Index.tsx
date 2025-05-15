@@ -14,7 +14,7 @@ import { useLanguage } from '@/context/LanguageContext';
 import { TestimonialsCarousel } from '@/components/ui/testimonials-carousel';
 import { FAQSection } from '@/components/ui/faq-section';
 
-// Sample FAQ data for structured data
+// Sample FAQ data for structured data - this is the ONLY FAQPage schema we'll keep
 const faqData = [
   {
     question: "C'est quoi chyll ?",

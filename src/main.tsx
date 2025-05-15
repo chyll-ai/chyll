@@ -82,35 +82,8 @@ const init = () => {
             document.head.appendChild(aiScript);
           }
           
-          // Add parent topic structured data for topic clusters
-          if (!document.querySelector('script[type="application/ld+json"][data-topic-cluster="true"]')) {
-            const topicScript = document.createElement('script');
-            topicScript.type = 'application/ld+json';
-            topicScript.setAttribute('data-topic-cluster', 'true');
-            topicScript.textContent = JSON.stringify({
-              '@context': 'https://schema.org',
-              '@type': 'FAQPage',
-              'mainEntity': [
-                {
-                  '@type': 'Question',
-                  'name': 'C\'est quoi chyll ?',
-                  'acceptedAnswer': {
-                    '@type': 'Answer',
-                    'text': 'chyll est un assistant commercial IA qui automatise la prospection B2B pour les startups et PME. Il trouve les bons prospects, les enrichit avec des coordonnées vérifiées et met à jour votre CRM automatiquement.'
-                  }
-                },
-                {
-                  '@type': 'Question',
-                  'name': 'Comment fonctionne chyll pour la prospection B2B ?',
-                  'acceptedAnswer': {
-                    '@type': 'Answer',
-                    'text': 'chyll utilise l\'intelligence artificielle pour identifier les prospects pertinents selon vos critères, enrichit leurs profils avec emails et téléphones vérifiés, et synchronise ces données avec votre CRM existant.'
-                  }
-                }
-              ]
-            });
-            document.head.appendChild(topicScript);
-          }
+          // We're removing this duplicate FAQPage structured data since it's already in Index.tsx
+          // and causing a duplicate FAQPage error in Search Console
         }
       });
     });
