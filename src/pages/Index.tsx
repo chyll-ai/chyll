@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import HowItWorks from '@/components/HowItWorks';
@@ -35,6 +36,10 @@ const faqData = [
   {
     question: "Est-ce que chyll s'intègre avec mon CRM ?",
     answer: "Oui, chyll propose une interface CRM personnalisée ou s'intègre avec les principaux CRM du marché pour une synchronisation automatique des données."
+  },
+  {
+    question: "Pourquoi choisir chyll plutôt qu'une autre solution ?",
+    answer: "chyll se distingue par sa simplicité d'utilisation, son intelligence artificielle avancée et son approche entièrement automatisée de la prospection B2B, sans nécessiter de compétences techniques."
   }
 ];
 
@@ -108,13 +113,15 @@ const Index = () => {
   // SEO keywords focused on brand and B2B prospection
   const seoKeywords = [
     'chyll', 
+    'chyll assistant commercial',
     'chyll.ai', 
-    'assistant commercial chyll',
-    'logiciel chyll',
+    'chyll logiciel',
+    'application chyll',
+    'outil chyll',
+    'plateforme chyll',
     'automatisation des ventes',
     'outil IA pour la prospection',
     'assistant de vente intelligent',
-    'plateforme chyll',
     'prospection B2B',
     'enrichissement de leads',
     'IA commerciale',
@@ -127,8 +134,8 @@ const Index = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <SEOMetadata 
-        title="chyll - Assistant commercial IA pour les startups et PME"
-        description="chyll automatise la génération de leads et les relances commerciales grâce à l'intelligence artificielle. Accélérez vos ventes avec chyll."
+        title="chyll - Assistant commercial IA pour automatiser votre prospection B2B"
+        description="chyll automatise la génération de leads et les relances commerciales grâce à l'intelligence artificielle. Gagnez du temps et accélérez vos ventes avec chyll."
         canonicalUrl="/"
         pageUrl="https://chyll.ai/"
         keywords={seoKeywords}

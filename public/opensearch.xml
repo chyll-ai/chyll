@@ -1,0 +1,16 @@
+
+<?xml version="1.0" encoding="UTF-8"?>
+<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/">
+  <ShortName>chyll</ShortName>
+  <Description>chyll - Assistant commercial IA pour la prospection B2B</Description>
+  <Tags>chyll chyll.ai assistant-commercial-ia prospection-b2b</Tags>
+  <Contact>contact@chyll.ai</Contact>
+  <Url type="text/html" template="https://chyll.ai/search?q={searchTerms}"/>
+  <Image height="16" width="16" type="image/png">https://chyll.ai/favicon.png</Image>
+  <InputEncoding>UTF-8</InputEncoding>
+  <OutputEncoding>UTF-8</OutputEncoding>
+  <Language>fr-FR</Language>
+  <Developer>chyll.ai</Developer>
+  <SyndicationRight>open</SyndicationRight>
+  <AdultContent>false</AdultContent>
+</OpenSearchDescription>

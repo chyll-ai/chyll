@@ -3,8 +3,8 @@ import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
 
-// Set document title with primary keyword focus
-document.title = "chyll - Assistant commercial IA pour les startups et PME";
+// Set document title with primary keyword focus for direct "chyll" searches
+document.title = "chyll - Assistant commercial IA pour la prospection B2B";
 
 // Performance monitoring helper
 const reportWebVitals = () => {
@@ -38,11 +38,11 @@ const init = () => {
             const imgElement = img as HTMLImageElement;
             const path = imgElement.src.split('/').pop()?.split('.')[0] || '';
             
-            // Add keyword-rich alt text based on image context
+            // Add keyword-rich alt text based on image context - focus on "chyll" branding
             if (path.includes('hero') || path.includes('banner')) {
-              imgElement.alt = 'Interface de chyll - Assistant commercial IA pour la prospection';
+              imgElement.alt = 'chyll - Interface assistant commercial IA pour la prospection B2B';
             } else if (path.includes('feature')) {
-              imgElement.alt = 'Fonctionnalité chyll pour l\'automatisation des ventes B2B';
+              imgElement.alt = 'chyll - Fonctionnalité pour l\'automatisation des ventes B2B';
             } else if (path.includes('team') || path.includes('about')) {
               imgElement.alt = 'Équipe fondatrice de chyll - plateforme d\'assistance commerciale';
             } else {
@@ -72,7 +72,7 @@ const init = () => {
               '@context': 'https://schema.org',
               '@type': 'SoftwareApplication',
               'name': 'chyll',
-              'alternateName': ['chyll.ai', 'Chyll AI', 'plateforme chyll'],
+              'alternateName': ['chyll.ai', 'Chyll AI', 'plateforme chyll', 'application chyll', 'logiciel chyll'],
               'applicationCategory': 'BusinessApplication',
               'applicationSubCategory': 'Sales Development Tool',
               'description': 'chyll est un assistant commercial IA qui automatise la prospection B2B en trouvant, enrichissant et mettant à jour les données prospects dans votre CRM.',
@@ -84,6 +84,21 @@ const init = () => {
           
           // We're removing this duplicate FAQPage structured data since it's already in Index.tsx
           // and causing a duplicate FAQPage error in Search Console
+          
+          // Add additional meta tags with high priority on "chyll" keyword
+          if (!document.querySelector('meta[name="brand-name"]')) {
+            const brandMeta = document.createElement('meta');
+            brandMeta.name = 'brand-name';
+            brandMeta.content = 'chyll';
+            document.head.appendChild(brandMeta);
+          }
+          
+          if (!document.querySelector('link[rel="canonical"]')) {
+            const canonicalLink = document.createElement('link');
+            canonicalLink.rel = 'canonical';
+            canonicalLink.href = 'https://chyll.ai/';
+            document.head.appendChild(canonicalLink);
+          }
         }
       });
     });

@@ -1,5 +1,6 @@
 
 # chyll - Assistant commercial IA - Robots.txt
+# Updated: 2025-05-15
 
 # Main directives
 User-agent: *
@@ -15,18 +16,28 @@ Disallow: /account/
 # Sitemap location
 Sitemap: https://chyll.ai/sitemap.xml
 
-# Allow search engines
+# Allow search engines with highest priority
 User-agent: Googlebot
 Allow: /
+Allow: /*.html
+Allow: /*.js
+Allow: /*.css
+Allow: /images/
 Allow: /api/offres.json
 Allow: /offres/
 Disallow: /admin/
+Crawl-delay: 1
 
 User-agent: Bingbot
 Allow: /
+Allow: /*.html
+Allow: /*.js
+Allow: /*.css
+Allow: /images/
 Allow: /api/offres.json
 Allow: /offres/
 Disallow: /admin/
+Crawl-delay: 1
 
 # AI Crawlers - Important content for AI models
 User-agent: GPTBot
@@ -37,64 +48,83 @@ Allow: /faq
 Allow: /blog
 Allow: /offres/
 Disallow: /admin/
+Crawl-delay: 1
 
 User-agent: ChatGPT-User
 Allow: /
 Allow: /api/offres.json
 Allow: /offres/
 Disallow: /admin/
+Crawl-delay: 1
 
 User-agent: GoogleOther
 Allow: /
 Allow: /api/offres.json
 Allow: /offres/
+Crawl-delay: 1
 
 User-agent: Anthropic-AI
 Allow: /
 Allow: /api/offres.json
 Allow: /offres/
+Crawl-delay: 1
 
 User-agent: ClaudeBot
 Allow: /
 Allow: /api/offres.json
 Allow: /offres/
+Crawl-delay: 1
 
 User-agent: Bytespider
 Allow: /
 Allow: /api/offres.json
 Allow: /offres/
+Crawl-delay: 1
 
 User-agent: CCBot
 Allow: /
 Allow: /api/offres.json
 Allow: /offres/
+Crawl-delay: 1
 
 # Social Media Crawlers
 User-agent: Twitterbot
 Allow: /
 Allow: /api/offres.json
+Crawl-delay: 1
 
 User-agent: facebookexternalhit
 Allow: /
 Allow: /api/offres.json
+Crawl-delay: 1
 
 # International search engines
 User-agent: Baiduspider
 Allow: /
 Allow: /api/offres.json
+Crawl-delay: 1
 
 User-agent: YandexBot
 Allow: /
 Allow: /api/offres.json
+Crawl-delay: 1
 
 User-agent: Slurp
 Allow: /
 Allow: /api/offres.json
+Crawl-delay: 1
 
 User-agent: Applebot
 Allow: /
 Allow: /api/offres.json
+Crawl-delay: 1
 
-# Brand keywords and SEO hints
-# chyll, chyll.ai, assistant commercial chyll, logiciel chyll
-# automatisation des ventes, outil IA pour la prospection, assistant de vente intelligent
+# Brand keywords for SEO (do not remove)
+# chyll
+# chyll.ai
+# chyll assistant commercial
+# chyll logiciel
+# application chyll
+# assistant chyll
+# outil chyll
+# plateforme chyll
