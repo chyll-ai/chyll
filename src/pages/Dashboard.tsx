@@ -1,17 +1,49 @@
 
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/components/ui/sonner';
 import { Button } from '@/components/ui/button';
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<any>(null);
   const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
+    const processAuth = async () => {
+      // Vérifier si la page est chargée avec un hash (pour l'authentification)
+      if (location.hash) {
+        console.log("Hash détecté dans l'URL, processing auth");
+        
+        const hashParams = new URLSearchParams(location.hash.substring(1));
+        const accessToken = hashParams.get('access_token');
+        
+        if (accessToken) {
+          // Définir la session avec le token d'accès
+          console.log("Setting session with access token");
+          const { error } = await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: hashParams.get('refresh_token') || '',
+          });
+          
+          if (error) {
+            console.error("Erreur lors de la définition de la session:", error);
+            toast.error("Erreur d'authentification. Veuillez réessayer.");
+            navigate('/login');
+            return;
+          }
+          
+          // Nettoyer l'URL en retirant le hash
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
+      }
+    };
+
+    processAuth();
+    
     const checkSession = async () => {
       try {
         const { data, error } = await supabase.auth.getSession();
@@ -53,7 +85,7 @@ const Dashboard = () => {
     };
     
     checkSession();
-  }, [navigate]);
+  }, [navigate, location]);
 
   const handleSignOut = async () => {
     try {

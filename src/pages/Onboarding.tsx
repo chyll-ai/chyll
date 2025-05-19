@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -17,6 +17,7 @@ import { Textarea } from '@/components/ui/textarea';
 
 const Onboarding = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState({
@@ -35,45 +36,84 @@ const Onboarding = () => {
   });
 
   useEffect(() => {
-    const checkSession = async () => {
+    const processAuth = async () => {
       try {
-        const { data, error } = await supabase.auth.getSession();
-        if (error || !data.session) {
-          // Pas de session, redirection vers la page de connexion
-          toast.error("Veuillez vous connecter pour accéder à cette page");
-          navigate('/login');
-          return;
+        // Vérifier si la page est chargée avec un hash (pour l'authentification)
+        if (location.hash) {
+          console.log("Hash détecté dans l'URL, processing auth");
+          
+          const hashParams = new URLSearchParams(location.hash.substring(1));
+          const accessToken = hashParams.get('access_token');
+          
+          if (accessToken) {
+            // Définir la session avec le token d'accès
+            console.log("Setting session with access token");
+            const { error } = await supabase.auth.setSession({
+              access_token: accessToken,
+              refresh_token: hashParams.get('refresh_token') || '',
+            });
+            
+            if (error) {
+              console.error("Erreur lors de la définition de la session:", error);
+              toast.error("Erreur d'authentification. Veuillez réessayer.");
+              navigate('/login');
+              return;
+            }
+            
+            // Nettoyer l'URL en retirant le hash
+            window.history.replaceState({}, document.title, window.location.pathname);
+          }
         }
+        
+        // Vérifier si l'utilisateur est authentifié
+        const checkSession = async () => {
+          try {
+            const { data, error } = await supabase.auth.getSession();
+            
+            if (error || !data.session) {
+              // Pas de session, redirection vers la page de connexion
+              toast.error("Veuillez vous connecter pour accéder à cette page");
+              navigate('/login');
+              return;
+            }
 
-        // Vérifier si l'utilisateur a déjà un profil
-        const userId = data.session.user.id;
-        const { data: profileData, error: profileError } = await supabase
-          .from('client_profile')
-          .select('*')
-          .eq('client_id', userId)
-          .maybeSingle();
+            // Vérifier si l'utilisateur a déjà un profil
+            const userId = data.session.user.id;
+            const { data: profileData, error: profileError } = await supabase
+              .from('client_profile')
+              .select('*')
+              .eq('client_id', userId)
+              .maybeSingle();
 
-        if (profileError) {
-          throw profileError;
-        }
+            if (profileError) {
+              throw profileError;
+            }
 
-        if (profileData) {
-          // L'utilisateur a déjà un profil, redirection vers le dashboard
-          toast.info("Vous êtes déjà inscrit");
-          navigate('/dashboard');
-          return;
-        }
+            if (profileData) {
+              // L'utilisateur a déjà un profil, redirection vers le dashboard
+              toast.info("Vous êtes déjà inscrit");
+              navigate('/dashboard');
+              return;
+            }
 
-        setLoading(false);
+            setLoading(false);
+          } catch (error: any) {
+            console.error("Erreur lors de la vérification de la session:", error);
+            toast.error(error.message || "Une erreur s'est produite");
+            navigate('/login');
+          }
+        };
+        
+        await checkSession();
       } catch (error: any) {
-        console.error("Erreur lors de la vérification de la session:", error);
+        console.error("Erreur lors du traitement de l'authentification:", error);
         toast.error(error.message || "Une erreur s'est produite");
         navigate('/login');
       }
     };
 
-    checkSession();
-  }, [navigate]);
+    processAuth();
+  }, [navigate, location]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
