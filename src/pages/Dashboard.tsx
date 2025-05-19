@@ -15,46 +15,56 @@ const Dashboard = () => {
   useEffect(() => {
     const processAuth = async () => {
       // Vérifier si la page est chargée avec un hash (pour l'authentification)
-      if (location.hash) {
-        console.log("Hash détecté dans l'URL, processing auth");
+      if (location.hash && location.hash.includes('access_token')) {
+        console.log("Hash détecté dans l'URL, processing auth dans Dashboard");
         
-        const hashParams = new URLSearchParams(location.hash.substring(1));
-        const accessToken = hashParams.get('access_token');
-        
-        if (accessToken) {
-          // Définir la session avec le token d'accès
-          console.log("Setting session with access token");
-          const { error } = await supabase.auth.setSession({
-            access_token: accessToken,
-            refresh_token: hashParams.get('refresh_token') || '',
-          });
+        try {
+          const hashParams = new URLSearchParams(location.hash.substring(1));
+          const accessToken = hashParams.get('access_token');
           
-          if (error) {
-            console.error("Erreur lors de la définition de la session:", error);
-            toast.error("Erreur d'authentification. Veuillez réessayer.");
-            navigate('/login');
-            return;
+          if (accessToken) {
+            // Définir la session avec le token d'accès
+            console.log("Setting session with access token in Dashboard");
+            const { error } = await supabase.auth.setSession({
+              access_token: accessToken,
+              refresh_token: hashParams.get('refresh_token') || '',
+            });
+            
+            if (error) {
+              console.error("Erreur lors de la définition de la session:", error);
+              toast.error("Erreur d'authentification. Veuillez réessayer.");
+              navigate('/login', { replace: true });
+              return;
+            }
+            
+            // Nettoyer l'URL en retirant le hash
+            window.history.replaceState({}, document.title, window.location.pathname);
+            console.log("Session définie avec succès, URL nettoyée");
           }
-          
-          // Nettoyer l'URL en retirant le hash
-          window.history.replaceState({}, document.title, window.location.pathname);
+        } catch (error) {
+          console.error("Erreur lors du traitement du hash:", error);
+          toast.error("Une erreur s'est produite lors de l'authentification");
+          navigate('/login', { replace: true });
+          return;
         }
       }
     };
 
-    processAuth();
-    
     const checkSession = async () => {
       try {
+        await processAuth();
+        
         const { data, error } = await supabase.auth.getSession();
         
         if (error || !data.session) {
           // Pas de session, redirection vers la page de connexion
+          console.log("Pas de session dans Dashboard, redirection vers login");
           toast.error("Veuillez vous connecter pour accéder à cette page");
-          navigate('/login');
+          navigate('/login', { replace: true });
           return;
         }
 
+        console.log("Session trouvée dans Dashboard:", data.session.user.email);
         setUser(data.session.user);
         
         // Récupérer le profil de l'utilisateur
@@ -71,7 +81,8 @@ const Dashboard = () => {
         
         if (!profileData) {
           // L'utilisateur n'a pas encore de profil, redirection vers l'onboarding
-          navigate('/onboarding');
+          console.log("Pas de profil trouvé, redirection vers onboarding");
+          navigate('/onboarding', { replace: true });
           return;
         }
         
@@ -91,7 +102,7 @@ const Dashboard = () => {
     try {
       await supabase.auth.signOut();
       toast.success("Vous avez été déconnecté avec succès");
-      navigate('/login');
+      navigate('/login', { replace: true });
     } catch (error: any) {
       toast.error(error.message || "Erreur lors de la déconnexion");
     }

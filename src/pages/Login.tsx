@@ -1,14 +1,35 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/components/ui/sonner';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [messageSent, setMessageSent] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Vérifier si la page est chargée avec un hash (pour l'authentification)
+    if (location.hash) {
+      console.log("Hash détecté dans l'URL de login, redirection vers onboarding");
+      navigate('/onboarding', { replace: true, state: { from: 'login', hash: location.hash } });
+    }
+
+    // Vérifier si l'utilisateur est déjà connecté
+    const checkSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      if (data.session) {
+        navigate('/dashboard', { replace: true });
+      }
+    };
+
+    checkSession();
+  }, [location, navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,7 +42,7 @@ const Login = () => {
     try {
       setLoading(true);
       
-      // Utiliser l'URL complète comme configurée dans Supabase
+      // Utiliser l'URL explicite pour la redirection
       const redirectUrl = "https://chyll.ai/onboarding";
       console.log("URL de redirection:", redirectUrl);
       
@@ -43,7 +64,7 @@ const Login = () => {
       
       // Messages d'erreur plus spécifiques
       if (error.message?.includes("path is invalid")) {
-        toast.error("Erreur de configuration de redirection. Veuillez contacter l'administrateur.");
+        toast.error("Erreur de configuration de redirection. Veuillez vérifier les URL de redirection dans Supabase.");
       } else {
         toast.error(error.error_description || error.message || "Une erreur s'est produite");
       }

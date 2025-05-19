@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -38,16 +37,20 @@ const Onboarding = () => {
   useEffect(() => {
     const processAuth = async () => {
       try {
-        // Vérifier si la page est chargée avec un hash (pour l'authentification)
-        if (location.hash) {
-          console.log("Hash détecté dans l'URL, processing auth");
+        // Vérifier si la page est chargée avec un hash (pour l'authentification) ou si le hash est passé via le state
+        const hashToProcess = location.hash || (location.state && location.state.hash);
+        
+        if (hashToProcess && hashToProcess.includes('access_token')) {
+          console.log("Hash détecté dans l'URL ou le state, processing auth dans Onboarding");
           
-          const hashParams = new URLSearchParams(location.hash.substring(1));
+          const hashParams = new URLSearchParams(
+            hashToProcess.substring(1) || (location.state && location.state.hash.substring(1))
+          );
           const accessToken = hashParams.get('access_token');
           
           if (accessToken) {
             // Définir la session avec le token d'accès
-            console.log("Setting session with access token");
+            console.log("Setting session with access token in Onboarding");
             const { error } = await supabase.auth.setSession({
               access_token: accessToken,
               refresh_token: hashParams.get('refresh_token') || '',
@@ -56,12 +59,16 @@ const Onboarding = () => {
             if (error) {
               console.error("Erreur lors de la définition de la session:", error);
               toast.error("Erreur d'authentification. Veuillez réessayer.");
-              navigate('/login');
+              navigate('/login', { replace: true });
               return;
             }
             
             // Nettoyer l'URL en retirant le hash
-            window.history.replaceState({}, document.title, window.location.pathname);
+            if (location.hash) {
+              window.history.replaceState({}, document.title, window.location.pathname);
+            }
+            
+            console.log("Session définie avec succès dans Onboarding, URL nettoyée");
           }
         }
         
@@ -72,10 +79,13 @@ const Onboarding = () => {
             
             if (error || !data.session) {
               // Pas de session, redirection vers la page de connexion
+              console.log("Pas de session dans Onboarding, redirection vers login");
               toast.error("Veuillez vous connecter pour accéder à cette page");
-              navigate('/login');
+              navigate('/login', { replace: true });
               return;
             }
+
+            console.log("Session trouvée dans Onboarding:", data.session.user.email);
 
             // Vérifier si l'utilisateur a déjà un profil
             const userId = data.session.user.id;
@@ -90,17 +100,31 @@ const Onboarding = () => {
             }
 
             if (profileData) {
-              // L'utilisateur a déjà un profil, redirection vers le dashboard
-              toast.info("Vous êtes déjà inscrit");
-              navigate('/dashboard');
-              return;
+              // Remplir le formulaire avec les données existantes
+              console.log("Profil trouvé, remplissage du formulaire");
+              setFormData({
+                company_name: profileData.company_name || '',
+                industry: profileData.industry || '',
+                icp_title: profileData.icp_title || '',
+                icp_size: profileData.icp_size || '',
+                icp_location: profileData.icp_location || '',
+                value_prop: profileData.value_prop || '',
+                tone: profileData.tone || '',
+                common_objections: profileData.common_objections || '',
+                primary_goal: profileData.primary_goal || '',
+                calendly_url: profileData.calendly_url || '',
+                linkedin_url: profileData.linkedin_url || '',
+                banned_phrases: profileData.banned_phrases || '',
+              });
+            } else {
+              console.log("Pas de profil trouvé, formulaire vide");
             }
 
             setLoading(false);
           } catch (error: any) {
             console.error("Erreur lors de la vérification de la session:", error);
             toast.error(error.message || "Une erreur s'est produite");
-            navigate('/login');
+            navigate('/login', { replace: true });
           }
         };
         
@@ -108,7 +132,7 @@ const Onboarding = () => {
       } catch (error: any) {
         console.error("Erreur lors du traitement de l'authentification:", error);
         toast.error(error.message || "Une erreur s'est produite");
-        navigate('/login');
+        navigate('/login', { replace: true });
       }
     };
 
@@ -139,22 +163,46 @@ const Onboarding = () => {
       
       const userId = sessionData.session.user.id;
       
-      // Insérer le profil dans la base de données
-      const { error: insertError } = await supabase
+      // Vérifier si le profil existe déjà
+      const { data: existingProfile } = await supabase
         .from('client_profile')
-        .insert({
-          ...formData,
-          client_id: userId,
-        });
+        .select('*')
+        .eq('client_id', userId)
+        .maybeSingle();
       
-      if (insertError) {
-        throw insertError;
+      let error;
+      
+      if (existingProfile) {
+        // Mettre à jour le profil existant
+        const { error: updateError } = await supabase
+          .from('client_profile')
+          .update({
+            ...formData,
+            client_id: userId,
+          })
+          .eq('client_id', userId);
+        
+        error = updateError;
+      } else {
+        // Insérer le nouveau profil
+        const { error: insertError } = await supabase
+          .from('client_profile')
+          .insert({
+            ...formData,
+            client_id: userId,
+          });
+        
+        error = insertError;
+      }
+      
+      if (error) {
+        throw error;
       }
       
       toast.success("✅ Profil enregistré avec succès");
       
       // Redirection vers le dashboard
-      navigate('/dashboard');
+      navigate('/dashboard', { replace: true });
       
     } catch (error: any) {
       console.error("Erreur lors de l'enregistrement du profil:", error);

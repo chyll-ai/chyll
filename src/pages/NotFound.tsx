@@ -1,5 +1,5 @@
 
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import { NotFoundPage } from "@/components/ui/404-page-not-found";
 import SEOMetadata from "@/components/SEOMetadata";
@@ -8,7 +8,6 @@ import { Footer2 } from '@/components/ui/footer2';
 
 const NotFound = () => {
   const location = useLocation();
-  const navigate = useNavigate();
   const { t } = useLanguage();
   
   // Set the proper HTTP status code to 404
