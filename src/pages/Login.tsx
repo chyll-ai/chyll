@@ -24,7 +24,9 @@ const Login = () => {
       const { error } = await supabase.auth.signInWithOtp({
         email,
         options: {
-          emailRedirectTo: 'https://chyll.ai/onboarding',
+          // Important: vérifiez que l'URL de redirection est correcte
+          // Utiliser une URL absolue pour éviter les problèmes
+          emailRedirectTo: window.location.origin + '/onboarding',
         }
       });
       
