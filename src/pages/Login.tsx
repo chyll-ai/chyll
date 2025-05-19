@@ -16,8 +16,8 @@ const Login = () => {
   useEffect(() => {
     // Vérifier si la page est chargée avec un hash (pour l'authentification)
     if (location.hash && location.hash.includes('access_token')) {
-      console.log("Hash détecté dans l'URL de login, redirection vers onboarding");
-      navigate('/onboarding', { replace: true, state: { from: 'login', hash: location.hash } });
+      console.log("Hash détecté dans l'URL de login, redirection vers assistant");
+      navigate('/assistant', { replace: true, state: { from: 'login', hash: location.hash } });
       return;
     }
 
@@ -25,7 +25,7 @@ const Login = () => {
     const checkSession = async () => {
       const { data } = await supabase.auth.getSession();
       if (data.session) {
-        navigate('/dashboard', { replace: true });
+        navigate('/assistant', { replace: true });
       }
     };
 
@@ -44,7 +44,7 @@ const Login = () => {
       setLoading(true);
       
       // Utiliser l'URL explicite pour la redirection
-      const redirectUrl = "https://chyll.ai/onboarding";
+      const redirectUrl = "https://chyll.ai/assistant";
       console.log("URL de redirection:", redirectUrl);
       
       const { error } = await supabase.auth.signInWithOtp({
