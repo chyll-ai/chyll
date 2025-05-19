@@ -21,8 +21,8 @@ const Login = () => {
     try {
       setLoading(true);
       
-      // Construire l'URL de redirection en utilisant l'origine actuelle
-      const redirectUrl = `${window.location.origin}/onboarding`;
+      // Utiliser l'URL complète comme configurée dans Supabase
+      const redirectUrl = "https://chyll.ai/onboarding";
       console.log("URL de redirection:", redirectUrl);
       
       const { error } = await supabase.auth.signInWithOtp({
