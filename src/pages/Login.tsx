@@ -21,12 +21,14 @@ const Login = () => {
     try {
       setLoading(true);
       
+      // Construire l'URL de redirection en utilisant l'origine actuelle
+      const redirectUrl = `${window.location.origin}/onboarding`;
+      console.log("URL de redirection:", redirectUrl);
+      
       const { error } = await supabase.auth.signInWithOtp({
         email,
         options: {
-          // Important: vérifiez que l'URL de redirection est correcte
-          // Utiliser une URL absolue pour éviter les problèmes
-          emailRedirectTo: window.location.origin + '/onboarding',
+          emailRedirectTo: redirectUrl,
         }
       });
       
@@ -37,7 +39,14 @@ const Login = () => {
       toast.success("Un lien de connexion vous a été envoyé par email");
       setMessageSent(true);
     } catch (error: any) {
-      toast.error(error.error_description || error.message || "Une erreur s'est produite");
+      console.error("Erreur d'authentification:", error);
+      
+      // Messages d'erreur plus spécifiques
+      if (error.message?.includes("path is invalid")) {
+        toast.error("Erreur de configuration de redirection. Veuillez contacter l'administrateur.");
+      } else {
+        toast.error(error.error_description || error.message || "Une erreur s'est produite");
+      }
     } finally {
       setLoading(false);
     }
