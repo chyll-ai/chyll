@@ -15,9 +15,10 @@ const Login = () => {
 
   useEffect(() => {
     // Vérifier si la page est chargée avec un hash (pour l'authentification)
-    if (location.hash) {
+    if (location.hash && location.hash.includes('access_token')) {
       console.log("Hash détecté dans l'URL de login, redirection vers onboarding");
       navigate('/onboarding', { replace: true, state: { from: 'login', hash: location.hash } });
+      return;
     }
 
     // Vérifier si l'utilisateur est déjà connecté

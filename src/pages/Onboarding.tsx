@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -13,12 +14,14 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { NotFoundRedirect } from '@/components/NotFoundRedirect';
 
 const Onboarding = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [authChecked, setAuthChecked] = useState(false);
   const [formData, setFormData] = useState({
     company_name: '',
     industry: '',
@@ -80,8 +83,7 @@ const Onboarding = () => {
             if (error || !data.session) {
               // Pas de session, redirection vers la page de connexion
               console.log("Pas de session dans Onboarding, redirection vers login");
-              toast.error("Veuillez vous connecter pour accéder à cette page");
-              navigate('/login', { replace: true });
+              setAuthChecked(true);
               return;
             }
 
@@ -121,10 +123,11 @@ const Onboarding = () => {
             }
 
             setLoading(false);
+            setAuthChecked(true);
           } catch (error: any) {
             console.error("Erreur lors de la vérification de la session:", error);
             toast.error(error.message || "Une erreur s'est produite");
-            navigate('/login', { replace: true });
+            setAuthChecked(true);
           }
         };
         
@@ -132,7 +135,7 @@ const Onboarding = () => {
       } catch (error: any) {
         console.error("Erreur lors du traitement de l'authentification:", error);
         toast.error(error.message || "Une erreur s'est produite");
-        navigate('/login', { replace: true });
+        setAuthChecked(true);
       }
     };
 
@@ -211,6 +214,20 @@ const Onboarding = () => {
       setSubmitting(false);
     }
   };
+
+  if (!authChecked) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <p className="text-lg">Vérification de l'authentification...</p>
+      </div>
+    );
+  }
+
+  // Si l'authentification a été vérifiée mais qu'il n'y a pas de session, rediriger vers login
+  const { data } = supabase.auth.getSession();
+  if (authChecked && !loading && !data.session) {
+    return <NotFoundRedirect message="Vous devez vous connecter pour accéder à cette page" redirectTo="/login" />;
+  }
 
   if (loading) {
     return (
