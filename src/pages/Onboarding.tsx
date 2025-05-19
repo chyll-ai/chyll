@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -312,9 +313,9 @@ const Onboarding = () => {
       console.log("Profil enregistré avec succès");
       toast.success("✅ Profil enregistré avec succès");
       
-      // Redirection vers le dashboard
+      // Redirection vers le dashboard with the new route
       console.log("Redirection vers le dashboard...");
-      navigate('/dashboard', { replace: true });
+      navigate('/dashboard-legacy', { replace: true });
       
     } catch (error: any) {
       console.error("Erreur lors de l'enregistrement du profil:", error);

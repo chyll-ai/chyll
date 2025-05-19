@@ -65,7 +65,7 @@ const Dashboard = () => {
         
         if (!profileData) {
           console.log("Profil non trouvé, redirection vers l'onboarding");
-          navigate('/onboarding');
+          navigate('/onboarding-legacy');
           return;
         }
         
