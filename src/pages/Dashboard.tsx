@@ -69,6 +69,8 @@ const Dashboard = () => {
         
         // Récupérer le profil de l'utilisateur
         const userId = data.session.user.id;
+        console.log("Récupération du profil utilisateur avec ID:", userId);
+        
         const { data: profileData, error: profileError } = await supabase
           .from('client_profile')
           .select('*')
@@ -76,6 +78,7 @@ const Dashboard = () => {
           .maybeSingle();
         
         if (profileError) {
+          console.error("Erreur lors de la récupération du profil:", profileError);
           throw profileError;
         }
         
@@ -86,6 +89,7 @@ const Dashboard = () => {
           return;
         }
         
+        console.log("Profil utilisateur récupéré avec succès:", profileData);
         setProfile(profileData);
         setLoading(false);
         

@@ -161,6 +161,7 @@ const Onboarding = () => {
     
     try {
       setSubmitting(true);
+      console.log("Début de la soumission du formulaire...");
       
       // Récupérer l'ID de l'utilisateur connecté
       const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
@@ -170,18 +171,26 @@ const Onboarding = () => {
       }
       
       const userId = sessionData.session.user.id;
+      console.log("ID utilisateur récupéré:", userId);
       
       // Vérifier si le profil existe déjà
-      const { data: existingProfile } = await supabase
+      const { data: existingProfile, error: profileCheckError } = await supabase
         .from('client_profile')
         .select('*')
         .eq('client_id', userId)
         .maybeSingle();
       
+      if (profileCheckError) {
+        console.error("Erreur lors de la vérification du profil:", profileCheckError);
+      }
+      
+      console.log("Profil existant:", existingProfile);
+      
       let error;
       
       if (existingProfile) {
         // Mettre à jour le profil existant
+        console.log("Mise à jour du profil existant...");
         const { error: updateError } = await supabase
           .from('client_profile')
           .update({
@@ -191,8 +200,12 @@ const Onboarding = () => {
           .eq('client_id', userId);
         
         error = updateError;
+        if (updateError) {
+          console.error("Erreur lors de la mise à jour du profil:", updateError);
+        }
       } else {
         // Insérer le nouveau profil
+        console.log("Création d'un nouveau profil...");
         const { error: insertError } = await supabase
           .from('client_profile')
           .insert({
@@ -201,15 +214,20 @@ const Onboarding = () => {
           });
         
         error = insertError;
+        if (insertError) {
+          console.error("Erreur lors de l'insertion du profil:", insertError);
+        }
       }
       
       if (error) {
         throw error;
       }
       
+      console.log("Profil enregistré avec succès");
       toast.success("✅ Profil enregistré avec succès");
       
       // Redirection vers le dashboard
+      console.log("Redirection vers le dashboard...");
       navigate('/dashboard', { replace: true });
       
     } catch (error: any) {
