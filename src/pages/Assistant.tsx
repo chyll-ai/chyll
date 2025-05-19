@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -108,16 +107,25 @@ const Assistant = () => {
         filter: userId ? `client_id=eq.${userId}` : undefined
       }, (payload) => {
         if (payload.new && typeof payload.new === 'object') {
-          const newMessage = payload.new as Message;
-          setMessages(current => {
-            // Check if the message already exists
-            if (current.some(msg => msg.id === newMessage.id)) {
-              return current;
-            }
-            return [...current, newMessage].sort((a, b) => 
-              new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-            );
-          });
+          const newMessage = payload.new as any;
+          if (newMessage.role === 'user' || newMessage.role === 'assistant') {
+            setMessages(current => {
+              // Check if the message already exists
+              if (current.some(msg => msg.id === newMessage.id)) {
+                return current;
+              }
+              // Type cast to ensure role is either 'user' or 'assistant'
+              const typedMessage: Message = {
+                id: newMessage.id,
+                role: newMessage.role as 'user' | 'assistant',
+                content: newMessage.content,
+                created_at: newMessage.created_at
+              };
+              return [...current, typedMessage].sort((a, b) => 
+                new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+              );
+            });
+          }
         }
       })
       .subscribe();
@@ -148,7 +156,15 @@ const Assistant = () => {
         throw error;
       }
       
-      setMessages(data || []);
+      // Type cast the data to ensure role is either 'user' or 'assistant'
+      const typedMessages: Message[] = data?.map(msg => ({
+        id: msg.id,
+        role: msg.role as 'user' | 'assistant',
+        content: msg.content,
+        created_at: msg.created_at
+      })) || [];
+      
+      setMessages(typedMessages);
     } catch (error) {
       console.error("Erreur lors de la récupération des messages:", error);
       toast.error("Impossible de charger les messages");
@@ -214,13 +230,13 @@ const Assistant = () => {
     try {
       // Show typing indicator
       const typingMessage = {
-        client_id: userId,
-        role: 'assistant' as const,
+        id: "typing-indicator",
+        role: 'assistant' as 'user' | 'assistant',
         content: "...",
-        id: "typing-indicator"
+        created_at: new Date().toISOString()
       };
       
-      setMessages([...messages, typingMessage as any]);
+      setMessages([...messages, typingMessage]);
       
       // Check if we are in onboarding flow
       const { data: profileData } = await supabase
