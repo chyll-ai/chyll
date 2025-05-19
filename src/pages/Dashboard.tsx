@@ -1,78 +1,35 @@
 
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/components/ui/sonner';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Rocket } from 'lucide-react';
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const [loading, setLoading] = useState(true);
-  const [profile, setProfile] = useState<any>(null);
-  const [user, setUser] = useState<any>(null);
-
+  const [profile, setProfile] = useState(null);
+  
   useEffect(() => {
-    const processAuth = async () => {
-      // Vérifier si la page est chargée avec un hash (pour l'authentification)
-      if (location.hash && location.hash.includes('access_token')) {
-        console.log("Hash détecté dans l'URL, processing auth dans Dashboard");
-        
-        try {
-          const hashParams = new URLSearchParams(location.hash.substring(1));
-          const accessToken = hashParams.get('access_token');
-          
-          if (accessToken) {
-            // Définir la session avec le token d'accès
-            console.log("Setting session with access token in Dashboard");
-            const { error } = await supabase.auth.setSession({
-              access_token: accessToken,
-              refresh_token: hashParams.get('refresh_token') || '',
-            });
-            
-            if (error) {
-              console.error("Erreur lors de la définition de la session:", error);
-              toast.error("Erreur d'authentification. Veuillez réessayer.");
-              navigate('/login', { replace: true });
-              return;
-            }
-            
-            // Nettoyer l'URL en retirant le hash
-            window.history.replaceState({}, document.title, window.location.pathname);
-            console.log("Session définie avec succès, URL nettoyée");
-          }
-        } catch (error) {
-          console.error("Erreur lors du traitement du hash:", error);
-          toast.error("Une erreur s'est produite lors de l'authentification");
-          navigate('/login', { replace: true });
-          return;
-        }
-      }
-    };
-
-    const checkSession = async () => {
+    const fetchUserData = async () => {
       try {
-        await processAuth();
+        // Get the current session
+        const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
         
-        const { data, error } = await supabase.auth.getSession();
-        
-        if (error || !data.session) {
-          // Pas de session, redirection vers la page de connexion
-          console.log("Pas de session dans Dashboard, redirection vers login");
+        if (sessionError || !sessionData.session) {
+          console.error("Pas de session trouvée:", sessionError);
           toast.error("Veuillez vous connecter pour accéder à cette page");
-          navigate('/login', { replace: true });
+          navigate('/login');
           return;
         }
-
-        console.log("Session trouvée dans Dashboard:", data.session.user.email);
-        setUser(data.session.user);
         
-        // IMPORTANT: Vérifier si l'utilisateur existe dans la table clients
-        const userId = data.session.user.id;
-        console.log("Vérification si l'utilisateur existe dans la table clients:", userId);
+        const userId = sessionData.session.user.id;
+        console.log("Session trouvée, ID utilisateur:", userId);
         
-        // Vérifier d'abord si le client existe
-        const { data: clientData, error: clientError } = await supabase
+        // Create client record if it doesn't exist
+        const { data: client, error: clientError } = await supabase
           .from('clients')
           .select('*')
           .eq('id', userId)
@@ -83,83 +40,63 @@ const Dashboard = () => {
           throw new Error("Erreur lors de la vérification du client");
         }
         
-        // Si le client n'existe pas, créer un nouveau client
-        if (!clientData) {
-          console.log("Client non trouvé, création d'un nouveau client dans la table clients");
-          const { error: insertClientError } = await supabase
+        if (!client) {
+          console.log("Client non trouvé, création en cours...");
+          await supabase
             .from('clients')
             .insert({
               id: userId,
-              email: data.session.user.email || '',
+              email: sessionData.session.user.email || ''
             });
-            
-          if (insertClientError) {
-            console.error("Erreur lors de la création du client:", insertClientError);
-            toast.error("Erreur lors de la création du profil client.");
-            return;
-          }
-          
-          console.log("Nouveau client créé avec succès");
-        } else {
-          console.log("Client trouvé dans la base de données:", clientData);
+          console.log("Client créé avec succès");
         }
         
-        // Vérification supplémentaire pour s'assurer que le client existe avant de récupérer le profil
-        const { data: verifyClientData, error: verifyClientError } = await supabase
-          .from('clients')
-          .select('*')
-          .eq('id', userId)
-          .maybeSingle();
-        
-        if (verifyClientError || !verifyClientData) {
-          console.error("Erreur lors de la vérification du client après création:", verifyClientError);
-          throw new Error("Le client n'a pas pu être créé ou récupéré correctement");
-        }
-        
-        // Récupérer le profil de l'utilisateur
-        console.log("Récupération du profil utilisateur avec ID:", userId);
-        
+        // Fetch client profile data
         const { data: profileData, error: profileError } = await supabase
           .from('client_profile')
           .select('*')
           .eq('client_id', userId)
           .maybeSingle();
-        
+          
         if (profileError) {
           console.error("Erreur lors de la récupération du profil:", profileError);
-          throw profileError;
+          throw new Error("Erreur lors de la récupération du profil");
         }
         
         if (!profileData) {
-          // L'utilisateur n'a pas encore de profil, redirection vers l'onboarding
-          console.log("Pas de profil trouvé, redirection vers onboarding");
-          navigate('/onboarding', { replace: true });
+          console.log("Profil non trouvé, redirection vers l'onboarding");
+          navigate('/onboarding');
           return;
         }
         
-        console.log("Profil utilisateur récupéré avec succès:", profileData);
+        console.log("Profil récupéré avec succès:", profileData);
         setProfile(profileData);
         setLoading(false);
         
-      } catch (error: any) {
-        console.error("Erreur lors de la récupération des données:", error);
-        toast.error(error.message || "Une erreur s'est produite");
+      } catch (error) {
+        console.error("Erreur lors du chargement des données:", error);
+        toast.error("Une erreur s'est produite");
+        setLoading(false);
       }
     };
     
-    checkSession();
-  }, [navigate, location]);
-
+    fetchUserData();
+  }, [navigate]);
+  
   const handleSignOut = async () => {
     try {
       await supabase.auth.signOut();
-      toast.success("Vous avez été déconnecté avec succès");
-      navigate('/login', { replace: true });
-    } catch (error: any) {
-      toast.error(error.message || "Erreur lors de la déconnexion");
+      toast.success("Déconnexion réussie");
+      navigate('/login');
+    } catch (error) {
+      toast.error("Erreur lors de la déconnexion");
     }
   };
-
+  
+  const handleStartCampaign = () => {
+    navigate('/assistant');
+  };
+  
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
@@ -167,70 +104,68 @@ const Dashboard = () => {
       </div>
     );
   }
-
+  
   return (
     <div className="min-h-screen bg-background p-6">
-      <div className="mx-auto max-w-5xl">
+      <div className="mx-auto max-w-4xl">
         <div className="mb-8 flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold">Tableau de bord</h1>
             <p className="text-muted-foreground">
-              Bienvenue {user?.email}
+              Bienvenue {profile?.company_name}
             </p>
           </div>
           <Button variant="outline" onClick={handleSignOut}>
             Se déconnecter
           </Button>
         </div>
-
-        <div className="rounded-lg border border-border bg-card p-6">
-          <h2 className="mb-4 text-xl font-semibold">Informations de votre profil</h2>
-          
-          {profile && (
-            <div className="grid gap-4 md:grid-cols-2">
-              <div>
-                <h3 className="font-medium">Entreprise</h3>
-                <p>{profile.company_name || "Non renseigné"}</p>
-              </div>
-              
-              <div>
-                <h3 className="font-medium">Secteur d'activité</h3>
-                <p>{profile.industry || "Non renseigné"}</p>
-              </div>
-              
-              <div>
-                <h3 className="font-medium">Cible principale</h3>
-                <p>{profile.icp_title || "Non renseigné"}</p>
-              </div>
-              
-              <div>
-                <h3 className="font-medium">Taille des entreprises ciblées</h3>
-                <p>{profile.icp_size || "Non renseigné"}</p>
-              </div>
-              
-              <div>
-                <h3 className="font-medium">Localisation cible</h3>
-                <p>{profile.icp_location || "Non renseigné"}</p>
-              </div>
-              
-              <div>
-                <h3 className="font-medium">Objectif principal</h3>
-                <p>{profile.primary_goal || "Non renseigné"}</p>
-              </div>
-              
-              <div className="md:col-span-2">
-                <h3 className="font-medium">Proposition de valeur</h3>
-                <p className="whitespace-pre-wrap">{profile.value_prop || "Non renseigné"}</p>
-              </div>
+        
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle>Profil de votre entreprise</CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-6 md:grid-cols-2">
+            <div>
+              <h3 className="mb-2 text-lg font-medium">Nom de l'entreprise</h3>
+              <p className="text-muted-foreground">{profile?.company_name || "Non renseigné"}</p>
             </div>
-          )}
-          
-          <div className="mt-6">
-            <Button onClick={() => navigate('/onboarding')}>
-              Modifier mon profil
-            </Button>
-          </div>
-        </div>
+            
+            <div>
+              <h3 className="mb-2 text-lg font-medium">Secteur d'activité</h3>
+              <p className="text-muted-foreground">{profile?.industry || "Non renseigné"}</p>
+            </div>
+            
+            <div>
+              <h3 className="mb-2 text-lg font-medium">Poste cible</h3>
+              <p className="text-muted-foreground">{profile?.icp_title || "Non renseigné"}</p>
+            </div>
+            
+            <div>
+              <h3 className="mb-2 text-lg font-medium">Taille d'entreprise ciblée</h3>
+              <p className="text-muted-foreground">{profile?.icp_size || "Non renseigné"}</p>
+            </div>
+            
+            <div className="md:col-span-2">
+              <h3 className="mb-2 text-lg font-medium">Proposition de valeur</h3>
+              <p className="text-muted-foreground whitespace-pre-wrap">{profile?.value_prop || "Non renseigné"}</p>
+            </div>
+            
+            <div>
+              <h3 className="mb-2 text-lg font-medium">Ton</h3>
+              <p className="text-muted-foreground">{profile?.tone || "Non renseigné"}</p>
+            </div>
+            
+            <div>
+              <h3 className="mb-2 text-lg font-medium">Objectif principal</h3>
+              <p className="text-muted-foreground">{profile?.primary_goal || "Non renseigné"}</p>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Button onClick={handleStartCampaign} className="w-full" size="lg">
+          <Rocket className="mr-2" />
+          Lancer une campagne
+        </Button>
       </div>
     </div>
   );
