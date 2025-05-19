@@ -1,6 +1,6 @@
 
 # chyll - Assistant commercial IA - Robots.txt
-# Updated: 2025-05-15
+# Updated: 2025-05-19
 
 # Main directives
 User-agent: *
@@ -13,8 +13,11 @@ Disallow: /wp-login/
 Disallow: /private/
 Disallow: /account/
 
-# Sitemap location
+# Sitemap locations
 Sitemap: https://chyll.ai/sitemap.xml
+Sitemap: https://chyll.ai/sitemaps/main-sitemap.xml
+Sitemap: https://chyll.ai/sitemaps/blog-sitemap.xml
+Sitemap: https://chyll.ai/sitemaps/legal-sitemap.xml
 
 # Allow search engines with highest priority
 User-agent: Googlebot
