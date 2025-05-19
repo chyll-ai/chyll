@@ -67,10 +67,11 @@ const Dashboard = () => {
         console.log("Session trouvée dans Dashboard:", data.session.user.email);
         setUser(data.session.user);
         
-        // Vérifier si l'utilisateur existe dans la table clients
+        // IMPORTANT: Vérifier si l'utilisateur existe dans la table clients
         const userId = data.session.user.id;
         console.log("Vérification si l'utilisateur existe dans la table clients:", userId);
         
+        // Vérifier d'abord si le client existe
         const { data: clientData, error: clientError } = await supabase
           .from('clients')
           .select('*')
@@ -79,6 +80,7 @@ const Dashboard = () => {
           
         if (clientError) {
           console.error("Erreur lors de la vérification du client:", clientError);
+          throw new Error("Erreur lors de la vérification du client");
         }
         
         // Si le client n'existe pas, créer un nouveau client
@@ -99,7 +101,19 @@ const Dashboard = () => {
           
           console.log("Nouveau client créé avec succès");
         } else {
-          console.log("Client trouvé dans la base de données");
+          console.log("Client trouvé dans la base de données:", clientData);
+        }
+        
+        // Vérification supplémentaire pour s'assurer que le client existe avant de récupérer le profil
+        const { data: verifyClientData, error: verifyClientError } = await supabase
+          .from('clients')
+          .select('*')
+          .eq('id', userId)
+          .maybeSingle();
+        
+        if (verifyClientError || !verifyClientData) {
+          console.error("Erreur lors de la vérification du client après création:", verifyClientError);
+          throw new Error("Le client n'a pas pu être créé ou récupéré correctement");
         }
         
         // Récupérer le profil de l'utilisateur

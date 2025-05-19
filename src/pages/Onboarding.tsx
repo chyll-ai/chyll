@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -94,6 +93,7 @@ const Onboarding = () => {
 
             // Vérifier si l'utilisateur a déjà un profil
             const userId = data.session.user.id;
+            console.log("ID utilisateur récupéré:", userId);
             
             // Vérifier si l'utilisateur existe dans la table clients
             const { data: clientData, error: clientError } = await supabase
@@ -207,6 +207,9 @@ const Onboarding = () => {
       const userId = sessionData.session.user.id;
       console.log("ID utilisateur récupéré:", userId);
       
+      // IMPORTANT: Vérifier d'abord si le client existe, si non, le créer
+      let clientExists = false;
+      
       // Vérifier si le client existe dans la table clients
       const { data: clientData, error: clientCheckError } = await supabase
         .from('clients')
@@ -216,6 +219,7 @@ const Onboarding = () => {
       
       if (clientCheckError) {
         console.error("Erreur lors de la vérification du client:", clientCheckError);
+        throw new Error("Erreur lors de la vérification du client");
       }
       
       // Si le client n'existe pas, créer un nouveau client
@@ -235,7 +239,24 @@ const Onboarding = () => {
         
         console.log("Nouveau client créé avec succès");
       } else {
-        console.log("Client déjà existant, pas besoin de le créer");
+        console.log("Client déjà existant dans la table clients:", clientData);
+        clientExists = true;
+      }
+      
+      // Vérification supplémentaire après l'insertion pour s'assurer que le client existe maintenant
+      if (!clientExists) {
+        const { data: verifyClientData, error: verifyClientError } = await supabase
+          .from('clients')
+          .select('*')
+          .eq('id', userId)
+          .maybeSingle();
+        
+        if (verifyClientError || !verifyClientData) {
+          console.error("Erreur de vérification après création du client:", verifyClientError);
+          throw new Error("Le client n'a pas pu être créé correctement");
+        }
+        
+        console.log("Vérification réussie: client bien créé:", verifyClientData);
       }
       
       // Vérifier si le profil existe déjà
