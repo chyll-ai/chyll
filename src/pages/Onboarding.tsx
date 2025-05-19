@@ -94,6 +94,40 @@ const Onboarding = () => {
 
             // Vérifier si l'utilisateur a déjà un profil
             const userId = data.session.user.id;
+            
+            // Vérifier si l'utilisateur existe dans la table clients
+            const { data: clientData, error: clientError } = await supabase
+              .from('clients')
+              .select('*')
+              .eq('id', userId)
+              .maybeSingle();
+              
+            if (clientError) {
+              console.error("Erreur lors de la vérification du client:", clientError);
+            }
+            
+            // Si le client n'existe pas, créer un nouveau client
+            if (!clientData) {
+              console.log("Client non trouvé, création d'un nouveau client dans la table clients");
+              const { error: insertClientError } = await supabase
+                .from('clients')
+                .insert({
+                  id: userId,
+                  email: data.session.user.email || '',
+                });
+                
+              if (insertClientError) {
+                console.error("Erreur lors de la création du client:", insertClientError);
+                toast.error("Erreur lors de la création du profil client.");
+                return;
+              }
+              
+              console.log("Nouveau client créé avec succès");
+            } else {
+              console.log("Client trouvé dans la base de données");
+            }
+
+            // Vérifier si l'utilisateur a déjà un profil
             const { data: profileData, error: profileError } = await supabase
               .from('client_profile')
               .select('*')
@@ -101,7 +135,7 @@ const Onboarding = () => {
               .maybeSingle();
 
             if (profileError) {
-              throw profileError;
+              console.error("Erreur lors de la vérification du profil:", profileError);
             }
 
             if (profileData) {
@@ -172,6 +206,37 @@ const Onboarding = () => {
       
       const userId = sessionData.session.user.id;
       console.log("ID utilisateur récupéré:", userId);
+      
+      // Vérifier si le client existe dans la table clients
+      const { data: clientData, error: clientCheckError } = await supabase
+        .from('clients')
+        .select('*')
+        .eq('id', userId)
+        .maybeSingle();
+      
+      if (clientCheckError) {
+        console.error("Erreur lors de la vérification du client:", clientCheckError);
+      }
+      
+      // Si le client n'existe pas, créer un nouveau client
+      if (!clientData) {
+        console.log("Client non trouvé, création d'un nouveau client dans la table clients");
+        const { error: insertClientError } = await supabase
+          .from('clients')
+          .insert({
+            id: userId,
+            email: sessionData.session.user.email || '',
+          });
+          
+        if (insertClientError) {
+          console.error("Erreur lors de la création du client:", insertClientError);
+          throw new Error("Erreur lors de la création du profil client");
+        }
+        
+        console.log("Nouveau client créé avec succès");
+      } else {
+        console.log("Client déjà existant, pas besoin de le créer");
+      }
       
       // Vérifier si le profil existe déjà
       const { data: existingProfile, error: profileCheckError } = await supabase
