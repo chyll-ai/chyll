@@ -15,6 +15,8 @@ import Blog from '@/pages/Blog';
 import BlogPostPage from '@/pages/BlogPostPage';
 import AboutUs from '@/pages/AboutUs';
 import Login from '@/pages/Login';
+import Onboarding from '@/pages/Onboarding';
+import Dashboard from '@/pages/Dashboard';
 
 import { LanguageProvider } from '@/context/LanguageContext';
 
@@ -34,6 +36,8 @@ function App() {
             <Route path="/blog/:id" element={<BlogPostPage />} />
             <Route path="/about-us" element={<AboutUs />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/onboarding" element={<Onboarding />} />
+            <Route path="/dashboard" element={<Dashboard />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <Toaster />

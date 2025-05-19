@@ -43,28 +43,58 @@ export type Database = {
       }
       client_profile: {
         Row: {
+          banned_phrases: string | null
           calendly_url: string | null
           client_id: string | null
+          common_objections: string | null
+          company_name: string | null
           icp: string | null
+          icp_location: string | null
+          icp_size: string | null
+          icp_title: string | null
           id: string
+          industry: string | null
+          linkedin_url: string | null
           offer: string | null
+          primary_goal: string | null
           tone: string | null
+          value_prop: string | null
         }
         Insert: {
+          banned_phrases?: string | null
           calendly_url?: string | null
           client_id?: string | null
+          common_objections?: string | null
+          company_name?: string | null
           icp?: string | null
+          icp_location?: string | null
+          icp_size?: string | null
+          icp_title?: string | null
           id?: string
+          industry?: string | null
+          linkedin_url?: string | null
           offer?: string | null
+          primary_goal?: string | null
           tone?: string | null
+          value_prop?: string | null
         }
         Update: {
+          banned_phrases?: string | null
           calendly_url?: string | null
           client_id?: string | null
+          common_objections?: string | null
+          company_name?: string | null
           icp?: string | null
+          icp_location?: string | null
+          icp_size?: string | null
+          icp_title?: string | null
           id?: string
+          industry?: string | null
+          linkedin_url?: string | null
           offer?: string | null
+          primary_goal?: string | null
           tone?: string | null
+          value_prop?: string | null
         }
         Relationships: [
           {
