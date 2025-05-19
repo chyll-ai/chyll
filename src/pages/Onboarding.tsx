@@ -22,6 +22,7 @@ const Onboarding = () => {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [authChecked, setAuthChecked] = useState(false);
+  const [hasSession, setHasSession] = useState(false);
   const [formData, setFormData] = useState({
     company_name: '',
     industry: '',
@@ -84,10 +85,12 @@ const Onboarding = () => {
               // Pas de session, redirection vers la page de connexion
               console.log("Pas de session dans Onboarding, redirection vers login");
               setAuthChecked(true);
+              setHasSession(false);
               return;
             }
 
             console.log("Session trouvée dans Onboarding:", data.session.user.email);
+            setHasSession(true);
 
             // Vérifier si l'utilisateur a déjà un profil
             const userId = data.session.user.id;
@@ -128,6 +131,7 @@ const Onboarding = () => {
             console.error("Erreur lors de la vérification de la session:", error);
             toast.error(error.message || "Une erreur s'est produite");
             setAuthChecked(true);
+            setHasSession(false);
           }
         };
         
@@ -136,6 +140,7 @@ const Onboarding = () => {
         console.error("Erreur lors du traitement de l'authentification:", error);
         toast.error(error.message || "Une erreur s'est produite");
         setAuthChecked(true);
+        setHasSession(false);
       }
     };
 
@@ -224,8 +229,7 @@ const Onboarding = () => {
   }
 
   // Si l'authentification a été vérifiée mais qu'il n'y a pas de session, rediriger vers login
-  const { data } = supabase.auth.getSession();
-  if (authChecked && !loading && !data.session) {
+  if (authChecked && !loading && !hasSession) {
     return <NotFoundRedirect message="Vous devez vous connecter pour accéder à cette page" redirectTo="/login" />;
   }
 
