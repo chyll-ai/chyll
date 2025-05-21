@@ -11,6 +11,7 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [messageSent, setMessageSent] = useState(false);
   const [checkingAuth, setCheckingAuth] = useState(true);
+  const [redirectAttempt, setRedirectAttempt] = useState(0);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -18,7 +19,9 @@ const Login = () => {
     // Vérifier si la page est chargée avec un hash (pour l'authentification)
     if (location.hash && location.hash.includes('access_token')) {
       console.log("Hash détecté dans l'URL de login, redirection vers assistant");
-      navigate('/assistant', { replace: true });
+      console.log("URL de redirection: " + window.location.origin + "/assistant");
+      // Force l'utilisation d'une redirection avec replace pour éviter les problèmes de navigation
+      window.location.href = window.location.origin + "/assistant";
       return;
     }
 
@@ -32,6 +35,7 @@ const Login = () => {
           toast.error("Erreur de vérification d'authentification");
         } else if (data.session) {
           console.log("Session utilisateur trouvée, redirection vers assistant");
+          // Utiliser replace: true pour remplacer l'entrée dans l'historique
           navigate('/assistant', { replace: true });
         }
       } catch (error) {
@@ -42,7 +46,7 @@ const Login = () => {
     };
 
     checkSession();
-  }, [location, navigate]);
+  }, [location, navigate, redirectAttempt]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -88,6 +92,18 @@ const Login = () => {
       setLoading(false);
     }
   };
+
+  // Force une nouvelle tentative de vérification après quelques secondes si on est toujours sur la page de login
+  // avec un hash dans l'URL
+  useEffect(() => {
+    if (location.hash && location.hash.includes('access_token')) {
+      const timer = setTimeout(() => {
+        console.log("Nouvelle tentative de redirection...");
+        setRedirectAttempt(prev => prev + 1);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [location.hash, redirectAttempt]);
 
   // Afficher un indicateur de chargement pendant la vérification de l'authentification
   if (checkingAuth) {

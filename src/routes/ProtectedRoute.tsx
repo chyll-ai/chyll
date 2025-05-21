@@ -10,6 +10,9 @@ interface ProtectedRouteProps {
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [authLoading, setAuthLoading] = useState(true);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
   const location = useLocation();
 
   useEffect(() => {
@@ -21,12 +24,19 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
         if (error) {
           console.error("Erreur lors de la vérification de session:", error);
           setIsAuthenticated(false);
-          toast.error("Erreur d'authentification");
+          toast.error("Erreur d'authentification: " + error.message);
           return;
         }
         
         const hasSession = !!data.session;
-        console.log("Session trouvée:", hasSession);
+        if (hasSession && data.session?.user) {
+          console.log("Session trouvée:", data.session.user.email);
+          setUserId(data.session.user.id);
+          setUserEmail(data.session.user.email || null);
+        } else {
+          console.log("Aucune session active trouvée");
+        }
+        
         setIsAuthenticated(hasSession);
         
         if (!hasSession) {
@@ -35,6 +45,8 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
       } catch (error) {
         console.error("Erreur inattendue:", error);
         setIsAuthenticated(false);
+      } finally {
+        setAuthLoading(false);
       }
     };
 
@@ -46,6 +58,14 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
         console.log("Changement d'état d'authentification:", event);
         const hasSession = !!session;
         setIsAuthenticated(hasSession);
+        
+        if (session?.user) {
+          setUserId(session.user.id);
+          setUserEmail(session.user.email || null);
+        } else {
+          setUserId(null);
+          setUserEmail(null);
+        }
         
         // Si l'utilisateur est déconnecté, afficher une notification
         if (event === 'SIGNED_OUT') {
@@ -59,7 +79,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     };
   }, []);
 
-  if (isAuthenticated === null) {
+  if (authLoading) {
     // État de chargement
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
@@ -81,9 +101,18 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  // Rendre les enfants si l'utilisateur est authentifié
+  // Rendre les enfants si l'utilisateur est authentifié avec un wrapper pour afficher les infos utilisateur
   console.log("Utilisateur authentifié, affichage du contenu protégé");
-  return <>{children}</>;
+  return (
+    <>
+      {userId && (
+        <div className="bg-muted/30 text-xs py-1 px-2 text-right">
+          <span className="font-mono">User ID: {userId.substring(0, 8)}... | {userEmail}</span>
+        </div>
+      )}
+      {children}
+    </>
+  );
 };
 
 export default ProtectedRoute;

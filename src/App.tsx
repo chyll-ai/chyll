@@ -62,6 +62,8 @@ function App() {
                 </ProtectedRoute>
               } 
             />
+            {/* Redirect routes to ensure proper navigation */}
+            <Route path="/assistant/*" element={<Navigate to="/assistant" replace />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <Toaster />
