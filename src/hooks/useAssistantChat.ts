@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -53,6 +52,7 @@ async function handleFunctionCall(toolCall: ToolCall, threadId: string, runId: s
       }
       
       const user_token = data.session.access_token;
+      const client_id = data.session.user.id;
       
       // Make the request to the connect-gmail edge function
       const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL || 'https://atsfuqwxfrezkxtnctmk.supabase.co'}/functions/v1/connect-gmail`, {
@@ -66,7 +66,8 @@ async function handleFunctionCall(toolCall: ToolCall, threadId: string, runId: s
           thread_id: threadId,
           run_id: runId,
           user_token: user_token,
-          tool_call_id: toolCall.id
+          tool_call_id: toolCall.id,
+          client_id: client_id // Add client_id to check for existing tokens
         })
       });
       
@@ -80,6 +81,12 @@ async function handleFunctionCall(toolCall: ToolCall, threadId: string, runId: s
       // Log the result but don't show anything in the UI
       const result = await response.json();
       console.log("Gmail connection initiated:", result);
+      
+      // If we already have a valid token, notify the user
+      if (result.access_token) {
+        toast.success("Gmail déjà connecté!");
+        return;
+      }
       
       if (result.oauth_url) {
         console.log("OAuth URL generated:", result.oauth_url);
@@ -105,15 +112,36 @@ async function handleFunctionCall(toolCall: ToolCall, threadId: string, runId: s
       }
       
       const user_token = data.session.access_token;
+      const client_id = data.session.user.id;
       
       // Parse the function arguments
       const args = JSON.parse(toolCall.function.arguments);
       const { access_token, to, subject, body } = args;
       
-      if (!access_token || !to || !subject || !body) {
+      if (!to || !subject || !body) {
         console.error("Missing required email parameters");
         toast.error("Impossible d'envoyer l'email: paramètres manquants");
         return;
+      }
+      
+      // If no access token provided in the args, try to get it from the database
+      let tokenToUse = access_token;
+      if (!tokenToUse) {
+        console.log("No access token provided, checking database");
+        const { data: tokenData, error: tokenError } = await supabase
+          .from('tokens')
+          .select('access_token')
+          .eq('client_id', client_id)
+          .maybeSingle();
+          
+        if (tokenError || !tokenData?.access_token) {
+          console.error("Error fetching token or no token found:", tokenError);
+          toast.error("Aucun token Gmail trouvé. Veuillez d'abord connecter votre compte Gmail.");
+          return;
+        }
+        
+        tokenToUse = tokenData.access_token;
+        console.log("Using token from database");
       }
       
       // Make the request to the connect-gmail edge function to send email
@@ -128,8 +156,9 @@ async function handleFunctionCall(toolCall: ToolCall, threadId: string, runId: s
           thread_id: threadId,
           run_id: runId,
           tool_call_id: toolCall.id,
+          client_id: client_id,
           email_data: {
-            access_token,
+            access_token: tokenToUse,
             to,
             subject,
             body

@@ -1,14 +1,25 @@
+
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.23.0";
 
 const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
 const GOOGLE_CLIENT_ID = Deno.env.get('GOOGLE_CLIENT_ID') || 'YOUR_CLIENT_ID';
+const GOOGLE_CLIENT_SECRET = Deno.env.get('GOOGLE_CLIENT_SECRET') || 'YOUR_CLIENT_SECRET';
 const REDIRECT_URL = "https://chyll.ai/assistant";
+const SUPABASE_URL = Deno.env.get('SUPABASE_URL') || '';
+const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY') || '';
+const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*', 
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+
+const supabase = createClient(
+  SUPABASE_URL,
+  SUPABASE_SERVICE_ROLE_KEY
+);
 
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -27,7 +38,7 @@ serve(async (req) => {
     }
 
     const reqData = await req.json();
-    const { action, thread_id, run_id, user_token, tool_call_id, email_data } = reqData;
+    const { action, thread_id, run_id, user_token, tool_call_id, email_data, code, client_id } = reqData;
     
     if (!action) {
       throw new Error('Missing required parameter: action');
@@ -41,6 +52,65 @@ serve(async (req) => {
       }
 
       console.log("Processing Gmail connection request for thread:", thread_id, "and run:", run_id);
+
+      // Check if we already have tokens for this user
+      if (client_id) {
+        const { data: existingTokens, error: tokenError } = await supabase
+          .from('tokens')
+          .select('*')
+          .eq('client_id', client_id)
+          .single();
+          
+        if (!tokenError && existingTokens && existingTokens.access_token) {
+          console.log("Found existing Gmail token, checking if valid...");
+          
+          // Check if token is valid by testing a simple request
+          const testResponse = await fetch('https://www.googleapis.com/gmail/v1/users/me/profile', {
+            headers: {
+              'Authorization': `Bearer ${existingTokens.access_token}`
+            }
+          });
+          
+          if (testResponse.ok) {
+            console.log("Existing token is valid, using it");
+            
+            // Submit the tool outputs back to OpenAI with the success message
+            if (OPENAI_API_KEY) {
+              const toolOutputResponse = await fetch(`https://api.openai.com/v1/threads/${thread_id}/runs/${run_id}/submit_tool_outputs`, {
+                method: 'POST',
+                headers: {
+                  'Authorization': `Bearer ${OPENAI_API_KEY}`,
+                  'Content-Type': 'application/json',
+                  'OpenAI-Beta': 'assistants=v2',
+                },
+                body: JSON.stringify({
+                  tool_outputs: [{
+                    tool_call_id: tool_call_id || crypto.randomUUID(),
+                    output: JSON.stringify({
+                      status: "success",
+                      message: "Already connected to Gmail",
+                      access_token: existingTokens.access_token
+                    })
+                  }]
+                })
+              });
+
+              console.log("Tool output response status:", toolOutputResponse.status);
+            }
+            
+            return new Response(
+              JSON.stringify({
+                status: "success",
+                message: "Already connected to Gmail",
+                access_token: existingTokens.access_token
+              }),
+              { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            );
+          } else {
+            console.log("Existing token is invalid, will generate new one");
+          }
+        }
+      }
 
       // Generate a unique state token for the OAuth2 flow
       const stateToken = crypto.randomUUID();
@@ -98,7 +168,7 @@ serve(async (req) => {
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     } else if (action === 'send_email') {
-      // New email sending functionality
+      // Email sending functionality
       if (!thread_id || !run_id || !email_data) {
         throw new Error('Missing required parameters for send_email: thread_id, run_id, or email_data');
       }
@@ -177,6 +247,66 @@ serve(async (req) => {
           status: "success",
           message: "Email sent successfully",
           email_id: emailResult.id
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    } else if (action === 'exchange_code') {
+      // New action to exchange authorization code for tokens
+      if (!code || !client_id) {
+        throw new Error('Missing required parameters for exchange_code: code or client_id');
+      }
+      
+      console.log("Exchanging authorization code for tokens");
+      
+      // Exchange the authorization code for tokens
+      const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+          code,
+          client_id: GOOGLE_CLIENT_ID,
+          client_secret: GOOGLE_CLIENT_SECRET,
+          redirect_uri: REDIRECT_URL,
+          grant_type: 'authorization_code'
+        }).toString()
+      });
+      
+      if (!tokenResponse.ok) {
+        const errorData = await tokenResponse.json();
+        console.error("Error exchanging code for tokens:", errorData);
+        throw new Error(`Failed to exchange code: ${JSON.stringify(errorData)}`);
+      }
+      
+      const tokenData = await tokenResponse.json();
+      console.log("Received tokens:", { 
+        access_token_length: tokenData.access_token?.length,
+        refresh_token_length: tokenData.refresh_token?.length,
+      });
+      
+      // Store the tokens in the database
+      const { error: insertError } = await supabase
+        .from('tokens')
+        .upsert({
+          client_id,
+          access_token: tokenData.access_token,
+          refresh_token: tokenData.refresh_token,
+          expires_at: new Date(Date.now() + tokenData.expires_in * 1000).toISOString()
+        });
+      
+      if (insertError) {
+        console.error("Error storing tokens:", insertError);
+        throw new Error(`Failed to store tokens: ${insertError.message}`);
+      }
+      
+      console.log("Tokens stored successfully");
+      
+      return new Response(
+        JSON.stringify({
+          status: "success",
+          message: "Gmail connected successfully",
+          access_token: tokenData.access_token
         }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
