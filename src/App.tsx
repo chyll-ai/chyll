@@ -38,13 +38,30 @@ function App() {
             <Route path="/blog/:id" element={<BlogPostPage />} />
             <Route path="/about-us" element={<AboutUs />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/onboarding-legacy" element={<Onboarding />} />
-            <Route path="/dashboard-legacy" element={<Dashboard />} />
-            <Route path="/assistant" element={
-              <ProtectedRoute>
-                <Assistant />
-              </ProtectedRoute>
-            } />
+            <Route 
+              path="/onboarding-legacy" 
+              element={
+                <ProtectedRoute>
+                  <Onboarding />
+                </ProtectedRoute>
+              }
+            />
+            <Route 
+              path="/dashboard-legacy" 
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route 
+              path="/assistant" 
+              element={
+                <ProtectedRoute>
+                  <Assistant />
+                </ProtectedRoute>
+              } 
+            />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <Toaster />

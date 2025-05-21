@@ -18,7 +18,7 @@ const Login = () => {
     // Vérifier si la page est chargée avec un hash (pour l'authentification)
     if (location.hash && location.hash.includes('access_token')) {
       console.log("Hash détecté dans l'URL de login, redirection vers assistant");
-      navigate('/assistant', { replace: true });
+      navigate('/assistant');
       return;
     }
 
@@ -32,7 +32,7 @@ const Login = () => {
           toast.error("Erreur de vérification d'authentification");
         } else if (data.session) {
           console.log("Session utilisateur trouvée, redirection vers assistant");
-          navigate('/assistant', { replace: true });
+          navigate('/assistant');
         }
       } catch (error) {
         console.error("Erreur inattendue:", error);

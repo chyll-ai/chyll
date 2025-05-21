@@ -15,6 +15,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
+        console.log("Vérification de l'authentification dans ProtectedRoute");
         const { data, error } = await supabase.auth.getSession();
         
         if (error) {
@@ -23,7 +24,9 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
           return;
         }
         
-        setIsAuthenticated(!!data.session);
+        const hasSession = !!data.session;
+        console.log("Session trouvée:", hasSession);
+        setIsAuthenticated(hasSession);
       } catch (error) {
         console.error("Erreur inattendue:", error);
         setIsAuthenticated(false);
@@ -34,7 +37,8 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     
     // Configurer l'écouteur de changement d'état d'authentification
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
+      (event, session) => {
+        console.log("Changement d'état d'authentification:", event);
         setIsAuthenticated(!!session);
       }
     );
