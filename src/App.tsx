@@ -18,6 +18,7 @@ import Login from '@/pages/Login';
 import Onboarding from '@/pages/Onboarding';
 import Dashboard from '@/pages/Dashboard';
 import Assistant from '@/pages/Assistant';
+import ProtectedRoute from '@/routes/ProtectedRoute';
 
 import { LanguageProvider } from '@/context/LanguageContext';
 
@@ -39,7 +40,11 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/onboarding-legacy" element={<Onboarding />} />
             <Route path="/dashboard-legacy" element={<Dashboard />} />
-            <Route path="/assistant" element={<Assistant />} />
+            <Route path="/assistant" element={
+              <ProtectedRoute>
+                <Assistant />
+              </ProtectedRoute>
+            } />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <Toaster />

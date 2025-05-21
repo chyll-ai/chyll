@@ -10,6 +10,7 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [messageSent, setMessageSent] = useState(false);
+  const [checkingAuth, setCheckingAuth] = useState(true);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -17,15 +18,26 @@ const Login = () => {
     // Vérifier si la page est chargée avec un hash (pour l'authentification)
     if (location.hash && location.hash.includes('access_token')) {
       console.log("Hash détecté dans l'URL de login, redirection vers assistant");
-      navigate('/assistant', { replace: true, state: { from: 'login', hash: location.hash } });
+      navigate('/assistant', { replace: true });
       return;
     }
 
     // Vérifier si l'utilisateur est déjà connecté
     const checkSession = async () => {
-      const { data } = await supabase.auth.getSession();
-      if (data.session) {
-        navigate('/assistant', { replace: true });
+      try {
+        const { data, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error("Erreur lors de la vérification de session:", error);
+          toast.error("Erreur de vérification d'authentification");
+        } else if (data.session) {
+          console.log("Session utilisateur trouvée, redirection vers assistant");
+          navigate('/assistant', { replace: true });
+        }
+      } catch (error) {
+        console.error("Erreur inattendue:", error);
+      } finally {
+        setCheckingAuth(false);
       }
     };
 
@@ -43,11 +55,12 @@ const Login = () => {
     try {
       setLoading(true);
       
-      // Utiliser l'URL explicite pour la redirection
-      const redirectUrl = "https://chyll.ai/assistant";
+      // Construire l'URL absolue pour la redirection
+      const origin = window.location.origin;
+      const redirectUrl = `${origin}/assistant`;
       console.log("URL de redirection:", redirectUrl);
       
-      const { error } = await supabase.auth.signInWithOtp({
+      const { data, error } = await supabase.auth.signInWithOtp({
         email,
         options: {
           emailRedirectTo: redirectUrl,
@@ -66,6 +79,8 @@ const Login = () => {
       // Messages d'erreur plus spécifiques
       if (error.message?.includes("path is invalid")) {
         toast.error("Erreur de configuration de redirection. Veuillez vérifier les URL de redirection dans Supabase.");
+      } else if (error.message?.includes("security purposes")) {
+        toast.error("Trop de tentatives. Veuillez attendre quelques instants avant de réessayer.");
       } else {
         toast.error(error.error_description || error.message || "Une erreur s'est produite");
       }
@@ -73,6 +88,22 @@ const Login = () => {
       setLoading(false);
     }
   };
+
+  // Afficher un indicateur de chargement pendant la vérification de l'authentification
+  if (checkingAuth) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <div className="text-center">
+          <div className="flex items-center justify-center space-x-1 mb-4">
+            <div className="w-3 h-3 bg-primary rounded-full animate-bounce"></div>
+            <div className="w-3 h-3 bg-primary rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+            <div className="w-3 h-3 bg-primary rounded-full animate-bounce" style={{animationDelay: '0.4s'}}></div>
+          </div>
+          <p className="text-lg">Vérification de l'authentification...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">

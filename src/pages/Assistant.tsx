@@ -9,11 +9,13 @@ import ChatSidebar from '@/components/chat/ChatSidebar';
 import { toast } from '@/components/ui/sonner';
 import { AlertTriangle, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { supabase } from '@/integrations/supabase/client';
 
 const Assistant = () => {
   const navigate = useNavigate();
   const [sidebarVisible, setSidebarVisible] = useState(true);
   const [apiStatus, setApiStatus] = useState<'connected' | 'error' | 'unknown'>('unknown');
+  const [authChecking, setAuthChecking] = useState(true);
   
   const {
     loading,
@@ -27,6 +29,36 @@ const Assistant = () => {
     createChatSession,
     fetchMessages,
   } = useAssistantChat();
+  
+  // Vérifier l'authentification avant tout
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const { data, error } = await supabase.auth.getSession();
+        if (error) {
+          console.error("Erreur lors de la vérification de session:", error);
+          toast.error("Erreur d'authentification");
+          navigate('/login');
+          return;
+        }
+        
+        if (!data.session) {
+          console.log("Pas de session active, redirection vers login");
+          navigate('/login');
+          return;
+        }
+        
+        console.log("Session authentifiée trouvée");
+      } catch (error) {
+        console.error("Erreur inattendue:", error);
+        navigate('/login');
+      } finally {
+        setAuthChecking(false);
+      }
+    };
+    
+    checkAuth();
+  }, [navigate]);
   
   // Charger les sessions de chat
   const [sessions, setSessions] = useState<any[]>([]);
@@ -129,15 +161,6 @@ const Assistant = () => {
     }
   }, [userId, setCurrentSessionId]);
   
-  useEffect(() => {
-    // Vérifier si l'utilisateur est connecté
-    if (!loading && !userId) {
-      console.log("Utilisateur non connecté, redirection vers login");
-      toast.error("Veuillez vous connecter pour accéder à cette page");
-      navigate('/login');
-    }
-  }, [loading, userId, navigate]);
-  
   // Créer une nouvelle conversation
   const handleNewChat = async () => {
     if (!userId) return;
@@ -159,7 +182,7 @@ const Assistant = () => {
   };
   
   // Afficher un écran de chargement
-  if (loading) {
+  if (authChecking || loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="text-center">
@@ -169,6 +192,7 @@ const Assistant = () => {
             <div className="w-3 h-3 bg-primary rounded-full animate-bounce" style={{animationDelay: '0.4s'}}></div>
           </div>
           <p className="text-lg">Chargement de l'assistant...</p>
+          <p className="text-sm text-gray-500 mt-2">Vérification de l'authentification et initialisation...</p>
         </div>
       </div>
     );
@@ -250,8 +274,5 @@ const Assistant = () => {
     </div>
   );
 };
-
-// Ajouter l'import de supabase
-import { supabase } from '@/integrations/supabase/client';
 
 export default Assistant;
