@@ -34,7 +34,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
         ) : (
           <div>
             <div className="text-xs opacity-70 mb-1">
-              {isUser ? 'Vous' : 'Assistant'} ({message.role})
+              {isUser ? 'You' : 'Assistant'} ({message.role})
             </div>
             <p className="whitespace-pre-wrap">{message.content}</p>
           </div>

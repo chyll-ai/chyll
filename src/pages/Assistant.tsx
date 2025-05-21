@@ -19,7 +19,7 @@ const Assistant = () => {
   const [user, setUser] = useState<any>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   
-  // Message de débogage visible au chargement
+  // Debug message visible on load
   const [isPageLoaded, setIsPageLoaded] = useState(true);
   
   const {
@@ -36,33 +36,33 @@ const Assistant = () => {
     apiError,
   } = useAssistantChat();
 
-  // Vérifier l'authentification avant tout et empêcher les redirections non voulues
+  // Check authentication before anything and prevent unwanted redirects
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        console.log("Vérification d'authentification dans Assistant");
+        console.log("Checking authentication in Assistant");
         const { data, error } = await supabase.auth.getSession();
         
         if (error) {
-          console.error("Erreur lors de la vérification de session:", error);
-          setLoadError(`Erreur d'authentification: ${error.message}`);
+          console.error("Error checking session:", error);
+          setLoadError(`Authentication error: ${error.message}`);
           setAuthChecking(false);
           return;
         }
         
         if (!data.session) {
-          console.log("Pas de session active dans Assistant");
-          setLoadError("Aucune session utilisateur active. Veuillez vous connecter.");
+          console.log("No active session in Assistant");
+          setLoadError("No active user session. Please login.");
           setAuthChecking(false);
           return;
         }
         
-        console.log("Session authentifiée trouvée:", data.session.user);
+        console.log("Authenticated session found:", data.session.user);
         setUser(data.session.user);
         setAuthChecking(false);
       } catch (error) {
-        console.error("Erreur inattendue dans Assistant:", error);
-        setLoadError(`Erreur inattendue: ${error instanceof Error ? error.message : 'Inconnue'}`);
+        console.error("Unexpected error in Assistant:", error);
+        setLoadError(`Unexpected error: ${error instanceof Error ? error.message : 'Unknown'}`);
         setAuthChecking(false);
       }
     };
@@ -70,7 +70,7 @@ const Assistant = () => {
     checkAuth();
   }, [navigate]);
   
-  // Charger les sessions de chat - avec gestion d'erreurs améliorée
+  // Load chat sessions - with improved error handling
   const [sessions, setSessions] = useState<any[]>([]);
   const [sessionsLoading, setSessionsLoading] = useState(true);
   const [sessionsError, setSessionsError] = useState<string | null>(null);
@@ -80,7 +80,7 @@ const Assistant = () => {
       if (!userId) return;
       
       try {
-        console.log("Chargement des sessions pour l'utilisateur:", userId);
+        console.log("Loading sessions for user:", userId);
         setSessionsLoading(true);
         setSessionsError(null);
         
@@ -92,12 +92,12 @@ const Assistant = () => {
         
         if (error) throw error;
         
-        console.log("Sessions chargées avec succès:", data?.length || 0);
+        console.log("Sessions loaded successfully:", data?.length || 0);
         setSessions(data || []);
       } catch (error) {
-        console.error("Erreur lors de la récupération des sessions:", error);
-        setSessionsError(`Impossible de charger les sessions: ${error instanceof Error ? error.message : 'Erreur inconnue'}`);
-        toast.error("Impossible de charger l'historique des conversations");
+        console.error("Error fetching sessions:", error);
+        setSessionsError(`Unable to load sessions: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        toast.error("Unable to load conversation history");
       } finally {
         setSessionsLoading(false);
       }
@@ -106,7 +106,7 @@ const Assistant = () => {
     if (userId) {
       fetchSessions();
       
-      // Écouter les changements dans les sessions
+      // Listen for changes in sessions
       const channel = supabase
         .channel('chat_sessions_changes')
         .on('postgres_changes', 
@@ -117,7 +117,7 @@ const Assistant = () => {
             filter: `client_id=eq.${userId}`
           }, 
           () => {
-            console.log("Changement détecté dans les sessions, rechargement");
+            console.log("Change detected in sessions, reloading");
             fetchSessions();
           }
         )
@@ -129,7 +129,7 @@ const Assistant = () => {
     }
   }, [userId]);
   
-  // Vérifier le statut de l'API OpenAI - une seule tentative
+  // Check OpenAI API status - one attempt only
   const [apiChecked, setApiChecked] = useState(false);
   
   useEffect(() => {
@@ -137,10 +137,10 @@ const Assistant = () => {
       if (!userId || apiChecked) return;
       
       try {
-        console.log("Vérification du statut de l'API OpenAI...");
+        console.log("Checking OpenAI API status...");
         setApiChecked(true);
         
-        // Tentative de création d'un thread pour vérifier l'API
+        // Try creating a thread to verify API
         const baseUrl = 'https://atsfuqwxfrezkxtnctmk.supabase.co';
         const response = await fetch(`${baseUrl}/functions/v1/openai-assistant`, {
           method: 'POST',
@@ -156,17 +156,17 @@ const Assistant = () => {
         const data = await response.json();
         
         if (response.ok && data.threadId) {
-          console.log("API OpenAI connectée avec succès, thread créé:", data.threadId);
+          console.log("OpenAI API connected successfully, thread created:", data.threadId);
           setApiStatus('connected');
         } else {
-          // Analyser l'erreur pour fournir un message plus précis
-          console.error("Erreur API:", data);
+          // Analyze error for more precise message
+          console.error("API error:", data);
           
           setApiStatus('error');
-          toast.error("Impossible de se connecter à l'API OpenAI. Vérifiez la configuration de l'API.");
+          toast.error("Unable to connect to OpenAI API. Check API configuration.");
         }
       } catch (error) {
-        console.error("Erreur lors de la vérification de l'API:", error);
+        console.error("Error checking API:", error);
         setApiStatus('error');
       }
     };
@@ -176,73 +176,73 @@ const Assistant = () => {
     }
   }, [userId, apiChecked]);
   
-  // Vérifier s'il y a une session active stockée
+  // Check if there's a stored active session
   useEffect(() => {
     const storedSessionId = localStorage.getItem('current_chat_session_id');
     if (storedSessionId && userId) {
-      console.log("Session stockée trouvée:", storedSessionId);
+      console.log("Found stored session:", storedSessionId);
       setCurrentSessionId(storedSessionId);
     } else {
-      console.log("Aucune session stockée trouvée");
+      console.log("No stored session found");
     }
   }, [userId, setCurrentSessionId]);
   
-  // Créer une nouvelle conversation
+  // Create new conversation
   const handleNewChat = async () => {
     if (!userId) {
-      console.error("Impossible de créer une nouvelle conversation: utilisateur non connecté");
-      toast.error("Vous devez être connecté pour créer une conversation");
+      console.error("Cannot create new conversation: user not logged in");
+      toast.error("You must be logged in to create a conversation");
       return;
     }
     
     try {
-      console.log("Création d'une nouvelle conversation");
+      console.log("Creating new conversation");
       const newSessionId = await createChatSession();
       if (newSessionId) {
         setCurrentSessionId(newSessionId);
-        console.log("Nouvelle conversation créée:", newSessionId);
+        console.log("New conversation created:", newSessionId);
       } else {
-        throw new Error("Erreur lors de la création de la session");
+        throw new Error("Error creating session");
       }
     } catch (error) {
-      console.error("Échec de la création d'une nouvelle conversation:", error);
-      toast.error("Impossible de créer une nouvelle conversation");
+      console.error("Failed to create new conversation:", error);
+      toast.error("Unable to create new conversation");
     }
   };
   
-  // Sélectionner une conversation existante
+  // Select existing conversation
   const handleSessionSelect = (sessionId: string) => {
-    console.log("Sélection de la session:", sessionId);
+    console.log("Selecting session:", sessionId);
     setCurrentSessionId(sessionId);
   };
   
-  // Gérer l'affichage sur mobile
+  // Handle mobile display
   const toggleSidebar = () => {
     setSidebarVisible(prev => !prev);
   };
   
-  // Afficher un message de débogage visible
+  // Display visible debug message
   const DebugBanner = () => (
     <div className="bg-green-100 py-1 px-2 text-center text-sm font-bold text-green-800 border-b border-green-300">
-      Assistant actif - Page chargée correctement
+      Assistant active - Page loaded correctly
     </div>
   );
   
-  // Afficher les informations utilisateur en haut de la page
+  // Display user info at top of page
   const UserInfo = () => (
     <div className="bg-muted/20 text-xs py-1 px-2 text-center border-b">
       {user ? (
         <span className="font-mono">
-          Connecté en tant que: {user?.email || 'Unknown'} | 
+          Logged in as: {user?.email || 'Unknown'} | 
           User ID: {user?.id ? `${user.id.substring(0, 8)}...` : 'Unknown'}
         </span>
       ) : (
-        <span className="font-mono text-red-500 font-bold">Connexion requise</span>
+        <span className="font-mono text-red-500 font-bold">Login required</span>
       )}
     </div>
   );
   
-  // Afficher un écran de chargement
+  // Display loading screen
   if (authChecking || loading) {
     return (
       <div className="flex flex-col min-h-screen bg-background">
@@ -255,15 +255,15 @@ const Assistant = () => {
               <div className="w-3 h-3 bg-primary rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
               <div className="w-3 h-3 bg-primary rounded-full animate-bounce" style={{animationDelay: '0.4s'}}></div>
             </div>
-            <p className="text-lg">Chargement de l'assistant...</p>
-            <p className="text-sm text-gray-500 mt-2">Vérification de l'authentification et initialisation...</p>
+            <p className="text-lg">Loading assistant...</p>
+            <p className="text-sm text-gray-500 mt-2">Verifying authentication and initializing...</p>
           </div>
         </div>
       </div>
     );
   }
   
-  // Afficher un message d'erreur générique si un problème empêche le chargement
+  // Display generic error message if a problem prevents loading
   if (loadError) {
     return (
       <div className="flex flex-col min-h-screen bg-background">
@@ -274,16 +274,16 @@ const Assistant = () => {
             <div className="flex justify-center mb-4 text-amber-500">
               <BugIcon size={48} />
             </div>
-            <h2 className="text-2xl font-bold mb-4">Erreur de chargement</h2>
+            <h2 className="text-2xl font-bold mb-4">Loading Error</h2>
             <p className="mb-6 text-gray-700">
               {loadError}
             </p>
             <div className="flex flex-col md:flex-row justify-center gap-2">
               <Button onClick={() => navigate('/')} variant="outline">
-                Retour à l'accueil
+                Return to home
               </Button>
               <Button onClick={() => window.location.reload()} className="flex items-center gap-1">
-                <RefreshCw size={16} /> Rafraîchir la page
+                <RefreshCw size={16} /> Refresh page
               </Button>
             </div>
           </div>
@@ -292,7 +292,7 @@ const Assistant = () => {
     );
   }
   
-  // Afficher un message d'erreur si l'API n'est pas disponible
+  // Display error message if API is unavailable
   if (apiStatus === 'error') {
     return (
       <div className="flex flex-col min-h-screen bg-background">
@@ -303,24 +303,24 @@ const Assistant = () => {
             <div className="flex justify-center mb-4 text-red-500">
               <AlertTriangle size={48} />
             </div>
-            <h2 className="text-2xl font-bold mb-4">Erreur de configuration</h2>
+            <h2 className="text-2xl font-bold mb-4">Configuration Error</h2>
             <p className="mb-6 text-gray-700">
-              Impossible de se connecter à l'API OpenAI. La clé API OpenAI n'est pas configurée correctement 
-              ou l'API des assistants v2 est inaccessible. Veuillez vérifier votre clé API et réessayer.
+              Unable to connect to OpenAI API. The OpenAI API key is not configured correctly 
+              or the Assistants v2 API is inaccessible. Please check your API key and try again.
             </p>
             <div className="flex flex-col md:flex-row justify-center gap-2">
               <Button onClick={() => navigate('/')} variant="outline" className="mr-2">
-                Retour à l'accueil
+                Return to home
               </Button>
               <Button onClick={() => {
                 setApiChecked(false);
                 window.location.reload();
               }} className="flex items-center gap-1">
-                Réessayer <ArrowRight size={16} />
+                Try again <ArrowRight size={16} />
               </Button>
             </div>
             <p className="mt-4 text-sm text-gray-500">
-              Si le problème persiste, contactez l'administrateur pour vérifier la configuration de l'API des assistants.
+              If the problem persists, contact the administrator to check the Assistants API configuration.
             </p>
           </div>
         </div>
@@ -333,7 +333,7 @@ const Assistant = () => {
       <DebugBanner />
       <UserInfo />
       <div className="flex flex-1 h-full overflow-hidden">
-        {/* Sidebar pour les conversations - toujours visible si sidebarVisible est true */}
+        {/* Sidebar for conversations - always visible if sidebarVisible is true */}
         {sidebarVisible && (
           <div className="w-64 border-r border-border bg-muted/20 h-full overflow-y-auto flex-shrink-0">
             <ChatSidebar
@@ -347,7 +347,7 @@ const Assistant = () => {
           </div>
         )}
         
-        {/* Contenu principal - toujours visible */}
+        {/* Main content - always visible */}
         <div className="flex flex-col flex-1 h-full overflow-hidden">
           <ChatHeader 
             onToggleSidebar={toggleSidebar} 
@@ -365,14 +365,14 @@ const Assistant = () => {
                 </div>
                 <div className="ml-3">
                   <p className="text-sm text-red-700">
-                    Erreur API: {apiError}
+                    API Error: {apiError}
                   </p>
                 </div>
               </div>
             </div>
           )}
           
-          {/* Section Chat ou Message d'accueil - toujours visible */}
+          {/* Chat Section or Welcome Message - always visible */}
           <div className="flex-1 flex flex-col overflow-hidden">
             {currentSessionId ? (
               <>
@@ -382,17 +382,17 @@ const Assistant = () => {
             ) : (
               <div className="flex-1 flex items-center justify-center p-6">
                 <div className="max-w-md text-center">
-                  <h2 className="text-2xl font-bold mb-4">Bienvenue dans l'assistant Chyll</h2>
+                  <h2 className="text-2xl font-bold mb-4">Welcome to Chyll Assistant</h2>
                   <p className="mb-6 text-muted-foreground">
                     {sessions.length > 0 
-                      ? "Sélectionnez une conversation existante ou commencez-en une nouvelle."
-                      : "Commencez une nouvelle conversation pour interagir avec l'assistant."}
+                      ? "Select an existing conversation or start a new one."
+                      : "Start a new conversation to interact with the assistant."}
                   </p>
                   <button
                     onClick={handleNewChat}
                     className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
                   >
-                    Nouvelle conversation
+                    New conversation
                   </button>
                 </div>
               </div>
