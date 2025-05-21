@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -185,10 +186,115 @@ export const handleFunctionCall = async (toolCall, threadId, runId) => {
       console.error("Error sending email:", error);
       toast.error("Erreur lors de l'envoi de l'email");
     }
+  } else if (toolCall.function.name === 'save_onboarding_profile') {
+    try {
+      console.log("Processing save_onboarding_profile function call");
+      // Get the user's session
+      const { data } = await supabase.auth.getSession();
+      if (!data.session) {
+        console.error("No active session found");
+        toast.error("Vous devez être connecté pour sauvegarder votre profil");
+        return;
+      }
+      
+      const userId = data.session.user.id;
+      
+      // Parse the function arguments
+      const profileData = JSON.parse(toolCall.function.arguments);
+      console.log("Profile data to save:", profileData);
+      
+      // Check if profile already exists
+      const { data: existingProfile, error: checkError } = await supabase
+        .from('client_profile')
+        .select('*')
+        .eq('client_id', userId)
+        .maybeSingle();
+        
+      if (checkError) {
+        console.error("Error checking existing profile:", checkError);
+        toast.error("Erreur lors de la vérification du profil");
+        return;
+      }
+      
+      let result;
+      
+      if (existingProfile) {
+        // Update existing profile
+        const { data: updateData, error: updateError } = await supabase
+          .from('client_profile')
+          .update({
+            ...profileData,
+            client_id: userId
+          })
+          .eq('client_id', userId);
+          
+        if (updateError) {
+          console.error("Error updating profile:", updateError);
+          toast.error("Erreur lors de la mise à jour du profil");
+          return;
+        }
+        
+        result = updateData;
+        toast.success("Profil mis à jour avec succès!");
+      } else {
+        // Create new profile
+        const { data: insertData, error: insertError } = await supabase
+          .from('client_profile')
+          .insert({
+            ...profileData,
+            client_id: userId
+          });
+          
+        if (insertError) {
+          console.error("Error creating profile:", insertError);
+          toast.error("Erreur lors de la création du profil");
+          return;
+        }
+        
+        result = insertData;
+        toast.success("Profil créé avec succès!");
+      }
+      
+      console.log("Profile saved successfully:", result);
+      
+      // Submit the tool output back to OpenAI if thread and run IDs are available
+      if (threadId && runId) {
+        try {
+          const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL || 'https://atsfuqwxfrezkxtnctmk.supabase.co'}/functions/v1/openai-assistant`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF0c2Z1cXd4ZnJlemt4dG5jdG1rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc2NjE3MjEsImV4cCI6MjA2MzIzNzcyMX0.FO6bvv2rFL0jhzN5aZ3m1QvNaM_ZNt7Ycmo859PSnJE'}`
+            },
+            body: JSON.stringify({
+              action: 'submit_tool_outputs',
+              threadId,
+              runId,
+              toolOutputs: [{
+                tool_call_id: toolCall.id,
+                output: JSON.stringify({ success: true, message: "Profile saved successfully" })
+              }]
+            })
+          });
+          
+          if (!response.ok) {
+            console.error("Error submitting tool output to OpenAI");
+          } else {
+            console.log("Tool output submitted successfully");
+          }
+        } catch (error) {
+          console.error("Error during tool output submission:", error);
+        }
+      }
+      
+    } catch (error) {
+      console.error("Error saving profile:", error);
+      toast.error("Erreur lors de la sauvegarde du profil");
+    }
   } else {
     console.log(`Function call detected but not handled: ${toolCall.function.name}`);
   }
-}
+};
 
 // Define the interface for the RPC function parameters
 interface UpdateMessageToolcallsParams {

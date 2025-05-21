@@ -104,6 +104,9 @@ const Assistant = () => {
         } else if (toolCall.function?.name === 'send_gmail_email') {
           console.log("Gmail send email tool call detected, processing...");
           handleFunctionCall(toolCall, threadId, currentRunId);
+        } else if (toolCall.function?.name === 'save_onboarding_profile') {
+          console.log("Save onboarding profile tool call detected, processing...");
+          handleFunctionCall(toolCall, threadId, currentRunId);
         } else {
           console.log("Unknown or unhandled tool call:", toolCall);
         }
