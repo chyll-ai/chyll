@@ -1,7 +1,9 @@
 
 import FollowupButton from "@/components/FollowupButton";
+import ScheduleCallButton from "@/components/ScheduleCallButton";
+import ChatButton from "@/components/ChatButton";
 import { Button } from "@/components/ui/button";
-import { Mail, Calendar, MessageSquare } from "lucide-react";
+import { Mail } from "lucide-react";
 
 interface LeadActionsProps {
   leadId: string;
@@ -24,15 +26,9 @@ export const LeadActions = ({ leadId, email }: LeadActionsProps) => {
       
       <FollowupButton leadId={leadId} />
       
-      <Button variant="outline" size="sm">
-        <Calendar className="h-4 w-4 mr-2" />
-        Schedule Call
-      </Button>
+      <ScheduleCallButton leadId={leadId} email={email} />
       
-      <Button variant="outline" size="sm">
-        <MessageSquare className="h-4 w-4 mr-2" />
-        Chat
-      </Button>
+      <ChatButton leadId={leadId} />
     </div>
   );
 };
