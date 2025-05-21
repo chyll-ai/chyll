@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -70,6 +71,8 @@ async function handleFunctionCall(toolCall: ToolCall, threadId: string, runId: s
       
       if (result.oauth_url) {
         console.log("OAuth URL generated:", result.oauth_url);
+        // Open the OAuth URL in a new tab
+        window.open(result.oauth_url, '_blank');
       }
       
       // We don't display anything in the UI as the assistant will handle the response
@@ -231,7 +234,8 @@ export const useAssistantChat = () => {
                 role: role,
                 content: newMessage.content,
                 created_at: newMessage.created_at,
-                toolCalls: newMessage.toolCalls
+                // Only add toolCalls if they exist in the message
+                ...(newMessage.toolCalls && { toolCalls: newMessage.toolCalls })
               };
               return [...current, typedMessage].sort((a, b) => 
                 new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
@@ -271,7 +275,8 @@ export const useAssistantChat = () => {
           role: role,
           content: msg.content,
           created_at: msg.created_at,
-          toolCalls: msg.toolCalls
+          // Only add toolCalls if they exist in the message
+          ...(msg.toolCalls && { toolCalls: msg.toolCalls })
         };
       }) || [];
       
@@ -302,8 +307,8 @@ export const useAssistantChat = () => {
           id: data[0].id,
           role: 'assistant',
           content: content,
-          created_at: data[0].created_at,
-          toolCalls: data[0].toolCalls
+          created_at: data[0].created_at
+          // Note: No toolCalls for welcome message
         };
         setMessages(prev => [...prev, welcomeMsg]);
       }
@@ -392,8 +397,8 @@ export const useAssistantChat = () => {
             id: userMessageData[0].id,
             role: 'user',
             content: userMessageData[0].content,
-            created_at: userMessageData[0].created_at,
-            toolCalls: userMessageData[0].toolCalls
+            created_at: userMessageData[0].created_at
+            // Note: No toolCalls for user message
           } : msg
         ));
       }
@@ -483,9 +488,13 @@ export const useAssistantChat = () => {
           id: assistantMessageData[0].id,
           role: 'assistant',
           content: assistantMessageData[0].content,
-          created_at: assistantMessageData[0].created_at,
-          toolCalls: assistantMessageData[0].toolCalls
+          created_at: assistantMessageData[0].created_at
         };
+        
+        // If there are any tool calls, add them to the message
+        if (data.toolCalls && data.toolCalls.length > 0) {
+          newAssistantMessage.toolCalls = data.toolCalls;
+        }
         
         setMessages(prev => [...prev.filter(msg => msg.id !== "typing-indicator"), newAssistantMessage]);
       }
