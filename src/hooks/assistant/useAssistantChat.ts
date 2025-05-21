@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/components/ui/sonner';
 import { Message } from './types';
-import { handleFunctionCall } from './toolCallHandlers';
+import { handleFunctionCall } from '@/lib/handleFunctionCall';
 import { isProfileQuestion } from './profileUtils';
 import { 
   createThread, 
@@ -14,7 +14,7 @@ import {
   updateMessageWithToolCalls
 } from './apiService';
 
-export { handleFunctionCall };
+export { handleFunctionCall } from '@/lib/handleFunctionCall';
 
 const useAssistantChat = () => {
   const navigate = useNavigate();
@@ -419,19 +419,6 @@ const useAssistantChat = () => {
         }
         
         setMessages(prev => [...prev.filter(msg => msg.id !== "typing-indicator"), newAssistantMessage]);
-      }
-      
-      // 5. Handle tool calls if any
-      if (data.toolCalls && data.toolCalls.length > 0) {
-        console.log('Tool calls received:', data.toolCalls);
-        
-        // Process each tool call
-        for (const toolCall of data.toolCalls) {
-          if (toolCall.type === 'function' && currentThreadId && data.runId) {
-            // Handle function calls, especially connect_gmail
-            await handleFunctionCall(toolCall, currentThreadId, data.runId);
-          }
-        }
       }
       
     } catch (error) {
