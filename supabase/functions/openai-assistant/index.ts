@@ -53,6 +53,10 @@ serve(async (req) => {
 async function handleCreateThread() {
   try {
     console.log("Création d'un nouveau thread...");
+    if (!OPENAI_API_KEY) {
+      throw new Error('OPENAI_API_KEY is not configured');
+    }
+    
     const response = await fetch('https://api.openai.com/v1/threads', {
       method: 'POST',
       headers: {
@@ -70,7 +74,7 @@ async function handleCreateThread() {
     }
 
     const thread = await response.json();
-    console.log("Thread créé:", thread.id);
+    console.log("Thread créé avec succès:", thread.id);
     
     return new Response(
       JSON.stringify({ threadId: thread.id }),
@@ -84,6 +88,10 @@ async function handleCreateThread() {
 
 async function handleSendMessage(threadId: string, messageContent: string) {
   try {
+    if (!OPENAI_API_KEY) {
+      throw new Error('OPENAI_API_KEY is not configured');
+    }
+    
     // 1. Add the message to the thread
     console.log(`Ajout du message au thread ${threadId}:`, messageContent);
     const messageResponse = await fetch(`https://api.openai.com/v1/threads/${threadId}/messages`, {
@@ -127,7 +135,7 @@ async function handleSendMessage(threadId: string, messageContent: string) {
 
     const runData = await runResponse.json();
     const runId = runData.id;
-    console.log("Run créé:", runId);
+    console.log("Run créé avec succès:", runId);
 
     // 3. Poll for the run completion
     console.log("Attente de la complétion du run...");
@@ -221,6 +229,10 @@ async function pollRunStatus(threadId: string, runId: string) {
     await new Promise(resolve => setTimeout(resolve, 1000));
     
     try {
+      if (!OPENAI_API_KEY) {
+        throw new Error('OPENAI_API_KEY is not configured');
+      }
+      
       const runCheckResponse = await fetch(`https://api.openai.com/v1/threads/${threadId}/runs/${runId}`, {
         method: 'GET',
         headers: {

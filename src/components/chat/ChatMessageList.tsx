@@ -22,8 +22,9 @@ const ChatMessageList: React.FC<ChatMessageListProps> = ({ messages }) => {
   return (
     <div className="flex-1 overflow-y-auto p-4 space-y-4">
       {messages.length === 0 ? (
-        <div className="text-center text-gray-500">
-          Pas de messages. Commencez une conversation!
+        <div className="text-center text-gray-500 p-8">
+          <p className="mb-2">Pas de messages. Commencez une conversation!</p>
+          <p className="text-sm">Posez une question à l'assistant pour démarrer.</p>
         </div>
       ) : (
         messages.map((message, index) => (
@@ -33,7 +34,7 @@ const ChatMessageList: React.FC<ChatMessageListProps> = ({ messages }) => {
           />
         ))
       )}
-      <div ref={messagesEndRef} />
+      <div ref={messagesEndRef} className="h-4" />
     </div>
   );
 };

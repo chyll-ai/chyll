@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/components/ui/sonner';
@@ -25,17 +26,22 @@ export const useAssistantChat = () => {
   const [userId, setUserId] = useState<string | null>(null);
   const [hasProfile, setHasProfile] = useState<boolean | null>(null);
   const [threadId, setThreadId] = useState<string | null>(null);
+  const [authChecked, setAuthChecked] = useState(false);
 
-  // Check if user is authenticated and fetch messages
+  // Check if user is authenticated
   useEffect(() => {
     const checkAuth = async () => {
       try {
         // Get current user
         const { data: userData, error: userError } = await supabase.auth.getUser();
         
-        if (userError || !userData.user) {
-          console.error("Pas d'utilisateur trouvé:", userError);
-          toast.error("Veuillez vous connecter pour accéder à cette page");
+        if (userError) {
+          console.error("Erreur lors de la vérification de l'utilisateur:", userError);
+          throw new Error(userError.message);
+        }
+        
+        if (!userData.user) {
+          console.log("Pas d'utilisateur trouvé, redirection vers login");
           navigate('/login');
           return;
         }
@@ -79,35 +85,30 @@ export const useAssistantChat = () => {
           throw new Error("Erreur lors de la récupération du profil");
         }
         
-        const profileExists = !!profileData;
-        setHasProfile(profileExists);
+        setHasProfile(!!profileData);
+        setAuthChecked(true);
+      } catch (error) {
+        console.error("Erreur lors du chargement des données:", error);
+        toast.error("Une erreur s'est produite lors de la vérification de l'authentification");
+      }
+    };
+    
+    checkAuth();
+  }, [navigate]);
+
+  // Load messages and create thread once user is authenticated
+  useEffect(() => {
+    if (!userId || !authChecked) return;
+
+    const loadData = async () => {
+      try {
+        setLoading(true);
         
         // Fetch chat messages
         await fetchMessages(userId);
         
-        // Check if any assistant messages exist, and if not, send a welcome message
-        const assistantMessages = messages.filter(msg => msg.role === 'assistant');
-        if (assistantMessages.length === 0) {
-          console.log("Aucun message assistant trouvé, envoi d'un message de bienvenue...");
-          const welcomeMessage = profileExists
-            ? "Maintenant que votre profil est configuré, je peux vous aider à générer des emails..."
-            : "Bienvenue ! Pour commencer, j'ai besoin de mieux comprendre votre cible et votre offre. On y va ?";
-          
-          await sendWelcomeMessage(userId, welcomeMessage);
-        }
-        
-        // Create a new thread if needed
-        if (!threadId) {
-          try {
-            const thread = await createThread();
-            console.log("Thread créé:", thread);
-            setThreadId(thread.threadId);
-            localStorage.setItem('openai_thread_id', thread.threadId);
-          } catch (error) {
-            console.error("Erreur lors de la création du thread:", error);
-            // Continue without a thread as it's not critical for initial loading
-          }
-        }
+        // Create a new thread or use existing one
+        await setupThread();
         
         setLoading(false);
       } catch (error) {
@@ -117,14 +118,8 @@ export const useAssistantChat = () => {
       }
     };
     
-    // Try to get existing threadId from localStorage
-    const storedThreadId = localStorage.getItem('openai_thread_id');
-    if (storedThreadId) {
-      setThreadId(storedThreadId);
-    }
-    
-    checkAuth();
-  }, [navigate, messages.length]);
+    loadData();
+  }, [userId, authChecked]);
 
   // Set up real-time subscription for new messages
   useEffect(() => {
@@ -142,6 +137,8 @@ export const useAssistantChat = () => {
   }, [userId]);
 
   const setupSubscription = (userId: string) => {
+    console.log("Configuration de l'abonnement aux messages en temps réel pour l'utilisateur:", userId);
+    
     const messagesChannel = supabase
       .channel('public:messages')
       .on('postgres_changes', { 
@@ -150,14 +147,19 @@ export const useAssistantChat = () => {
         table: 'messages',
         filter: `client_id=eq.${userId}`
       }, (payload) => {
+        console.log("Changement détecté dans les messages:", payload);
+        
         if (payload.new && typeof payload.new === 'object') {
           const newMessage = payload.new as any;
           if (newMessage.role === 'user' || newMessage.role === 'assistant') {
             setMessages(current => {
               // Check if the message already exists
               if (current.some(msg => msg.id === newMessage.id)) {
+                console.log("Message déjà présent dans l'état", newMessage.id);
                 return current;
               }
+              
+              console.log("Ajout du nouveau message à l'état:", newMessage);
               // Cast role to 'user' | 'assistant' type
               const role = newMessage.role as 'user' | 'assistant';
               const typedMessage: Message = {
@@ -166,6 +168,7 @@ export const useAssistantChat = () => {
                 content: newMessage.content,
                 created_at: newMessage.created_at
               };
+              
               return [...current, typedMessage].sort((a, b) => 
                 new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
               );
@@ -174,7 +177,7 @@ export const useAssistantChat = () => {
         }
       })
       .subscribe((status) => {
-        console.log("Status de souscription:", status);
+        console.log("Status de souscription aux messages:", status);
       });
     
     return messagesChannel;
@@ -182,6 +185,8 @@ export const useAssistantChat = () => {
   
   const fetchMessages = async (userId: string) => {
     try {
+      console.log("Récupération des messages pour l'utilisateur:", userId);
+      
       const { data, error } = await supabase
         .from('messages')
         .select('*')
@@ -189,6 +194,7 @@ export const useAssistantChat = () => {
         .order('created_at', { ascending: true });
         
       if (error) {
+        console.error("Erreur lors de la récupération des messages:", error);
         throw error;
       }
       
@@ -208,10 +214,37 @@ export const useAssistantChat = () => {
       }) || [];
       
       setMessages(typedMessages);
-      console.log(`Fetched ${typedMessages.length} messages:`, typedMessages);
+      console.log(`Récupération de ${typedMessages.length} messages:`, typedMessages);
     } catch (error) {
       console.error("Erreur lors de la récupération des messages:", error);
       toast.error("Impossible de charger les messages");
+    }
+  };
+
+  const setupThread = async () => {
+    // Try to get existing threadId from localStorage
+    const storedThreadId = localStorage.getItem('openai_thread_id');
+    
+    if (storedThreadId) {
+      console.log("Utilisation du thread existant:", storedThreadId);
+      setThreadId(storedThreadId);
+      return;
+    }
+    
+    try {
+      console.log("Création d'un nouveau thread...");
+      const thread = await createThread();
+      console.log("Thread créé:", thread);
+      
+      if (thread.threadId) {
+        setThreadId(thread.threadId);
+        localStorage.setItem('openai_thread_id', thread.threadId);
+      } else {
+        throw new Error("Impossible de créer un thread: réponse invalide");
+      }
+    } catch (error) {
+      console.error("Erreur lors de la création du thread:", error);
+      toast.error("Impossible de créer une conversation avec l'assistant");
     }
   };
   
@@ -246,8 +279,11 @@ export const useAssistantChat = () => {
   
   const createThread = async () => {
     try {
+      console.log("Appel de la fonction Edge pour créer un thread...");
+      
       // Use the full URL for the Edge Function
-      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL || 'https://atsfuqwxfrezkxtnctmk.supabase.co'}/functions/v1/openai-assistant`, {
+      const baseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://atsfuqwxfrezkxtnctmk.supabase.co';
+      const response = await fetch(`${baseUrl}/functions/v1/openai-assistant`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -260,6 +296,7 @@ export const useAssistantChat = () => {
       
       if (!response.ok) {
         const errorData = await response.json();
+        console.error("Erreur de réponse lors de la création du thread:", errorData);
         throw new Error(errorData.error || 'Erreur lors de la création du thread');
       }
       
@@ -267,7 +304,6 @@ export const useAssistantChat = () => {
       return data;
     } catch (error) {
       console.error("Erreur lors de la création du thread:", error);
-      toast.error("Impossible de créer une conversation avec l'assistant");
       throw error;
     }
   };
@@ -280,6 +316,7 @@ export const useAssistantChat = () => {
     
     if (sending) {
       console.log("Envoi déjà en cours, veuillez patienter");
+      toast.error("Un message est déjà en cours d'envoi, veuillez patienter");
       return;
     }
     
@@ -297,17 +334,15 @@ export const useAssistantChat = () => {
       // Update the UI immediately with the user message
       setMessages(prev => [...prev, tempUserMessage]);
       
-      // 1. Insert user message
-      const userMessage = {
-        client_id: userId,
-        role: 'user' as const,
-        content: content.trim()
-      };
-      
-      console.log("Envoi du message utilisateur à Supabase:", userMessage);
+      // 1. Insert user message into the database
+      console.log("Envoi du message utilisateur à Supabase:", content.trim());
       const { data: userMessageData, error: userMessageError } = await supabase
         .from('messages')
-        .insert([userMessage])
+        .insert([{
+          client_id: userId,
+          role: 'user' as const,
+          content: content.trim()
+        }])
         .select();
         
       if (userMessageError) {
@@ -334,6 +369,10 @@ export const useAssistantChat = () => {
         console.log("Pas de thread existant, création d'un nouveau thread...");
         try {
           const thread = await createThread();
+          if (!thread || !thread.threadId) {
+            throw new Error("Réponse invalide lors de la création du thread");
+          }
+          
           currentThreadId = thread.threadId;
           setThreadId(currentThreadId);
           localStorage.setItem('openai_thread_id', currentThreadId);
@@ -358,7 +397,9 @@ export const useAssistantChat = () => {
       
       // 3. Send message to OpenAI and get response
       console.log("Envoi du message à OpenAI avec threadId:", currentThreadId);
-      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL || 'https://atsfuqwxfrezkxtnctmk.supabase.co'}/functions/v1/openai-assistant`, {
+      
+      const baseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://atsfuqwxfrezkxtnctmk.supabase.co';
+      const response = await fetch(`${baseUrl}/functions/v1/openai-assistant`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -377,11 +418,18 @@ export const useAssistantChat = () => {
       if (!response.ok) {
         const errorData = await response.json();
         console.error("Erreur de réponse de l'API OpenAI:", errorData);
+        toast.error("Erreur de communication avec l'assistant");
         throw new Error(errorData.error || 'Erreur lors de l\'envoi du message');
       }
       
       const data = await response.json();
       console.log("Réponse reçue de l'API OpenAI:", data);
+      
+      if (!data.message) {
+        console.error("Format de réponse invalide de l'API OpenAI:", data);
+        toast.error("Réponse invalide de l'assistant");
+        throw new Error('Format de réponse invalide');
+      }
       
       // 4. Insert assistant's response
       const assistantMessage = {
@@ -398,6 +446,7 @@ export const useAssistantChat = () => {
         
       if (assistantMessageError) {
         console.error("Erreur lors de l'enregistrement de la réponse de l'assistant:", assistantMessageError);
+        toast.error("Erreur lors de l'enregistrement de la réponse");
         throw assistantMessageError;
       }
       
@@ -412,11 +461,6 @@ export const useAssistantChat = () => {
         };
         
         setMessages(prev => [...prev.filter(msg => msg.id !== "typing-indicator"), newAssistantMessage]);
-      }
-      
-      // 5. Handle tool calls if any
-      if (data.toolCalls && data.toolCalls.length > 0) {
-        console.log('Tool calls received:', data.toolCalls);
       }
       
     } catch (error) {

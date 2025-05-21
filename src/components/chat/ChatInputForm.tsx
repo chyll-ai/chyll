@@ -43,16 +43,23 @@ const ChatInputForm: React.FC<ChatInputFormProps> = ({ onSendMessage, disabled }
           placeholder="Tapez votre message..."
           disabled={disabled}
           className="flex-1"
+          aria-label="Entrez votre message"
         />
         <Button 
           type="submit" 
           disabled={!inputMessage.trim() || disabled}
           aria-label="Envoyer le message"
+          className={disabled ? "opacity-50 cursor-not-allowed" : ""}
         >
           <Send className="h-4 w-4 mr-2" />
           Envoyer
         </Button>
       </form>
+      {disabled && (
+        <p className="text-xs text-center mt-1 text-muted-foreground">
+          Traitement en cours, veuillez patienter...
+        </p>
+      )}
     </footer>
   );
 };
