@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -270,14 +269,20 @@ export const useAssistantChat = () => {
           ? msg.role as 'user' | 'assistant'
           : 'assistant'; // Default fallback
           
-        return {
+        // Create a properly typed Message object without assuming toolCalls exists
+        const message: Message = {
           id: msg.id,
           role: role,
           content: msg.content,
-          created_at: msg.created_at,
-          // Only add toolCalls if they exist in the message
-          ...(msg.toolCalls && { toolCalls: msg.toolCalls })
+          created_at: msg.created_at
         };
+        
+        // Only add toolCalls if it exists in the database message
+        if ('toolCalls' in msg && msg.toolCalls) {
+          message.toolCalls = msg.toolCalls;
+        }
+        
+        return message;
       }) || [];
       
       setMessages(typedMessages);
