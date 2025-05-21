@@ -18,7 +18,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
   
   return (
     <div className={cn(
-      'flex',
+      'flex w-full mb-4',
       isUser ? 'justify-end' : 'justify-start'
     )}>
       <div className={cn(
@@ -34,7 +34,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
         ) : (
           <div>
             <div className="text-xs opacity-70 mb-1">
-              {isUser ? 'You' : 'Assistant'} ({message.role})
+              {isUser ? 'Vous' : 'Assistant'} 
             </div>
             <p className="whitespace-pre-wrap">{message.content}</p>
           </div>

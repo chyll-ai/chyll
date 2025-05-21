@@ -19,7 +19,7 @@ const Assistant = () => {
   const [user, setUser] = useState<any>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   
-  // Debug message visible on load
+  // Make sure the page is visible
   const [isPageLoaded, setIsPageLoaded] = useState(true);
   
   const {
@@ -54,6 +54,8 @@ const Assistant = () => {
           console.log("No active session in Assistant");
           setLoadError("No active user session. Please login.");
           setAuthChecking(false);
+          // Redirect to login
+          navigate('/login');
           return;
         }
         
@@ -224,7 +226,7 @@ const Assistant = () => {
   // Display visible debug message
   const DebugBanner = () => (
     <div className="bg-green-100 py-1 px-2 text-center text-sm font-bold text-green-800 border-b border-green-300">
-      Assistant active - Page loaded correctly
+      Assistant actif - Page chargée correctement
     </div>
   );
   
@@ -233,11 +235,11 @@ const Assistant = () => {
     <div className="bg-muted/20 text-xs py-1 px-2 text-center border-b">
       {user ? (
         <span className="font-mono">
-          Logged in as: {user?.email || 'Unknown'} | 
-          User ID: {user?.id ? `${user.id.substring(0, 8)}...` : 'Unknown'}
+          Connecté en tant que: {user?.email || 'Inconnu'} | 
+          User ID: {user?.id ? `${user.id.substring(0, 8)}...` : 'Inconnu'}
         </span>
       ) : (
-        <span className="font-mono text-red-500 font-bold">Login required</span>
+        <span className="font-mono text-red-500 font-bold">Connexion requise</span>
       )}
     </div>
   );
@@ -255,8 +257,8 @@ const Assistant = () => {
               <div className="w-3 h-3 bg-primary rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
               <div className="w-3 h-3 bg-primary rounded-full animate-bounce" style={{animationDelay: '0.4s'}}></div>
             </div>
-            <p className="text-lg">Loading assistant...</p>
-            <p className="text-sm text-gray-500 mt-2">Verifying authentication and initializing...</p>
+            <p className="text-lg">Chargement de l'assistant...</p>
+            <p className="text-sm text-gray-500 mt-2">Vérification de l'authentification et initialisation...</p>
           </div>
         </div>
       </div>
@@ -274,16 +276,16 @@ const Assistant = () => {
             <div className="flex justify-center mb-4 text-amber-500">
               <BugIcon size={48} />
             </div>
-            <h2 className="text-2xl font-bold mb-4">Loading Error</h2>
+            <h2 className="text-2xl font-bold mb-4">Erreur de chargement</h2>
             <p className="mb-6 text-gray-700">
               {loadError}
             </p>
             <div className="flex flex-col md:flex-row justify-center gap-2">
               <Button onClick={() => navigate('/')} variant="outline">
-                Return to home
+                Retour à l'accueil
               </Button>
               <Button onClick={() => window.location.reload()} className="flex items-center gap-1">
-                <RefreshCw size={16} /> Refresh page
+                <RefreshCw size={16} /> Rafraîchir la page
               </Button>
             </div>
           </div>
@@ -303,24 +305,24 @@ const Assistant = () => {
             <div className="flex justify-center mb-4 text-red-500">
               <AlertTriangle size={48} />
             </div>
-            <h2 className="text-2xl font-bold mb-4">Configuration Error</h2>
+            <h2 className="text-2xl font-bold mb-4">Erreur de configuration</h2>
             <p className="mb-6 text-gray-700">
-              Unable to connect to OpenAI API. The OpenAI API key is not configured correctly 
-              or the Assistants v2 API is inaccessible. Please check your API key and try again.
+              Impossible de se connecter à l'API OpenAI. La clé API OpenAI n'est pas configurée correctement 
+              ou l'API Assistants v2 est inaccessible. Veuillez vérifier votre clé API et réessayer.
             </p>
             <div className="flex flex-col md:flex-row justify-center gap-2">
               <Button onClick={() => navigate('/')} variant="outline" className="mr-2">
-                Return to home
+                Retour à l'accueil
               </Button>
               <Button onClick={() => {
                 setApiChecked(false);
                 window.location.reload();
               }} className="flex items-center gap-1">
-                Try again <ArrowRight size={16} />
+                Réessayer <ArrowRight size={16} />
               </Button>
             </div>
             <p className="mt-4 text-sm text-gray-500">
-              If the problem persists, contact the administrator to check the Assistants API configuration.
+              Si le problème persiste, contactez l'administrateur pour vérifier la configuration de l'API Assistants.
             </p>
           </div>
         </div>
@@ -328,6 +330,7 @@ const Assistant = () => {
     );
   }
   
+  // Main UI - always render this if no errors
   return (
     <div className="flex flex-col h-screen bg-background">
       <DebugBanner />
@@ -342,7 +345,7 @@ const Assistant = () => {
               onSessionSelect={handleSessionSelect}
               onNewChat={handleNewChat}
               isLoading={sessionsLoading}
-              error={sessionsError}
+              error={sessionsError || null}
             />
           </div>
         )}
@@ -372,8 +375,8 @@ const Assistant = () => {
             </div>
           )}
           
-          {/* Chat Section or Welcome Message - always visible */}
-          <div className="flex-1 flex flex-col overflow-hidden">
+          {/* Chat Section or Welcome Message - ALWAYS VISIBLE */}
+          <div className="flex-1 flex flex-col overflow-hidden border border-gray-200 m-2 rounded-md">
             {currentSessionId ? (
               <>
                 <ChatMessageList messages={messages} />
@@ -382,17 +385,17 @@ const Assistant = () => {
             ) : (
               <div className="flex-1 flex items-center justify-center p-6">
                 <div className="max-w-md text-center">
-                  <h2 className="text-2xl font-bold mb-4">Welcome to Chyll Assistant</h2>
+                  <h2 className="text-2xl font-bold mb-4">Bienvenue sur Chyll Assistant</h2>
                   <p className="mb-6 text-muted-foreground">
                     {sessions.length > 0 
-                      ? "Select an existing conversation or start a new one."
-                      : "Start a new conversation to interact with the assistant."}
+                      ? "Sélectionnez une conversation existante ou démarrez-en une nouvelle."
+                      : "Démarrez une nouvelle conversation pour interagir avec l'assistant."}
                   </p>
                   <button
                     onClick={handleNewChat}
                     className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
                   >
-                    New conversation
+                    Nouvelle conversation
                   </button>
                 </div>
               </div>
