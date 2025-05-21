@@ -1,11 +1,10 @@
 
 import React, { useCallback, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import useAssistantChat from '@/hooks/useAssistantChat';
+import useAssistantChat, { handleFunctionCall } from '@/hooks/useAssistantChat';
 import ChatHeader from '@/components/chat/ChatHeader';
 import ChatMessageList from '@/components/chat/ChatMessageList';
 import ChatInputForm from '@/components/chat/ChatInputForm';
-import { handleFunctionCall } from '@/hooks/useAssistantChat';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/components/ui/sonner';
 
