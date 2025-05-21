@@ -170,7 +170,7 @@ async function handleSendMessage(threadId: string, messageContent: string) {
       .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
     const assistantResponse = assistantMessages.length > 0 
-      ? assistantMessages[0].content[0].text.value 
+      ? assistantMessages[0].content[0]?.text?.value || ""
       : "Je n'ai pas pu générer une réponse.";
 
     console.log("Réponse de l'assistant:", assistantResponse.substring(0, 100) + "...");

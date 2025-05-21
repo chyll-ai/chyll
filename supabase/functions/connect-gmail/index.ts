@@ -17,7 +17,7 @@ serve(async (req) => {
   }
   
   try {
-    const { thread_id, run_id, user_token } = await req.json();
+    const { thread_id, run_id, user_token, tool_call_id } = await req.json();
     
     if (!thread_id || !run_id || !user_token) {
       throw new Error('Missing required parameters: thread_id, run_id, or user_token');
@@ -50,7 +50,7 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         tool_outputs: [{
-          tool_call_id: "dummy_id", // In a real implementation, this would be from the tool call
+          tool_call_id: tool_call_id || "dummy_id", // Use the provided tool_call_id or a dummy one
           output: JSON.stringify({
             status: "success",
             message: "OAuth URL generated",
