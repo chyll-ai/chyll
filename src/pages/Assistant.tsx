@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAssistantChat from '@/hooks/useAssistantChat';
@@ -17,6 +18,9 @@ const Assistant = () => {
   const [authChecking, setAuthChecking] = useState(true);
   const [user, setUser] = useState<any>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
+  
+  // Message de débogage visible au chargement
+  const [isPageLoaded, setIsPageLoaded] = useState(true);
   
   const {
     loading,
@@ -217,18 +221,43 @@ const Assistant = () => {
     setSidebarVisible(prev => !prev);
   };
   
+  // Afficher un message de débogage visible
+  const DebugBanner = () => (
+    <div className="bg-green-100 py-1 px-2 text-center text-sm font-bold text-green-800 border-b border-green-300">
+      Assistant actif - Page chargée correctement
+    </div>
+  );
+  
+  // Afficher les informations utilisateur en haut de la page
+  const UserInfo = () => (
+    <div className="bg-muted/20 text-xs py-1 px-2 text-center border-b">
+      {user ? (
+        <span className="font-mono">
+          Connecté en tant que: {user?.email || 'Unknown'} | 
+          User ID: {user?.id ? `${user.id.substring(0, 8)}...` : 'Unknown'}
+        </span>
+      ) : (
+        <span className="font-mono text-red-500 font-bold">Connexion requise</span>
+      )}
+    </div>
+  );
+  
   // Afficher un écran de chargement
   if (authChecking || loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="text-center">
-          <div className="flex items-center justify-center space-x-1 mb-4">
-            <div className="w-3 h-3 bg-primary rounded-full animate-bounce"></div>
-            <div className="w-3 h-3 bg-primary rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
-            <div className="w-3 h-3 bg-primary rounded-full animate-bounce" style={{animationDelay: '0.4s'}}></div>
+      <div className="flex flex-col min-h-screen bg-background">
+        <DebugBanner />
+        <UserInfo />
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center">
+            <div className="flex items-center justify-center space-x-1 mb-4">
+              <div className="w-3 h-3 bg-primary rounded-full animate-bounce"></div>
+              <div className="w-3 h-3 bg-primary rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+              <div className="w-3 h-3 bg-primary rounded-full animate-bounce" style={{animationDelay: '0.4s'}}></div>
+            </div>
+            <p className="text-lg">Chargement de l'assistant...</p>
+            <p className="text-sm text-gray-500 mt-2">Vérification de l'authentification et initialisation...</p>
           </div>
-          <p className="text-lg">Chargement de l'assistant...</p>
-          <p className="text-sm text-gray-500 mt-2">Vérification de l'authentification et initialisation...</p>
         </div>
       </div>
     );
@@ -237,42 +266,37 @@ const Assistant = () => {
   // Afficher un message d'erreur générique si un problème empêche le chargement
   if (loadError) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="text-center max-w-md p-8 bg-white rounded-lg shadow-lg">
-          <div className="flex justify-center mb-4 text-amber-500">
-            <BugIcon size={48} />
-          </div>
-          <h2 className="text-2xl font-bold mb-4">Erreur de chargement</h2>
-          <p className="mb-6 text-gray-700">
-            {loadError}
-          </p>
-          <div className="flex flex-col md:flex-row justify-center gap-2">
-            <Button onClick={() => navigate('/')} variant="outline">
-              Retour à l'accueil
-            </Button>
-            <Button onClick={() => window.location.reload()} className="flex items-center gap-1">
-              <RefreshCw size={16} /> Rafraîchir la page
-            </Button>
+      <div className="flex flex-col min-h-screen bg-background">
+        <DebugBanner />
+        <UserInfo />
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center max-w-md p-8 bg-white rounded-lg shadow-lg">
+            <div className="flex justify-center mb-4 text-amber-500">
+              <BugIcon size={48} />
+            </div>
+            <h2 className="text-2xl font-bold mb-4">Erreur de chargement</h2>
+            <p className="mb-6 text-gray-700">
+              {loadError}
+            </p>
+            <div className="flex flex-col md:flex-row justify-center gap-2">
+              <Button onClick={() => navigate('/')} variant="outline">
+                Retour à l'accueil
+              </Button>
+              <Button onClick={() => window.location.reload()} className="flex items-center gap-1">
+                <RefreshCw size={16} /> Rafraîchir la page
+              </Button>
+            </div>
           </div>
         </div>
       </div>
     );
   }
   
-  // Afficher les informations utilisateur en haut de la page
-  const UserInfo = () => (
-    <div className="bg-muted/20 text-xs py-1 px-2 text-center border-b">
-      <span className="font-mono">
-        Connecté en tant que: {user?.email || 'Unknown'} | 
-        User ID: {user?.id ? `${user.id.substring(0, 8)}...` : 'Unknown'}
-      </span>
-    </div>
-  );
-  
   // Afficher un message d'erreur si l'API n'est pas disponible
   if (apiStatus === 'error') {
     return (
       <div className="flex flex-col min-h-screen bg-background">
+        <DebugBanner />
         <UserInfo />
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center max-w-md p-8 bg-white rounded-lg shadow-lg">
@@ -306,9 +330,10 @@ const Assistant = () => {
   
   return (
     <div className="flex flex-col h-screen bg-background">
+      <DebugBanner />
       <UserInfo />
       <div className="flex flex-1 h-full overflow-hidden">
-        {/* Sidebar pour les conversations */}
+        {/* Sidebar pour les conversations - toujours visible si sidebarVisible est true */}
         {sidebarVisible && (
           <div className="w-64 border-r border-border bg-muted/20 h-full overflow-y-auto flex-shrink-0">
             <ChatSidebar
@@ -322,7 +347,7 @@ const Assistant = () => {
           </div>
         )}
         
-        {/* Contenu principal */}
+        {/* Contenu principal - toujours visible */}
         <div className="flex flex-col flex-1 h-full overflow-hidden">
           <ChatHeader 
             onToggleSidebar={toggleSidebar} 
@@ -347,29 +372,32 @@ const Assistant = () => {
             </div>
           )}
           
-          {currentSessionId ? (
-            <>
-              <ChatMessageList messages={messages} />
-              <ChatInputForm onSendMessage={sendMessage} disabled={sending} />
-            </>
-          ) : (
-            <div className="flex-1 flex items-center justify-center p-6">
-              <div className="max-w-md text-center">
-                <h2 className="text-2xl font-bold mb-4">Bienvenue dans l'assistant Chyll</h2>
-                <p className="mb-6 text-muted-foreground">
-                  {sessions.length > 0 
-                    ? "Sélectionnez une conversation existante ou commencez-en une nouvelle."
-                    : "Commencez une nouvelle conversation pour interagir avec l'assistant."}
-                </p>
-                <button
-                  onClick={handleNewChat}
-                  className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
-                >
-                  Nouvelle conversation
-                </button>
+          {/* Section Chat ou Message d'accueil - toujours visible */}
+          <div className="flex-1 flex flex-col overflow-hidden">
+            {currentSessionId ? (
+              <>
+                <ChatMessageList messages={messages} />
+                <ChatInputForm onSendMessage={sendMessage} disabled={sending} />
+              </>
+            ) : (
+              <div className="flex-1 flex items-center justify-center p-6">
+                <div className="max-w-md text-center">
+                  <h2 className="text-2xl font-bold mb-4">Bienvenue dans l'assistant Chyll</h2>
+                  <p className="mb-6 text-muted-foreground">
+                    {sessions.length > 0 
+                      ? "Sélectionnez une conversation existante ou commencez-en une nouvelle."
+                      : "Commencez une nouvelle conversation pour interagir avec l'assistant."}
+                  </p>
+                  <button
+                    onClick={handleNewChat}
+                    className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+                  >
+                    Nouvelle conversation
+                  </button>
+                </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
     </div>
