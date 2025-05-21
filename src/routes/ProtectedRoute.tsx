@@ -21,12 +21,17 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
         if (error) {
           console.error("Erreur lors de la vérification de session:", error);
           setIsAuthenticated(false);
+          toast.error("Erreur d'authentification");
           return;
         }
         
         const hasSession = !!data.session;
         console.log("Session trouvée:", hasSession);
         setIsAuthenticated(hasSession);
+        
+        if (!hasSession) {
+          toast.error("Veuillez vous connecter pour accéder à cette page");
+        }
       } catch (error) {
         console.error("Erreur inattendue:", error);
         setIsAuthenticated(false);
@@ -39,7 +44,13 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         console.log("Changement d'état d'authentification:", event);
-        setIsAuthenticated(!!session);
+        const hasSession = !!session;
+        setIsAuthenticated(hasSession);
+        
+        // Si l'utilisateur est déconnecté, afficher une notification
+        if (event === 'SIGNED_OUT') {
+          toast.info("Vous avez été déconnecté");
+        }
       }
     );
     
@@ -66,11 +77,12 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
 
   if (!isAuthenticated) {
     // Rediriger vers la page de connexion si l'utilisateur n'est pas authentifié
-    toast.error("Veuillez vous connecter pour accéder à cette page");
+    console.log("Utilisateur non authentifié, redirection vers login");
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   // Rendre les enfants si l'utilisateur est authentifié
+  console.log("Utilisateur authentifié, affichage du contenu protégé");
   return <>{children}</>;
 };
 
