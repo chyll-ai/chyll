@@ -23,7 +23,7 @@ const Assistant = () => {
   
   const location = useLocation();
   
-  // Handle OAuth code returned from Gmail
+  // Handle OAuth code returned from Gmail with improved error handling
   useEffect(() => {
     const handleOAuthCallback = async () => {
       const urlParams = new URLSearchParams(location.search);
@@ -47,7 +47,8 @@ const Assistant = () => {
             body: JSON.stringify({
               action: 'exchange_code',
               code: code,
-              client_id: userId
+              client_id: userId,
+              redirect_url: window.location.origin + '/assistant' // Ensure redirect URL matches exactly what's configured in Google
             })
           });
           
@@ -60,7 +61,13 @@ const Assistant = () => {
               errorData = { error: errorText };
             }
             console.error("Error exchanging code:", errorData);
-            toast.error("Error connecting to Gmail. Please try again.");
+            
+            // More descriptive error messages for users
+            if (errorData.error?.includes("invalid_grant")) {
+              toast.error("Gmail authorization expired. Please try connecting again.");
+            } else {
+              toast.error("Error connecting to Gmail. Please try again.");
+            }
             return;
           }
           
@@ -76,7 +83,7 @@ const Assistant = () => {
           }
         } catch (error) {
           console.error("Error processing OAuth callback:", error);
-          toast.error("Error connecting to Gmail. Please try again.");
+          toast.error("Error connecting to Gmail. Please check console for details.");
         }
       }
     };

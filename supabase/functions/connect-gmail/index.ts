@@ -6,7 +6,6 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.23.0";
 const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
 const GOOGLE_CLIENT_ID = Deno.env.get('GOOGLE_CLIENT_ID') || 'YOUR_CLIENT_ID';
 const GOOGLE_CLIENT_SECRET = Deno.env.get('GOOGLE_CLIENT_SECRET') || 'YOUR_CLIENT_SECRET';
-const REDIRECT_URL = "https://chyll.ai/assistant";
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') || '';
 const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY') || '';
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
@@ -49,7 +48,7 @@ serve(async (req) => {
       );
     }
 
-    const { action, thread_id, run_id, user_token, tool_call_id, email_data, code, client_id } = reqData;
+    const { action, thread_id, run_id, user_token, tool_call_id, email_data, code, client_id, redirect_url } = reqData;
     
     if (!action) {
       throw new Error('Missing required parameter: action');
@@ -76,49 +75,54 @@ serve(async (req) => {
           console.log("Found existing Gmail token, checking if valid...");
           
           // Check if token is valid by testing a simple request
-          const testResponse = await fetch('https://www.googleapis.com/gmail/v1/users/me/profile', {
-            headers: {
-              'Authorization': `Bearer ${existingTokens.access_token}`
-            }
-          });
-          
-          if (testResponse.ok) {
-            console.log("Existing token is valid, using it");
+          try {
+            const testResponse = await fetch('https://www.googleapis.com/gmail/v1/users/me/profile', {
+              headers: {
+                'Authorization': `Bearer ${existingTokens.access_token}`
+              }
+            });
             
-            // Submit the tool outputs back to OpenAI with the success message
-            if (OPENAI_API_KEY) {
-              const toolOutputResponse = await fetch(`https://api.openai.com/v1/threads/${thread_id}/runs/${run_id}/submit_tool_outputs`, {
-                method: 'POST',
-                headers: {
-                  'Authorization': `Bearer ${OPENAI_API_KEY}`,
-                  'Content-Type': 'application/json',
-                  'OpenAI-Beta': 'assistants=v2',
-                },
-                body: JSON.stringify({
-                  tool_outputs: [{
-                    tool_call_id: tool_call_id || crypto.randomUUID(),
-                    output: JSON.stringify({
-                      status: "success",
-                      message: "Already connected to Gmail",
-                      access_token: existingTokens.access_token
-                    })
-                  }]
-                })
-              });
+            if (testResponse.ok) {
+              console.log("Existing token is valid, using it");
+              
+              // Submit the tool outputs back to OpenAI with the success message
+              if (OPENAI_API_KEY) {
+                const toolOutputResponse = await fetch(`https://api.openai.com/v1/threads/${thread_id}/runs/${run_id}/submit_tool_outputs`, {
+                  method: 'POST',
+                  headers: {
+                    'Authorization': `Bearer ${OPENAI_API_KEY}`,
+                    'Content-Type': 'application/json',
+                    'OpenAI-Beta': 'assistants=v2',
+                  },
+                  body: JSON.stringify({
+                    tool_outputs: [{
+                      tool_call_id: tool_call_id || crypto.randomUUID(),
+                      output: JSON.stringify({
+                        status: "success",
+                        message: "Already connected to Gmail",
+                        access_token: existingTokens.access_token
+                      })
+                    }]
+                  })
+                });
 
-              console.log("Tool output response status:", toolOutputResponse.status);
+                console.log("Tool output response status:", toolOutputResponse.status);
+              }
+              
+              return new Response(
+                JSON.stringify({
+                  status: "success",
+                  message: "Already connected to Gmail",
+                  access_token: existingTokens.access_token
+                }),
+                { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+              );
+            } else {
+              console.log("Existing token is invalid, will generate new one");
             }
-            
-            return new Response(
-              JSON.stringify({
-                status: "success",
-                message: "Already connected to Gmail",
-                access_token: existingTokens.access_token
-              }),
-              { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-            );
-          } else {
-            console.log("Existing token is invalid, will generate new one");
+          } catch (error) {
+            console.log("Error checking existing token:", error);
+            // Continue with generating a new token
           }
         }
       }
@@ -126,10 +130,13 @@ serve(async (req) => {
       // Generate a unique state token for the OAuth2 flow
       const stateToken = crypto.randomUUID();
       
+      // Get the redirect URL from the frontend or use a default
+      const finalRedirectUrl = redirect_url || "https://chyll.ai/assistant";
+      
       // Create an OAuth URL with the GOOGLE_CLIENT_ID
       const oauthUrl = `https://accounts.google.com/o/oauth2/auth?` +
         `client_id=${GOOGLE_CLIENT_ID}` +
-        `&redirect_uri=${encodeURIComponent(REDIRECT_URL)}` +
+        `&redirect_uri=${encodeURIComponent(finalRedirectUrl)}` +
         `&response_type=code` +
         `&scope=${encodeURIComponent('https://www.googleapis.com/auth/gmail.readonly https://www.googleapis.com/auth/gmail.send')}` +
         `&state=${stateToken}` +
@@ -269,6 +276,10 @@ serve(async (req) => {
       
       console.log("Exchanging authorization code for tokens");
       
+      // Get the redirect URL from the frontend or use a default
+      const finalRedirectUrl = redirect_url || "https://chyll.ai/assistant";
+      console.log("Using redirect URL:", finalRedirectUrl);
+      
       // Exchange the authorization code for tokens
       const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
         method: 'POST',
@@ -279,7 +290,7 @@ serve(async (req) => {
           code,
           client_id: GOOGLE_CLIENT_ID,
           client_secret: GOOGLE_CLIENT_SECRET,
-          redirect_uri: REDIRECT_URL,
+          redirect_uri: finalRedirectUrl,
           grant_type: 'authorization_code'
         }).toString()
       });

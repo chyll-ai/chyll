@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -40,7 +39,7 @@ export interface ToolCall {
 }
 
 // Function to handle tool calls, specifically for connect_gmail and send_gmail_email
-async function handleFunctionCall(toolCall: ToolCall, threadId: string, runId: string) {
+export const handleFunctionCall = async (toolCall, threadId, runId) => {
   if (toolCall.function.name === 'connect_gmail') {
     try {
       console.log("Processing connect_gmail function call");
@@ -55,6 +54,9 @@ async function handleFunctionCall(toolCall: ToolCall, threadId: string, runId: s
       const user_token = data.session.access_token;
       const client_id = data.session.user.id;
       
+      // Get the current URL to use as redirect URL
+      const redirectUrl = window.location.origin + window.location.pathname;
+      
       // Make the request to the connect-gmail edge function
       const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL || 'https://atsfuqwxfrezkxtnctmk.supabase.co'}/functions/v1/connect-gmail`, {
         method: 'POST',
@@ -68,7 +70,8 @@ async function handleFunctionCall(toolCall: ToolCall, threadId: string, runId: s
           run_id: runId,
           user_token: user_token,
           tool_call_id: toolCall.id,
-          client_id: client_id // Add client_id to check for existing tokens
+          client_id: client_id, // Add client_id to check for existing tokens
+          redirect_url: redirectUrl // Pass the current URL as the redirect URL
         })
       });
       

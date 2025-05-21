@@ -41,6 +41,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
     try {
       if (gmailToolCall) {
         const args = JSON.parse(gmailToolCall.function.arguments || '{}');
+        // Look for url in arguments or in output field if available
         oauthUrl = args.url || '';
       }
     } catch (e) {
@@ -109,9 +110,14 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
                   className="flex items-center gap-2 text-sm"
                   onClick={() => {
                     // Use the extracted OAuth URL if available, otherwise use a fallback
-                    const urlToOpen = oauthUrl || 'https://accounts.google.com/o/oauth2/auth';
-                    console.log("Opening OAuth URL:", urlToOpen);
-                    window.open(urlToOpen, '_blank');
+                    const urlToOpen = oauthUrl || '';
+                    if (urlToOpen) {
+                      console.log("Opening OAuth URL:", urlToOpen);
+                      // Open in a new tab and set a consistent redirect URL
+                      window.open(urlToOpen, '_blank');
+                    } else {
+                      console.error("No OAuth URL found in tool call");
+                    }
                   }}
                 >
                   <ExternalLink size={16} />
