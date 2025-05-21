@@ -11,6 +11,17 @@ export interface Message {
   toolCalls?: any[];
 }
 
+// Define the shape of messages as they come from the database
+interface DatabaseMessage {
+  id: string;
+  role: string;
+  content: string;
+  created_at: string;
+  client_id: string;
+  chat_session_id?: string;
+  toolCalls?: any; // Database field might exist but not be typed properly
+}
+
 export interface ClientProfile {
   id: string;
   client_id: string;
@@ -265,22 +276,25 @@ export const useAssistantChat = () => {
       
       // Type cast the data to ensure role is either 'user' or 'assistant'
       const typedMessages: Message[] = data?.map(msg => {
+        // Explicitly type the database message
+        const dbMessage = msg as DatabaseMessage;
+        
         // Ensure role is one of the allowed values
-        const role = (msg.role === 'user' || msg.role === 'assistant') 
-          ? msg.role as 'user' | 'assistant'
+        const role = (dbMessage.role === 'user' || dbMessage.role === 'assistant') 
+          ? dbMessage.role as 'user' | 'assistant'
           : 'assistant'; // Default fallback
           
         // Create a properly typed Message object
         const message: Message = {
-          id: msg.id,
+          id: dbMessage.id,
           role: role,
-          content: msg.content,
-          created_at: msg.created_at
+          content: dbMessage.content,
+          created_at: dbMessage.created_at
         };
         
         // Only add toolCalls if they exist in the database message
-        if (msg.toolCalls) {
-          message.toolCalls = msg.toolCalls as any[];
+        if (dbMessage.toolCalls) {
+          message.toolCalls = Array.isArray(dbMessage.toolCalls) ? dbMessage.toolCalls : [];
         }
         
         return message;
@@ -501,11 +515,11 @@ export const useAssistantChat = () => {
           newAssistantMessage.toolCalls = data.toolCalls;
           
           // Update the message in the database to include tool calls
-          // We need to use a raw SQL query here to update the toolCalls column
+          // Use a custom RPC function that handles the updating of the toolCalls JSON field
           const { error: updateError } = await supabase
             .rpc('update_message_toolcalls', { 
               message_id: newAssistantMessage.id, 
-              tool_calls: JSON.stringify(data.toolCalls)
+              tool_calls: JSON.stringify(data.toolCalls) as unknown as Record<string, unknown>
             });
             
           if (updateError) {
