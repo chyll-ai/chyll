@@ -23,11 +23,16 @@ const Assistant = () => {
     console.log("Processing tool calls:", toolCalls);
     
     toolCalls.forEach(toolCall => {
-      if (toolCall.type === 'function' && toolCall.function?.name === 'connect_gmail' && threadId && currentRunId) {
-        console.log("Gmail connection tool call detected, processing...");
-        handleFunctionCall(toolCall, threadId, currentRunId);
-      } else {
-        console.log("Unknown or unhandled tool call:", toolCall);
+      if (toolCall.type === 'function' && threadId && currentRunId) {
+        if (toolCall.function?.name === 'connect_gmail') {
+          console.log("Gmail connection tool call detected, processing...");
+          handleFunctionCall(toolCall, threadId, currentRunId);
+        } else if (toolCall.function?.name === 'send_gmail_email') {
+          console.log("Gmail send email tool call detected, processing...");
+          handleFunctionCall(toolCall, threadId, currentRunId);
+        } else {
+          console.log("Unknown or unhandled tool call:", toolCall);
+        }
       }
     });
   }, [threadId, currentRunId]);

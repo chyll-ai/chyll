@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -38,7 +39,7 @@ export interface ToolCall {
   };
 }
 
-// Function to handle tool calls, specifically for connect_gmail
+// Function to handle tool calls, specifically for connect_gmail and send_gmail_email
 async function handleFunctionCall(toolCall: ToolCall, threadId: string, runId: string) {
   if (toolCall.function.name === 'connect_gmail') {
     try {
@@ -61,6 +62,7 @@ async function handleFunctionCall(toolCall: ToolCall, threadId: string, runId: s
           'Authorization': `Bearer ${user_token}`
         },
         body: JSON.stringify({
+          action: 'connect',
           thread_id: threadId,
           run_id: runId,
           user_token: user_token,
@@ -90,6 +92,65 @@ async function handleFunctionCall(toolCall: ToolCall, threadId: string, runId: s
     } catch (error) {
       console.error("Error initiating Gmail connection:", error);
       toast.error("Erreur lors de la connexion à Gmail");
+    }
+  } else if (toolCall.function.name === 'send_gmail_email') {
+    try {
+      console.log("Processing send_gmail_email function call");
+      // Get the user's session to extract the access token
+      const { data } = await supabase.auth.getSession();
+      if (!data.session) {
+        console.error("No active session found");
+        toast.error("Vous devez être connecté pour utiliser cette fonctionnalité");
+        return;
+      }
+      
+      const user_token = data.session.access_token;
+      
+      // Parse the function arguments
+      const args = JSON.parse(toolCall.function.arguments);
+      const { access_token, to, subject, body } = args;
+      
+      if (!access_token || !to || !subject || !body) {
+        console.error("Missing required email parameters");
+        toast.error("Impossible d'envoyer l'email: paramètres manquants");
+        return;
+      }
+      
+      // Make the request to the connect-gmail edge function to send email
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL || 'https://atsfuqwxfrezkxtnctmk.supabase.co'}/functions/v1/connect-gmail`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user_token}`
+        },
+        body: JSON.stringify({
+          action: 'send_email',
+          thread_id: threadId,
+          run_id: runId,
+          tool_call_id: toolCall.id,
+          email_data: {
+            access_token,
+            to,
+            subject,
+            body
+          }
+        })
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Error sending email via Gmail:", errorData);
+        toast.error("Erreur lors de l'envoi de l'email");
+        return;
+      }
+      
+      const result = await response.json();
+      console.log("Email sent successfully:", result);
+      toast.success("Email envoyé avec succès!");
+      
+    } catch (error) {
+      console.error("Error sending email:", error);
+      toast.error("Erreur lors de l'envoi de l'email");
     }
   } else {
     console.log(`Function call detected but not handled: ${toolCall.function.name}`);

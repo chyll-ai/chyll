@@ -2,7 +2,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink, Mail } from 'lucide-react';
 
 interface Message {
   id: string;
@@ -27,6 +27,11 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
     tool => tool.type === 'function' && tool.function?.name === 'connect_gmail'
   );
   
+  // Check for Gmail send email tool call
+  const hasGmailSendEmailToolCall = message.toolCalls?.some(
+    tool => tool.type === 'function' && tool.function?.name === 'send_gmail_email'
+  );
+  
   // Extract OAuth URL from function arguments if available
   let oauthUrl = '';
   if (hasGmailToolCall) {
@@ -43,6 +48,25 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
     }
   }
   
+  // Extract email details if available
+  let emailDetails = null;
+  if (hasGmailSendEmailToolCall) {
+    const sendEmailToolCall = message.toolCalls?.find(
+      tool => tool.type === 'function' && tool.function?.name === 'send_gmail_email'
+    );
+    try {
+      if (sendEmailToolCall) {
+        const args = JSON.parse(sendEmailToolCall.function.arguments || '{}');
+        emailDetails = {
+          to: args.to,
+          subject: args.subject
+        };
+      }
+    } catch (e) {
+      console.error('Error parsing email tool call arguments:', e);
+    }
+  }
+  
   // Determine what content to display
   let displayContent = message.content;
   
@@ -53,6 +77,8 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
     // Add more specific messages for known tool calls
     if (hasGmailToolCall) {
       displayContent = "Je prépare la connexion à Gmail...";
+    } else if (hasGmailSendEmailToolCall) {
+      displayContent = "Je prépare l'envoi d'un email...";
     }
   }
   
@@ -91,6 +117,17 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
                   <ExternalLink size={16} />
                   Connecter Gmail
                 </Button>
+              </div>
+            )}
+            
+            {hasGmailSendEmailToolCall && emailDetails && (
+              <div className="mt-3 p-3 border border-gray-200 rounded-md bg-gray-50">
+                <div className="flex items-center gap-2 mb-2">
+                  <Mail size={16} />
+                  <span className="font-semibold">Email en cours d'envoi</span>
+                </div>
+                <p className="text-sm"><span className="font-medium">À:</span> {emailDetails.to}</p>
+                <p className="text-sm"><span className="font-medium">Sujet:</span> {emailDetails.subject}</p>
               </div>
             )}
           </div>
