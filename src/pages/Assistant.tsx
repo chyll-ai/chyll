@@ -105,19 +105,15 @@ const Assistant = () => {
     });
   }, [threadId, currentRunId]);
   
-  // Check if profile is missing and redirect to onboarding if needed
+  // Check if profile is missing and guide the user instead of redirecting
   useEffect(() => {
-    if (hasProfile === false && !loading) {
-      // User is logged in but doesn't have a profile, redirect to onboarding
-      toast.info("Please complete your profile before using the assistant");
-      // Add a slight delay before redirecting to ensure the toast is visible
-      const redirectTimer = setTimeout(() => {
-        window.location.href = '/onboarding';
-      }, 1500);
-      
-      return () => clearTimeout(redirectTimer);
+    if (hasProfile === false && !loading && messages.length === 0) {
+      // User is logged in but doesn't have a profile, guide them to use the assistant
+      setTimeout(() => {
+        sendMessage("Hello! I notice you don't have a profile yet. To get the most out of our assistant, let me ask you a few questions about your business and target audience. This will help me provide more personalized assistance. What is your company name?");
+      }, 1000);
     }
-  }, [hasProfile, loading]);
+  }, [hasProfile, loading, sendMessage, messages.length]);
   
   if (loading) {
     return (
