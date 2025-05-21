@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Plus, History } from 'lucide-react';
+import { Plus, History, Loader2 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
 
@@ -16,6 +16,8 @@ interface ChatSidebarProps {
   currentSessionId: string | null;
   onSessionSelect: (sessionId: string) => void;
   onNewChat: () => void;
+  isLoading?: boolean;
+  error?: string | null;
 }
 
 const ChatSidebar: React.FC<ChatSidebarProps> = ({
@@ -23,6 +25,8 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
   currentSessionId,
   onSessionSelect,
   onNewChat,
+  isLoading = false,
+  error = null,
 }) => {
   return (
     <div className="w-64 border-r flex flex-col h-full bg-muted/30">
@@ -43,7 +47,18 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
           <span>Historique des conversations</span>
         </div>
         
-        {sessions.length === 0 ? (
+        {error && (
+          <div className="text-sm text-red-500 p-2 border border-red-200 bg-red-50 rounded-md">
+            {error}
+          </div>
+        )}
+        
+        {isLoading ? (
+          <div className="flex items-center justify-center p-4 text-sm text-muted-foreground">
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            <span>Chargement...</span>
+          </div>
+        ) : sessions.length === 0 ? (
           <div className="text-sm text-center text-muted-foreground p-4">
             Aucune conversation
           </div>
