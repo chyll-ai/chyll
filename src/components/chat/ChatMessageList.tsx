@@ -21,9 +21,15 @@ const ChatMessageList: React.FC<ChatMessageListProps> = ({ messages }) => {
   
   return (
     <div className="flex-1 overflow-y-auto p-4 space-y-4">
-      {messages.map((message, index) => (
-        <ChatMessage key={message.id || index} message={message} />
-      ))}
+      {messages.length === 0 ? (
+        <div className="text-center text-gray-500">
+          Pas de messages. Commencez une conversation!
+        </div>
+      ) : (
+        messages.map((message, index) => (
+          <ChatMessage key={message.id || index} message={message} />
+        ))
+      )}
       <div ref={messagesEndRef} />
     </div>
   );

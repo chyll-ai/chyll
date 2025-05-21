@@ -87,7 +87,9 @@ export const useAssistantChat = () => {
         await fetchMessages(userId);
         
         // Check if any assistant messages exist, and if not, send a welcome message
-        if (messages.filter(msg => msg.role === 'assistant').length === 0) {
+        const assistantMessages = messages.filter(msg => msg.role === 'assistant');
+        if (assistantMessages.length === 0) {
+          console.log("Aucun message assistant trouvé, envoi d'un message de bienvenue...");
           const welcomeMessage = profileExists
             ? "Maintenant que votre profil est configuré, je peux vous aider à générer des emails..."
             : "Bienvenue ! Pour commencer, j'ai besoin de mieux comprendre votre cible et votre offre. On y va ?";
@@ -196,6 +198,7 @@ export const useAssistantChat = () => {
       }) || [];
       
       setMessages(typedMessages);
+      console.log(`Fetched ${typedMessages.length} messages:`, typedMessages);
     } catch (error) {
       console.error("Erreur lors de la récupération des messages:", error);
       toast.error("Impossible de charger les messages");
@@ -214,6 +217,17 @@ export const useAssistantChat = () => {
         .select();
         
       if (error) throw error;
+      
+      if (data && data.length > 0) {
+        // Add the welcome message to the local state
+        const welcomeMsg: Message = {
+          id: data[0].id,
+          role: 'assistant',
+          content: content,
+          created_at: data[0].created_at
+        };
+        setMessages(prev => [...prev, welcomeMsg]);
+      }
       
     } catch (error) {
       console.error("Erreur lors de l'envoi du message de bienvenue:", error);
@@ -254,6 +268,17 @@ export const useAssistantChat = () => {
     try {
       setSending(true);
       
+      // Create a temporary message to display immediately in the UI
+      const tempUserMessage: Message = {
+        id: "temp-" + Date.now(),
+        role: 'user',
+        content: content.trim(),
+        created_at: new Date().toISOString()
+      };
+      
+      // Update the UI immediately with the user message
+      setMessages(prev => [...prev, tempUserMessage]);
+      
       // 1. Insert user message
       const userMessage = {
         client_id: userId,
@@ -261,11 +286,24 @@ export const useAssistantChat = () => {
         content: content.trim()
       };
       
-      const { error: userMessageError } = await supabase
+      const { data: userMessageData, error: userMessageError } = await supabase
         .from('messages')
-        .insert([userMessage]);
+        .insert([userMessage])
+        .select();
         
       if (userMessageError) throw userMessageError;
+      
+      // Replace the temporary message with the actual one from the database
+      if (userMessageData && userMessageData.length > 0) {
+        setMessages(prev => prev.map(msg => 
+          msg.id === tempUserMessage.id ? {
+            id: userMessageData[0].id,
+            role: 'user',
+            content: userMessageData[0].content,
+            created_at: userMessageData[0].created_at
+          } : msg
+        ));
+      }
       
       // 2. Send to OpenAI Assistant API
       if (!threadId) {
@@ -275,9 +313,9 @@ export const useAssistantChat = () => {
       }
       
       // Show typing indicator
-      const typingMessage = {
+      const typingMessage: Message = {
         id: "typing-indicator",
-        role: 'assistant' as 'user' | 'assistant',
+        role: 'assistant',
         content: "...",
         created_at: new Date().toISOString()
       };
@@ -314,11 +352,24 @@ export const useAssistantChat = () => {
         content: data.message
       };
       
-      const { error: assistantMessageError } = await supabase
+      const { data: assistantMessageData, error: assistantMessageError } = await supabase
         .from('messages')
-        .insert([assistantMessage]);
+        .insert([assistantMessage])
+        .select();
         
       if (assistantMessageError) throw assistantMessageError;
+      
+      // Add the assistant message to the UI immediately
+      if (assistantMessageData && assistantMessageData.length > 0) {
+        const newAssistantMessage: Message = {
+          id: assistantMessageData[0].id,
+          role: 'assistant',
+          content: assistantMessageData[0].content,
+          created_at: assistantMessageData[0].created_at
+        };
+        
+        setMessages(prev => [...prev.filter(msg => msg.id !== "typing-indicator"), newAssistantMessage]);
+      }
       
       // 4. Handle tool calls if any
       if (data.toolCalls && data.toolCalls.length > 0) {
