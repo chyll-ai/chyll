@@ -17,7 +17,8 @@ const Assistant = () => {
     sendMessage,
     threadId,
     currentRunId,
-    userId
+    userId,
+    hasProfile
   } = useAssistantChat();
   
   const location = useLocation();
@@ -97,6 +98,20 @@ const Assistant = () => {
       }
     });
   }, [threadId, currentRunId]);
+  
+  // Check if profile is missing and redirect to onboarding if needed
+  useEffect(() => {
+    if (hasProfile === false && !loading) {
+      // User is logged in but doesn't have a profile, redirect to onboarding
+      toast.info("Please complete your profile before using the assistant");
+      // Add a slight delay before redirecting to ensure the toast is visible
+      const redirectTimer = setTimeout(() => {
+        window.location.href = '/onboarding';
+      }, 1500);
+      
+      return () => clearTimeout(redirectTimer);
+    }
+  }, [hasProfile, loading]);
   
   if (loading) {
     return (
