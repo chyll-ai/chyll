@@ -9,6 +9,7 @@ export interface Message {
   role: 'user' | 'assistant';
   content: string;
   created_at: string;
+  chat_session_id?: string | null;
 }
 
 export interface ClientProfile {
@@ -27,6 +28,7 @@ export const useAssistantChat = () => {
   const [hasProfile, setHasProfile] = useState<boolean | null>(null);
   const [threadId, setThreadId] = useState<string | null>(null);
   const [authChecked, setAuthChecked] = useState(false);
+  const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
 
   // Check if user is authenticated
   useEffect(() => {
@@ -96,101 +98,50 @@ export const useAssistantChat = () => {
     checkAuth();
   }, [navigate]);
 
-  // Load messages and create thread once user is authenticated
-  useEffect(() => {
-    if (!userId || !authChecked) return;
-
-    const loadData = async () => {
-      try {
-        setLoading(true);
-        
-        // Fetch chat messages
-        await fetchMessages(userId);
-        
-        // Create a new thread or use existing one
-        await setupThread();
-        
-        setLoading(false);
-      } catch (error) {
-        console.error("Erreur lors du chargement des données:", error);
-        toast.error("Une erreur s'est produite lors du chargement");
-        setLoading(false);
+  // Function to create a new chat session
+  const createChatSession = useCallback(async () => {
+    if (!userId) return null;
+    
+    try {
+      const { data, error } = await supabase
+        .from('chat_sessions')
+        .insert([{
+          client_id: userId,
+          title: null // Le titre sera mis à jour ultérieurement
+        }])
+        .select();
+      
+      if (error) throw error;
+      
+      if (data && data.length > 0) {
+        console.log("Nouvelle session créée:", data[0]);
+        setCurrentSessionId(data[0].id);
+        return data[0].id;
       }
-    };
-    
-    loadData();
-  }, [userId, authChecked]);
-
-  // Set up real-time subscription for new messages
-  useEffect(() => {
-    let messagesChannel: any;
-    
-    if (userId) {
-      messagesChannel = setupSubscription(userId);
+      
+      return null;
+    } catch (error) {
+      console.error("Erreur lors de la création de la session:", error);
+      toast.error("Impossible de créer une nouvelle session de chat");
+      return null;
     }
-    
-    return () => {
-      if (messagesChannel) {
-        supabase.removeChannel(messagesChannel);
-      }
-    };
   }, [userId]);
 
-  const setupSubscription = (userId: string) => {
-    console.log("Configuration de l'abonnement aux messages en temps réel pour l'utilisateur:", userId);
+  // Load messages for a specific chat session
+  const fetchMessages = useCallback(async (chatSessionId: string | null) => {
+    if (!userId || !chatSessionId) {
+      setMessages([]);
+      return;
+    }
     
-    const messagesChannel = supabase
-      .channel('public:messages')
-      .on('postgres_changes', { 
-        event: '*', 
-        schema: 'public', 
-        table: 'messages',
-        filter: `client_id=eq.${userId}`
-      }, (payload) => {
-        console.log("Changement détecté dans les messages:", payload);
-        
-        if (payload.new && typeof payload.new === 'object') {
-          const newMessage = payload.new as any;
-          if (newMessage.role === 'user' || newMessage.role === 'assistant') {
-            setMessages(current => {
-              // Check if the message already exists
-              if (current.some(msg => msg.id === newMessage.id)) {
-                console.log("Message déjà présent dans l'état", newMessage.id);
-                return current;
-              }
-              
-              console.log("Ajout du nouveau message à l'état:", newMessage);
-              // Cast role to 'user' | 'assistant' type
-              const role = newMessage.role as 'user' | 'assistant';
-              const typedMessage: Message = {
-                id: newMessage.id,
-                role: role,
-                content: newMessage.content,
-                created_at: newMessage.created_at
-              };
-              
-              return [...current, typedMessage].sort((a, b) => 
-                new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-              );
-            });
-          }
-        }
-      })
-      .subscribe((status) => {
-        console.log("Status de souscription aux messages:", status);
-      });
-    
-    return messagesChannel;
-  };
-  
-  const fetchMessages = async (userId: string) => {
     try {
-      console.log("Récupération des messages pour l'utilisateur:", userId);
+      console.log(`Récupération des messages pour la session: ${chatSessionId}`);
       
       const { data, error } = await supabase
         .from('messages')
         .select('*')
         .eq('client_id', userId)
+        .eq('chat_session_id', chatSessionId)
         .order('created_at', { ascending: true });
         
       if (error) {
@@ -209,71 +160,152 @@ export const useAssistantChat = () => {
           id: msg.id,
           role: role,
           content: msg.content,
-          created_at: msg.created_at
+          created_at: msg.created_at,
+          chat_session_id: msg.chat_session_id
         };
       }) || [];
       
       setMessages(typedMessages);
-      console.log(`Récupération de ${typedMessages.length} messages:`, typedMessages);
+      console.log(`Récupération de ${typedMessages.length} messages pour la session:`, typedMessages);
     } catch (error) {
       console.error("Erreur lors de la récupération des messages:", error);
       toast.error("Impossible de charger les messages");
     }
+  }, [userId]);
+
+  // Update the thread ID when the chat session changes
+  useEffect(() => {
+    if (currentSessionId) {
+      console.log("Session courante:", currentSessionId);
+      fetchMessages(currentSessionId);
+      
+      // Stocker la session courante dans localStorage
+      localStorage.setItem('current_chat_session_id', currentSessionId);
+      
+      // Mettre à jour le threadId pour cette session
+      const storedThreadId = localStorage.getItem(`openai_thread_id_${currentSessionId}`);
+      if (storedThreadId) {
+        console.log("Utilisation du thread existant pour cette session:", storedThreadId);
+        setThreadId(storedThreadId);
+      } else {
+        // Créer un nouveau thread pour cette session
+        setupThread(currentSessionId);
+      }
+    } else {
+      // Réinitialiser les messages si aucune session n'est sélectionnée
+      setMessages([]);
+      setThreadId(null);
+    }
+  }, [currentSessionId, fetchMessages]);
+
+  // Set up real-time subscription for new messages
+  useEffect(() => {
+    let messagesChannel: any;
+    
+    if (userId) {
+      // Si une session spécifique est sélectionnée, ne suivre que les messages de cette session
+      if (currentSessionId) {
+        messagesChannel = setupSubscription(userId, currentSessionId);
+      }
+    }
+    
+    return () => {
+      if (messagesChannel) {
+        supabase.removeChannel(messagesChannel);
+      }
+    };
+  }, [userId, currentSessionId]);
+
+  const setupSubscription = (userId: string, sessionId: string | null) => {
+    console.log(`Configuration de l'abonnement aux messages pour la session: ${sessionId}`);
+    
+    let filter = { client_id: `eq.${userId}` };
+    if (sessionId) {
+      // @ts-ignore - Le typage de Supabase ne gère pas bien les filtres multiples
+      filter.chat_session_id = `eq.${sessionId}`;
+    }
+    
+    const messagesChannel = supabase
+      .channel('public:messages:' + (sessionId || 'all'))
+      .on('postgres_changes', { 
+        event: '*', 
+        schema: 'public', 
+        table: 'messages',
+        filter: `client_id=eq.${userId}${sessionId ? ` AND chat_session_id=eq.${sessionId}` : ''}`
+      }, (payload) => {
+        console.log("Changement détecté dans les messages:", payload);
+        
+        if (payload.new && typeof payload.new === 'object') {
+          const newMessage = payload.new as any;
+          
+          // Ne traiter que les messages de la session courante
+          if (sessionId && newMessage.chat_session_id !== sessionId) {
+            console.log("Message ignoré - session différente:", newMessage.chat_session_id);
+            return;
+          }
+          
+          if (newMessage.role === 'user' || newMessage.role === 'assistant') {
+            setMessages(current => {
+              // Check if the message already exists
+              if (current.some(msg => msg.id === newMessage.id)) {
+                console.log("Message déjà présent dans l'état", newMessage.id);
+                return current;
+              }
+              
+              console.log("Ajout du nouveau message à l'état:", newMessage);
+              // Cast role to 'user' | 'assistant' type
+              const role = newMessage.role as 'user' | 'assistant';
+              const typedMessage: Message = {
+                id: newMessage.id,
+                role: role,
+                content: newMessage.content,
+                created_at: newMessage.created_at,
+                chat_session_id: newMessage.chat_session_id
+              };
+              
+              return [...current, typedMessage].sort((a, b) => 
+                new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+              );
+            });
+          }
+        }
+      })
+      .subscribe((status) => {
+        console.log("Status de souscription aux messages:", status);
+      });
+    
+    return messagesChannel;
   };
 
-  const setupThread = async () => {
-    // Try to get existing threadId from localStorage
-    const storedThreadId = localStorage.getItem('openai_thread_id');
+  const setupThread = async (sessionId: string | null = null) => {
+    if (!sessionId) {
+      console.log("Pas de session spécifiée pour créer un thread");
+      return;
+    }
+    
+    // Try to get existing threadId from localStorage for this session
+    const storedThreadId = localStorage.getItem(`openai_thread_id_${sessionId}`);
     
     if (storedThreadId) {
-      console.log("Utilisation du thread existant:", storedThreadId);
+      console.log(`Utilisation du thread existant pour la session ${sessionId}:`, storedThreadId);
       setThreadId(storedThreadId);
       return;
     }
     
     try {
-      console.log("Création d'un nouveau thread...");
+      console.log("Création d'un nouveau thread pour la session:", sessionId);
       const thread = await createThread();
       console.log("Thread créé:", thread);
       
       if (thread.threadId) {
         setThreadId(thread.threadId);
-        localStorage.setItem('openai_thread_id', thread.threadId);
+        localStorage.setItem(`openai_thread_id_${sessionId}`, thread.threadId);
       } else {
         throw new Error("Impossible de créer un thread: réponse invalide");
       }
     } catch (error) {
       console.error("Erreur lors de la création du thread:", error);
       toast.error("Impossible de créer une conversation avec l'assistant");
-    }
-  };
-  
-  const sendWelcomeMessage = async (userId: string, content: string) => {
-    try {
-      const { data, error } = await supabase
-        .from('messages')
-        .insert([{
-          client_id: userId,
-          role: 'assistant',
-          content: content
-        }])
-        .select();
-        
-      if (error) throw error;
-      
-      if (data && data.length > 0) {
-        // Add the welcome message to the local state
-        const welcomeMsg: Message = {
-          id: data[0].id,
-          role: 'assistant',
-          content: content,
-          created_at: data[0].created_at
-        };
-        setMessages(prev => [...prev, welcomeMsg]);
-      }
-      
-    } catch (error) {
-      console.error("Erreur lors de l'envoi du message de bienvenue:", error);
     }
   };
   
@@ -309,8 +341,8 @@ export const useAssistantChat = () => {
   };
   
   const sendMessage = async (content: string) => {
-    if (!content.trim() || !userId) {
-      console.log("Message vide ou utilisateur non connecté");
+    if (!content.trim() || !userId || !currentSessionId) {
+      console.log("Message vide, utilisateur non connecté ou session non définie");
       return;
     }
     
@@ -328,7 +360,8 @@ export const useAssistantChat = () => {
         id: "temp-" + Date.now(),
         role: 'user',
         content: content.trim(),
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
+        chat_session_id: currentSessionId
       };
       
       // Update the UI immediately with the user message
@@ -341,7 +374,8 @@ export const useAssistantChat = () => {
         .insert([{
           client_id: userId,
           role: 'user' as const,
-          content: content.trim()
+          content: content.trim(),
+          chat_session_id: currentSessionId
         }])
         .select();
         
@@ -358,9 +392,13 @@ export const useAssistantChat = () => {
             id: userMessageData[0].id,
             role: 'user',
             content: userMessageData[0].content,
-            created_at: userMessageData[0].created_at
+            created_at: userMessageData[0].created_at,
+            chat_session_id: userMessageData[0].chat_session_id
           } : msg
         ));
+        
+        // Mettre à jour le titre de la session si c'est le premier message
+        updateSessionTitle(currentSessionId, content.trim());
       }
       
       // 2. Verify or create thread if needed
@@ -375,7 +413,9 @@ export const useAssistantChat = () => {
           
           currentThreadId = thread.threadId;
           setThreadId(currentThreadId);
-          localStorage.setItem('openai_thread_id', currentThreadId);
+          if (currentSessionId) {
+            localStorage.setItem(`openai_thread_id_${currentSessionId}`, currentThreadId);
+          }
           console.log("Nouveau thread créé:", currentThreadId);
         } catch (threadError) {
           console.error("Erreur lors de la création du thread:", threadError);
@@ -390,7 +430,8 @@ export const useAssistantChat = () => {
         id: "typing-indicator",
         role: 'assistant',
         content: "...",
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
+        chat_session_id: currentSessionId
       };
       
       setMessages(prev => [...prev, typingMessage]);
@@ -435,7 +476,8 @@ export const useAssistantChat = () => {
       const assistantMessage = {
         client_id: userId,
         role: 'assistant' as const,
-        content: data.message
+        content: data.message,
+        chat_session_id: currentSessionId
       };
       
       console.log("Enregistrement de la réponse de l'assistant:", assistantMessage);
@@ -457,7 +499,8 @@ export const useAssistantChat = () => {
           id: assistantMessageData[0].id,
           role: 'assistant',
           content: assistantMessageData[0].content,
-          created_at: assistantMessageData[0].created_at
+          created_at: assistantMessageData[0].created_at,
+          chat_session_id: assistantMessageData[0].chat_session_id
         };
         
         setMessages(prev => [...prev.filter(msg => msg.id !== "typing-indicator"), newAssistantMessage]);
@@ -474,6 +517,40 @@ export const useAssistantChat = () => {
     }
   };
 
+  // Mettre à jour le titre de la session
+  const updateSessionTitle = useCallback(async (sessionId: string, firstMessage: string) => {
+    if (!userId || !sessionId) return;
+    
+    try {
+      // Vérifier si la session a déjà un titre
+      const { data: sessionData } = await supabase
+        .from('chat_sessions')
+        .select('title')
+        .eq('id', sessionId)
+        .single();
+      
+      // Ne mettre à jour que si le titre est null
+      if (sessionData && sessionData.title === null) {
+        // Générer un titre basé sur le premier message (limité à 50 caractères)
+        const title = firstMessage.length > 50 
+          ? firstMessage.substring(0, 47) + '...' 
+          : firstMessage;
+        
+        const { error } = await supabase
+          .from('chat_sessions')
+          .update({ title })
+          .eq('id', sessionId);
+        
+        if (error) {
+          console.error("Erreur lors de la mise à jour du titre de la session:", error);
+        }
+      }
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour du titre de la session:", error);
+      // Ne pas afficher de toast pour éviter de perturber l'utilisateur
+    }
+  }, [userId]);
+
   return {
     loading,
     sending,
@@ -481,6 +558,10 @@ export const useAssistantChat = () => {
     sendMessage,
     userId,
     hasProfile,
+    currentSessionId,
+    setCurrentSessionId,
+    createChatSession,
+    fetchMessages,
   };
 };
 

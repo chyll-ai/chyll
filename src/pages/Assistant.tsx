@@ -1,21 +1,87 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAssistantChat from '@/hooks/useAssistantChat';
 import ChatHeader from '@/components/chat/ChatHeader';
 import ChatMessageList from '@/components/chat/ChatMessageList';
 import ChatInputForm from '@/components/chat/ChatInputForm';
+import ChatSidebar from '@/components/chat/ChatSidebar';
 import { toast } from '@/components/ui/sonner';
 
 const Assistant = () => {
   const navigate = useNavigate();
+  const [sidebarVisible, setSidebarVisible] = useState(true);
+  
   const {
     loading,
     sending,
     messages,
     sendMessage,
     userId,
+    hasProfile,
+    currentSessionId,
+    setCurrentSessionId,
+    createChatSession,
+    fetchMessages,
   } = useAssistantChat();
+  
+  // Charger les sessions de chat
+  const [sessions, setSessions] = useState<any[]>([]);
+  const [sessionsLoading, setSessionsLoading] = useState(true);
+  
+  useEffect(() => {
+    const fetchSessions = async () => {
+      if (!userId) return;
+      
+      try {
+        setSessionsLoading(true);
+        const { data, error } = await supabase
+          .from('chat_sessions')
+          .select('*')
+          .eq('client_id', userId)
+          .order('created_at', { ascending: false });
+        
+        if (error) throw error;
+        
+        setSessions(data || []);
+      } catch (error) {
+        console.error("Erreur lors de la récupération des sessions:", error);
+        toast.error("Impossible de charger l'historique des conversations");
+      } finally {
+        setSessionsLoading(false);
+      }
+    };
+    
+    if (userId) {
+      fetchSessions();
+      
+      // Écouter les changements dans les sessions
+      const channel = supabase
+        .channel('chat_sessions_changes')
+        .on('postgres_changes', 
+          { 
+            event: '*', 
+            schema: 'public', 
+            table: 'chat_sessions',
+            filter: `client_id=eq.${userId}`
+          }, 
+          () => fetchSessions()
+        )
+        .subscribe();
+      
+      return () => {
+        supabase.removeChannel(channel);
+      };
+    }
+  }, [userId]);
+  
+  // Vérifier s'il y a une session active stockée
+  useEffect(() => {
+    const storedSessionId = localStorage.getItem('current_chat_session_id');
+    if (storedSessionId && userId) {
+      setCurrentSessionId(storedSessionId);
+    }
+  }, [userId]);
   
   useEffect(() => {
     // Vérifier si l'utilisateur est connecté
@@ -25,6 +91,26 @@ const Assistant = () => {
       navigate('/login');
     }
   }, [loading, userId, navigate]);
+  
+  // Créer une nouvelle conversation
+  const handleNewChat = async () => {
+    if (!userId) return;
+    
+    const newSessionId = await createChatSession();
+    if (newSessionId) {
+      setCurrentSessionId(newSessionId);
+    }
+  };
+  
+  // Sélectionner une conversation existante
+  const handleSessionSelect = (sessionId: string) => {
+    setCurrentSessionId(sessionId);
+  };
+  
+  // Gérer l'affichage sur mobile
+  const toggleSidebar = () => {
+    setSidebarVisible(prev => !prev);
+  };
   
   if (loading) {
     return (
@@ -42,12 +128,53 @@ const Assistant = () => {
   }
   
   return (
-    <div className="flex flex-col h-screen bg-background">
-      <ChatHeader />
-      <ChatMessageList messages={messages} />
-      <ChatInputForm onSendMessage={sendMessage} disabled={sending} />
+    <div className="flex h-screen bg-background">
+      {/* Sidebar pour les conversations */}
+      {sidebarVisible && (
+        <ChatSidebar
+          sessions={sessions}
+          currentSessionId={currentSessionId}
+          onSessionSelect={handleSessionSelect}
+          onNewChat={handleNewChat}
+        />
+      )}
+      
+      {/* Contenu principal */}
+      <div className="flex flex-col flex-1 h-full">
+        <ChatHeader 
+          onToggleSidebar={toggleSidebar} 
+          sidebarVisible={sidebarVisible}
+          onNewChat={handleNewChat}
+          sessionTitle={currentSessionId ? sessions.find(s => s.id === currentSessionId)?.title : null}
+        />
+        
+        {currentSessionId ? (
+          <>
+            <ChatMessageList messages={messages} />
+            <ChatInputForm onSendMessage={sendMessage} disabled={sending} />
+          </>
+        ) : (
+          <div className="flex-1 flex items-center justify-center p-6">
+            <div className="max-w-md text-center">
+              <h2 className="text-2xl font-bold mb-4">Bienvenue dans l'assistant Chyll</h2>
+              <p className="mb-6 text-muted-foreground">
+                Commencez une nouvelle conversation ou sélectionnez une conversation existante dans la barre latérale.
+              </p>
+              <button
+                onClick={handleNewChat}
+                className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+              >
+                Nouvelle conversation
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
+
+// Ajouter l'import de supabase
+import { supabase } from '@/integrations/supabase/client';
 
 export default Assistant;
