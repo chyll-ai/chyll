@@ -35,22 +35,23 @@ export const useAssistantChat = () => {
     const checkAuth = async () => {
       try {
         // Get current user
-        const { data: userData, error: userError } = await supabase.auth.getUser();
+        const { data: authData, error: authError } = await supabase.auth.getSession();
         
-        if (userError) {
-          console.error("Erreur lors de la vérification de l'utilisateur:", userError);
-          throw new Error(userError.message);
-        }
-        
-        if (!userData.user) {
-          console.log("Pas d'utilisateur trouvé, redirection vers login");
+        if (authError) {
+          console.error("Erreur lors de la vérification de la session:", authError);
           navigate('/login');
           return;
         }
         
-        const userId = userData.user.id;
+        if (!authData.session) {
+          console.log("Pas de session active, redirection vers login");
+          navigate('/login');
+          return;
+        }
+        
+        const userId = authData.session.user.id;
+        console.log("Session utilisateur trouvée, ID:", userId);
         setUserId(userId);
-        console.log("Utilisateur trouvé, ID:", userId);
         
         // Create client record if it doesn't exist
         const { data: client, error: clientError } = await supabase
@@ -70,7 +71,7 @@ export const useAssistantChat = () => {
             .from('clients')
             .insert({
               id: userId,
-              email: userData.user.email || ''
+              email: authData.session.user.email || ''
             });
           console.log("Client créé avec succès");
         }
@@ -89,13 +90,32 @@ export const useAssistantChat = () => {
         
         setHasProfile(!!profileData);
         setAuthChecked(true);
+        setLoading(false);
       } catch (error) {
         console.error("Erreur lors du chargement des données:", error);
         toast.error("Une erreur s'est produite lors de la vérification de l'authentification");
+        setLoading(false);
       }
     };
     
     checkAuth();
+    
+    // Set up auth state change listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        console.log("Changement d'état d'authentification:", event);
+        if (event === 'SIGNED_OUT') {
+          setUserId(null);
+          navigate('/login');
+        } else if (event === 'SIGNED_IN' && session) {
+          setUserId(session.user.id);
+        }
+      }
+    );
+    
+    return () => {
+      subscription.unsubscribe();
+    };
   }, [navigate]);
 
   // Function to create a new chat session
@@ -314,12 +334,12 @@ export const useAssistantChat = () => {
       console.log("Appel de la fonction Edge pour créer un thread...");
       
       // Use the full URL for the Edge Function
-      const baseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://atsfuqwxfrezkxtnctmk.supabase.co';
+      const baseUrl = 'https://atsfuqwxfrezkxtnctmk.supabase.co';
       const response = await fetch(`${baseUrl}/functions/v1/openai-assistant`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF0c2Z1cXd4ZnJlemt4dG5jdG1rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc2NjE3MjEsImV4cCI6MjA2MzIzNzcyMX0.FO6bvv2rFL0jhzN5aZ3m1QvNaM_ZNt7Ycmo859PSnJE'}`
+          'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF0c2Z1cXd4ZnJlemt4dG5jdG1rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc2NjE3MjEsImV4cCI6MjA2MzIzNzcyMX0.FO6bvv2rFL0jhzN5aZ3m1QvNaM_ZNt7Ycmo859PSnJE`
         },
         body: JSON.stringify({
           action: 'create_thread'
@@ -439,12 +459,12 @@ export const useAssistantChat = () => {
       // 3. Send message to OpenAI and get response
       console.log("Envoi du message à OpenAI avec threadId:", currentThreadId);
       
-      const baseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://atsfuqwxfrezkxtnctmk.supabase.co';
+      const baseUrl = 'https://atsfuqwxfrezkxtnctmk.supabase.co';
       const response = await fetch(`${baseUrl}/functions/v1/openai-assistant`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF0c2Z1cXd4ZnJlemt4dG5jdG1rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc2NjE3MjEsImV4cCI6MjA2MzIzNzcyMX0.FO6bvv2rFL0jhzN5aZ3m1QvNaM_ZNt7Ycmo859PSnJE'}`
+          'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF0c2Z1cXd4ZnJlemt4dG5jdG1rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc2NjE3MjEsImV4cCI6MjA2MzIzNzcyMX0.FO6bvv2rFL0jhzN5aZ3m1QvNaM_ZNt7Ycmo859PSnJE`
         },
         body: JSON.stringify({
           action: 'send_message',

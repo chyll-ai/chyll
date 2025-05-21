@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAssistantChat from '@/hooks/useAssistantChat';
@@ -83,6 +84,7 @@ const Assistant = () => {
       if (!userId) return;
       
       try {
+        console.log("Vérification du statut de l'API OpenAI...");
         // Tentative de création d'un thread pour vérifier l'API
         const baseUrl = 'https://atsfuqwxfrezkxtnctmk.supabase.co';
         const response = await fetch(`${baseUrl}/functions/v1/openai-assistant`, {
@@ -96,12 +98,14 @@ const Assistant = () => {
           })
         });
         
-        if (response.ok) {
+        const data = await response.json();
+        
+        if (response.ok && data.threadId) {
+          console.log("API OpenAI connectée avec succès, thread créé:", data.threadId);
           setApiStatus('connected');
         } else {
           // Analyser l'erreur pour fournir un message plus précis
-          const errorData = await response.json();
-          console.error("Erreur API:", errorData);
+          console.error("Erreur API:", data);
           
           setApiStatus('error');
           toast.error("Impossible de se connecter à l'API OpenAI. Vérifiez la configuration de l'API.");
@@ -123,7 +127,7 @@ const Assistant = () => {
     if (storedSessionId && userId) {
       setCurrentSessionId(storedSessionId);
     }
-  }, [userId]);
+  }, [userId, setCurrentSessionId]);
   
   useEffect(() => {
     // Vérifier si l'utilisateur est connecté
@@ -154,6 +158,7 @@ const Assistant = () => {
     setSidebarVisible(prev => !prev);
   };
   
+  // Afficher un écran de chargement
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
