@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Menu, Plus } from 'lucide-react';
+import { ArrowLeft, Menu, Plus, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
@@ -10,13 +10,15 @@ interface ChatHeaderProps {
   sidebarVisible: boolean;
   onNewChat: () => void;
   sessionTitle: string | null;
+  apiStatus?: 'connected' | 'error' | 'unknown';
 }
 
 const ChatHeader: React.FC<ChatHeaderProps> = ({
   onToggleSidebar,
   sidebarVisible,
   onNewChat,
-  sessionTitle
+  sessionTitle,
+  apiStatus = 'unknown'
 }) => {
   return (
     <header className="border-b p-4 flex items-center justify-between">
@@ -32,7 +34,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
         )}
         
         <h1 className="text-xl font-semibold truncate max-w-[200px] md:max-w-md">
-          {sessionTitle || "Nouvel assistant"}
+          {sessionTitle || "Nouvelle conversation"}
         </h1>
       </div>
       
@@ -46,7 +48,28 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
           <TooltipContent>Nouvelle conversation</TooltipContent>
         </Tooltip>
         
-        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse ml-1"></div>
+        {apiStatus === 'error' ? (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse ml-1"></div>
+            </TooltipTrigger>
+            <TooltipContent>Erreur de connexion à l'API</TooltipContent>
+          </Tooltip>
+        ) : apiStatus === 'connected' ? (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse ml-1"></div>
+            </TooltipTrigger>
+            <TooltipContent>API connectée</TooltipContent>
+          </Tooltip>
+        ) : (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse ml-1"></div>
+            </TooltipTrigger>
+            <TooltipContent>Statut de l'API inconnu</TooltipContent>
+          </Tooltip>
+        )}
       </div>
     </header>
   );

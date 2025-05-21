@@ -7,10 +7,13 @@ import ChatMessageList from '@/components/chat/ChatMessageList';
 import ChatInputForm from '@/components/chat/ChatInputForm';
 import ChatSidebar from '@/components/chat/ChatSidebar';
 import { toast } from '@/components/ui/sonner';
+import { AlertTriangle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 const Assistant = () => {
   const navigate = useNavigate();
   const [sidebarVisible, setSidebarVisible] = useState(true);
+  const [apiStatus, setApiStatus] = useState<'connected' | 'error' | 'unknown'>('unknown');
   
   const {
     loading,
@@ -75,6 +78,46 @@ const Assistant = () => {
     }
   }, [userId]);
   
+  // Vérifier le statut de l'API OpenAI
+  useEffect(() => {
+    const checkApiStatus = async () => {
+      if (!userId) return;
+      
+      try {
+        // Tentative de création d'un thread pour vérifier l'API
+        const baseUrl = 'https://atsfuqwxfrezkxtnctmk.supabase.co';
+        const response = await fetch(`${baseUrl}/functions/v1/openai-assistant`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF0c2Z1cXd4ZnJlemt4dG5jdG1rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc2NjE3MjEsImV4cCI6MjA2MzIzNzcyMX0.FO6bvv2rFL0jhzN5aZ3m1QvNaM_ZNt7Ycmo859PSnJE`
+          },
+          body: JSON.stringify({
+            action: 'create_thread'
+          })
+        });
+        
+        if (response.ok) {
+          setApiStatus('connected');
+        } else {
+          // Analyser l'erreur pour fournir un message plus précis
+          const errorData = await response.json();
+          console.error("Erreur API:", errorData);
+          
+          setApiStatus('error');
+          toast.error("Impossible de se connecter à l'API OpenAI. Vérifiez la configuration de l'API.");
+        }
+      } catch (error) {
+        console.error("Erreur lors de la vérification de l'API:", error);
+        setApiStatus('error');
+      }
+    };
+    
+    if (userId) {
+      checkApiStatus();
+    }
+  }, [userId]);
+  
   // Vérifier s'il y a une session active stockée
   useEffect(() => {
     const storedSessionId = localStorage.getItem('current_chat_session_id');
@@ -127,6 +170,30 @@ const Assistant = () => {
     );
   }
   
+  // Afficher un message d'erreur si l'API n'est pas disponible
+  if (apiStatus === 'error') {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <div className="text-center max-w-md p-8 bg-white rounded-lg shadow-lg">
+          <div className="flex justify-center mb-4 text-red-500">
+            <AlertTriangle size={48} />
+          </div>
+          <h2 className="text-2xl font-bold mb-4">Erreur de configuration</h2>
+          <p className="mb-6 text-gray-700">
+            Impossible de se connecter à l'API OpenAI. La clé API n'est pas configurée correctement 
+            dans les fonctions Edge de Supabase. Contactez l'administrateur pour configurer la clé API.
+          </p>
+          <Button onClick={() => navigate('/')} className="mr-2">
+            Retour à l'accueil
+          </Button>
+          <Button variant="outline" onClick={() => window.location.reload()}>
+            Réessayer
+          </Button>
+        </div>
+      </div>
+    );
+  }
+  
   return (
     <div className="flex h-screen bg-background">
       {/* Sidebar pour les conversations */}
@@ -146,6 +213,7 @@ const Assistant = () => {
           sidebarVisible={sidebarVisible}
           onNewChat={handleNewChat}
           sessionTitle={currentSessionId ? sessions.find(s => s.id === currentSessionId)?.title : null}
+          apiStatus={apiStatus}
         />
         
         {currentSessionId ? (
