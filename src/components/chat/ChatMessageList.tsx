@@ -27,7 +27,10 @@ const ChatMessageList: React.FC<ChatMessageListProps> = ({ messages }) => {
         </div>
       ) : (
         messages.map((message, index) => (
-          <ChatMessage key={message.id || index} message={message} />
+          <ChatMessage 
+            key={message.id || index} 
+            message={message} 
+          />
         ))
       )}
       <div ref={messagesEndRef} />

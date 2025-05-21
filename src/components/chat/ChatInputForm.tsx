@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Send } from 'lucide-react';
+import { toast } from '@/components/ui/sonner';
 
 interface ChatInputFormProps {
   onSendMessage: (message: string) => void;
@@ -14,10 +15,23 @@ const ChatInputForm: React.FC<ChatInputFormProps> = ({ onSendMessage, disabled }
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!inputMessage.trim() || disabled) return;
     
-    onSendMessage(inputMessage);
-    setInputMessage('');
+    if (!inputMessage.trim()) {
+      return;
+    }
+    
+    if (disabled) {
+      toast.error("Veuillez patienter, un message est déjà en cours d'envoi");
+      return;
+    }
+    
+    try {
+      onSendMessage(inputMessage);
+      setInputMessage('');
+    } catch (error) {
+      console.error("Erreur lors de l'envoi du message:", error);
+      toast.error("Impossible d'envoyer le message. Veuillez réessayer.");
+    }
   };
   
   return (
@@ -33,6 +47,7 @@ const ChatInputForm: React.FC<ChatInputFormProps> = ({ onSendMessage, disabled }
         <Button 
           type="submit" 
           disabled={!inputMessage.trim() || disabled}
+          aria-label="Envoyer le message"
         >
           <Send className="h-4 w-4 mr-2" />
           Envoyer

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -99,15 +98,21 @@ export const useAssistantChat = () => {
         
         // Create a new thread if needed
         if (!threadId) {
-          const thread = await createThread();
-          setThreadId(thread.threadId);
-          localStorage.setItem('openai_thread_id', thread.threadId);
+          try {
+            const thread = await createThread();
+            console.log("Thread créé:", thread);
+            setThreadId(thread.threadId);
+            localStorage.setItem('openai_thread_id', thread.threadId);
+          } catch (error) {
+            console.error("Erreur lors de la création du thread:", error);
+            // Continue without a thread as it's not critical for initial loading
+          }
         }
         
         setLoading(false);
       } catch (error) {
         console.error("Erreur lors du chargement des données:", error);
-        toast.error("Une erreur s'est produite");
+        toast.error("Une erreur s'est produite lors du chargement");
         setLoading(false);
       }
     };
@@ -119,9 +124,12 @@ export const useAssistantChat = () => {
     }
     
     checkAuth();
-    
-    // Set up real-time subscription for new messages
+  }, [navigate, messages.length]);
+
+  // Set up real-time subscription for new messages
+  useEffect(() => {
     let messagesChannel: any;
+    
     if (userId) {
       messagesChannel = setupSubscription(userId);
     }
@@ -131,7 +139,7 @@ export const useAssistantChat = () => {
         supabase.removeChannel(messagesChannel);
       }
     };
-  }, [navigate, userId]);
+  }, [userId]);
 
   const setupSubscription = (userId: string) => {
     const messagesChannel = supabase
@@ -165,7 +173,9 @@ export const useAssistantChat = () => {
           }
         }
       })
-      .subscribe();
+      .subscribe((status) => {
+        console.log("Status de souscription:", status);
+      });
     
     return messagesChannel;
   };
@@ -236,7 +246,7 @@ export const useAssistantChat = () => {
   
   const createThread = async () => {
     try {
-      // Use the full URL instead
+      // Use the full URL for the Edge Function
       const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL || 'https://atsfuqwxfrezkxtnctmk.supabase.co'}/functions/v1/openai-assistant`, {
         method: 'POST',
         headers: {
@@ -248,12 +258,12 @@ export const useAssistantChat = () => {
         })
       });
       
-      const data = await response.json();
-      
       if (!response.ok) {
-        throw new Error(data.error || 'Erreur lors de la création du thread');
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Erreur lors de la création du thread');
       }
       
+      const data = await response.json();
       return data;
     } catch (error) {
       console.error("Erreur lors de la création du thread:", error);
@@ -263,7 +273,15 @@ export const useAssistantChat = () => {
   };
   
   const sendMessage = async (content: string) => {
-    if (!content.trim() || !userId || sending) return;
+    if (!content.trim() || !userId) {
+      console.log("Message vide ou utilisateur non connecté");
+      return;
+    }
+    
+    if (sending) {
+      console.log("Envoi déjà en cours, veuillez patienter");
+      return;
+    }
     
     try {
       setSending(true);
@@ -286,15 +304,20 @@ export const useAssistantChat = () => {
         content: content.trim()
       };
       
+      console.log("Envoi du message utilisateur à Supabase:", userMessage);
       const { data: userMessageData, error: userMessageError } = await supabase
         .from('messages')
         .insert([userMessage])
         .select();
         
-      if (userMessageError) throw userMessageError;
+      if (userMessageError) {
+        console.error("Erreur lors de l'insertion du message utilisateur:", userMessageError);
+        throw userMessageError;
+      }
       
       // Replace the temporary message with the actual one from the database
       if (userMessageData && userMessageData.length > 0) {
+        console.log("Message utilisateur enregistré avec succès:", userMessageData[0]);
         setMessages(prev => prev.map(msg => 
           msg.id === tempUserMessage.id ? {
             id: userMessageData[0].id,
@@ -305,11 +328,22 @@ export const useAssistantChat = () => {
         ));
       }
       
-      // 2. Send to OpenAI Assistant API
-      if (!threadId) {
-        const thread = await createThread();
-        setThreadId(thread.threadId);
-        localStorage.setItem('openai_thread_id', thread.threadId);
+      // 2. Verify or create thread if needed
+      let currentThreadId = threadId;
+      if (!currentThreadId) {
+        console.log("Pas de thread existant, création d'un nouveau thread...");
+        try {
+          const thread = await createThread();
+          currentThreadId = thread.threadId;
+          setThreadId(currentThreadId);
+          localStorage.setItem('openai_thread_id', currentThreadId);
+          console.log("Nouveau thread créé:", currentThreadId);
+        } catch (threadError) {
+          console.error("Erreur lors de la création du thread:", threadError);
+          toast.error("Erreur de communication avec l'assistant");
+          setSending(false);
+          return;
+        }
       }
       
       // Show typing indicator
@@ -322,7 +356,8 @@ export const useAssistantChat = () => {
       
       setMessages(prev => [...prev, typingMessage]);
       
-      // Send message to OpenAI and get response
+      // 3. Send message to OpenAI and get response
+      console.log("Envoi du message à OpenAI avec threadId:", currentThreadId);
       const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL || 'https://atsfuqwxfrezkxtnctmk.supabase.co'}/functions/v1/openai-assistant`, {
         method: 'POST',
         headers: {
@@ -331,36 +366,44 @@ export const useAssistantChat = () => {
         },
         body: JSON.stringify({
           action: 'send_message',
-          threadId: threadId,
+          threadId: currentThreadId,
           message: content.trim()
         })
       });
-      
-      const data = await response.json();
       
       // Remove typing indicator
       setMessages(prev => prev.filter(msg => msg.id !== "typing-indicator"));
       
       if (!response.ok) {
-        throw new Error(data.error || 'Erreur lors de l\'envoi du message');
+        const errorData = await response.json();
+        console.error("Erreur de réponse de l'API OpenAI:", errorData);
+        throw new Error(errorData.error || 'Erreur lors de l\'envoi du message');
       }
       
-      // 3. Insert assistant's response
+      const data = await response.json();
+      console.log("Réponse reçue de l'API OpenAI:", data);
+      
+      // 4. Insert assistant's response
       const assistantMessage = {
         client_id: userId,
         role: 'assistant' as const,
         content: data.message
       };
       
+      console.log("Enregistrement de la réponse de l'assistant:", assistantMessage);
       const { data: assistantMessageData, error: assistantMessageError } = await supabase
         .from('messages')
         .insert([assistantMessage])
         .select();
         
-      if (assistantMessageError) throw assistantMessageError;
+      if (assistantMessageError) {
+        console.error("Erreur lors de l'enregistrement de la réponse de l'assistant:", assistantMessageError);
+        throw assistantMessageError;
+      }
       
       // Add the assistant message to the UI immediately
       if (assistantMessageData && assistantMessageData.length > 0) {
+        console.log("Réponse de l'assistant enregistrée avec succès:", assistantMessageData[0]);
         const newAssistantMessage: Message = {
           id: assistantMessageData[0].id,
           role: 'assistant',
@@ -371,7 +414,7 @@ export const useAssistantChat = () => {
         setMessages(prev => [...prev.filter(msg => msg.id !== "typing-indicator"), newAssistantMessage]);
       }
       
-      // 4. Handle tool calls if any
+      // 5. Handle tool calls if any
       if (data.toolCalls && data.toolCalls.length > 0) {
         console.log('Tool calls received:', data.toolCalls);
       }
