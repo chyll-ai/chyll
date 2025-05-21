@@ -1,5 +1,5 @@
 
-import { FollowupButton } from "@/components/FollowupButton";
+import FollowupButton from "@/components/FollowupButton";
 import { Button } from "@/components/ui/button";
 import { Mail, Calendar, MessageSquare } from "lucide-react";
 
