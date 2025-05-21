@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/sonner";
 
@@ -350,7 +349,7 @@ export async function handleFunctionCall(toolCall, thread_id, run_id) {
           return;
         }
         
-        toast.success("Suivi envoyé avec succès!");
+        toast.success("Message de suivi envoyé avec succès!");
         
         // Soumettre le résultat de l'outil à OpenAI
         const toolOutputResponse = await fetch(`${import.meta.env.VITE_SUPABASE_URL || 'https://atsfuqwxfrezkxtnctmk.supabase.co'}/functions/v1/openai-assistant`, {
