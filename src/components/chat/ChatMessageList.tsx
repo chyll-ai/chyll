@@ -25,6 +25,7 @@ const ChatMessageList: React.FC<ChatMessageListProps> = ({
       // Check if the latest message has any tool calls attached to it
       const latestMessage = messages[messages.length - 1];
       if (latestMessage && (latestMessage as any).toolCalls) {
+        console.log("Found tool calls in latest message:", (latestMessage as any).toolCalls);
         onProcessToolCalls((latestMessage as any).toolCalls);
       }
     }

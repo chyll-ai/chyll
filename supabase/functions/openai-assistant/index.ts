@@ -140,31 +140,9 @@ async function handleSendMessage(threadId: string, messageContent: string) {
       console.log("Des appels d'outils sont requis");
       toolCalls = runStatus.required_action.submit_tool_outputs.tool_calls;
       
-      // Since we're not processing tool calls yet, just complete the run
-      const completeRunResponse = await fetch(`https://api.openai.com/v1/threads/${threadId}/runs/${runId}/submit_tool_outputs`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${OPENAI_API_KEY}`,
-          'Content-Type': 'application/json',
-          'OpenAI-Beta': 'assistants=v2',  // Updated to v2
-        },
-        body: JSON.stringify({
-          tool_outputs: toolCalls.map(tool => ({
-            tool_call_id: tool.id,
-            output: JSON.stringify({ message: "Function executed by the client" })
-          }))
-        })
-      });
-
-      if (!completeRunResponse.ok) {
-        const errorData = await completeRunResponse.json();
-        console.error("Erreur lors de l'envoi des résultats d'outils:", errorData);
-        throw new Error(`Failed to submit tool outputs: ${JSON.stringify(errorData)}`);
-      }
-
-      // Poll again for completion
-      console.log("Attente de la fin du run après l'envoi des résultats d'outils...");
-      runStatus = await pollRunStatus(threadId, runId);
+      // Since we're returning the tool calls to the frontend for processing,
+      // we're not completing the run here. The frontend will handle it.
+      console.log("Returning tool calls to frontend:", toolCalls);
     }
 
     // 5. Get the assistant's messages

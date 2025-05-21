@@ -20,9 +20,14 @@ const Assistant = () => {
   const processToolCalls = useCallback((toolCalls) => {
     if (!toolCalls || !Array.isArray(toolCalls)) return;
     
+    console.log("Processing tool calls:", toolCalls);
+    
     toolCalls.forEach(toolCall => {
       if (toolCall.type === 'function' && toolCall.function?.name === 'connect_gmail' && threadId && currentRunId) {
+        console.log("Gmail connection tool call detected, processing...");
         handleFunctionCall(toolCall, threadId, currentRunId);
+      } else {
+        console.log("Unknown or unhandled tool call:", toolCall);
       }
     });
   }, [handleFunctionCall, threadId, currentRunId]);

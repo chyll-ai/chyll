@@ -31,6 +31,7 @@ export interface ToolCall {
 async function handleFunctionCall(toolCall: ToolCall, threadId: string, runId: string) {
   if (toolCall.function.name === 'connect_gmail') {
     try {
+      console.log("Processing connect_gmail function call");
       // Get the user's session to extract the access token
       const { data } = await supabase.auth.getSession();
       if (!data.session) {
@@ -50,7 +51,8 @@ async function handleFunctionCall(toolCall: ToolCall, threadId: string, runId: s
         body: JSON.stringify({
           thread_id: threadId,
           run_id: runId,
-          user_token: user_token
+          user_token: user_token,
+          tool_call_id: toolCall.id
         })
       });
       
