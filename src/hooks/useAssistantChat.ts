@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -72,6 +73,7 @@ async function handleFunctionCall(toolCall: ToolCall, threadId: string, runId: s
         console.log("OAuth URL generated:", result.oauth_url);
         // Open the OAuth URL in a new tab
         window.open(result.oauth_url, '_blank');
+        toast.success("Redirection vers la page de connexion Gmail...");
       }
       
       // We don't display anything in the UI as the assistant will handle the response
@@ -403,7 +405,6 @@ export const useAssistantChat = () => {
             role: 'user',
             content: userMessageData[0].content,
             created_at: userMessageData[0].created_at
-            // Note: No toolCalls for user message
           } : msg
         ));
       }
@@ -499,6 +500,12 @@ export const useAssistantChat = () => {
         // If there are any tool calls, add them to the message
         if (data.toolCalls && data.toolCalls.length > 0) {
           newAssistantMessage.toolCalls = data.toolCalls;
+          
+          // Update the message in the database to include tool calls
+          await supabase
+            .from('messages')
+            .update({ toolCalls: data.toolCalls })
+            .eq('id', newAssistantMessage.id);
         }
         
         setMessages(prev => [...prev.filter(msg => msg.id !== "typing-indicator"), newAssistantMessage]);
