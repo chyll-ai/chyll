@@ -1,4 +1,3 @@
-
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { Toaster } from '@/components/ui/toaster';
@@ -18,6 +17,7 @@ import Login from '@/pages/Login';
 import Onboarding from '@/pages/Onboarding';
 import Dashboard from '@/pages/Dashboard';
 import Assistant from '@/pages/Assistant';
+import Leads from '@/pages/Leads';
 
 import { LanguageProvider } from '@/context/LanguageContext';
 
@@ -40,6 +40,7 @@ function App() {
             <Route path="/onboarding-legacy" element={<Onboarding />} />
             <Route path="/dashboard-legacy" element={<Dashboard />} />
             <Route path="/assistant" element={<Assistant />} />
+            <Route path="/leads" element={<Leads />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <Toaster />
