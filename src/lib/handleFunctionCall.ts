@@ -176,6 +176,207 @@ export async function handleFunctionCall(toolCall, thread_id, run_id) {
         console.error("Erreur lors de la sauvegarde du profil:", error);
         toast.error("Erreur lors de la sauvegarde du profil");
       }
+    } else if (toolCall.function?.name === "launch_search") {
+      console.log("Appel de la fonction launch_search");
+      
+      try {
+        // Parse les arguments de la fonction
+        const args = JSON.parse(toolCall.function.arguments);
+        const { keyword, filters } = args;
+        
+        if (!keyword) {
+          console.error("Mot-clé manquant pour la recherche");
+          toast.error("Impossible de lancer la recherche: mot-clé manquant");
+          return;
+        }
+        
+        // Insertion d'une nouvelle recherche dans la table queue_search
+        const { error: insertError } = await supabase
+          .from("queue_search")
+          .insert({
+            client_id,
+            keyword,
+            parsed_filters: filters || {}
+          });
+          
+        if (insertError) {
+          console.error("Erreur lors de l'ajout de la recherche à la file d'attente:", insertError);
+          toast.error("Erreur lors du lancement de la recherche");
+          return;
+        }
+        
+        toast.success("Recherche lancée avec succès!");
+        
+        // Soumettre le résultat de l'outil à OpenAI
+        const toolOutputResponse = await fetch(`${import.meta.env.VITE_SUPABASE_URL || 'https://atsfuqwxfrezkxtnctmk.supabase.co'}/functions/v1/openai-assistant`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF0c2Z1cXd4ZnJlemt4dG5jdG1rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc2NjE3MjEsImV4cCI6MjA2MzIzNzcyMX0.FO6bvv2rFL0jhzN5aZ3m1QvNaM_ZNt7Ycmo859PSnJE'}`
+          },
+          body: JSON.stringify({
+            action: 'submit_tool_outputs',
+            threadId: thread_id,
+            runId: run_id,
+            toolOutputs: [{
+              tool_call_id: toolCall.id,
+              output: JSON.stringify({ success: true })
+            }]
+          })
+        });
+        
+        if (!toolOutputResponse.ok) {
+          console.error("Erreur lors de la soumission du résultat de l'outil");
+        }
+      } catch (error) {
+        console.error("Erreur lors du lancement de la recherche:", error);
+        toast.error("Erreur lors du lancement de la recherche");
+      }
+    } else if (toolCall.function?.name === "generate_messages") {
+      console.log("Appel de la fonction generate_messages");
+      
+      try {
+        // Ici, on pourrait faire plus d'opérations si nécessaire
+        
+        // Soumettre le résultat de l'outil à OpenAI
+        const toolOutputResponse = await fetch(`${import.meta.env.VITE_SUPABASE_URL || 'https://atsfuqwxfrezkxtnctmk.supabase.co'}/functions/v1/openai-assistant`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF0c2Z1cXd4ZnJlemt4dG5jdG1rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc2NjE3MjEsImV4cCI6MjA2MzIzNzcyMX0.FO6bvv2rFL0jhzN5aZ3m1QvNaM_ZNt7Ycmo859PSnJE'}`
+          },
+          body: JSON.stringify({
+            action: 'submit_tool_outputs',
+            threadId: thread_id,
+            runId: run_id,
+            toolOutputs: [{
+              tool_call_id: toolCall.id,
+              output: JSON.stringify({ status: "message_generation_triggered" })
+            }]
+          })
+        });
+        
+        if (!toolOutputResponse.ok) {
+          console.error("Erreur lors de la soumission du résultat de l'outil");
+        }
+        
+        toast.success("Génération des messages en cours...");
+      } catch (error) {
+        console.error("Erreur lors de la génération des messages:", error);
+        toast.error("Erreur lors de la génération des messages");
+      }
+    } else if (toolCall.function?.name === "send_email") {
+      console.log("Appel de la fonction send_email");
+      
+      try {
+        // Parse les arguments de la fonction
+        const args = JSON.parse(toolCall.function.arguments);
+        const { lead_id, subject, body } = args;
+        
+        if (!lead_id || !subject || !body) {
+          console.error("Paramètres d'email manquants");
+          toast.error("Impossible d'envoyer l'email: paramètres manquants");
+          return;
+        }
+        
+        // Appel à la fonction Edge pour envoyer l'email
+        const { error: invokeError } = await supabase.functions.invoke("send-email", {
+          body: {
+            user_id: client_id,
+            lead_id,
+            subject,
+            body
+          }
+        });
+        
+        if (invokeError) {
+          console.error("Erreur lors de l'envoi de l'email:", invokeError);
+          toast.error("Erreur lors de l'envoi de l'email");
+          return;
+        }
+        
+        toast.success("Email envoyé avec succès!");
+        
+        // Soumettre le résultat de l'outil à OpenAI
+        const toolOutputResponse = await fetch(`${import.meta.env.VITE_SUPABASE_URL || 'https://atsfuqwxfrezkxtnctmk.supabase.co'}/functions/v1/openai-assistant`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF0c2Z1cXd4ZnJlemt4dG5jdG1rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc2NjE3MjEsImV4cCI6MjA2MzIzNzcyMX0.FO6bvv2rFL0jhzN5aZ3m1QvNaM_ZNt7Ycmo859PSnJE'}`
+          },
+          body: JSON.stringify({
+            action: 'submit_tool_outputs',
+            threadId: thread_id,
+            runId: run_id,
+            toolOutputs: [{
+              tool_call_id: toolCall.id,
+              output: JSON.stringify({ success: true })
+            }]
+          })
+        });
+        
+        if (!toolOutputResponse.ok) {
+          console.error("Erreur lors de la soumission du résultat de l'outil");
+        }
+      } catch (error) {
+        console.error("Erreur lors de l'envoi de l'email:", error);
+        toast.error("Erreur lors de l'envoi de l'email");
+      }
+    } else if (toolCall.function?.name === "send_followup") {
+      console.log("Appel de la fonction send_followup");
+      
+      try {
+        // Parse les arguments de la fonction
+        const args = JSON.parse(toolCall.function.arguments);
+        const { lead_id } = args;
+        
+        if (!lead_id) {
+          console.error("ID de lead manquant");
+          toast.error("Impossible d'envoyer le suivi: ID de lead manquant");
+          return;
+        }
+        
+        // Appel à la fonction Edge pour envoyer le suivi
+        const { error: invokeError } = await supabase.functions.invoke("send-followup", {
+          body: {
+            user_id: client_id,
+            lead_id
+          }
+        });
+        
+        if (invokeError) {
+          console.error("Erreur lors de l'envoi du suivi:", invokeError);
+          toast.error("Erreur lors de l'envoi du suivi");
+          return;
+        }
+        
+        toast.success("Suivi envoyé avec succès!");
+        
+        // Soumettre le résultat de l'outil à OpenAI
+        const toolOutputResponse = await fetch(`${import.meta.env.VITE_SUPABASE_URL || 'https://atsfuqwxfrezkxtnctmk.supabase.co'}/functions/v1/openai-assistant`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF0c2Z1cXd4ZnJlemt4dG5jdG1rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc2NjE3MjEsImV4cCI6MjA2MzIzNzcyMX0.FO6bvv2rFL0jhzN5aZ3m1QvNaM_ZNt7Ycmo859PSnJE'}`
+          },
+          body: JSON.stringify({
+            action: 'submit_tool_outputs',
+            threadId: thread_id,
+            runId: run_id,
+            toolOutputs: [{
+              tool_call_id: toolCall.id,
+              output: JSON.stringify({ success: true })
+            }]
+          })
+        });
+        
+        if (!toolOutputResponse.ok) {
+          console.error("Erreur lors de la soumission du résultat de l'outil");
+        }
+      } catch (error) {
+        console.error("Erreur lors de l'envoi du suivi:", error);
+        toast.error("Erreur lors de l'envoi du suivi");
+      }
     } else {
       console.log(`Appel de fonction non géré: ${toolCall.function?.name}`);
     }

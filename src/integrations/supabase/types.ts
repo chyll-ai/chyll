@@ -77,7 +77,6 @@ export type Database = {
           client_id: string | null
           common_objections: string | null
           company_name: string | null
-          icp: string | null
           icp_location: string | null
           icp_size: string | null
           icp_title: string | null
@@ -95,7 +94,6 @@ export type Database = {
           client_id?: string | null
           common_objections?: string | null
           company_name?: string | null
-          icp?: string | null
           icp_location?: string | null
           icp_size?: string | null
           icp_title?: string | null
@@ -113,7 +111,6 @@ export type Database = {
           client_id?: string | null
           common_objections?: string | null
           company_name?: string | null
-          icp?: string | null
           icp_location?: string | null
           icp_size?: string | null
           icp_title?: string | null
