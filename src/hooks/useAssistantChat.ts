@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -54,7 +55,6 @@ async function handleFunctionCall(toolCall: ToolCall, threadId: string, runId: s
       const user_token = data.session.access_token;
       
       // Make the request to the connect-gmail edge function
-      // Fix the authorization header issue by ensuring it's properly set
       const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL || 'https://atsfuqwxfrezkxtnctmk.supabase.co'}/functions/v1/connect-gmail`, {
         method: 'POST',
         headers: {
@@ -95,6 +95,12 @@ async function handleFunctionCall(toolCall: ToolCall, threadId: string, runId: s
   } else {
     console.log(`Function call detected but not handled: ${toolCall.function.name}`);
   }
+}
+
+// Define the interface for the RPC function parameters
+interface UpdateMessageToolcallsParams {
+  message_id: string;
+  tool_calls: string;
 }
 
 export const useAssistantChat = () => {
@@ -342,7 +348,6 @@ export const useAssistantChat = () => {
   const createThread = async () => {
     try {
       // Use the full URL for the Edge Function
-      // Fix the authorization header issue by ensuring it's properly set
       const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL || 'https://atsfuqwxfrezkxtnctmk.supabase.co'}/functions/v1/openai-assistant`, {
         method: 'POST',
         headers: {
@@ -454,7 +459,6 @@ export const useAssistantChat = () => {
       
       // 3. Send message to OpenAI and get response
       console.log("Envoi du message à OpenAI avec threadId:", currentThreadId);
-      // Fix the authorization header issue by ensuring it's properly set
       const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL || 'https://atsfuqwxfrezkxtnctmk.supabase.co'}/functions/v1/openai-assistant`, {
         method: 'POST',
         headers: {
@@ -520,14 +524,13 @@ export const useAssistantChat = () => {
           // Update the message in the database to include tool calls
           // Use a custom RPC function that handles the updating of the toolCalls JSON field
           // Fix the type error by properly casting the tool_calls parameter
+          const params: UpdateMessageToolcallsParams = {
+            message_id: newAssistantMessage.id,
+            tool_calls: JSON.stringify(data.toolCalls)
+          };
+          
           const { error: updateError } = await supabase
-            .rpc('update_message_toolcalls', { 
-              message_id: newAssistantMessage.id, 
-              tool_calls: JSON.stringify(data.toolCalls) 
-            } as {
-              message_id: string;
-              tool_calls: string;
-            });
+            .rpc('update_message_toolcalls', params);
             
           if (updateError) {
             console.error("Error updating message with tool calls:", updateError);
