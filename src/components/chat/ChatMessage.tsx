@@ -81,7 +81,12 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
                   variant="outline" 
                   size="sm"
                   className="flex items-center gap-2 text-sm"
-                  onClick={() => window.open('https://accounts.google.com/o/oauth2/auth', '_blank')}
+                  onClick={() => {
+                    // Use the extracted OAuth URL if available, otherwise use a fallback
+                    const urlToOpen = oauthUrl || 'https://accounts.google.com/o/oauth2/auth';
+                    console.log("Opening OAuth URL:", urlToOpen);
+                    window.open(urlToOpen, '_blank');
+                  }}
                 >
                   <ExternalLink size={16} />
                   Connecter Gmail

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -271,7 +270,7 @@ export const useAssistantChat = () => {
           ? msg.role as 'user' | 'assistant'
           : 'assistant'; // Default fallback
           
-        // Create a properly typed Message object without assuming toolCalls exists
+        // Create a properly typed Message object
         const message: Message = {
           id: msg.id,
           role: role,
@@ -279,9 +278,9 @@ export const useAssistantChat = () => {
           created_at: msg.created_at
         };
         
-        // Only add toolCalls if it exists in the database message
-        if ('toolCalls' in msg && msg.toolCalls) {
-          message.toolCalls = msg.toolCalls;
+        // Only add toolCalls if they exist in the database message
+        if (msg.toolCalls) {
+          message.toolCalls = msg.toolCalls as any[];
         }
         
         return message;
@@ -502,10 +501,16 @@ export const useAssistantChat = () => {
           newAssistantMessage.toolCalls = data.toolCalls;
           
           // Update the message in the database to include tool calls
-          await supabase
-            .from('messages')
-            .update({ toolCalls: data.toolCalls })
-            .eq('id', newAssistantMessage.id);
+          // We need to use a raw SQL query here to update the toolCalls column
+          const { error: updateError } = await supabase
+            .rpc('update_message_toolcalls', { 
+              message_id: newAssistantMessage.id, 
+              tool_calls: JSON.stringify(data.toolCalls)
+            });
+            
+          if (updateError) {
+            console.error("Error updating message with tool calls:", updateError);
+          }
         }
         
         setMessages(prev => [...prev.filter(msg => msg.id !== "typing-indicator"), newAssistantMessage]);

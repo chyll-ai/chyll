@@ -39,6 +39,9 @@ serve(async (req) => {
       `&access_type=offline` +
       `&prompt=consent`;
     
+    // Make sure to include the OAuth URL in the response
+    console.log("Generated OAuth URL:", oauthUrl);
+    
     // Submit the tool outputs back to OpenAI with the OAuth URL
     if (OPENAI_API_KEY) {
       const toolOutputResponse = await fetch(`https://api.openai.com/v1/threads/${thread_id}/runs/${run_id}/submit_tool_outputs`, {
