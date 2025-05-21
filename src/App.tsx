@@ -1,5 +1,5 @@
 
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { Toaster } from '@/components/ui/toaster';
 import { Toaster as SonnerToaster } from '@/components/ui/sonner';
@@ -18,7 +18,6 @@ import Login from '@/pages/Login';
 import Onboarding from '@/pages/Onboarding';
 import Dashboard from '@/pages/Dashboard';
 import Assistant from '@/pages/Assistant';
-import ProtectedRoute from '@/routes/ProtectedRoute';
 
 import { LanguageProvider } from '@/context/LanguageContext';
 
@@ -38,32 +37,9 @@ function App() {
             <Route path="/blog/:id" element={<BlogPostPage />} />
             <Route path="/about-us" element={<AboutUs />} />
             <Route path="/login" element={<Login />} />
-            <Route 
-              path="/onboarding-legacy" 
-              element={
-                <ProtectedRoute>
-                  <Onboarding />
-                </ProtectedRoute>
-              }
-            />
-            <Route 
-              path="/dashboard-legacy" 
-              element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route 
-              path="/assistant" 
-              element={
-                <ProtectedRoute>
-                  <Assistant />
-                </ProtectedRoute>
-              } 
-            />
-            {/* Redirect routes to ensure proper navigation */}
-            <Route path="/assistant/*" element={<Navigate to="/assistant" replace />} />
+            <Route path="/onboarding-legacy" element={<Onboarding />} />
+            <Route path="/dashboard-legacy" element={<Dashboard />} />
+            <Route path="/assistant" element={<Assistant />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <Toaster />

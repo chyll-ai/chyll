@@ -53,16 +53,12 @@ serve(async (req) => {
 async function handleCreateThread() {
   try {
     console.log("Création d'un nouveau thread...");
-    if (!OPENAI_API_KEY) {
-      throw new Error('OPENAI_API_KEY is not configured');
-    }
-    
     const response = await fetch('https://api.openai.com/v1/threads', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${OPENAI_API_KEY}`,
         'Content-Type': 'application/json',
-        'OpenAI-Beta': 'assistants=v2',  // Mise à jour ici pour utiliser v2
+        'OpenAI-Beta': 'assistants=v1',
       },
       body: JSON.stringify({})
     });
@@ -74,7 +70,7 @@ async function handleCreateThread() {
     }
 
     const thread = await response.json();
-    console.log("Thread créé avec succès:", thread.id);
+    console.log("Thread créé:", thread.id);
     
     return new Response(
       JSON.stringify({ threadId: thread.id }),
@@ -88,10 +84,6 @@ async function handleCreateThread() {
 
 async function handleSendMessage(threadId: string, messageContent: string) {
   try {
-    if (!OPENAI_API_KEY) {
-      throw new Error('OPENAI_API_KEY is not configured');
-    }
-    
     // 1. Add the message to the thread
     console.log(`Ajout du message au thread ${threadId}:`, messageContent);
     const messageResponse = await fetch(`https://api.openai.com/v1/threads/${threadId}/messages`, {
@@ -99,7 +91,7 @@ async function handleSendMessage(threadId: string, messageContent: string) {
       headers: {
         'Authorization': `Bearer ${OPENAI_API_KEY}`,
         'Content-Type': 'application/json',
-        'OpenAI-Beta': 'assistants=v2',  // Mise à jour ici pour utiliser v2
+        'OpenAI-Beta': 'assistants=v1',
       },
       body: JSON.stringify({
         role: 'user',
@@ -120,7 +112,7 @@ async function handleSendMessage(threadId: string, messageContent: string) {
       headers: {
         'Authorization': `Bearer ${OPENAI_API_KEY}`,
         'Content-Type': 'application/json',
-        'OpenAI-Beta': 'assistants=v2',  // Mise à jour ici pour utiliser v2
+        'OpenAI-Beta': 'assistants=v1',
       },
       body: JSON.stringify({
         assistant_id: ASSISTANT_ID
@@ -135,7 +127,7 @@ async function handleSendMessage(threadId: string, messageContent: string) {
 
     const runData = await runResponse.json();
     const runId = runData.id;
-    console.log("Run créé avec succès:", runId);
+    console.log("Run créé:", runId);
 
     // 3. Poll for the run completion
     console.log("Attente de la complétion du run...");
@@ -153,7 +145,7 @@ async function handleSendMessage(threadId: string, messageContent: string) {
         headers: {
           'Authorization': `Bearer ${OPENAI_API_KEY}`,
           'Content-Type': 'application/json',
-          'OpenAI-Beta': 'assistants=v2',  // Mise à jour ici pour utiliser v2
+          'OpenAI-Beta': 'assistants=v1',
         },
         body: JSON.stringify({
           tool_outputs: toolCalls.map(tool => ({
@@ -181,7 +173,7 @@ async function handleSendMessage(threadId: string, messageContent: string) {
       headers: {
         'Authorization': `Bearer ${OPENAI_API_KEY}`,
         'Content-Type': 'application/json',
-        'OpenAI-Beta': 'assistants=v2',  // Mise à jour ici pour utiliser v2
+        'OpenAI-Beta': 'assistants=v1',
       }
     });
 
@@ -229,16 +221,12 @@ async function pollRunStatus(threadId: string, runId: string) {
     await new Promise(resolve => setTimeout(resolve, 1000));
     
     try {
-      if (!OPENAI_API_KEY) {
-        throw new Error('OPENAI_API_KEY is not configured');
-      }
-      
       const runCheckResponse = await fetch(`https://api.openai.com/v1/threads/${threadId}/runs/${runId}`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${OPENAI_API_KEY}`,
           'Content-Type': 'application/json',
-          'OpenAI-Beta': 'assistants=v2',  // Mise à jour ici pour utiliser v2
+          'OpenAI-Beta': 'assistants=v1',
         }
       });
 
