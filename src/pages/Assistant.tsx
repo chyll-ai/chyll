@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAssistantChat from '@/hooks/useAssistantChat';
@@ -7,7 +6,7 @@ import ChatMessageList from '@/components/chat/ChatMessageList';
 import ChatInputForm from '@/components/chat/ChatInputForm';
 import ChatSidebar from '@/components/chat/ChatSidebar';
 import { toast } from '@/components/ui/sonner';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const Assistant = () => {
@@ -180,15 +179,20 @@ const Assistant = () => {
           </div>
           <h2 className="text-2xl font-bold mb-4">Erreur de configuration</h2>
           <p className="mb-6 text-gray-700">
-            Impossible de se connecter à l'API OpenAI. La clé API n'est pas configurée correctement 
-            dans les fonctions Edge de Supabase. Contactez l'administrateur pour configurer la clé API.
+            Impossible de se connecter à l'API OpenAI. La clé API OpenAI n'est pas configurée correctement 
+            ou l'API des assistants v2 est inaccessible. Veuillez vérifier votre clé API et réessayer.
           </p>
-          <Button onClick={() => navigate('/')} className="mr-2">
-            Retour à l'accueil
-          </Button>
-          <Button variant="outline" onClick={() => window.location.reload()}>
-            Réessayer
-          </Button>
+          <div className="flex flex-col md:flex-row justify-center gap-2">
+            <Button onClick={() => navigate('/')} className="mr-2">
+              Retour à l'accueil
+            </Button>
+            <Button variant="outline" onClick={() => window.location.reload()} className="flex items-center gap-1">
+              Réessayer <ArrowRight size={16} />
+            </Button>
+          </div>
+          <p className="mt-4 text-sm text-gray-500">
+            Si le problème persiste, contactez l'administrateur pour vérifier la configuration de l'API des assistants.
+          </p>
         </div>
       </div>
     );

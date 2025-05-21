@@ -62,7 +62,7 @@ async function handleCreateThread() {
       headers: {
         'Authorization': `Bearer ${OPENAI_API_KEY}`,
         'Content-Type': 'application/json',
-        'OpenAI-Beta': 'assistants=v1',
+        'OpenAI-Beta': 'assistants=v2',  // Mise à jour ici pour utiliser v2
       },
       body: JSON.stringify({})
     });
@@ -99,7 +99,7 @@ async function handleSendMessage(threadId: string, messageContent: string) {
       headers: {
         'Authorization': `Bearer ${OPENAI_API_KEY}`,
         'Content-Type': 'application/json',
-        'OpenAI-Beta': 'assistants=v1',
+        'OpenAI-Beta': 'assistants=v2',  // Mise à jour ici pour utiliser v2
       },
       body: JSON.stringify({
         role: 'user',
@@ -120,7 +120,7 @@ async function handleSendMessage(threadId: string, messageContent: string) {
       headers: {
         'Authorization': `Bearer ${OPENAI_API_KEY}`,
         'Content-Type': 'application/json',
-        'OpenAI-Beta': 'assistants=v1',
+        'OpenAI-Beta': 'assistants=v2',  // Mise à jour ici pour utiliser v2
       },
       body: JSON.stringify({
         assistant_id: ASSISTANT_ID
@@ -153,7 +153,7 @@ async function handleSendMessage(threadId: string, messageContent: string) {
         headers: {
           'Authorization': `Bearer ${OPENAI_API_KEY}`,
           'Content-Type': 'application/json',
-          'OpenAI-Beta': 'assistants=v1',
+          'OpenAI-Beta': 'assistants=v2',  // Mise à jour ici pour utiliser v2
         },
         body: JSON.stringify({
           tool_outputs: toolCalls.map(tool => ({
@@ -181,7 +181,7 @@ async function handleSendMessage(threadId: string, messageContent: string) {
       headers: {
         'Authorization': `Bearer ${OPENAI_API_KEY}`,
         'Content-Type': 'application/json',
-        'OpenAI-Beta': 'assistants=v1',
+        'OpenAI-Beta': 'assistants=v2',  // Mise à jour ici pour utiliser v2
       }
     });
 
@@ -238,7 +238,7 @@ async function pollRunStatus(threadId: string, runId: string) {
         headers: {
           'Authorization': `Bearer ${OPENAI_API_KEY}`,
           'Content-Type': 'application/json',
-          'OpenAI-Beta': 'assistants=v1',
+          'OpenAI-Beta': 'assistants=v2',  // Mise à jour ici pour utiliser v2
         }
       });
 
