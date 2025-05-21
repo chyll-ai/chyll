@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -100,7 +99,7 @@ async function handleFunctionCall(toolCall: ToolCall, threadId: string, runId: s
 // Define the interface for the RPC function parameters
 interface UpdateMessageToolcallsParams {
   message_id: string;
-  tool_calls: string;
+  tool_calls: string | any;
 }
 
 export const useAssistantChat = () => {
@@ -523,7 +522,6 @@ export const useAssistantChat = () => {
           
           // Update the message in the database to include tool calls
           // Use a custom RPC function that handles the updating of the toolCalls JSON field
-          // Fix the type error by properly casting the tool_calls parameter
           const params: UpdateMessageToolcallsParams = {
             message_id: newAssistantMessage.id,
             tool_calls: JSON.stringify(data.toolCalls)

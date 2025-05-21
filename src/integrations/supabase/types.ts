@@ -278,6 +278,7 @@ export type Database = {
           created_at: string | null
           id: string
           role: string
+          toolCalls: Json | null
         }
         Insert: {
           chat_session_id?: string | null
@@ -286,6 +287,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           role: string
+          toolCalls?: Json | null
         }
         Update: {
           chat_session_id?: string | null
@@ -294,6 +296,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           role?: string
+          toolCalls?: Json | null
         }
         Relationships: [
           {
@@ -384,7 +387,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      update_message_toolcalls: {
+        Args: { message_id: string; tool_calls: Json }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
