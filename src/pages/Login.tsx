@@ -14,23 +14,117 @@ const Login = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Vérifier si la page est chargée avec un hash (pour l'authentification)
+    // Check if the page is loaded with a hash (for authentication)
     if (location.hash && location.hash.includes('access_token')) {
-      console.log("Hash détecté dans l'URL de login, redirection vers assistant");
-      navigate('/assistant', { replace: true, state: { from: 'login', hash: location.hash } });
+      console.log("Hash detected in the URL of login, processing auth");
+      processAuth();
       return;
     }
 
-    // Vérifier si l'utilisateur est déjà connecté
+    // Check if the user is already connected
     const checkSession = async () => {
-      const { data } = await supabase.auth.getSession();
-      if (data.session) {
-        navigate('/assistant', { replace: true });
+      try {
+        const { data } = await supabase.auth.getSession();
+        if (data.session) {
+          // User is logged in, redirect to dashboard or onboarding based on profile
+          checkProfileAndRedirect(data.session.user.id);
+        }
+      } catch (error) {
+        console.error("Error checking session:", error);
       }
     };
 
     checkSession();
   }, [location, navigate]);
+
+  const processAuth = async () => {
+    try {
+      // Extract token from hash
+      const hashParams = new URLSearchParams(location.hash.substring(1));
+      const accessToken = hashParams.get('access_token');
+
+      if (accessToken) {
+        console.log("Setting session with access token");
+        const { error } = await supabase.auth.setSession({
+          access_token: accessToken,
+          refresh_token: hashParams.get('refresh_token') || '',
+        });
+
+        if (error) {
+          console.error("Error setting session:", error);
+          toast.error("Authentication error. Please try again.");
+          return;
+        }
+
+        // Clean URL hash
+        window.history.replaceState({}, document.title, window.location.pathname);
+        
+        // Get user id and check profile
+        const { data } = await supabase.auth.getUser();
+        if (data.user) {
+          checkProfileAndRedirect(data.user.id);
+        }
+      }
+    } catch (error) {
+      console.error("Error processing authentication:", error);
+      toast.error("Authentication error. Please try again.");
+    }
+  };
+
+  const checkProfileAndRedirect = async (userId: string) => {
+    try {
+      // Create client record if it doesn't exist
+      const { data: client, error: clientError } = await supabase
+        .from('clients')
+        .select('*')
+        .eq('id', userId)
+        .maybeSingle();
+
+      if (clientError) {
+        console.error("Error checking client:", clientError);
+        throw new Error("Error checking client");
+      }
+
+      if (!client) {
+        console.log("Client not found, creating...");
+        const { data: userData } = await supabase.auth.getUser();
+        const email = userData?.user?.email || '';
+        
+        await supabase
+          .from('clients')
+          .insert({
+            id: userId,
+            email: email
+          });
+        console.log("Client created successfully");
+      }
+
+      // Check if the user has a profile
+      const { data: profile, error: profileError } = await supabase
+        .from('client_profile')
+        .select('*')
+        .eq('client_id', userId)
+        .maybeSingle();
+
+      if (profileError) {
+        console.error("Error fetching profile:", profileError);
+        toast.error("Error fetching your profile");
+        return;
+      }
+
+      // Redirect based on whether the user has a profile
+      if (!profile) {
+        console.log("No profile found, redirecting to onboarding");
+        navigate('/onboarding', { replace: true });
+      } else {
+        console.log("Profile found, redirecting to assistant");
+        navigate('/assistant', { replace: true });
+      }
+    } catch (error: any) {
+      console.error("Error in checkProfileAndRedirect:", error);
+      toast.error(error.message || "An error occurred");
+    }
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,9 +137,9 @@ const Login = () => {
     try {
       setLoading(true);
       
-      // Utiliser l'URL explicite pour la redirection
-      const redirectUrl = "https://chyll.ai/assistant";
-      console.log("URL de redirection:", redirectUrl);
+      // Use explicit URL for redirection
+      const redirectUrl = window.location.origin + "/login";
+      console.log("Redirect URL:", redirectUrl);
       
       const { error } = await supabase.auth.signInWithOtp({
         email,
@@ -61,13 +155,13 @@ const Login = () => {
       toast.success("Un lien de connexion vous a été envoyé par email");
       setMessageSent(true);
     } catch (error: any) {
-      console.error("Erreur d'authentification:", error);
+      console.error("Authentication error:", error);
       
-      // Messages d'erreur plus spécifiques
+      // More specific error messages
       if (error.message?.includes("path is invalid")) {
-        toast.error("Erreur de configuration de redirection. Veuillez vérifier les URL de redirection dans Supabase.");
+        toast.error("Redirection configuration error. Please check the redirect URLs in Supabase.");
       } else {
-        toast.error(error.error_description || error.message || "Une erreur s'est produite");
+        toast.error(error.error_description || error.message || "An error occurred");
       }
     } finally {
       setLoading(false);
