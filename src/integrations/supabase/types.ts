@@ -41,6 +41,35 @@ export type Database = {
           },
         ]
       }
+      chat_sessions: {
+        Row: {
+          client_id: string | null
+          created_at: string | null
+          id: string
+          title: string | null
+        }
+        Insert: {
+          client_id?: string | null
+          created_at?: string | null
+          id?: string
+          title?: string | null
+        }
+        Update: {
+          client_id?: string | null
+          created_at?: string | null
+          id?: string
+          title?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_sessions_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       client_profile: {
         Row: {
           banned_phrases: string | null
@@ -243,6 +272,7 @@ export type Database = {
       }
       messages: {
         Row: {
+          chat_session_id: string | null
           client_id: string | null
           content: string
           created_at: string | null
@@ -250,6 +280,7 @@ export type Database = {
           role: string
         }
         Insert: {
+          chat_session_id?: string | null
           client_id?: string | null
           content: string
           created_at?: string | null
@@ -257,6 +288,7 @@ export type Database = {
           role: string
         }
         Update: {
+          chat_session_id?: string | null
           client_id?: string | null
           content?: string
           created_at?: string | null
@@ -264,6 +296,13 @@ export type Database = {
           role?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "messages_chat_session_id_fkey"
+            columns: ["chat_session_id"]
+            isOneToOne: false
+            referencedRelation: "chat_sessions"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "messages_client_id_fkey"
             columns: ["client_id"]
