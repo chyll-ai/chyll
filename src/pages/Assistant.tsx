@@ -1,7 +1,7 @@
 
 import React, { useCallback, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import useAssistantChat, { handleFunctionCall } from '@/hooks/useAssistantChat';
+import useAssistantChat, { handleFunctionCall } from '@/hooks/assistant/useAssistantChat';
 import ChatHeader from '@/components/chat/ChatHeader';
 import ChatMessageList from '@/components/chat/ChatMessageList';
 import ChatInputForm from '@/components/chat/ChatInputForm';
