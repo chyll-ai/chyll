@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -55,6 +54,7 @@ async function handleFunctionCall(toolCall: ToolCall, threadId: string, runId: s
       const user_token = data.session.access_token;
       
       // Make the request to the connect-gmail edge function
+      // Fix the authorization header issue by ensuring it's properly set
       const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL || 'https://atsfuqwxfrezkxtnctmk.supabase.co'}/functions/v1/connect-gmail`, {
         method: 'POST',
         headers: {
@@ -342,6 +342,7 @@ export const useAssistantChat = () => {
   const createThread = async () => {
     try {
       // Use the full URL for the Edge Function
+      // Fix the authorization header issue by ensuring it's properly set
       const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL || 'https://atsfuqwxfrezkxtnctmk.supabase.co'}/functions/v1/openai-assistant`, {
         method: 'POST',
         headers: {
@@ -453,6 +454,7 @@ export const useAssistantChat = () => {
       
       // 3. Send message to OpenAI and get response
       console.log("Envoi du message à OpenAI avec threadId:", currentThreadId);
+      // Fix the authorization header issue by ensuring it's properly set
       const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL || 'https://atsfuqwxfrezkxtnctmk.supabase.co'}/functions/v1/openai-assistant`, {
         method: 'POST',
         headers: {

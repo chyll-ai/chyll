@@ -18,6 +18,15 @@ serve(async (req) => {
   }
   
   try {
+    // Check for proper authorization
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ error: 'Missing authorization header' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const { thread_id, run_id, user_token, tool_call_id } = await req.json();
     
     if (!thread_id || !run_id || !user_token) {
