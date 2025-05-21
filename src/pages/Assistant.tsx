@@ -4,6 +4,7 @@ import useAssistantChat from '@/hooks/useAssistantChat';
 import ChatHeader from '@/components/chat/ChatHeader';
 import ChatMessageList from '@/components/chat/ChatMessageList';
 import ChatInputForm from '@/components/chat/ChatInputForm';
+import { handleFunctionCall } from '@/hooks/useAssistantChat';
 
 const Assistant = () => {
   const {
@@ -13,7 +14,6 @@ const Assistant = () => {
     sendMessage,
     threadId,
     currentRunId,
-    handleFunctionCall
   } = useAssistantChat();
   
   // Handle any tool calls from the assistant
@@ -30,7 +30,7 @@ const Assistant = () => {
         console.log("Unknown or unhandled tool call:", toolCall);
       }
     });
-  }, [handleFunctionCall, threadId, currentRunId]);
+  }, [threadId, currentRunId]);
   
   if (loading) {
     return (

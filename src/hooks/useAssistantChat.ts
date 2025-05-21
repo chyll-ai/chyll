@@ -8,6 +8,7 @@ export interface Message {
   role: 'user' | 'assistant';
   content: string;
   created_at: string;
+  toolCalls?: any[];
 }
 
 export interface ClientProfile {
@@ -35,6 +36,7 @@ async function handleFunctionCall(toolCall: ToolCall, threadId: string, runId: s
       const { data } = await supabase.auth.getSession();
       if (!data.session) {
         console.error("No active session found");
+        toast.error("Vous devez être connecté pour utiliser cette fonctionnalité");
         return;
       }
       
@@ -55,13 +57,25 @@ async function handleFunctionCall(toolCall: ToolCall, threadId: string, runId: s
         })
       });
       
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Error connecting to Gmail:", errorData);
+        toast.error("Erreur lors de la connexion à Gmail");
+        return;
+      }
+      
       // Log the result but don't show anything in the UI
       const result = await response.json();
       console.log("Gmail connection initiated:", result);
       
+      if (result.oauth_url) {
+        console.log("OAuth URL generated:", result.oauth_url);
+      }
+      
       // We don't display anything in the UI as the assistant will handle the response
     } catch (error) {
       console.error("Error initiating Gmail connection:", error);
+      toast.error("Erreur lors de la connexion à Gmail");
     }
   } else {
     console.log(`Function call detected but not handled: ${toolCall.function.name}`);
@@ -216,7 +230,8 @@ export const useAssistantChat = () => {
                 id: newMessage.id,
                 role: role,
                 content: newMessage.content,
-                created_at: newMessage.created_at
+                created_at: newMessage.created_at,
+                toolCalls: newMessage.toolCalls
               };
               return [...current, typedMessage].sort((a, b) => 
                 new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
@@ -255,7 +270,8 @@ export const useAssistantChat = () => {
           id: msg.id,
           role: role,
           content: msg.content,
-          created_at: msg.created_at
+          created_at: msg.created_at,
+          toolCalls: msg.toolCalls
         };
       }) || [];
       
@@ -286,7 +302,8 @@ export const useAssistantChat = () => {
           id: data[0].id,
           role: 'assistant',
           content: content,
-          created_at: data[0].created_at
+          created_at: data[0].created_at,
+          toolCalls: data[0].toolCalls
         };
         setMessages(prev => [...prev, welcomeMsg]);
       }
@@ -375,7 +392,8 @@ export const useAssistantChat = () => {
             id: userMessageData[0].id,
             role: 'user',
             content: userMessageData[0].content,
-            created_at: userMessageData[0].created_at
+            created_at: userMessageData[0].created_at,
+            toolCalls: userMessageData[0].toolCalls
           } : msg
         ));
       }
@@ -465,7 +483,8 @@ export const useAssistantChat = () => {
           id: assistantMessageData[0].id,
           role: 'assistant',
           content: assistantMessageData[0].content,
-          created_at: assistantMessageData[0].created_at
+          created_at: assistantMessageData[0].created_at,
+          toolCalls: assistantMessageData[0].toolCalls
         };
         
         setMessages(prev => [...prev.filter(msg => msg.id !== "typing-indicator"), newAssistantMessage]);
@@ -508,4 +527,5 @@ export const useAssistantChat = () => {
   };
 };
 
+export { handleFunctionCall };
 export default useAssistantChat;
