@@ -52,7 +52,13 @@ const Assistant = () => {
           });
           
           if (!response.ok) {
-            const errorData = await response.json();
+            const errorText = await response.text();
+            let errorData;
+            try {
+              errorData = JSON.parse(errorText);
+            } catch (e) {
+              errorData = { error: errorText };
+            }
             console.error("Error exchanging code:", errorData);
             toast.error("Error connecting to Gmail. Please try again.");
             return;

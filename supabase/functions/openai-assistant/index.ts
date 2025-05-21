@@ -84,6 +84,55 @@ async function handleCreateThread() {
 
 async function handleSendMessage(threadId: string, messageContent: string) {
   try {
+    // Check if there's an active run on this thread
+    console.log("Checking for active runs on thread:", threadId);
+    const listRunsResponse = await fetch(`https://api.openai.com/v1/threads/${threadId}/runs`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${OPENAI_API_KEY}`,
+        'Content-Type': 'application/json',
+        'OpenAI-Beta': 'assistants=v2',
+      }
+    });
+    
+    if (!listRunsResponse.ok) {
+      const errorData = await listRunsResponse.json();
+      console.error("Error checking runs:", errorData);
+    } else {
+      const runsData = await listRunsResponse.json();
+      const activeRuns = runsData.data.filter(run => 
+        ['queued', 'in_progress', 'requires_action'].includes(run.status)
+      );
+      
+      // Cancel any active runs before proceeding
+      if (activeRuns.length > 0) {
+        console.log(`Found ${activeRuns.length} active runs, cancelling them...`);
+        for (const run of activeRuns) {
+          try {
+            const cancelResponse = await fetch(`https://api.openai.com/v1/threads/${threadId}/runs/${run.id}/cancel`, {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${OPENAI_API_KEY}`,
+                'Content-Type': 'application/json',
+                'OpenAI-Beta': 'assistants=v2',
+              }
+            });
+            
+            if (!cancelResponse.ok) {
+              console.error(`Failed to cancel run ${run.id}:`, await cancelResponse.json());
+            } else {
+              console.log(`Successfully cancelled run ${run.id}`);
+            }
+          } catch (error) {
+            console.error(`Error cancelling run ${run.id}:`, error);
+          }
+          
+          // Wait briefly to ensure the cancellation is processed
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+      }
+    }
+
     // 1. Add the message to the thread
     console.log(`Ajout du message au thread ${threadId}:`, messageContent);
     const messageResponse = await fetch(`https://api.openai.com/v1/threads/${threadId}/messages`, {

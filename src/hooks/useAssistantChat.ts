@@ -617,11 +617,24 @@ export const useAssistantChat = () => {
             tool_calls: JSON.stringify(data.toolCalls)
           };
           
-          const { error: updateError } = await supabase
-            .rpc('update_message_toolcalls', params);
-            
-          if (updateError) {
-            console.error("Error updating message with tool calls:", updateError);
+          try {
+            const { error: updateError } = await supabase
+              .rpc('update_message_toolcalls', params);
+              
+            if (updateError) {
+              console.error("Error updating message with tool calls:", updateError);
+              // Try direct update if RPC fails
+              const { error: directUpdateError } = await supabase
+                .from('messages')
+                .update({ toolCalls: data.toolCalls })
+                .eq('id', newAssistantMessage.id);
+              
+              if (directUpdateError) {
+                console.error("Error with direct update of toolCalls:", directUpdateError);
+              }
+            }
+          } catch (error) {
+            console.error("Exception when updating toolCalls:", error);
           }
         }
         

@@ -37,7 +37,18 @@ serve(async (req) => {
       );
     }
 
-    const reqData = await req.json();
+    // Parse request data
+    let reqData;
+    try {
+      reqData = await req.json();
+    } catch (e) {
+      console.error("Error parsing request JSON:", e);
+      return new Response(
+        JSON.stringify({ error: 'Invalid JSON in request body' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const { action, thread_id, run_id, user_token, tool_call_id, email_data, code, client_id } = reqData;
     
     if (!action) {
