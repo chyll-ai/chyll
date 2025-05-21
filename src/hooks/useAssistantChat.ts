@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -192,6 +193,29 @@ interface UpdateMessageToolcallsParams {
   tool_calls: string | any;
 }
 
+// Helper function to check if a message matches certain patterns for profile onboarding
+const isProfileQuestion = (message: string): string | null => {
+  const lowerMessage = message.toLowerCase();
+  
+  if (lowerMessage.includes("company name") && lowerMessage.includes("what is")) {
+    return "company_name";
+  }
+  if (lowerMessage.includes("industry") && (lowerMessage.includes("what") || lowerMessage.includes("which"))) {
+    return "industry";
+  }
+  if (lowerMessage.includes("target audience") || lowerMessage.includes("ideal customer")) {
+    return "icp";
+  }
+  if (lowerMessage.includes("value proposition") || lowerMessage.includes("value prop")) {
+    return "value_prop";
+  }
+  if (lowerMessage.includes("tone") && lowerMessage.includes("prefer")) {
+    return "tone";
+  }
+  
+  return null;
+};
+
 export const useAssistantChat = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -201,6 +225,8 @@ export const useAssistantChat = () => {
   const [hasProfile, setHasProfile] = useState<boolean | null>(null);
   const [threadId, setThreadId] = useState<string | null>(null);
   const [currentRunId, setCurrentRunId] = useState<string | null>(null);
+  const [profileOnboarding, setProfileOnboarding] = useState<{ [key: string]: string }>({});
+  const [lastProfileQuestion, setLastProfileQuestion] = useState<string | null>(null);
 
   // Check if user is authenticated and fetch messages
   useEffect(() => {
@@ -316,6 +342,100 @@ export const useAssistantChat = () => {
       }
     };
   }, [userId]);
+
+  // Track profile questions and update profile when enough data is collected
+  useEffect(() => {
+    const updateProfileIfNeeded = async () => {
+      // Only proceed if we have at least company_name and one other field
+      if (userId && profileOnboarding.company_name && Object.keys(profileOnboarding).length >= 2) {
+        try {
+          console.log("Attempting to create user profile with:", profileOnboarding);
+          
+          // Check if profile already exists
+          const { data: existingProfile } = await supabase
+            .from('client_profile')
+            .select('*')
+            .eq('client_id', userId)
+            .maybeSingle();
+            
+          if (existingProfile) {
+            // Update existing profile
+            const { error } = await supabase
+              .from('client_profile')
+              .update(profileOnboarding)
+              .eq('client_id', userId);
+              
+            if (error) throw error;
+            toast.success("Votre profil a été mis à jour avec succès!");
+          } else {
+            // Create new profile
+            const { error } = await supabase
+              .from('client_profile')
+              .insert({
+                client_id: userId,
+                ...profileOnboarding
+              });
+              
+            if (error) throw error;
+            toast.success("Votre profil a été créé avec succès!");
+          }
+          
+          // Update local state to reflect that user now has a profile
+          setHasProfile(true);
+          
+          // Send a confirmation message from the assistant
+          setTimeout(() => {
+            sendMessage("Parfait! Votre profil a été enregistré. Je peux maintenant vous aider à générer des emails et messages personnalisés pour votre prospection.");
+          }, 1000);
+          
+        } catch (error) {
+          console.error("Erreur lors de la mise à jour du profil:", error);
+          toast.error("Une erreur s'est produite lors de la mise à jour de votre profil.");
+        }
+      }
+    };
+    
+    updateProfileIfNeeded();
+  }, [profileOnboarding, userId]);
+
+  // Process new assistant messages to detect profile questions
+  useEffect(() => {
+    if (!messages.length || hasProfile) return;
+    
+    const assistantMessages = messages.filter(msg => msg.role === 'assistant');
+    if (assistantMessages.length === 0) return;
+    
+    const lastAssistantMessage = assistantMessages[assistantMessages.length - 1];
+    const fieldType = isProfileQuestion(lastAssistantMessage.content);
+    
+    if (fieldType) {
+      console.log("Detected profile question about:", fieldType);
+      setLastProfileQuestion(fieldType);
+    }
+  }, [messages, hasProfile]);
+
+  // Process user responses to profile questions
+  useEffect(() => {
+    if (!lastProfileQuestion || !messages.length || hasProfile) return;
+    
+    const userMessages = messages.filter(msg => msg.role === 'user');
+    if (userMessages.length === 0) return;
+    
+    const lastUserMessage = userMessages[userMessages.length - 1];
+    // Make sure this is a recent message (within the last 5 messages)
+    const lastIndex = messages.findIndex(msg => msg.id === lastUserMessage.id);
+    
+    if (messages.length - lastIndex <= 5) {
+      // Store user's answer to the last profile question
+      setProfileOnboarding(prev => ({
+        ...prev,
+        [lastProfileQuestion]: lastUserMessage.content
+      }));
+      
+      console.log(`Stored ${lastProfileQuestion} as: ${lastUserMessage.content}`);
+      setLastProfileQuestion(null);
+    }
+  }, [messages, lastProfileQuestion, hasProfile]);
 
   const setupSubscription = (userId: string) => {
     const messagesChannel = supabase
