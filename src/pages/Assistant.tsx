@@ -92,10 +92,10 @@ const Assistant = () => {
         // Fetch chat messages
         await fetchMessages(userId);
         
-        // If no messages yet, send welcome message based on profile existence
-        if (messages.length === 0) {
+        // Check if any assistant messages exist, and if not, send a welcome message
+        if (messages.filter(msg => msg.role === 'assistant').length === 0) {
           const welcomeMessage = profileExists
-            ? "Je suis prêt à générer des messages ou lancer des recherches. Que souhaitez-vous faire ?"
+            ? "Maintenant que votre profil est configuré, je peux vous aider à générer des emails..."
             : "Bienvenue ! Pour commencer, j'ai besoin de mieux comprendre votre cible et votre offre. On y va ?";
           
           await sendWelcomeMessage(userId, welcomeMessage);
@@ -237,11 +237,12 @@ const Assistant = () => {
   
   const createThread = async () => {
     try {
-      const response = await fetch(`${supabase.supabaseUrl}/functions/v1/openai-assistant`, {
+      // Fix for accessing protected properties: Use the full URL instead
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL || 'https://atsfuqwxfrezkxtnctmk.supabase.co'}/functions/v1/openai-assistant`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${supabase.supabaseKey}`
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF0c2Z1cXd4ZnJlemt4dG5jdG1rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc2NjE3MjEsImV4cCI6MjA2MzIzNzcyMX0.FO6bvv2rFL0jhzN5aZ3m1QvNaM_ZNt7Ycmo859PSnJE'}`
         },
         body: JSON.stringify({
           action: 'create_thread'
@@ -304,11 +305,12 @@ const Assistant = () => {
       setMessages(prev => [...prev, typingMessage]);
       
       // Send message to OpenAI and get response
-      const response = await fetch(`${supabase.supabaseUrl}/functions/v1/openai-assistant`, {
+      // Fix for accessing protected properties: Use the full URL instead
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL || 'https://atsfuqwxfrezkxtnctmk.supabase.co'}/functions/v1/openai-assistant`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${supabase.supabaseKey}`
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF0c2Z1cXd4ZnJlemt4dG5jdG1rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc2NjE3MjEsImV4cCI6MjA2MzIzNzcyMX0.FO6bvv2rFL0jhzN5aZ3m1QvNaM_ZNt7Ycmo859PSnJE'}`
         },
         body: JSON.stringify({
           action: 'send_message',
