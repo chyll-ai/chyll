@@ -801,5 +801,4 @@ export const useAssistantChat = () => {
   };
 };
 
-export { handleFunctionCall };
 export default useAssistantChat;
