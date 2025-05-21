@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -17,6 +18,55 @@ export interface ClientProfile {
   industry: string | null;
 }
 
+export interface ToolCall {
+  id: string;
+  type: string;
+  function: {
+    name: string;
+    arguments: string;
+  };
+}
+
+// Function to handle tool calls, specifically for connect_gmail
+async function handleFunctionCall(toolCall: ToolCall, threadId: string, runId: string) {
+  if (toolCall.function.name === 'connect_gmail') {
+    try {
+      // Get the user's session to extract the access token
+      const { data } = await supabase.auth.getSession();
+      if (!data.session) {
+        console.error("No active session found");
+        return;
+      }
+      
+      const user_token = data.session.access_token;
+      
+      // Make the request to the connect-gmail edge function
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL || 'https://atsfuqwxfrezkxtnctmk.supabase.co'}/functions/v1/connect-gmail`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user_token}`
+        },
+        body: JSON.stringify({
+          thread_id: threadId,
+          run_id: runId,
+          user_token: user_token
+        })
+      });
+      
+      // Log the result but don't show anything in the UI
+      const result = await response.json();
+      console.log("Gmail connection initiated:", result);
+      
+      // We don't display anything in the UI as the assistant will handle the response
+    } catch (error) {
+      console.error("Error initiating Gmail connection:", error);
+    }
+  } else {
+    console.log(`Function call detected but not handled: ${toolCall.function.name}`);
+  }
+}
+
 export const useAssistantChat = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -25,6 +75,7 @@ export const useAssistantChat = () => {
   const [userId, setUserId] = useState<string | null>(null);
   const [hasProfile, setHasProfile] = useState<boolean | null>(null);
   const [threadId, setThreadId] = useState<string | null>(null);
+  const [currentRunId, setCurrentRunId] = useState<string | null>(null);
 
   // Check if user is authenticated and fetch messages
   useEffect(() => {
@@ -383,6 +434,11 @@ export const useAssistantChat = () => {
       const data = await response.json();
       console.log("Réponse reçue de l'API OpenAI:", data);
       
+      // Store the current run ID
+      if (data.runId) {
+        setCurrentRunId(data.runId);
+      }
+      
       // 4. Insert assistant's response
       const assistantMessage = {
         client_id: userId,
@@ -417,6 +473,14 @@ export const useAssistantChat = () => {
       // 5. Handle tool calls if any
       if (data.toolCalls && data.toolCalls.length > 0) {
         console.log('Tool calls received:', data.toolCalls);
+        
+        // Process each tool call
+        for (const toolCall of data.toolCalls) {
+          if (toolCall.type === 'function' && currentThreadId && data.runId) {
+            // Handle function calls, especially connect_gmail
+            await handleFunctionCall(toolCall, currentThreadId, data.runId);
+          }
+        }
       }
       
     } catch (error) {
@@ -437,6 +501,9 @@ export const useAssistantChat = () => {
     sendMessage,
     userId,
     hasProfile,
+    handleFunctionCall,
+    threadId,
+    currentRunId
   };
 };
 

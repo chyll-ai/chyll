@@ -5,15 +5,30 @@ import { Message } from '@/hooks/useAssistantChat';
 
 interface ChatMessageListProps {
   messages: Message[];
+  onProcessToolCalls?: (toolCalls: any[]) => void;
 }
 
-const ChatMessageList: React.FC<ChatMessageListProps> = ({ messages }) => {
+const ChatMessageList: React.FC<ChatMessageListProps> = ({ 
+  messages, 
+  onProcessToolCalls 
+}) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
   // Auto-scroll to bottom when messages change
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+    
+    // Process any tool calls that might have been received with the latest message
+    // This needs to be handled externally since we want to only process tool calls once
+    // and the useEffect will re-run every time messages changes
+    if (messages.length > 0 && onProcessToolCalls) {
+      // Check if the latest message has any tool calls attached to it
+      const latestMessage = messages[messages.length - 1];
+      if (latestMessage && (latestMessage as any).toolCalls) {
+        onProcessToolCalls((latestMessage as any).toolCalls);
+      }
+    }
+  }, [messages, onProcessToolCalls]);
   
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });

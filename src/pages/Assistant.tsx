@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useCallback } from 'react';
 import useAssistantChat from '@/hooks/useAssistantChat';
 import ChatHeader from '@/components/chat/ChatHeader';
 import ChatMessageList from '@/components/chat/ChatMessageList';
@@ -11,7 +11,21 @@ const Assistant = () => {
     sending,
     messages,
     sendMessage,
+    threadId,
+    currentRunId,
+    handleFunctionCall
   } = useAssistantChat();
+  
+  // Handle any tool calls from the assistant
+  const processToolCalls = useCallback((toolCalls) => {
+    if (!toolCalls || !Array.isArray(toolCalls)) return;
+    
+    toolCalls.forEach(toolCall => {
+      if (toolCall.type === 'function' && toolCall.function?.name === 'connect_gmail' && threadId && currentRunId) {
+        handleFunctionCall(toolCall, threadId, currentRunId);
+      }
+    });
+  }, [handleFunctionCall, threadId, currentRunId]);
   
   if (loading) {
     return (
@@ -24,7 +38,7 @@ const Assistant = () => {
   return (
     <div className="flex flex-col h-screen bg-background">
       <ChatHeader />
-      <ChatMessageList messages={messages} />
+      <ChatMessageList messages={messages} onProcessToolCalls={processToolCalls} />
       <ChatInputForm onSendMessage={sendMessage} disabled={sending} />
     </div>
   );

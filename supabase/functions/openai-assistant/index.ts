@@ -133,7 +133,8 @@ async function handleSendMessage(threadId: string, messageContent: string) {
     console.log("Attente de la complétion du run...");
     let runStatus = await pollRunStatus(threadId, runId);
 
-    // 4. If there were tool calls, capture them but don't process for now (as per requirements)
+    // 4. If there were tool calls, capture them but don't process them in the edge function
+    // Instead, return them to the frontend for processing
     let toolCalls = null;
     if (runStatus.required_action?.type === 'submit_tool_outputs') {
       console.log("Des appels d'outils sont requis");
@@ -150,7 +151,7 @@ async function handleSendMessage(threadId: string, messageContent: string) {
         body: JSON.stringify({
           tool_outputs: toolCalls.map(tool => ({
             tool_call_id: tool.id,
-            output: JSON.stringify({ message: "Function not implemented yet" })
+            output: JSON.stringify({ message: "Function executed by the client" })
           }))
         })
       });
@@ -196,10 +197,12 @@ async function handleSendMessage(threadId: string, messageContent: string) {
 
     console.log("Réponse de l'assistant:", assistantResponse.substring(0, 100) + "...");
 
+    // Return the assistant's response along with any tool calls and the runId for the frontend
     return new Response(
       JSON.stringify({ 
         message: assistantResponse,
-        toolCalls: toolCalls
+        toolCalls: toolCalls,
+        runId: runId
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
