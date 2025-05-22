@@ -61,12 +61,81 @@ export const handleFunctionCall = async (toolCall, threadId, runId) => {
         // Open the OAuth URL in a new tab
         window.open(result.oauth_url, '_blank');
         toast.success("Redirection vers la page de connexion Gmail...");
+        
+        // Start polling for token updates
+        checkForGmailToken(client_id);
       }
       
       // We don't display anything in the UI as the assistant will handle the response
     } catch (error) {
       console.error("Error initiating Gmail connection:", error);
       toast.error("Erreur lors de la connexion à Gmail");
+    }
+  } else if (toolCall.function.name === 'is_gmail_connected') {
+    try {
+      console.log("Processing is_gmail_connected function call");
+      // Get the user's session to extract the access token
+      const { data } = await supabase.auth.getSession();
+      if (!data.session) {
+        console.error("No active session found");
+        toast.error("Vous devez être connecté pour vérifier le statut Gmail");
+        return;
+      }
+      
+      const user_token = data.session.access_token;
+      
+      // Call the is-gmail-connected edge function
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL || 'https://atsfuqwxfrezkxtnctmk.supabase.co'}/functions/v1/is-gmail-connected`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${user_token}`
+        }
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Error checking Gmail connection:", errorData);
+        
+        // Submit the tool output back to OpenAI
+        if (threadId && runId) {
+          await submitToolOutput(threadId, runId, toolCall.id, {
+            connected: false,
+            reason: errorData.reason || 'api_error'
+          });
+        }
+        
+        return;
+      }
+      
+      // Process the response
+      const connectionStatus = await response.json();
+      console.log("Gmail connection status:", connectionStatus);
+      
+      if (connectionStatus.connected) {
+        toast.success("Gmail connecté avec succès!");
+      } else if (connectionStatus.expired) {
+        toast.error("Votre connexion Gmail a expiré. Veuillez vous reconnecter.");
+      } else {
+        toast.error("Vous n'êtes pas connecté à Gmail.");
+      }
+      
+      // Submit the tool output back to OpenAI
+      if (threadId && runId) {
+        await submitToolOutput(threadId, runId, toolCall.id, connectionStatus);
+      }
+      
+    } catch (error) {
+      console.error("Error checking Gmail connection:", error);
+      toast.error("Erreur lors de la vérification de la connexion Gmail");
+      
+      // Submit error to OpenAI
+      if (threadId && runId) {
+        await submitToolOutput(threadId, runId, toolCall.id, {
+          connected: false,
+          reason: 'internal_error',
+          error: error.message
+        });
+      }
     }
   } else if (toolCall.function.name === 'send_gmail_email') {
     try {
@@ -256,5 +325,74 @@ export const handleFunctionCall = async (toolCall, threadId, runId) => {
     }
   } else {
     console.log(`Function call detected but not handled: ${toolCall.function.name}`);
+  }
+};
+
+// Helper function to submit tool outputs back to OpenAI
+const submitToolOutput = async (threadId, runId, toolCallId, output) => {
+  try {
+    const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL || 'https://atsfuqwxfrezkxtnctmk.supabase.co'}/functions/v1/openai-assistant`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF0c2Z1cXd4ZnJlemt4dG5jdG1rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc2NjE3MjEsImV4cCI6MjA2MzIzNzcyMX0.FO6bvv2rFL0jhzN5aZ3m1QvNaM_ZNt7Ycmo859PSnJE'}`
+      },
+      body: JSON.stringify({
+        action: 'submit_tool_outputs',
+        threadId,
+        runId,
+        toolOutputs: [{
+          tool_call_id: toolCallId,
+          output: JSON.stringify(output)
+        }]
+      })
+    });
+    
+    if (!response.ok) {
+      console.error("Error submitting tool output to OpenAI");
+    } else {
+      console.log("Tool output submitted successfully");
+    }
+  } catch (error) {
+    console.error("Error during tool output submission:", error);
+  }
+};
+
+// Function to check if the Gmail token was successfully stored
+const checkForGmailToken = async (clientId, attempts = 0) => {
+  if (attempts > 5) {
+    console.log("Maximum check attempts reached");
+    toast.error("La connexion Gmail n'a pas pu être finalisée. Veuillez réessayer.");
+    return;
+  }
+  
+  try {
+    // Wait a few seconds before checking
+    await new Promise(resolve => setTimeout(resolve, 3000));
+    
+    // Check if token exists
+    const { data, error } = await supabase
+      .from('tokens')
+      .select('access_token')
+      .eq('client_id', clientId)
+      .maybeSingle();
+      
+    if (error) {
+      console.error("Error checking for Gmail token:", error);
+      return;
+    }
+    
+    if (data && data.access_token) {
+      console.log("Gmail token found!");
+      toast.success("Connexion Gmail réussie!");
+      return;
+    }
+    
+    // If no token yet, check again after a delay
+    console.log(`No token found yet, checking again... (attempt ${attempts + 1})`);
+    checkForGmailToken(clientId, attempts + 1);
+    
+  } catch (error) {
+    console.error("Error during token check:", error);
   }
 };

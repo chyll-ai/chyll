@@ -29,6 +29,71 @@ const Assistant = ({ embedded = false }: AssistantProps) => {
     conversationId
   } = useAssistantChat();
   
+  // Handle OAuth redirect with authorization code
+  useEffect(() => {
+    const checkForOAuthCode = async () => {
+      // Extract authorization code from URL if present
+      const urlParams = new URLSearchParams(window.location.search);
+      const code = urlParams.get('code');
+      const state = urlParams.get('state');
+      
+      if (code && state) {
+        try {
+          console.log("OAuth code detected in URL, completing Gmail connection...");
+          
+          // Get user token for authentication
+          const { data } = await supabase.auth.getSession();
+          if (!data.session) {
+            console.error("No active session found");
+            toast.error("Vous devez être connecté pour finaliser la connexion Gmail");
+            return;
+          }
+          
+          const user_token = data.session.access_token;
+          const client_id = data.session.user.id;
+          
+          // Exchange the code for tokens
+          const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL || 'https://atsfuqwxfrezkxtnctmk.supabase.co'}/functions/v1/connect-gmail`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${user_token}`
+            },
+            body: JSON.stringify({
+              action: 'exchange_code',
+              code,
+              client_id,
+              redirect_url: window.location.origin + window.location.pathname
+            })
+          });
+          
+          if (!response.ok) {
+            const errorData = await response.json();
+            console.error("Error exchanging code for tokens:", errorData);
+            toast.error("Erreur lors de la finalisation de la connexion Gmail");
+            return;
+          }
+          
+          const result = await response.json();
+          console.log("Code exchange result:", result);
+          
+          if (result.status === "success") {
+            toast.success("Connexion Gmail réussie!");
+          }
+          
+          // Clean up the URL to remove the code
+          window.history.replaceState({}, document.title, window.location.pathname);
+          
+        } catch (error) {
+          console.error("Error handling OAuth callback:", error);
+          toast.error("Erreur lors de la finalisation de la connexion Gmail");
+        }
+      }
+    };
+    
+    checkForOAuthCode();
+  }, []);
+  
   // Check if user profile exists and redirect to dashboard if needed
   useEffect(() => {
     // Skip this check if the component is embedded in another page
