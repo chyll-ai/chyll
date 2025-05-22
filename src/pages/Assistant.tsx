@@ -1,16 +1,22 @@
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
 import useAssistantChat from '@/hooks/assistant/useAssistantChat';
 import { handleFunctionCall } from '@/lib/handleFunctionCall';
 import ChatHeader from '@/components/chat/ChatHeader';
 import ChatMessageList from '@/components/chat/ChatMessageList';
 import ChatInputForm from '@/components/chat/ChatInputForm';
+import { Loader2 } from 'lucide-react';
 
 interface AssistantProps {
   embedded?: boolean;
 }
 
 const Assistant = ({ embedded = false }: AssistantProps) => {
+  const navigate = useNavigate();
+  const [checkingProfile, setCheckingProfile] = useState(!embedded);
+  
   const {
     loading,
     sending,
@@ -22,6 +28,54 @@ const Assistant = ({ embedded = false }: AssistantProps) => {
     hasProfile,
     conversationId
   } = useAssistantChat();
+  
+  // Check if user profile exists and redirect to dashboard if needed
+  useEffect(() => {
+    // Skip this check if the component is embedded in another page
+    if (embedded) {
+      setCheckingProfile(false);
+      return;
+    }
+
+    const checkUserProfile = async () => {
+      try {
+        // Get current user
+        const { data: userData, error: userError } = await supabase.auth.getUser();
+        if (userError || !userData.user) {
+          console.error("No user found:", userError);
+          navigate('/login');
+          return;
+        }
+
+        // Check if user has a profile
+        const { data: profileData, error: profileError } = await supabase
+          .from('client_profile')
+          .select('*')
+          .eq('client_id', userData.user.id)
+          .maybeSingle();
+          
+        if (profileError) {
+          console.error("Error retrieving profile:", profileError);
+          setCheckingProfile(false);
+          return;
+        }
+        
+        // If profile exists and not embedded, redirect to dashboard
+        if (profileData && !embedded) {
+          console.log("Profile found, redirecting to dashboard");
+          navigate('/dashboard', { replace: true });
+          return;
+        }
+        
+        setCheckingProfile(false);
+      } catch (error) {
+        console.error("Error checking profile:", error);
+        setCheckingProfile(false);
+      }
+    };
+    
+    checkUserProfile();
+  }, [navigate, embedded]);
   
   // Handle any tool calls from the assistant
   const processToolCalls = useCallback((toolCalls) => {
@@ -37,10 +91,10 @@ const Assistant = ({ embedded = false }: AssistantProps) => {
     });
   }, [threadId, currentRunId]);
   
-  if (loading) {
+  if (checkingProfile || loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
-        <p className="text-lg">Chargement...</p>
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }

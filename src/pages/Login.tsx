@@ -26,7 +26,7 @@ const Login = () => {
       try {
         const { data } = await supabase.auth.getSession();
         if (data.session) {
-          // User is logged in, redirect to dashboard or onboarding based on profile
+          // User is logged in, check profile and redirect
           checkProfileAndRedirect(data.session.user.id);
         }
       } catch (error) {
@@ -113,11 +113,11 @@ const Login = () => {
       }
 
       // Redirect based on whether the user has a profile
-      if (!profile) {
-        console.log("No profile found, redirecting to onboarding");
-        navigate('/onboarding', { replace: true });
+      if (profile) {
+        console.log("Profile found, redirecting to dashboard");
+        navigate('/dashboard', { replace: true });
       } else {
-        console.log("Profile found, redirecting to assistant");
+        console.log("No profile found, redirecting to assistant");
         navigate('/assistant', { replace: true });
       }
     } catch (error: any) {
