@@ -41,7 +41,7 @@ interface Lead {
   job_title: string;
   email: string;
   company: string;
-  status: string;
+  status: string | null;
   created_at: string;
   email_jobs?: {
     status: string;
@@ -304,7 +304,7 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
                     </TableCell>
                     <TableCell>{lead.company || 'N/A'}</TableCell>
                     <TableCell>
-                      <LeadStatusBadge status={lead.status} />
+                      <LeadStatusBadge status={lead.status || 'à contacter'} />
                     </TableCell>
                     <TableCell>
                       {formatDate(lead.created_at)}
@@ -369,7 +369,7 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
           </DialogHeader>
           <div className="py-4">
             <Select 
-              defaultValue={currentLead?.status} 
+              defaultValue={currentLead?.status || undefined} 
               onValueChange={saveLeadStatus}
               disabled={updatingStatus}
             >
