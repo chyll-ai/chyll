@@ -117,8 +117,8 @@ const Login = () => {
         console.log("Profile found, redirecting to dashboard");
         navigate('/dashboard', { replace: true });
       } else {
-        console.log("No profile found, redirecting to assistant");
-        navigate('/assistant', { replace: true });
+        console.log("No profile found, redirecting to onboarding");
+        navigate('/onboarding', { replace: true });
       }
     } catch (error: any) {
       console.error("Error in checkProfileAndRedirect:", error);
