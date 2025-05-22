@@ -125,10 +125,10 @@ const Assistant = ({ embedded = false }: AssistantProps) => {
           return;
         }
 
-        // Check if user has a profile
+        // Check if user has a profile and if it's complete
         const { data: profileData, error: profileError } = await supabase
           .from('client_profile')
-          .select('*')
+          .select('*, is_complete')
           .eq('client_id', userData.user.id)
           .maybeSingle();
           
@@ -138,9 +138,9 @@ const Assistant = ({ embedded = false }: AssistantProps) => {
           return;
         }
         
-        // If profile exists and not embedded, redirect to dashboard
-        if (profileData && !embedded) {
-          console.log("Profile found, redirecting to dashboard");
+        // Only redirect to dashboard if profile exists AND is marked as complete
+        if (profileData && profileData.is_complete === true && !embedded) {
+          console.log("Complete profile found, redirecting to dashboard");
           navigate('/dashboard', { replace: true });
           return;
         }
