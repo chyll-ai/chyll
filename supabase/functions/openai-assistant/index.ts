@@ -271,8 +271,51 @@ async function handleSubmitToolOutputs(threadId: string, runId: string, toolOutp
     const data = await response.json();
     console.log("Tool outputs submitted successfully, run status:", data.status);
     
+    // After submitting tool outputs, poll for completion and return the assistant's message
+    let runStatus = await pollRunStatus(threadId, runId);
+    console.log("Run status after tool outputs:", runStatus.status);
+    
+    // Get the assistant's messages after tool output submission
+    const messagesResponse = await fetch(`https://api.openai.com/v1/threads/${threadId}/messages`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${OPENAI_API_KEY}`,
+        'Content-Type': 'application/json',
+        'OpenAI-Beta': 'assistants=v2',
+      }
+    });
+
+    if (!messagesResponse.ok) {
+      console.error("Error retrieving messages after tool outputs:", await messagesResponse.json());
+      return new Response(
+        JSON.stringify({ success: true, status: data.status }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const messagesData = await messagesResponse.json();
+    
+    // Get the most recent assistant message
+    const assistantMessages = messagesData.data
+      .filter(msg => msg.role === 'assistant')
+      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
+    const assistantResponse = assistantMessages.length > 0 
+      ? assistantMessages[0].content[0]?.text?.value || ""
+      : "";
+
+    console.log("Latest assistant response after tool outputs:", assistantResponse.substring(0, 100) + "...");
+    
     return new Response(
-      JSON.stringify({ success: true, status: data.status }),
+      JSON.stringify({ 
+        success: true, 
+        status: data.status,
+        message: assistantResponse,
+        // If there are new tool calls, include them
+        toolCalls: runStatus.required_action?.type === 'submit_tool_outputs' 
+          ? runStatus.required_action.submit_tool_outputs.tool_calls 
+          : null
+      }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (error) {
@@ -319,6 +362,11 @@ async function pollRunStatus(threadId: string, runId: string) {
       
       if (status === 'requires_action') {
         console.log("Le run nécessite une action");
+        return runStatus;
+      }
+      
+      if (status === 'completed') {
+        console.log("Run completed successfully");
         return runStatus;
       }
     } catch (error) {

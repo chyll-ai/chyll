@@ -17,6 +17,7 @@ interface AssistantProps {
 const Assistant = ({ embedded = false }: AssistantProps) => {
   const navigate = useNavigate();
   const [checkingProfile, setCheckingProfile] = useState(!embedded);
+  const [processedToolCalls, setProcessedToolCalls] = useState<Set<string>>(new Set());
   
   const {
     loading,
@@ -155,12 +156,32 @@ const Assistant = ({ embedded = false }: AssistantProps) => {
     console.log("Processing tool calls:", toolCalls);
     
     toolCalls.forEach(toolCall => {
+      // Only process each tool call once to prevent loops
+      if (processedToolCalls.has(toolCall.id)) {
+        console.log(`Tool call ${toolCall.id} already processed, skipping`);
+        return;
+      }
+      
       if (toolCall.type === 'function' && threadId && currentRunId) {
         console.log(`Processing function call: ${toolCall.function?.name}`);
         handleFunctionCall(toolCall, threadId, currentRunId);
+        
+        // Mark this tool call as processed
+        setProcessedToolCalls(prev => {
+          const updated = new Set(prev);
+          updated.add(toolCall.id);
+          return updated;
+        });
       }
     });
-  }, [threadId, currentRunId]);
+  }, [threadId, currentRunId, processedToolCalls]);
+  
+  // Reset processedToolCalls when the thread ID changes
+  useEffect(() => {
+    if (threadId) {
+      setProcessedToolCalls(new Set());
+    }
+  }, [threadId]);
   
   if (checkingProfile || loading) {
     return (
