@@ -82,6 +82,7 @@ export type Database = {
           icp_title: string | null
           id: string
           industry: string | null
+          is_complete: boolean | null
           linkedin_url: string | null
           offer: string | null
           primary_goal: string | null
@@ -99,6 +100,7 @@ export type Database = {
           icp_title?: string | null
           id?: string
           industry?: string | null
+          is_complete?: boolean | null
           linkedin_url?: string | null
           offer?: string | null
           primary_goal?: string | null
@@ -116,6 +118,7 @@ export type Database = {
           icp_title?: string | null
           id?: string
           industry?: string | null
+          is_complete?: boolean | null
           linkedin_url?: string | null
           offer?: string | null
           primary_goal?: string | null

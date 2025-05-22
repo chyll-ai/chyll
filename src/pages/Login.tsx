@@ -99,10 +99,10 @@ const Login = () => {
         console.log("Client created successfully");
       }
 
-      // Check if the user has a profile
+      // Check if the user has a profile and if it's complete
       const { data: profile, error: profileError } = await supabase
         .from('client_profile')
-        .select('*')
+        .select('*, is_complete')
         .eq('client_id', userId)
         .maybeSingle();
 
@@ -112,12 +112,12 @@ const Login = () => {
         return;
       }
 
-      // Redirect based on whether the user has a profile
-      if (profile) {
-        console.log("Profile found, redirecting to dashboard");
+      // Redirect based on whether the user has a complete profile
+      if (profile && profile.is_complete === true) {
+        console.log("Complete profile found, redirecting to dashboard");
         navigate('/dashboard', { replace: true });
       } else {
-        console.log("No profile found, redirecting to assistant");
+        console.log("No complete profile found, redirecting to assistant");
         navigate('/assistant', { replace: true });
       }
     } catch (error: any) {
