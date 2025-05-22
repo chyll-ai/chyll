@@ -18,6 +18,7 @@ const Assistant = ({ embedded = false }: AssistantProps) => {
   const navigate = useNavigate();
   const [checkingProfile, setCheckingProfile] = useState(!embedded);
   const [processedToolCalls, setProcessedToolCalls] = useState<Set<string>>(new Set());
+  const [oauthInProgress, setOauthInProgress] = useState(false);
   
   const {
     loading,
@@ -39,8 +40,9 @@ const Assistant = ({ embedded = false }: AssistantProps) => {
       const code = urlParams.get('code');
       const state = urlParams.get('state');
       
-      if (code && state) {
+      if (code && state && !oauthInProgress) {
         try {
+          setOauthInProgress(true);
           console.log("OAuth code detected in URL, completing Gmail connection...");
           
           // Get user token for authentication
@@ -48,6 +50,7 @@ const Assistant = ({ embedded = false }: AssistantProps) => {
           if (!data.session) {
             console.error("No active session found");
             toast.error("Vous devez être connecté pour finaliser la connexion Gmail");
+            setOauthInProgress(false);
             return;
           }
           
@@ -73,6 +76,7 @@ const Assistant = ({ embedded = false }: AssistantProps) => {
             const errorData = await response.json();
             console.error("Error exchanging code for tokens:", errorData);
             toast.error("Erreur lors de la finalisation de la connexion Gmail");
+            setOauthInProgress(false);
             return;
           }
           
@@ -90,16 +94,18 @@ const Assistant = ({ embedded = false }: AssistantProps) => {
           
           // Clean up the URL to remove the code
           window.history.replaceState({}, document.title, window.location.pathname);
+          setOauthInProgress(false);
           
         } catch (error) {
           console.error("Error handling OAuth callback:", error);
           toast.error("Erreur lors de la finalisation de la connexion Gmail");
+          setOauthInProgress(false);
         }
       }
     };
     
     checkForOAuthCode();
-  }, [sendMessage]);
+  }, [sendMessage, oauthInProgress]);
   
   // Check if user profile exists and redirect to dashboard if needed
   useEffect(() => {
@@ -195,7 +201,7 @@ const Assistant = ({ embedded = false }: AssistantProps) => {
     <div className={`flex flex-col ${embedded ? 'h-full' : 'h-screen'} bg-background`}>
       <ChatHeader conversationId={conversationId} showBackButton={!embedded} />
       <ChatMessageList messages={messages} onProcessToolCalls={processToolCalls} />
-      <ChatInputForm onSendMessage={sendMessage} disabled={sending} />
+      <ChatInputForm onSendMessage={sendMessage} disabled={sending || oauthInProgress} />
     </div>
   );
 };

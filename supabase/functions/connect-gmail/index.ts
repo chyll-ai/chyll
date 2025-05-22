@@ -280,6 +280,16 @@ serve(async (req) => {
       const finalRedirectUrl = redirect_url || "https://chyll.ai/assistant";
       console.log("Using redirect URL:", finalRedirectUrl);
       
+      // Check for existing tokens for this user - avoid duplicate creation
+      const { data: existingTokensData, error: existingTokensError } = await supabase
+        .from('tokens')
+        .select('*')
+        .eq('client_id', client_id)
+        .single();
+
+      // If a token already exists, we should update it rather than creating a new one
+      const tokenExists = !existingTokensError && existingTokensData;
+      
       // Exchange the authorization code for tokens
       const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
         method: 'POST',
@@ -307,19 +317,37 @@ serve(async (req) => {
         refresh_token_length: tokenData.refresh_token?.length,
       });
       
-      // Store the tokens in the database
-      const { error: insertError } = await supabase
-        .from('tokens')
-        .upsert({
-          client_id,
-          access_token: tokenData.access_token,
-          refresh_token: tokenData.refresh_token,
-          expires_at: new Date(Date.now() + tokenData.expires_in * 1000).toISOString()
-        });
-      
-      if (insertError) {
-        console.error("Error storing tokens:", insertError);
-        throw new Error(`Failed to store tokens: ${insertError.message}`);
+      // Store the tokens in the database - update if they already exist, insert if not
+      if (tokenExists) {
+        console.log("Updating existing token record");
+        const { error: updateError } = await supabase
+          .from('tokens')
+          .update({
+            access_token: tokenData.access_token,
+            refresh_token: tokenData.refresh_token || existingTokensData.refresh_token, // Keep existing refresh token if not provided
+            expires_at: new Date(Date.now() + tokenData.expires_in * 1000).toISOString()
+          })
+          .eq('client_id', client_id);
+        
+        if (updateError) {
+          console.error("Error updating tokens:", updateError);
+          throw new Error(`Failed to update tokens: ${updateError.message}`);
+        }
+      } else {
+        console.log("Creating new token record");
+        const { error: insertError } = await supabase
+          .from('tokens')
+          .insert({
+            client_id,
+            access_token: tokenData.access_token,
+            refresh_token: tokenData.refresh_token,
+            expires_at: new Date(Date.now() + tokenData.expires_in * 1000).toISOString()
+          });
+        
+        if (insertError) {
+          console.error("Error storing tokens:", insertError);
+          throw new Error(`Failed to store tokens: ${insertError.message}`);
+        }
       }
       
       console.log("Tokens stored successfully");
