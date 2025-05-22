@@ -34,3 +34,6 @@ verify_jwt = true
 
 [functions.send-followup]
 verify_jwt = true
+
+[functions.is-gmail-connected]
+verify_jwt = true
