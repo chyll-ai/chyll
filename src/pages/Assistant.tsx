@@ -6,7 +6,11 @@ import ChatHeader from '@/components/chat/ChatHeader';
 import ChatMessageList from '@/components/chat/ChatMessageList';
 import ChatInputForm from '@/components/chat/ChatInputForm';
 
-const Assistant = () => {
+interface AssistantProps {
+  embedded?: boolean;
+}
+
+const Assistant = ({ embedded = false }: AssistantProps) => {
   const {
     loading,
     sending,
@@ -42,8 +46,8 @@ const Assistant = () => {
   }
   
   return (
-    <div className="flex flex-col h-screen bg-background">
-      <ChatHeader conversationId={conversationId} />
+    <div className={`flex flex-col ${embedded ? 'h-full' : 'h-screen'} bg-background`}>
+      <ChatHeader conversationId={conversationId} showBackButton={!embedded} />
       <ChatMessageList messages={messages} onProcessToolCalls={processToolCalls} />
       <ChatInputForm onSendMessage={sendMessage} disabled={sending} />
     </div>

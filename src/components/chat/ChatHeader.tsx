@@ -6,9 +6,10 @@ import { MessageSquareText, ChevronLeft } from 'lucide-react';
 
 interface ChatHeaderProps {
   conversationId?: string | null;
+  showBackButton?: boolean;
 }
 
-const ChatHeader: React.FC<ChatHeaderProps> = ({ conversationId }) => {
+const ChatHeader: React.FC<ChatHeaderProps> = ({ conversationId, showBackButton = true }) => {
   const [title, setTitle] = useState('Assistant');
   
   useEffect(() => {
@@ -41,10 +42,12 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ conversationId }) => {
   return (
     <header className="flex items-center justify-between p-4 border-b border-border bg-card">
       <div className="flex items-center gap-2">
-        <Link to="/dashboard-legacy" className="flex items-center text-muted-foreground hover:text-foreground transition-colors">
-          <ChevronLeft className="h-5 w-5" />
-          <span className="sr-only">Retour</span>
-        </Link>
+        {showBackButton && (
+          <Link to="/dashboard" className="flex items-center text-muted-foreground hover:text-foreground transition-colors">
+            <ChevronLeft className="h-5 w-5" />
+            <span className="sr-only">Retour</span>
+          </Link>
+        )}
         <div className="flex items-center gap-2">
           <MessageSquareText className="h-5 w-5 text-primary" />
           <h1 className="text-xl font-semibold">{title}</h1>

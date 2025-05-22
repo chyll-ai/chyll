@@ -2,56 +2,33 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from '@/components/ui/sonner';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Rocket } from 'lucide-react';
+import Assistant from '@/pages/Assistant';
+import LeadsTable from '@/components/dashboard/LeadsTable';
+import { Loader2 } from 'lucide-react';
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
-  const [profile, setProfile] = useState(null);
-  
+  const [hasProfile, setHasProfile] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
+
+  // Check if user has a profile, otherwise redirect to assistant page
   useEffect(() => {
-    const fetchUserData = async () => {
+    const checkUserProfile = async () => {
       try {
-        // Get the current session
-        const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+        // Get the current user
+        const { data: userData, error: userError } = await supabase.auth.getUser();
         
-        if (sessionError || !sessionData.session) {
-          console.error("Pas de session trouvée:", sessionError);
-          toast.error("Veuillez vous connecter pour accéder à cette page");
+        if (userError || !userData.user) {
+          console.error("No user found:", userError);
           navigate('/login');
           return;
         }
         
-        const userId = sessionData.session.user.id;
-        console.log("Session trouvée, ID utilisateur:", userId);
+        const userId = userData.user.id;
+        setUserId(userId);
         
-        // Create client record if it doesn't exist
-        const { data: client, error: clientError } = await supabase
-          .from('clients')
-          .select('*')
-          .eq('id', userId)
-          .maybeSingle();
-          
-        if (clientError) {
-          console.error("Erreur lors de la vérification du client:", clientError);
-          throw new Error("Erreur lors de la vérification du client");
-        }
-        
-        if (!client) {
-          console.log("Client non trouvé, création en cours...");
-          await supabase
-            .from('clients')
-            .insert({
-              id: userId,
-              email: sessionData.session.user.email || ''
-            });
-          console.log("Client créé avec succès");
-        }
-        
-        // Fetch client profile data
+        // Check if user has a profile
         const { data: profileData, error: profileError } = await supabase
           .from('client_profile')
           .select('*')
@@ -59,113 +36,48 @@ const Dashboard = () => {
           .maybeSingle();
           
         if (profileError) {
-          console.error("Erreur lors de la récupération du profil:", profileError);
-          throw new Error("Erreur lors de la récupération du profil");
+          console.error("Error retrieving profile:", profileError);
+          throw new Error("Error retrieving profile");
         }
         
-        if (!profileData) {
-          console.log("Profil non trouvé, redirection vers l'onboarding");
-          navigate('/onboarding-legacy');
+        const profileExists = !!profileData;
+        setHasProfile(profileExists);
+        
+        // If no profile exists, redirect to assistant page
+        if (!profileExists) {
+          navigate('/assistant');
           return;
         }
         
-        console.log("Profil récupéré avec succès:", profileData);
-        setProfile(profileData);
         setLoading(false);
-        
       } catch (error) {
-        console.error("Erreur lors du chargement des données:", error);
-        toast.error("Une erreur s'est produite");
+        console.error("Error loading profile data:", error);
         setLoading(false);
       }
     };
     
-    fetchUserData();
+    checkUserProfile();
   }, [navigate]);
-  
-  const handleSignOut = async () => {
-    try {
-      await supabase.auth.signOut();
-      toast.success("Déconnexion réussie");
-      navigate('/login');
-    } catch (error) {
-      toast.error("Erreur lors de la déconnexion");
-    }
-  };
-  
-  const handleStartCampaign = () => {
-    navigate('/assistant');
-  };
-  
+
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
-        <p className="text-lg">Chargement...</p>
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
-  
+
   return (
-    <div className="min-h-screen bg-background p-6">
-      <div className="mx-auto max-w-4xl">
-        <div className="mb-8 flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold">Tableau de bord</h1>
-            <p className="text-muted-foreground">
-              Bienvenue {profile?.company_name}
-            </p>
-          </div>
-          <Button variant="outline" onClick={handleSignOut}>
-            Se déconnecter
-          </Button>
-        </div>
-        
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle>Profil de votre entreprise</CardTitle>
-          </CardHeader>
-          <CardContent className="grid gap-6 md:grid-cols-2">
-            <div>
-              <h3 className="mb-2 text-lg font-medium">Nom de l'entreprise</h3>
-              <p className="text-muted-foreground">{profile?.company_name || "Non renseigné"}</p>
-            </div>
-            
-            <div>
-              <h3 className="mb-2 text-lg font-medium">Secteur d'activité</h3>
-              <p className="text-muted-foreground">{profile?.industry || "Non renseigné"}</p>
-            </div>
-            
-            <div>
-              <h3 className="mb-2 text-lg font-medium">Poste cible</h3>
-              <p className="text-muted-foreground">{profile?.icp_title || "Non renseigné"}</p>
-            </div>
-            
-            <div>
-              <h3 className="mb-2 text-lg font-medium">Taille d'entreprise ciblée</h3>
-              <p className="text-muted-foreground">{profile?.icp_size || "Non renseigné"}</p>
-            </div>
-            
-            <div className="md:col-span-2">
-              <h3 className="mb-2 text-lg font-medium">Proposition de valeur</h3>
-              <p className="text-muted-foreground whitespace-pre-wrap">{profile?.value_prop || "Non renseigné"}</p>
-            </div>
-            
-            <div>
-              <h3 className="mb-2 text-lg font-medium">Ton</h3>
-              <p className="text-muted-foreground">{profile?.tone || "Non renseigné"}</p>
-            </div>
-            
-            <div>
-              <h3 className="mb-2 text-lg font-medium">Objectif principal</h3>
-              <p className="text-muted-foreground">{profile?.primary_goal || "Non renseigné"}</p>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Button onClick={handleStartCampaign} className="w-full" size="lg">
-          <Rocket className="mr-2" />
-          Lancer une campagne
-        </Button>
+    <div className="flex flex-col md:flex-row h-screen bg-background">
+      {/* Assistant Chat Column (40%) */}
+      <div className="w-full md:w-2/5 h-full border-r border-border">
+        <Assistant embedded={true} />
+      </div>
+      
+      {/* Leads Table Column (60%) */}
+      <div className="w-full md:w-3/5 h-full overflow-auto p-4">
+        <h1 className="text-2xl font-bold mb-4">Leads</h1>
+        {userId && <LeadsTable userId={userId} />}
       </div>
     </div>
   );

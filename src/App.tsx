@@ -1,3 +1,4 @@
+
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { Toaster } from '@/components/ui/toaster';
@@ -38,6 +39,7 @@ function App() {
             <Route path="/about-us" element={<AboutUs />} />
             <Route path="/login" element={<Login />} />
             <Route path="/onboarding-legacy" element={<Onboarding />} />
+            <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/dashboard-legacy" element={<Dashboard />} />
             <Route path="/assistant" element={<Assistant />} />
             <Route path="/leads" element={<Leads />} />
