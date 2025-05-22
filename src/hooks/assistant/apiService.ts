@@ -78,14 +78,15 @@ export const fetchMessages = async (userId: string): Promise<Message[]> => {
   }
 };
 
-export const sendWelcomeMessage = async (userId: string, content: string): Promise<Message | null> => {
+export const sendWelcomeMessage = async (userId: string, content: string, conversationId: string): Promise<Message | null> => {
   try {
     const { data, error } = await supabase
       .from('messages')
       .insert([{
         client_id: userId,
         role: 'assistant',
-        content: content
+        content: content,
+        conversation_id: conversationId
       }])
       .select();
       

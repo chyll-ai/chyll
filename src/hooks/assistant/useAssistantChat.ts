@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -27,6 +26,7 @@ const useAssistantChat = () => {
   const [currentRunId, setCurrentRunId] = useState<string | null>(null);
   const [profileOnboarding, setProfileOnboarding] = useState<{ [key: string]: string }>({});
   const [lastProfileQuestion, setLastProfileQuestion] = useState<string | null>(null);
+  const [conversationId, setConversationId] = useState<string | null>(null);
 
   // Check if user is authenticated and fetch messages
   useEffect(() => {
@@ -84,8 +84,13 @@ const useAssistantChat = () => {
         const profileExists = !!profileData;
         setHasProfile(profileExists);
         
-        // Fetch chat messages
-        const messagesData = await fetchMessages(userId);
+        // Get or create conversation
+        const currentConversation = await getOrCreateConversation(userId, profileExists);
+        setConversationId(currentConversation.id);
+        console.log("Conversation active ID:", currentConversation.id);
+        
+        // Fetch chat messages for this conversation
+        const messagesData = await fetchMessagesForConversation(userId, currentConversation.id);
         setMessages(messagesData);
         
         // Check if any assistant messages exist, and if not, send a welcome message
@@ -96,7 +101,7 @@ const useAssistantChat = () => {
             ? "Maintenant que votre profil est configuré, je peux vous aider à générer des emails..."
             : "Bienvenue ! Pour commencer, j'ai besoin de mieux comprendre votre cible et votre offre. On y va ?";
           
-          const welcomeMsg = await sendWelcomeMessage(userId, welcomeMessage);
+          const welcomeMsg = await sendWelcomeMessage(userId, welcomeMessage, currentConversation.id);
           if (welcomeMsg) {
             setMessages(prev => [...prev, welcomeMsg]);
           }
@@ -132,12 +137,111 @@ const useAssistantChat = () => {
     checkAuth();
   }, [navigate, messages.length]);
 
+  // Helper function to get or create a conversation
+  const getOrCreateConversation = async (userId: string, hasProfile: boolean) => {
+    try {
+      // Try to get the most recent conversation based on profile status
+      const conversationType = hasProfile ? 'campaign' : 'onboarding';
+      
+      console.log(`Recherche d'une conversation existante de type ${conversationType} pour l'utilisateur ${userId}`);
+      
+      const { data: existingConversations, error } = await supabase
+        .from('conversations')
+        .select('*')
+        .eq('client_id', userId)
+        .eq('type', conversationType)
+        .order('created_at', { ascending: false })
+        .limit(1);
+      
+      if (error) {
+        console.error("Erreur lors de la récupération des conversations:", error);
+        throw error;
+      }
+      
+      // If conversation exists, return it
+      if (existingConversations && existingConversations.length > 0) {
+        console.log("Conversation existante trouvée:", existingConversations[0]);
+        return existingConversations[0];
+      }
+      
+      // Otherwise, create a new conversation
+      console.log("Aucune conversation existante, création d'une nouvelle...");
+      
+      const { data: newConversation, error: insertError } = await supabase
+        .from('conversations')
+        .insert([{
+          client_id: userId,
+          type: conversationType,
+          title: hasProfile ? "Nouvelle campagne" : "Onboarding"
+        }])
+        .select()
+        .single();
+      
+      if (insertError) {
+        console.error("Erreur lors de la création d'une conversation:", insertError);
+        throw insertError;
+      }
+      
+      console.log("Nouvelle conversation créée:", newConversation);
+      return newConversation;
+    } catch (error) {
+      console.error("Erreur dans getOrCreateConversation:", error);
+      throw error;
+    }
+  };
+  
+  // Helper function to fetch messages for a specific conversation
+  const fetchMessagesForConversation = async (userId: string, conversationId: string): Promise<Message[]> => {
+    try {
+      console.log(`Récupération des messages pour la conversation ${conversationId}`);
+      
+      const { data, error } = await supabase
+        .from('messages')
+        .select('*')
+        .eq('client_id', userId)
+        .eq('conversation_id', conversationId)
+        .order('created_at', { ascending: true });
+      
+      if (error) {
+        console.error("Erreur lors de la récupération des messages:", error);
+        throw error;
+      }
+      
+      // Type cast the data to ensure role is either 'user' or 'assistant'
+      const typedMessages: Message[] = data?.map(msg => {
+        const role = (msg.role === 'user' || msg.role === 'assistant') 
+          ? msg.role as 'user' | 'assistant'
+          : 'assistant'; // Default fallback
+          
+        const message: Message = {
+          id: msg.id,
+          role: role,
+          content: msg.content,
+          created_at: msg.created_at
+        };
+        
+        // Only add toolCalls if they exist in the database message
+        if (msg.toolCalls) {
+          message.toolCalls = Array.isArray(msg.toolCalls) ? msg.toolCalls : [];
+        }
+        
+        return message;
+      }) || [];
+      
+      console.log(`Récupération de ${typedMessages.length} messages pour la conversation ${conversationId}`);
+      return typedMessages;
+    } catch (error) {
+      console.error("Erreur dans fetchMessagesForConversation:", error);
+      return [];
+    }
+  };
+
   // Set up real-time subscription for new messages
   useEffect(() => {
     let messagesChannel: any;
     
-    if (userId) {
-      messagesChannel = setupSubscription(userId);
+    if (userId && conversationId) {
+      messagesChannel = setupSubscription(userId, conversationId);
     }
     
     return () => {
@@ -145,7 +249,7 @@ const useAssistantChat = () => {
         supabase.removeChannel(messagesChannel);
       }
     };
-  }, [userId]);
+  }, [userId, conversationId]);
 
   // Track profile questions and update profile when enough data is collected
   useEffect(() => {
@@ -241,14 +345,14 @@ const useAssistantChat = () => {
     }
   }, [messages, lastProfileQuestion, hasProfile]);
 
-  const setupSubscription = (userId: string) => {
+  const setupSubscription = (userId: string, conversationId: string) => {
     const messagesChannel = supabase
       .channel('public:messages')
       .on('postgres_changes', { 
         event: '*', 
         schema: 'public', 
         table: 'messages',
-        filter: `client_id=eq.${userId}`
+        filter: `client_id=eq.${userId} AND conversation_id=eq.${conversationId}`
       }, (payload) => {
         if (payload.new && typeof payload.new === 'object') {
           const newMessage = payload.new as any;
@@ -283,8 +387,8 @@ const useAssistantChat = () => {
   };
 
   const sendMessage = async (content: string) => {
-    if (!content.trim() || !userId) {
-      console.log("Message vide ou utilisateur non connecté");
+    if (!content.trim() || !userId || !conversationId) {
+      console.log("Message vide, utilisateur non connecté ou conversation non définie");
       return;
     }
     
@@ -311,7 +415,8 @@ const useAssistantChat = () => {
       const userMessage = {
         client_id: userId,
         role: 'user' as const,
-        content: content.trim()
+        content: content.trim(),
+        conversation_id: conversationId
       };
       
       console.log("Envoi du message utilisateur à Supabase:", userMessage);
@@ -382,7 +487,8 @@ const useAssistantChat = () => {
       const assistantMessage = {
         client_id: userId,
         role: 'assistant' as const,
-        content: data.message
+        content: data.message,
+        conversation_id: conversationId
       };
       
       console.log("Enregistrement de la réponse de l'assistant:", assistantMessage);
@@ -440,7 +546,8 @@ const useAssistantChat = () => {
     userId,
     hasProfile,
     threadId,
-    currentRunId
+    currentRunId,
+    conversationId
   };
 };
 

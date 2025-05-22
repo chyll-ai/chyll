@@ -15,7 +15,8 @@ const Assistant = () => {
     threadId,
     currentRunId,
     userId,
-    hasProfile
+    hasProfile,
+    conversationId
   } = useAssistantChat();
   
   // Handle any tool calls from the assistant
@@ -42,7 +43,7 @@ const Assistant = () => {
   
   return (
     <div className="flex flex-col h-screen bg-background">
-      <ChatHeader />
+      <ChatHeader conversationId={conversationId} />
       <ChatMessageList messages={messages} onProcessToolCalls={processToolCalls} />
       <ChatInputForm onSendMessage={sendMessage} disabled={sending} />
     </div>
