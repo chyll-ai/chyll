@@ -19,6 +19,7 @@ const Assistant = ({ embedded = false }: AssistantProps) => {
   const [checkingProfile, setCheckingProfile] = useState(!embedded);
   const [processedToolCalls, setProcessedToolCalls] = useState<Set<string>>(new Set());
   const [oauthInProgress, setOauthInProgress] = useState(false);
+  const [redirecting, setRedirecting] = useState(false);
   
   const {
     loading,
@@ -155,6 +156,19 @@ const Assistant = ({ embedded = false }: AssistantProps) => {
     checkUserProfile();
   }, [navigate, embedded]);
   
+  // Handle function call to redirect to dashboard
+  const handleRedirectToDashboard = useCallback(() => {
+    if (redirecting) return;
+
+    setRedirecting(true);
+    toast.success("Votre profil est complet ! Redirection vers le tableau de bord...");
+    
+    // Small delay to show the toast before redirecting
+    setTimeout(() => {
+      navigate('/dashboard');
+    }, 1500);
+  }, [navigate, redirecting]);
+  
   // Handle any tool calls from the assistant
   const processToolCalls = useCallback((toolCalls) => {
     if (!toolCalls || !Array.isArray(toolCalls)) return;
@@ -168,9 +182,17 @@ const Assistant = ({ embedded = false }: AssistantProps) => {
         return;
       }
       
-      if (toolCall.type === 'function' && threadId && currentRunId) {
-        console.log(`Processing function call: ${toolCall.function?.name}`);
-        handleFunctionCall(toolCall, threadId, currentRunId);
+      if (toolCall.type === 'function') {
+        // Check for redirect_to_dashboard function call
+        if (toolCall.function?.name === 'redirect_to_dashboard') {
+          console.log('Redirect to dashboard function called by assistant');
+          handleRedirectToDashboard();
+        }
+        // Process other function calls normally
+        else if (threadId && currentRunId) {
+          console.log(`Processing function call: ${toolCall.function?.name}`);
+          handleFunctionCall(toolCall, threadId, currentRunId);
+        }
         
         // Mark this tool call as processed
         setProcessedToolCalls(prev => {
@@ -180,7 +202,7 @@ const Assistant = ({ embedded = false }: AssistantProps) => {
         });
       }
     });
-  }, [threadId, currentRunId, processedToolCalls]);
+  }, [threadId, currentRunId, processedToolCalls, handleRedirectToDashboard]);
   
   // Reset processedToolCalls when the thread ID changes
   useEffect(() => {
@@ -197,11 +219,20 @@ const Assistant = ({ embedded = false }: AssistantProps) => {
     );
   }
   
+  if (redirecting) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center bg-background gap-4">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <p className="text-lg font-medium">Redirection en cours...</p>
+      </div>
+    );
+  }
+  
   return (
     <div className={`flex flex-col ${embedded ? 'h-full' : 'h-screen'} bg-background`}>
       <ChatHeader conversationId={conversationId} showBackButton={!embedded} />
       <ChatMessageList messages={messages} onProcessToolCalls={processToolCalls} />
-      <ChatInputForm onSendMessage={sendMessage} disabled={sending || oauthInProgress} />
+      <ChatInputForm onSendMessage={sendMessage} disabled={sending || oauthInProgress || redirecting} />
     </div>
   );
 };
