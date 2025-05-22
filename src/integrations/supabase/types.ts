@@ -253,6 +253,7 @@ export type Database = {
           location: string | null
           phone_number: string | null
           search_id: string | null
+          status: string | null
         }
         Insert: {
           client_id?: string | null
@@ -267,6 +268,7 @@ export type Database = {
           location?: string | null
           phone_number?: string | null
           search_id?: string | null
+          status?: string | null
         }
         Update: {
           client_id?: string | null
@@ -281,6 +283,7 @@ export type Database = {
           location?: string | null
           phone_number?: string | null
           search_id?: string | null
+          status?: string | null
         }
         Relationships: [
           {
