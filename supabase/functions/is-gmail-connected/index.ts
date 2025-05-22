@@ -11,13 +11,13 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  // Gérer les requêtes CORS preflight
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    // Extraire le token d'authentification de l'en-tête
+    // Extract authentication token from header
     const authHeader = req.headers.get('Authorization');
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return new Response(
@@ -29,20 +29,20 @@ serve(async (req) => {
       );
     }
 
-    // Extraire le token Bearer
+    // Extract the Bearer token
     const token = authHeader.replace('Bearer ', '');
     
-    // Initialiser le client Supabase avec la clé de service
+    // Initialize Supabase client with service role key
     const supabase = createClient(
       SUPABASE_URL,
       SUPABASE_SERVICE_ROLE_KEY
     );
 
-    // Authentifier l'utilisateur avec le token
+    // Authenticate the user with the token
     const { data: { user }, error: authError } = await supabase.auth.getUser(token);
     
     if (authError || !user) {
-      console.error("Erreur d'authentification:", authError);
+      console.error("Authentication error:", authError);
       return new Response(
         JSON.stringify({ 
           connected: false, 
@@ -52,7 +52,7 @@ serve(async (req) => {
       );
     }
 
-    // Rechercher le token Gmail dans la table tokens
+    // Search for the Gmail token in the tokens table
     const { data: tokenData, error: tokenError } = await supabase
       .from('tokens')
       .select('access_token, expires_at')
@@ -60,17 +60,17 @@ serve(async (req) => {
       .single();
     
     if (tokenError || !tokenData) {
-      console.log("Aucun token Gmail trouvé pour l'utilisateur:", user.id);
+      console.log("No Gmail token found for user:", user.id);
       return new Response(
         JSON.stringify({ 
           connected: false, 
-          reason: 'no_gmail_token' 
+          reason: 'token_not_found' 
         }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    // Vérifier que le token existe et n'est pas expiré
+    // Check if the token exists and is not expired
     const accessToken = tokenData.access_token;
     const expiresAt = tokenData.expires_at;
     
@@ -88,7 +88,7 @@ serve(async (req) => {
     const expiry = new Date(expiresAt);
     const isExpired = expiry <= now;
     
-    // Retourner le statut de connexion
+    // Return the connection status
     return new Response(
       JSON.stringify({ 
         connected: !isExpired, 
@@ -98,7 +98,7 @@ serve(async (req) => {
     );
 
   } catch (error) {
-    console.error("Erreur lors de la vérification de la connexion Gmail:", error);
+    console.error("Error checking Gmail connection:", error);
     
     return new Response(
       JSON.stringify({ 
