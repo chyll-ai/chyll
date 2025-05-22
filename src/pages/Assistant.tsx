@@ -8,6 +8,7 @@ import ChatHeader from '@/components/chat/ChatHeader';
 import ChatMessageList from '@/components/chat/ChatMessageList';
 import ChatInputForm from '@/components/chat/ChatInputForm';
 import { Loader2 } from 'lucide-react';
+import { toast } from '@/components/ui/sonner';
 
 interface AssistantProps {
   embedded?: boolean;
@@ -79,6 +80,11 @@ const Assistant = ({ embedded = false }: AssistantProps) => {
           
           if (result.status === "success") {
             toast.success("Connexion Gmail réussie!");
+            
+            // Add a delay before sending a message to the assistant
+            setTimeout(() => {
+              sendMessage("La connexion Gmail a été établie avec succès. Je peux maintenant vous aider à rédiger et envoyer des emails.");
+            }, 2000);
           }
           
           // Clean up the URL to remove the code
@@ -92,7 +98,7 @@ const Assistant = ({ embedded = false }: AssistantProps) => {
     };
     
     checkForOAuthCode();
-  }, []);
+  }, [sendMessage]);
   
   // Check if user profile exists and redirect to dashboard if needed
   useEffect(() => {

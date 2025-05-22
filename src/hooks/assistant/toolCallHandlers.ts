@@ -50,9 +50,16 @@ export const handleFunctionCall = async (toolCall, threadId, runId) => {
       const result = await response.json();
       console.log("Gmail connection initiated:", result);
       
-      // If we already have a valid token, notify the user
+      // If we already have a valid token, notify the user and submit the output back to OpenAI
       if (result.access_token) {
         toast.success("Gmail déjà connecté!");
+        
+        // Submit success status back to OpenAI
+        await submitToolOutput(threadId, runId, toolCall.id, {
+          connected: true,
+          message: "User already has valid Gmail tokens"
+        });
+        
         return;
       }
       
@@ -63,7 +70,7 @@ export const handleFunctionCall = async (toolCall, threadId, runId) => {
         toast.success("Redirection vers la page de connexion Gmail...");
         
         // Start polling for token updates
-        checkForGmailToken(client_id);
+        await checkForGmailToken(client_id, threadId, runId, toolCall.id);
       }
       
       // We don't display anything in the UI as the assistant will handle the response
@@ -116,7 +123,16 @@ export const handleFunctionCall = async (toolCall, threadId, runId) => {
       } else if (connectionStatus.expired) {
         toast.error("Votre connexion Gmail a expiré. Veuillez vous reconnecter.");
       } else {
-        toast.error("Vous n'êtes pas connecté à Gmail.");
+        toast.warning("Vous n'êtes pas connecté à Gmail.");
+        
+        // Automatically trigger the connect_gmail flow if not connected
+        setTimeout(() => {
+          handleFunctionCall({
+            id: `auto-${Date.now()}`,
+            type: 'function',
+            function: { name: 'connect_gmail', arguments: '{}' }
+          }, threadId, runId);
+        }, 1000);
       }
       
       // Submit the tool output back to OpenAI
@@ -291,32 +307,7 @@ export const handleFunctionCall = async (toolCall, threadId, runId) => {
       
       // Submit the tool output back to OpenAI if thread and run IDs are available
       if (threadId && runId) {
-        try {
-          const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL || 'https://atsfuqwxfrezkxtnctmk.supabase.co'}/functions/v1/openai-assistant`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF0c2Z1cXd4ZnJlemt4dG5jdG1rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc2NjE3MjEsImV4cCI6MjA2MzIzNzcyMX0.FO6bvv2rFL0jhzN5aZ3m1QvNaM_ZNt7Ycmo859PSnJE'}`
-            },
-            body: JSON.stringify({
-              action: 'submit_tool_outputs',
-              threadId,
-              runId,
-              toolOutputs: [{
-                tool_call_id: toolCall.id,
-                output: JSON.stringify({ success: true, message: "Profile saved successfully" })
-              }]
-            })
-          });
-          
-          if (!response.ok) {
-            console.error("Error submitting tool output to OpenAI");
-          } else {
-            console.log("Tool output submitted successfully");
-          }
-        } catch (error) {
-          console.error("Error during tool output submission:", error);
-        }
+        submitToolOutput(threadId, runId, toolCall.id, { success: true, message: "Profile saved successfully" });
       }
       
     } catch (error) {
@@ -359,7 +350,7 @@ const submitToolOutput = async (threadId, runId, toolCallId, output) => {
 };
 
 // Function to check if the Gmail token was successfully stored
-const checkForGmailToken = async (clientId, attempts = 0) => {
+const checkForGmailToken = async (clientId, threadId, runId, toolCallId, attempts = 0) => {
   if (attempts > 5) {
     console.log("Maximum check attempts reached");
     toast.error("La connexion Gmail n'a pas pu être finalisée. Veuillez réessayer.");
@@ -385,12 +376,21 @@ const checkForGmailToken = async (clientId, attempts = 0) => {
     if (data && data.access_token) {
       console.log("Gmail token found!");
       toast.success("Connexion Gmail réussie!");
+      
+      // Submit the tool output back to OpenAI
+      if (threadId && runId && toolCallId) {
+        await submitToolOutput(threadId, runId, toolCallId, { 
+          connected: true, 
+          message: "Gmail connection successful" 
+        });
+      }
+      
       return;
     }
     
     // If no token yet, check again after a delay
     console.log(`No token found yet, checking again... (attempt ${attempts + 1})`);
-    checkForGmailToken(clientId, attempts + 1);
+    checkForGmailToken(clientId, threadId, runId, toolCallId, attempts + 1);
     
   } catch (error) {
     console.error("Error during token check:", error);

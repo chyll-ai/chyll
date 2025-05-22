@@ -19,7 +19,8 @@ serve(async (req) => {
   }
 
   try {
-    const { action, message, threadId } = await req.json();
+    const requestData = await req.json();
+    const { action, message, threadId, runId, toolOutputs } = requestData;
     console.log("Action:", action, "ThreadId:", threadId);
 
     if (!OPENAI_API_KEY) {
@@ -35,6 +36,11 @@ serve(async (req) => {
           throw new Error('Missing threadId or message');
         }
         return handleSendMessage(threadId, message);
+      case 'submit_tool_outputs':
+        if (!threadId || !runId || !toolOutputs) {
+          throw new Error('Missing threadId, runId, or toolOutputs');
+        }
+        return handleSubmitToolOutputs(threadId, runId, toolOutputs);
       default:
         throw new Error(`Unknown action: ${action}`);
     }
@@ -235,6 +241,42 @@ async function handleSendMessage(threadId: string, messageContent: string) {
     );
   } catch (error) {
     console.error("Erreur lors de l'envoi du message:", error);
+    throw error;
+  }
+}
+
+async function handleSubmitToolOutputs(threadId: string, runId: string, toolOutputs: any[]) {
+  try {
+    console.log(`Submitting tool outputs for thread ${threadId}, run ${runId}:`);
+    console.log("Tool outputs:", JSON.stringify(toolOutputs));
+    
+    const response = await fetch(`https://api.openai.com/v1/threads/${threadId}/runs/${runId}/submit_tool_outputs`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${OPENAI_API_KEY}`,
+        'Content-Type': 'application/json',
+        'OpenAI-Beta': 'assistants=v2',
+      },
+      body: JSON.stringify({
+        tool_outputs: toolOutputs
+      })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("Error submitting tool outputs:", errorData);
+      throw new Error(`Failed to submit tool outputs: ${JSON.stringify(errorData)}`);
+    }
+
+    const data = await response.json();
+    console.log("Tool outputs submitted successfully, run status:", data.status);
+    
+    return new Response(
+      JSON.stringify({ success: true, status: data.status }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
+  } catch (error) {
+    console.error("Error submitting tool outputs:", error);
     throw error;
   }
 }
