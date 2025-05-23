@@ -59,7 +59,7 @@ const Assistant = ({ embedded = false }: AssistantProps) => {
           const client_id = data.session.user.id;
           
           // Exchange the code for tokens
-          const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL || 'https://atsfuqwxfrezkxtnctmk.supabase.co'}/functions/v1/connect-gmail`, {
+          const response = await fetch(`https://atsfuqwxfrezkxtnctmk.supabase.co/functions/v1/connect-gmail`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -108,7 +108,7 @@ const Assistant = ({ embedded = false }: AssistantProps) => {
     checkForOAuthCode();
   }, [sendMessage, oauthInProgress]);
   
-  // Check if user profile exists and redirect to dashboard if needed
+  // Check if user profile exists and redirect to dashboard if needed (only when not embedded)
   useEffect(() => {
     // Skip this check if the component is embedded in another page
     if (embedded) {

@@ -31,7 +31,7 @@ const Dashboard = () => {
         // Check if user has a profile
         const { data: profileData, error: profileError } = await supabase
           .from('client_profile')
-          .select('*')
+          .select('*, is_complete')
           .eq('client_id', userId)
           .maybeSingle();
           
@@ -40,11 +40,12 @@ const Dashboard = () => {
           throw new Error("Error retrieving profile");
         }
         
-        const profileExists = !!profileData;
+        // Only redirect to assistant if profile doesn't exist OR is not complete
+        const profileExists = profileData && profileData.is_complete === true;
         setHasProfile(profileExists);
         
-        // If no profile exists, redirect to assistant page
         if (!profileExists) {
+          console.log("Profile incomplete or missing, redirecting to assistant");
           navigate('/assistant');
           return;
         }
