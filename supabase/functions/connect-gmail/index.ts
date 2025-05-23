@@ -1,4 +1,3 @@
-
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.23.0";
@@ -132,6 +131,7 @@ serve(async (req) => {
       
       // Get the redirect URL from the frontend or use a default
       const finalRedirectUrl = redirect_url || "https://chyll.ai/assistant";
+      console.log("Using redirect URL:", finalRedirectUrl);
       
       // Create an OAuth URL with the GOOGLE_CLIENT_ID
       const oauthUrl = `https://accounts.google.com/o/oauth2/auth?` +

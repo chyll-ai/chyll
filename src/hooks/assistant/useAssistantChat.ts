@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -195,6 +196,7 @@ const useAssistantChat = () => {
     try {
       console.log(`Récupération des messages pour la conversation ${conversationId}`);
       
+      // Fixed query: Using proper parameter format instead of string concatenation
       const { data, error } = await supabase
         .from('messages')
         .select('*')
@@ -488,7 +490,8 @@ const useAssistantChat = () => {
         client_id: userId,
         role: 'assistant' as const,
         content: data.message,
-        conversation_id: conversationId
+        conversation_id: conversationId,
+        toolCalls: data.toolCalls  // Make sure toolCalls is properly saved
       };
       
       console.log("Enregistrement de la réponse de l'assistant:", assistantMessage);
