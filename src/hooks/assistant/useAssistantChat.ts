@@ -73,7 +73,7 @@ const useAssistantChat = () => {
         // Check if user has a profile
         const { data: profileData, error: profileError } = await supabase
           .from('client_profile')
-          .select('*')
+          .select('*, is_complete')
           .eq('client_id', userId)
           .maybeSingle();
           
@@ -82,7 +82,7 @@ const useAssistantChat = () => {
           throw new Error("Erreur lors de la récupération du profil");
         }
         
-        const profileExists = !!profileData;
+        const profileExists = profileData && profileData.is_complete === true;
         setHasProfile(profileExists);
         
         // Get or create conversation
@@ -99,7 +99,7 @@ const useAssistantChat = () => {
         if (assistantMessages.length === 0) {
           console.log("Aucun message assistant trouvé, envoi d'un message de bienvenue...");
           const welcomeMessage = profileExists
-            ? "Maintenant que votre profil est configuré, je peux vous aider à générer des emails..."
+            ? "Parfait ! Votre profil est configuré. Commençons par générer une liste de prospects qualifiés pour votre business. Voulez-vous que je lance une recherche de leads correspondant à votre cible ?"
             : "Bienvenue ! Pour commencer, j'ai besoin de mieux comprendre votre cible et votre offre. On y va ?";
           
           const welcomeMsg = await sendWelcomeMessage(userId, welcomeMessage, currentConversation.id);
@@ -272,7 +272,10 @@ const useAssistantChat = () => {
             // Update existing profile
             const { error } = await supabase
               .from('client_profile')
-              .update(profileOnboarding)
+              .update({
+                ...profileOnboarding,
+                is_complete: true
+              })
               .eq('client_id', userId);
               
             if (error) throw error;
@@ -283,7 +286,8 @@ const useAssistantChat = () => {
               .from('client_profile')
               .insert({
                 client_id: userId,
-                ...profileOnboarding
+                ...profileOnboarding,
+                is_complete: true
               });
               
             if (error) throw error;
@@ -293,9 +297,9 @@ const useAssistantChat = () => {
           // Update local state to reflect that user now has a profile
           setHasProfile(true);
           
-          // Send a confirmation message from the assistant
+          // Send a confirmation message from the assistant with focus on lead generation
           setTimeout(() => {
-            sendMessage("Parfait! Votre profil a été enregistré. Je peux maintenant vous aider à générer des emails et messages personnalisés pour votre prospection.");
+            sendMessage("Excellent ! Votre profil est maintenant complet. La prochaine étape est de générer une liste de prospects qualifiés pour votre business. Voulez-vous que je lance une recherche de leads correspondant exactement à votre cible ?");
           }, 1000);
           
         } catch (error) {

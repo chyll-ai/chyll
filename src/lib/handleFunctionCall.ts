@@ -268,10 +268,11 @@ export async function handleFunctionCall(toolCall, thread_id, run_id) {
           toast.success("Profil créé avec succès!");
         }
         
-        // Soumettre le résultat de l'outil à OpenAI
+        // Soumettre le résultat de l'outil à OpenAI avec un message personnalisé pour orienter vers la génération de leads
         await submitToolOutput(thread_id, run_id, toolCall.id, { 
           success: true, 
-          message: "Profile saved successfully" 
+          message: "Profile saved successfully. User should now be guided to generate leads/contacts before email campaigns.",
+          next_step: "lead_generation"
         });
       } catch (error) {
         console.error("Erreur lors de la sauvegarde du profil:", error);
@@ -290,7 +291,8 @@ export async function handleFunctionCall(toolCall, thread_id, run_id) {
       // We still need to submit a success response to OpenAI
       await submitToolOutput(thread_id, run_id, toolCall.id, {
         success: true,
-        message: "Redirect initiated"
+        message: "Redirect initiated. User should be guided to lead generation first.",
+        next_step: "lead_generation"
       });
       
     } else if (toolCall.function?.name === "launch_search") {
