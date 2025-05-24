@@ -34,18 +34,8 @@ const initializeOpenAI = async () => {
     console.log('Supabase API key fetch:', { hasData: !!apiKeyData, error: !!error });
     
     if (error || !apiKeyData?.key_value) {
-      // Fallback to environment variable
-      const envApiKey = import.meta.env.VITE_OPENAI_API_KEY;
-      console.log('Environment API key exists:', !!envApiKey);
-      
-      if (!envApiKey) {
-        throw new OpenAIClientError('OpenAI API key not found. Please contact support.');
-      }
-
-      return new OpenAI({
-        apiKey: envApiKey,
-        dangerouslyAllowBrowser: true
-      });
+      // For now, throw an error since we need the API key from Supabase
+      throw new OpenAIClientError('OpenAI API key not found in database. Please contact support.');
     }
 
     return new OpenAI({
@@ -626,9 +616,9 @@ export class AssistantService {
 
       console.log('Calling launch-search function for lead generation:', { jobTitle, location });
       
-      // Call the launch-search Edge Function
+      // Call the launch-search Edge Function with correct URL
       const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL || 'https://atsfuqwxfrezkxtnctmk.supabase.co'}/functions/v1/launch-search`,
+        'https://atsfuqwxfrezkxtnctmk.supabase.co/functions/v1/launch-search',
         {
           method: 'POST',
           headers: {
@@ -1016,7 +1006,7 @@ export class AssistantService {
     console.log('Searching leads with criteria:', criteria);
 
     const response = await fetch(
-      `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/search-leads`,
+      'https://atsfuqwxfrezkxtnctmk.supabase.co/functions/v1/search-leads',
       {
         method: 'POST',
         headers: {
