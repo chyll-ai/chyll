@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
@@ -24,6 +25,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   const ensureClientRecord = async (userId: string, email: string) => {
     try {
@@ -86,8 +88,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const updateAuthState = (newSession: Session | null) => {
+    console.log('AuthContext: Updating auth state:', { 
+      hasSession: !!newSession, 
+      userId: newSession?.user?.id,
+      isInitialized 
+    });
+    
+    setSession(newSession);
+    setUser(newSession?.user || null);
+    
+    // Only navigate if we're fully initialized to prevent redirects during setup
+    if (isInitialized && newSession?.user) {
+      console.log('AuthContext: User authenticated, navigating to assistant...');
+      navigate('/assistant', { replace: true });
+    }
+  };
+
   const handleAuthStateChange = async (event: string, newSession: Session | null) => {
-    console.log('AuthContext: Auth state changed:', { event, userId: newSession?.user?.id });
+    console.log('AuthContext: Auth state changed:', { event, userId: newSession?.user?.id, isInitialized });
     debugStorage();
 
     try {
@@ -98,20 +117,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         processedUsers.clear();
         localStorage.removeItem('supabase.auth.token');
         sessionStorage.removeItem('supabase.auth.token');
-        navigate('/login', { replace: true });
-      } else if (newSession?.user) {
-        console.log('AuthContext: Updating session state...');
-        setSession(newSession);
-        setUser(newSession.user);
+        if (isInitialized) {
+          navigate('/login', { replace: true });
+        }
+      } else if (event === 'SIGNED_IN' && newSession?.user) {
+        console.log('AuthContext: User signed in, updating state...');
+        updateAuthState(newSession);
         
         // Ensure client record exists in background after session is established
-        if (event === 'SIGNED_IN') {
-          // Use a longer delay to ensure the session is fully propagated
-          setTimeout(() => {
-            ensureClientRecord(newSession.user.id, newSession.user.email || '');
-          }, 1000);
-        }
-      } else {
+        setTimeout(() => {
+          ensureClientRecord(newSession.user.id, newSession.user.email || '');
+        }, 1000);
+      } else if (event === 'TOKEN_REFRESHED' && newSession) {
+        console.log('AuthContext: Token refreshed, updating session...');
+        setSession(newSession);
+        setUser(newSession.user);
+      } else if (event.startsWith('INITIAL') && newSession?.user) {
+        console.log('AuthContext: Initial session found, updating state...');
+        updateAuthState(newSession);
+      } else if (event.startsWith('INITIAL') && !newSession) {
+        console.log('AuthContext: No initial session found');
+        setSession(null);
+        setUser(null);
+      } else if (!newSession) {
         console.log('AuthContext: No session, clearing state...');
         setSession(null);
         setUser(null);
@@ -206,6 +234,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         console.log('AuthContext: Initializing auth state...');
         debugStorage();
         
+        // Set up auth state listener first
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(handleAuthStateChange);
+        
+        // Then check for existing session
         const { data: { session: initialSession }, error: sessionError } = await supabase.auth.getSession();
         
         if (sessionError) {
@@ -213,32 +245,37 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           throw sessionError;
         }
         
-        if (!initialSession) {
+        if (initialSession) {
+          console.log('AuthContext: Found initial session:', {
+            userId: initialSession.user.id,
+            expiresAt: initialSession.expires_at
+          });
+          await handleAuthStateChange('INITIAL_SESSION', initialSession);
+        } else {
           console.log('AuthContext: No initial session found');
-          await handleAuthStateChange('INITIAL', null);
-          return;
+          await handleAuthStateChange('INITIAL_SESSION', null);
         }
-
-        console.log('AuthContext: Found initial session:', {
-          userId: initialSession.user.id,
-          expiresAt: initialSession.expires_at
-        });
-        await handleAuthStateChange('INITIAL', initialSession);
+        
+        // Mark as initialized
+        setIsInitialized(true);
+        
+        return () => {
+          console.log('AuthContext: Cleaning up auth subscriptions');
+          subscription.unsubscribe();
+        };
       } catch (error) {
         console.error('AuthContext: Error in initializeAuth:', error);
-        await handleAuthStateChange('INITIAL', null);
+        await handleAuthStateChange('INITIAL_SESSION', null);
+        setIsInitialized(true);
       }
     };
 
-    initializeAuth();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(handleAuthStateChange);
-
+    const cleanup = initializeAuth();
+    
     return () => {
-      console.log('AuthContext: Cleaning up auth subscriptions');
-      subscription.unsubscribe();
+      cleanup.then(cleanupFn => cleanupFn?.());
     };
-  }, [navigate]);
+  }, []); // Remove navigate dependency to prevent re-initialization
 
   const value = {
     user,
