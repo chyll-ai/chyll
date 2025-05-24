@@ -378,6 +378,12 @@ const useAssistantChat = (): AssistantState => {
                 // Only add toolCalls if they exist in the message
                 ...(newMessage.toolCalls && { toolCalls: newMessage.toolCalls })
               };
+              
+              // If this is an assistant message, stop the typing indicator
+              if (role === 'assistant') {
+                setIsGenerating(false);
+              }
+              
               return [...current, typedMessage].sort((a, b) => 
                 new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
               );
@@ -462,21 +468,14 @@ const useAssistantChat = (): AssistantState => {
           console.error("Erreur lors de la création du thread:", threadError);
           toast.error("Erreur de communication avec l'assistant");
           setSending(false);
+          setIsGenerating(false);
           return;
         }
       }
       
-      // Show typing indicator
-      const typingMessage = createMessage("...", 'assistant');
-      
-      setMessages(prev => [...prev, typingMessage]);
-      
       // 3. Send message to OpenAI and get response
       console.log("Envoi du message à OpenAI avec threadId:", currentThreadId);
       const data = await sendMessageToOpenAI(currentThreadId, content.trim());
-      
-      // Remove typing indicator
-      setMessages(prev => prev.filter(msg => msg.id !== "typing-indicator"));
       
       // Store the current run ID
       if (data.runId) {
@@ -497,22 +496,22 @@ const useAssistantChat = (): AssistantState => {
         throw assistantMessageError;
       }
       
-      // Add the assistant message to the UI immediately
+      // The typing indicator will be stopped by the subscription when the assistant message is received
+      // or manually stop it here if the subscription doesn't fire
       if (assistantMessageData && assistantMessageData.length > 0) {
         console.log("Réponse de l'assistant enregistrée avec succès:", assistantMessageData[0]);
-        setMessages(prev => [...prev.filter(msg => msg.id !== "typing-indicator"), assistantMessage]);
+        setMessages(prev => [...prev, assistantMessage]);
+        setIsGenerating(false);
       }
       
     } catch (error) {
       console.error("Erreur lors de l'envoi du message:", error);
       toast.error("Impossible d'envoyer le message");
-      
-      // Remove typing indicator in case of error
-      setMessages(prev => prev.filter(msg => msg.id !== "typing-indicator"));
+      setIsGenerating(false);
     } finally {
       setSending(false);
     }
-  }, [userId, conversationId, sending, threadId, isGenerating]);
+  }, [userId, conversationId, sending, threadId]);
 
   // Add effect to handle response completion
   useEffect(() => {
