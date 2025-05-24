@@ -288,12 +288,17 @@ export async function handleFunctionCall(toolCall, thread_id, run_id) {
       console.log("Appel de la fonction check_profile_status");
       
       try {
+        console.log("Vérification du profil pour client_id:", client_id);
+        
         // Vérifier si le profil existe et est complet
         const { data: profileData, error: profileError } = await supabase
           .from('client_profile')
-          .select('*, is_complete')
+          .select('*')
           .eq('client_id', client_id)
           .maybeSingle();
+          
+        console.log("Données du profil récupérées:", profileData);
+        console.log("Erreur de récupération:", profileError);
           
         if (profileError) {
           console.error("Erreur lors de la vérification du profil:", profileError);
@@ -301,21 +306,57 @@ export async function handleFunctionCall(toolCall, thread_id, run_id) {
           // Submit error to OpenAI
           await submitToolOutput(thread_id, run_id, toolCall.id, {
             profile_complete: false,
-            error: "Failed to check profile status"
+            error: "Failed to check profile status",
+            debug_info: profileError.message
           });
           return;
         }
         
-        const isComplete = profileData && profileData.is_complete === true;
-        console.log("Statut du profil:", isComplete ? "Complet" : "Incomplet");
+        // Check if profile exists and has data
+        const hasBasicData = profileData && 
+                           profileData.company_name && 
+                           profileData.industry && 
+                           profileData.icp_title;
+        
+        const isMarkedComplete = profileData && profileData.is_complete === true;
+        
+        console.log("Profil trouvé:", !!profileData);
+        console.log("Données de base présentes:", hasBasicData);
+        console.log("Marqué comme complet:", isMarkedComplete);
+        console.log("Évaluation finale:", hasBasicData && isMarkedComplete);
+        
+        const isComplete = hasBasicData && isMarkedComplete;
+        
+        // Si le profil a les données de base mais n'est pas marqué comme complet, le marquer
+        if (hasBasicData && !isMarkedComplete) {
+          console.log("Mise à jour du profil pour le marquer comme complet");
+          const { error: updateError } = await supabase
+            .from('client_profile')
+            .update({ is_complete: true })
+            .eq('client_id', client_id);
+            
+          if (updateError) {
+            console.error("Erreur lors de la mise à jour du statut:", updateError);
+          } else {
+            console.log("Profil marqué comme complet avec succès");
+          }
+        }
         
         // Submit le statut du profil à l'assistant
         await submitToolOutput(thread_id, run_id, toolCall.id, {
-          profile_complete: isComplete,
+          profile_complete: hasBasicData, // Use the real check, not just the flag
           profile_data: profileData,
-          message: isComplete 
-            ? "Profile is complete. User should be guided to lead generation." 
-            : "Profile needs to be completed first."
+          message: hasBasicData 
+            ? "Profile is complete. User should be guided to lead generation instead of profile completion." 
+            : "Profile needs to be completed first.",
+          debug_info: {
+            profile_exists: !!profileData,
+            has_basic_data: hasBasicData,
+            is_marked_complete: isMarkedComplete,
+            company_name: profileData?.company_name,
+            industry: profileData?.industry,
+            icp_title: profileData?.icp_title
+          }
         });
         
       } catch (error) {
