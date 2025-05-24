@@ -311,6 +311,7 @@ export type Database = {
           client_id: string | null
           content: string
           conversation_id: string | null
+          created_at: string | null
           id: string
           role: string
           toolCalls: Json | null
@@ -320,6 +321,7 @@ export type Database = {
           client_id?: string | null
           content: string
           conversation_id?: string | null
+          created_at?: string | null
           id?: string
           role: string
           toolCalls?: Json | null
@@ -329,6 +331,7 @@ export type Database = {
           client_id?: string | null
           content?: string
           conversation_id?: string | null
+          created_at?: string | null
           id?: string
           role?: string
           toolCalls?: Json | null
@@ -354,7 +357,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "conversations"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       queue_search: {
@@ -396,23 +399,38 @@ export type Database = {
         Row: {
           access_token: string | null
           client_id: string | null
+          created_at: string | null
           expires_at: string | null
           id: string
+          provider: string | null
+          provider_token_id: string | null
           refresh_token: string | null
+          scope: string[] | null
+          updated_at: string | null
         }
         Insert: {
           access_token?: string | null
           client_id?: string | null
+          created_at?: string | null
           expires_at?: string | null
           id?: string
+          provider?: string | null
+          provider_token_id?: string | null
           refresh_token?: string | null
+          scope?: string[] | null
+          updated_at?: string | null
         }
         Update: {
           access_token?: string | null
           client_id?: string | null
+          created_at?: string | null
           expires_at?: string | null
           id?: string
+          provider?: string | null
+          provider_token_id?: string | null
           refresh_token?: string | null
+          scope?: string[] | null
+          updated_at?: string | null
         }
         Relationships: [
           {

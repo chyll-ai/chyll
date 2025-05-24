@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
@@ -153,17 +154,20 @@ const useAssistantChat = (): AssistantState => {
         const assistant = new AssistantService(session.user.id, currentConversation.id);
         setAssistantService(assistant);
         
-        // Fetch existing messages
+        // Fetch existing messages with proper query structure
+        console.log('Fetching messages for conversation:', currentConversation.id);
         const { data: existingMessages, error: messagesError } = await supabase
           .from('messages')
           .select('*')
           .eq('conversation_id', currentConversation.id)
-          .order('id', { ascending: true });
+          .order('created_at', { ascending: true });
           
         if (messagesError) {
           console.error("Error fetching messages:", messagesError);
           throw messagesError;
         }
+        
+        console.log('Fetched messages:', existingMessages);
         
         if (existingMessages) {
           const typedMessages = existingMessages.map(convertToMessage);
@@ -223,6 +227,8 @@ const useAssistantChat = (): AssistantState => {
       setSending(true);
       setIsGenerating(true);
       
+      console.log('Sending message to conversation:', conversationId);
+      
       // Save user message to database first
       const { data: userMessage, error: userMessageError } = await supabase
         .from('messages')
@@ -236,8 +242,11 @@ const useAssistantChat = (): AssistantState => {
         .single();
         
       if (userMessageError) {
+        console.error("Error saving user message:", userMessageError);
         throw userMessageError;
       }
+      
+      console.log('User message saved:', userMessage);
       
       // Update UI with user message
       const typedUserMessage = convertToMessage(userMessage);
@@ -261,8 +270,11 @@ const useAssistantChat = (): AssistantState => {
         .single();
 
       if (assistantError) {
+        console.error("Error saving assistant message:", assistantError);
         throw assistantError;
       }
+      
+      console.log('Assistant message saved:', assistantMessage);
       
       // Update UI with assistant message
       const typedAssistantMessage = convertToMessage(assistantMessage);
