@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { supabase } from '@/lib/supabase';
+import { RealtimeChannel } from '@supabase/supabase-js';
 import { 
   Table, 
   TableBody, 
@@ -9,7 +10,7 @@ import {
   TableRow 
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { Eye, ArrowRight, Tags } from 'lucide-react';
+import { Eye, ArrowRight, Tags, Mail, Phone, Calendar, FileText, RefreshCw } from 'lucide-react';
 import { toast } from '@/components/ui/sonner';
 import {
   Dialog,
@@ -50,7 +51,33 @@ interface Lead {
   }[];
 }
 
+interface SearchLeadsResponse {
+  message: string;
+  total: number;
+  leads: Lead[];
+}
+
+interface ActionButtonProps {
+  onClick: () => void;
+  icon: React.ReactNode;
+  label: string;
+  variant?: "default" | "outline" | "secondary" | "ghost" | "link" | "destructive";
+}
+
+const ActionButton: React.FC<ActionButtonProps> = ({ onClick, icon, label, variant = "outline" }) => (
+  <Button
+    variant={variant}
+    size="sm"
+    onClick={onClick}
+    className="whitespace-nowrap"
+  >
+    {icon}
+    <span className="ml-2">{label}</span>
+  </Button>
+);
+
 const LEAD_STATUS_OPTIONS = [
+  'new',
   'à contacter',
   'email envoyé',
   'répondu',
@@ -59,6 +86,29 @@ const LEAD_STATUS_OPTIONS = [
   'RDV',
   'RDV manqué'
 ];
+
+const normalizeStatus = (status: string): string => {
+  if (!status) return 'new';
+  
+  const normalized = status.toLowerCase().trim();
+  
+  // Direct match for 'new'
+  if (normalized === 'new') return 'new';
+  
+  // Check for exact matches first
+  const exactMatch = LEAD_STATUS_OPTIONS.find(s => s.toLowerCase() === normalized);
+  if (exactMatch) return exactMatch;
+  
+  // Then check for partial matches
+  const partialMatch = LEAD_STATUS_OPTIONS.find(s => 
+    normalized.includes(s.toLowerCase()) || 
+    s.toLowerCase().includes(normalized)
+  );
+  if (partialMatch) return partialMatch;
+  
+  // If no match found, return 'new'
+  return 'new';
+};
 
 const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
   const [leads, setLeads] = useState<Lead[]>([]);
@@ -70,9 +120,13 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
   const [statusUpdateDialogOpen, setStatusUpdateDialogOpen] = useState(false);
   const [currentLead, setCurrentLead] = useState<Lead | null>(null);
   const [updatingStatus, setUpdatingStatus] = useState(false);
-  
+  const channelRef = useRef<RealtimeChannel | null>(null);
+  const isInitialFetchRef = useRef(true);
+  const unmountingRef = useRef(false);
+
   const fetchLeads = async () => {
     try {
+      console.log('Fetching leads for user:', userId);
       const { data, error } = await supabase
         .from('leads')
         .select(`
@@ -108,69 +162,210 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
       toast.error('Erreur lors du chargement des leads');
     } finally {
       setLoading(false);
+      isInitialFetchRef.current = false;
     }
   };
   
   useEffect(() => {
+    // Initial fetch
     fetchLeads();
   }, [userId]);
 
-  // Écouter l'événement personnalisé pour refresh automatique
   useEffect(() => {
-    const handleLeadsUpdated = (event: CustomEvent) => {
-      console.log("Événement leadsUpdated reçu:", event.detail);
-      toast.success(`${event.detail.count} nouveaux leads ajoutés !`);
+    if (!userId) {
+      return;
+    }
+
+    unmountingRef.current = false;
+
+    const setupSubscription = () => {
+      if (unmountingRef.current) {
+        return;
+      }
+
+      const channelId = `realtime:public:leads:client_id=eq.${userId}`;
       
-      // Refresh les leads après un petit délai
-      setTimeout(() => {
-        fetchLeads();
-      }, 1000);
+      const channel = supabase.channel(channelId)
+        .on('postgres_changes', { 
+          event: '*', 
+          schema: 'public', 
+          table: 'leads',
+          filter: `client_id=eq.${userId}`
+        }, async (payload: any) => {
+          if (unmountingRef.current) return;
+            
+          try {
+            if (payload.eventType === 'INSERT') {
+              setLeads(currentLeads => {
+                if (currentLeads.some(lead => lead.id === payload.new.id)) {
+                  return currentLeads;
+                }
+                return [{ ...payload.new, status: payload.new.status || 'à contacter' }, ...currentLeads];
+              });
+            } else if (payload.eventType === 'UPDATE') {
+              setLeads(currentLeads => 
+                currentLeads.map(lead => {
+                  if (lead.id === payload.new.id) {
+                    // Only update if there are actual changes
+                    const hasChanges = 
+                      lead.status !== payload.new.status ||
+                      lead.full_name !== payload.new.full_name ||
+                      lead.job_title !== payload.new.job_title ||
+                      lead.email !== payload.new.email ||
+                      lead.company !== payload.new.company;
+
+                    if (hasChanges) {
+                      return {
+                        ...lead,
+                        status: payload.new.status || lead.status || 'à contacter',
+                        full_name: payload.new.full_name || lead.full_name,
+                        job_title: payload.new.job_title || lead.job_title,
+                        email: payload.new.email || lead.email,
+                        company: payload.new.company || lead.company,
+                        created_at: payload.new.created_at || lead.created_at,
+                        email_jobs: lead.email_jobs || []
+                      };
+                    }
+                  }
+                  return lead;
+                })
+              );
+            } else if (payload.eventType === 'DELETE') {
+              setLeads(currentLeads => 
+                currentLeads.filter(lead => lead.id !== payload.old.id)
+              );
+            }
+          } catch (error) {
+            console.error('Error processing real-time update:', error);
+          }
+        });
+
+      channel.subscribe((status, err) => {
+        if (unmountingRef.current) return;
+        
+        if (status === 'SUBSCRIBED') {
+          channelRef.current = channel;
+        } else if (status === 'CHANNEL_ERROR') {
+          console.error('Channel error:', err);
+          toast.error('Erreur de connexion temps réel - Actualisez la page');
+        }
+      });
+
+      channelRef.current = channel;
+      return channel;
     };
 
-    window.addEventListener('leadsUpdated', handleLeadsUpdated as EventListener);
-    
+    const channel = setupSubscription();
+
     return () => {
-      window.removeEventListener('leadsUpdated', handleLeadsUpdated as EventListener);
+      unmountingRef.current = true;
+      if (channelRef.current) {
+        channelRef.current.unsubscribe();
+        channelRef.current = null;
+      }
     };
-  }, []);
-  
+  }, [userId]);
+
   const handleViewMessage = (subject: string, body: string) => {
     setSelectedEmail({ subject, body });
     setEmailDialogOpen(true);
   };
   
-  const handleFollowupLead = async (leadId: string) => {
+  const handleChatAction = async (leadId: string | null, action: string, status?: string, leadName?: string, notes?: string) => {
     try {
-      const { data } = await supabase.auth.getSession();
-      const access_token = data.session?.access_token;
-      const client_id = data.session?.user?.id;
+      const { data: session } = await supabase.auth.getSession();
+      const access_token = session?.session?.access_token;
+      const client_id = session?.session?.user?.id;
       
       if (!access_token || !client_id) {
         toast.error('Vous devez être connecté pour effectuer cette action');
         return;
       }
+
+      // For status updates, only update if the status is actually different
+      if (action === 'update_status' && status && leadId) {
+        const lead = leads.find(l => l.id === leadId);
+        if (lead && lead.status !== status) {
+          setLeads(prevLeads => 
+            prevLeads.map(l => 
+              l.id === leadId ? { ...l, status } : l
+            )
+          );
+        }
+      }
       
-      toast.info('Envoi du message de relance en cours...');
-      
-      await fetch(`${import.meta.env.VITE_SUPABASE_URL || 'https://atsfuqwxfrezkxtnctmk.supabase.co'}/functions/v1/send-followup`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${access_token}`
-        },
-        body: JSON.stringify({
-          lead_id: leadId,
-          user_id: client_id
-        })
-      });
-      
-      toast.success('Message de relance envoyé avec succès');
+      try {
+        const baseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://atsfuqwxfrezkxtnctmk.supabase.co';
+        const response = await fetch(`${baseUrl}/functions/v1/chat-action`, {
+          method: 'POST',
+          mode: 'cors',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${access_token}`,
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            lead_id: leadId,
+            lead_name: leadName,
+            action,
+            status,
+            notes,
+            user_id: client_id
+          })
+        });
+
+        if (!response.ok) {
+          const result = await response.json().catch(() => ({ error: 'Failed to parse response' }));
+          if (response.status === 300 && result.leads) {
+            toast.error(`Plusieurs leads trouvés avec ce nom. Veuillez être plus précis.`);
+            return result.leads;
+          }
+          throw new Error(result.error || `Error: ${response.status}`);
+        }
+
+        const result = await response.json();
+        toast.success(result.message || 'Action effectuée avec succès');
+        return result.lead;
+
+      } catch (fetchError: any) {
+        // Handle network errors (including CORS)
+        if (fetchError instanceof TypeError && fetchError.message === 'Failed to fetch') {
+          console.error('Network error (possibly CORS):', fetchError);
+          toast.error('Erreur de connexion au serveur. Veuillez réessayer.');
+        } else {
+          console.error('Error executing chat action:', fetchError);
+          toast.error(fetchError.message || 'Erreur lors de l\'exécution de l\'action');
+        }
+        
+        // If it was a status update that failed, revert the local state
+        if (action === 'update_status' && status && leadId) {
+          const originalLead = leads.find(l => l.id === leadId);
+          if (originalLead) {
+            setLeads(prevLeads => 
+              prevLeads.map(l => 
+                l.id === leadId ? { ...l, status: originalLead.status } : l
+              )
+            );
+          }
+        }
+        return null;
+      }
+
     } catch (error) {
-      console.error('Error sending followup:', error);
-      toast.error('Erreur lors de l\'envoi de la relance');
+      console.error('Error in handleChatAction:', error);
+      toast.error('Une erreur inattendue est survenue');
+      return null;
     }
   };
-  
+
+  const handleSendColdEmail = async (leadId: string) => {
+    await handleChatAction(leadId, 'send_cold_email');
+  };
+
+  const handleFollowupLead = async (leadId: string) => {
+    await handleChatAction(leadId, 'send_followup');
+  };
+
   const handleUpdateStatus = (lead: Lead) => {
     setCurrentLead(lead);
     setStatusUpdateDialogOpen(true);
@@ -178,60 +373,65 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
   
   const saveLeadStatus = async (newStatus: string) => {
     if (!currentLead) return;
-    
-    setUpdatingStatus(true);
-    try {
-      const { error } = await supabase
-        .from('leads')
-        .update({ status: newStatus })
-        .eq('id', currentLead.id);
-        
-      if (error) throw error;
-      
-      setLeads(prevLeads => 
-        prevLeads.map(lead => 
-          lead.id === currentLead.id ? { ...lead, status: newStatus } : lead
-        )
-      );
-      
-      toast.success('Statut mis à jour avec succès');
-      setStatusUpdateDialogOpen(false);
-    } catch (error) {
-      console.error('Error updating lead status:', error);
-      toast.error('Erreur lors de la mise à jour du statut');
-    } finally {
-      setUpdatingStatus(false);
-    }
+    await handleChatAction(currentLead.id, 'update_status', newStatus);
   };
-  
+
+  const handleScheduleCall = async (leadId: string) => {
+    await handleChatAction(leadId, 'schedule_call');
+  };
+
+  // New function to find a lead by name
+  const findLeadByName = async (name: string) => {
+    return await handleChatAction(null, 'find_lead', undefined, name);
+  };
+
   const formatDate = (dateString: string) => {
     if (!dateString) return 'N/A';
     
     const date = new Date(dateString);
     const now = new Date();
     const diffTime = Math.abs(now.getTime() - date.getTime());
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    const diffMinutes = Math.floor(diffTime / (1000 * 60));
     
-    if (diffDays === 0) {
-      const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
-      if (diffHours === 0) {
-        const diffMinutes = Math.floor(diffTime / (1000 * 60));
-        return `Il y a ${diffMinutes} minute${diffMinutes > 1 ? 's' : ''}`;
+    // Format the time part
+    const timeStr = date.toLocaleTimeString('fr-FR', {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+
+    // Today's date at midnight
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Yesterday's date at midnight
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    if (date >= today) {
+      // Today
+      if (diffMinutes < 1) {
+        return `À l'instant - ${timeStr}`;
+      } else if (diffMinutes < 60) {
+        return `Il y a ${diffMinutes} min - ${timeStr}`;
+      } else {
+        return `Aujourd'hui - ${timeStr}`;
       }
-      return `Il y a ${diffHours} heure${diffHours > 1 ? 's' : ''}`;
-    } else if (diffDays === 1) {
-      return 'Hier';
-    } else if (diffDays < 7) {
-      return `Il y a ${diffDays} jour${diffDays > 1 ? 's' : ''}`;
+    } else if (date >= yesterday) {
+      // Yesterday
+      return `Hier - ${timeStr}`;
     } else {
-      return date.toLocaleDateString('fr-FR', {
+      // Older dates
+      return date.toLocaleString('fr-FR', {
         day: '2-digit',
         month: '2-digit',
-        year: 'numeric'
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
       });
     }
   };
 
+  // Filter leads based on search query and selected statuses
   const filteredLeads = useMemo(() => {
     if (!searchQuery && selectedStatuses.length === 0) return leads;
     
@@ -239,7 +439,8 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
       const matchesSearch = searchQuery === '' || 
         (lead.full_name && lead.full_name.toLowerCase().includes(searchQuery.toLowerCase())) ||
         (lead.company && lead.company.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        (lead.job_title && lead.job_title.toLowerCase().includes(searchQuery.toLowerCase()));
+        (lead.job_title && lead.job_title.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (lead.email && lead.email.toLowerCase().includes(searchQuery.toLowerCase()));
       
       const matchesStatus = selectedStatuses.length === 0 || 
         (lead.status && selectedStatuses.includes(lead.status));
@@ -248,19 +449,155 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
     });
   }, [leads, searchQuery, selectedStatuses]);
   
+  const getLeadActions = (lead: Lead) => {
+    const hasEmailJobs = lead.email_jobs && lead.email_jobs.length > 0;
+    const rawStatus = lead.status || 'new';
+    const status = normalizeStatus(rawStatus);
+
+    const actions = [];
+
+    // View message button (if there are email jobs)
+    if (hasEmailJobs && lead.email_jobs![0].subject && lead.email_jobs![0].body) {
+      actions.push(
+        <ActionButton
+          key="view"
+          onClick={() => handleViewMessage(lead.email_jobs![0].subject, lead.email_jobs![0].body)}
+          icon={<Eye className="h-4 w-4" />}
+          label="Voir message"
+        />
+      );
+    }
+
+    // Status-based actions
+    switch (status.toLowerCase()) {
+      case 'new':
+      case 'à contacter':
+        actions.push(
+          <ActionButton
+            key="cold-email"
+            onClick={() => handleSendColdEmail(lead.id)}
+            icon={<Mail className="h-4 w-4" />}
+            label="Envoyer email initial"
+            variant="default"
+          />
+        );
+        break;
+
+      case 'email envoyé':
+        actions.push(
+          <ActionButton
+            key="followup"
+            onClick={() => handleFollowupLead(lead.id)}
+            icon={<ArrowRight className="h-4 w-4" />}
+            label="Relancer"
+          />
+        );
+        break;
+
+      case 'répondu':
+        actions.push(
+          <ActionButton
+            key="schedule"
+            onClick={() => handleScheduleCall(lead.id)}
+            icon={<Phone className="h-4 w-4" />}
+            label="Planifier appel"
+            variant="secondary"
+          />
+        );
+        break;
+
+      case 'à relancer':
+        actions.push(
+          <ActionButton
+            key="followup-urgent"
+            onClick={() => handleFollowupLead(lead.id)}
+            icon={<ArrowRight className="h-4 w-4" />}
+            label="Relancer"
+            variant="destructive"
+          />
+        );
+        break;
+
+      case 'appel prévu':
+        actions.push(
+          <ActionButton
+            key="call-reminder"
+            onClick={() => handleViewCallDetails(lead.id)}
+            icon={<Calendar className="h-4 w-4" />}
+            label="Voir RDV"
+          />
+        );
+        break;
+
+      case 'rdv':
+        actions.push(
+          <ActionButton
+            key="meeting-notes"
+            onClick={() => handleAddMeetingNotes(lead.id)}
+            icon={<FileText className="h-4 w-4" />}
+            label="Notes RDV"
+          />
+        );
+        break;
+
+      case 'rdv manqué':
+        actions.push(
+          <ActionButton
+            key="reschedule"
+            onClick={() => handleRescheduleCall(lead.id)}
+            icon={<RefreshCw className="h-4 w-4" />}
+            label="Replanifier"
+            variant="secondary"
+          />
+        );
+        break;
+    }
+
+    return (
+      <div className="flex flex-wrap gap-2">
+        {actions}
+      </div>
+    );
+  };
+
+  const handleViewCallDetails = async (leadId: string) => {
+    // Implement call details viewing logic
+    toast.info('Fonctionnalité à venir');
+  };
+
+  const handleAddMeetingNotes = async (leadId: string) => {
+    // Implement meeting notes logic
+    toast.info('Fonctionnalité à venir');
+  };
+
+  const handleRescheduleCall = async (leadId: string) => {
+    // Implement call rescheduling logic
+    toast.info('Fonctionnalité à venir');
+  };
+
   if (loading) {
     return <div className="flex justify-center p-8"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div>;
   }
   
   return (
     <>
-      <LeadFilterBar 
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        selectedStatuses={selectedStatuses}
-        setSelectedStatuses={setSelectedStatuses}
-        statusOptions={LEAD_STATUS_OPTIONS}
-      />
+      <div className="flex flex-col gap-4">
+        <div className="flex gap-4 items-center">
+          <Input
+            placeholder="Rechercher par nom, entreprise, titre ou email"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="flex-1"
+          />
+        </div>
+        <LeadFilterBar 
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          selectedStatuses={selectedStatuses}
+          setSelectedStatuses={setSelectedStatuses}
+          statusOptions={LEAD_STATUS_OPTIONS}
+        />
+      </div>
       
       <div className="rounded-md border mt-4">
         <Table>
@@ -270,8 +607,8 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
               <TableHead>Poste</TableHead>
               <TableHead>Email</TableHead>
               <TableHead>Entreprise</TableHead>
-              <TableHead>Statut</TableHead>
               <TableHead>Date ajout</TableHead>
+              <TableHead>Statut</TableHead>
               <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -286,10 +623,6 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
               </TableRow>
             ) : (
               filteredLeads.map((lead) => {
-                const emailJob = lead.email_jobs && lead.email_jobs.length > 0 
-                  ? lead.email_jobs[0] 
-                  : null;
-                  
                 return (
                   <TableRow key={lead.id}>
                     <TableCell className="font-medium">{lead.full_name || 'N/A'}</TableCell>
@@ -315,42 +648,23 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
                     </TableCell>
                     <TableCell>{lead.company || 'N/A'}</TableCell>
                     <TableCell>
-                      <LeadStatusBadge status={lead.status || 'à contacter'} />
-                    </TableCell>
-                    <TableCell>
                       {formatDate(lead.created_at)}
                     </TableCell>
                     <TableCell>
-                      <div className="flex space-x-2">
-                        {emailJob && emailJob.subject && emailJob.body && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleViewMessage(emailJob.subject, emailJob.body)}
-                          >
-                            <Eye className="h-4 w-4 mr-1" />
-                            Voir message
-                          </Button>
-                        )}
-                        
+                      <div className="flex items-center gap-2">
+                        <LeadStatusBadge status={lead.status || 'à contacter'} />
                         <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleFollowupLead(lead.id)}
-                        >
-                          <ArrowRight className="h-4 w-4 mr-1" />
-                          Relancer
-                        </Button>
-                        
-                        <Button
-                          variant="outline"
+                          variant="ghost"
                           size="sm"
                           onClick={() => handleUpdateStatus(lead)}
+                          className="ml-2"
                         >
-                          <Tags className="h-4 w-4 mr-1" />
-                          Statut
+                          <Tags className="h-4 w-4" />
                         </Button>
                       </div>
+                    </TableCell>
+                    <TableCell>
+                      {getLeadActions(lead)}
                     </TableCell>
                   </TableRow>
                 );
@@ -377,6 +691,9 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
         <DialogContent className="max-w-sm">
           <DialogHeader>
             <DialogTitle>Mettre à jour le statut</DialogTitle>
+            <DialogDescription>
+              Choisissez un nouveau statut pour {currentLead?.full_name || 'ce lead'}
+            </DialogDescription>
           </DialogHeader>
           <div className="py-4">
             <Select 

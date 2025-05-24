@@ -2,19 +2,22 @@ import React, { useRef, useEffect } from 'react';
 import ChatMessage from '@/components/chat/ChatMessage';
 import { Message } from '@/types/assistant';
 import { cn } from '@/lib/utils';
-import { Avatar } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { TypingIndicator } from './TypingIndicator';
 import useAssistantChat from '@/hooks/assistant/useAssistantChat';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Bot, User } from 'lucide-react';
 
 interface ChatMessageListProps {
   messages: Message[];
   onProcessToolCalls?: (toolCalls: any[]) => void;
   className?: string;
+  isGenerating?: boolean;
 }
 
-const ChatMessageList = ({ messages, onProcessToolCalls, className }: ChatMessageListProps) => {
+const ChatMessageList = ({ messages, onProcessToolCalls, className, isGenerating = false }: ChatMessageListProps) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const { isGenerating } = useAssistantChat();
+  const { isGenerating: assistantIsGenerating } = useAssistantChat();
   
   // Auto-scroll to bottom when messages change
   useEffect(() => {
@@ -36,49 +39,63 @@ const ChatMessageList = ({ messages, onProcessToolCalls, className }: ChatMessag
   };
   
   return (
-    <div className={cn('flex-1 overflow-y-auto p-4 space-y-4', className)}>
-      {messages.length === 0 ? (
-        <div className="text-center text-gray-500">
-          Pas de messages. Commencez une conversation!
-        </div>
-      ) : (
-        messages.map((message, index) => (
-          <div
-            key={message.id || index}
-            className={cn(
-              'flex items-start gap-3 text-sm',
-              message.role === 'assistant' ? 'flex-row' : 'flex-row-reverse'
-            )}
-          >
-            <Avatar className="mt-0.5 h-8 w-8">
-              <div className={cn(
-                'h-full w-full rounded-full',
-                message.role === 'assistant' ? 'bg-primary' : 'bg-muted'
-              )} />
+    <ScrollArea className={cn('flex-1 overflow-y-auto p-4 space-y-4', className)}>
+      <div className="space-y-4">
+        {messages.length === 0 ? (
+          <div className="text-center text-gray-500">
+            Pas de messages. Commencez une conversation!
+          </div>
+        ) : (
+          messages.map((message, index) => (
+            <div
+              key={message.id || index}
+              className={cn(
+                'flex w-full gap-3 rounded-lg p-4',
+                message.role === 'assistant' ? 'bg-muted/50' : 'bg-background'
+              )}
+            >
+              <Avatar className="h-8 w-8">
+                {message.role === 'assistant' ? (
+                  <>
+                    <AvatarImage src="/bot-avatar.png" alt="Assistant" />
+                    <AvatarFallback>
+                      <Bot className="h-5 w-5" />
+                    </AvatarFallback>
+                  </>
+                ) : (
+                  <>
+                    <AvatarImage src="/user-avatar.png" alt="User" />
+                    <AvatarFallback>
+                      <User className="h-5 w-5" />
+                    </AvatarFallback>
+                  </>
+                )}
+              </Avatar>
+              <div className="flex-1 space-y-2">
+                <div className="prose prose-sm max-w-none dark:prose-invert">
+                  {message.content}
+                </div>
+              </div>
+            </div>
+          ))
+        )}
+        
+        {isGenerating && (
+          <div className="flex w-full gap-3 rounded-lg p-4 bg-muted/50">
+            <Avatar className="h-8 w-8">
+              <AvatarImage src="/bot-avatar.png" alt="Assistant" />
             </Avatar>
-            <div className={cn(
-              'rounded-lg px-4 py-2 max-w-[85%]',
-              message.role === 'assistant' ? 'bg-muted' : 'bg-primary text-primary-foreground'
-            )}>
-              {message.content}
+            <div className="flex-1 space-y-2">
+              <div className="prose prose-sm max-w-none dark:prose-invert">
+                <TypingIndicator />
+              </div>
             </div>
           </div>
-        ))
-      )}
-      
-      {isGenerating && (
-        <div className="flex items-start gap-3">
-          <Avatar className="mt-0.5 h-8 w-8">
-            <div className="h-full w-full rounded-full bg-primary" />
-          </Avatar>
-          <div className="rounded-lg px-4 py-2 bg-muted">
-            <TypingIndicator />
-          </div>
-        </div>
-      )}
-      
-      <div ref={messagesEndRef} />
-    </div>
+        )}
+        
+        <div ref={messagesEndRef} />
+      </div>
+    </ScrollArea>
   );
 };
 

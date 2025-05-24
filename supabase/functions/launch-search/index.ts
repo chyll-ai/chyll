@@ -1,6 +1,11 @@
-
+// @deno-types="https://deno.land/std@0.168.0/http/server.ts"
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+// @deno-types="https://esm.sh/@supabase/supabase-js@2.49.4"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+
+interface RequestEvent {
+  request: Request;
+}
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -13,7 +18,7 @@ const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 // Create Supabase client with service role for bypassing RLS
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-serve(async (req) => {
+serve(async (req: Request) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -81,25 +86,52 @@ serve(async (req) => {
 
     console.log(`Inserting ${leads.length} leads for client ${client_id}`);
 
-    // Insert leads into the database
-    const { data, error } = await supabase
-      .from('leads')
-      .insert(leads);
-
-    if (error) {
-      console.error("Error inserting leads:", error);
-      return new Response(JSON.stringify({ error: error.message }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    // Insert leads one by one with a small delay
+    const insertedLeads = [];
+    for (const lead of leads) {
+      console.log('Inserting lead:', {
+        full_name: lead.full_name,
+        client_id: lead.client_id,
+        timestamp: new Date().toISOString()
       });
+
+      const { data, error } = await supabase
+        .from('leads')
+        .insert([lead])
+        .select()
+        .single();
+
+      if (error) {
+        console.error("Error inserting lead:", {
+          error: error.message,
+          lead: lead.full_name,
+          timestamp: new Date().toISOString()
+        });
+        continue;
+      }
+
+      console.log('Successfully inserted lead:', {
+        id: data.id,
+        full_name: data.full_name,
+        timestamp: new Date().toISOString()
+      });
+
+      insertedLeads.push(data);
+      
+      // Add a larger delay between inserts to ensure real-time events are processed
+      await new Promise(resolve => setTimeout(resolve, 500));
     }
 
-    console.log(`Successfully inserted ${leads.length} demo leads`);
+    console.log(`Successfully inserted ${insertedLeads.length} demo leads:`, {
+      firstLead: insertedLeads[0]?.full_name,
+      lastLead: insertedLeads[insertedLeads.length - 1]?.full_name,
+      timestamp: new Date().toISOString()
+    });
 
     return new Response(JSON.stringify({ 
       success: true,
-      message: `30 leads de démonstration générés avec succès`,
-      leads_count: leads.length,
+      message: `${insertedLeads.length} leads de démonstration générés avec succès`,
+      leads_count: insertedLeads.length,
       keyword: keyword,
       location: filters?.location || 'Toute la France'
     }), {
@@ -108,8 +140,8 @@ serve(async (req) => {
     });
 
   } catch (error) {
-    console.error('Error in launch-search function:', error);
-    return new Response(JSON.stringify({ error: error.message }), {
+    console.error('Error in launch-search function:', error instanceof Error ? error.message : 'Unknown error');
+    return new Response(JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     });
