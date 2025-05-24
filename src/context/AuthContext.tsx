@@ -26,6 +26,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [hasValidSession, setHasValidSession] = useState(false);
 
   const ensureClientRecord = async (userId: string, email: string) => {
     try {
@@ -88,26 +89,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const updateAuthState = (newSession: Session | null, skipNavigation = false) => {
-    console.log('AuthContext: Updating auth state:', { 
-      hasSession: !!newSession, 
-      userId: newSession?.user?.id,
-      isInitialized,
-      skipNavigation
-    });
-    
-    setSession(newSession);
-    setUser(newSession?.user || null);
-    
-    // Only navigate if we're fully initialized and not skipping navigation
-    if (isInitialized && !skipNavigation && newSession?.user) {
-      console.log('AuthContext: User authenticated, navigating to assistant...');
-      navigate('/assistant', { replace: true });
-    }
-  };
-
   const handleAuthStateChange = async (event: string, newSession: Session | null) => {
-    console.log('AuthContext: Auth state changed:', { event, userId: newSession?.user?.id, isInitialized });
+    console.log('AuthContext: Auth state changed:', { 
+      event, 
+      userId: newSession?.user?.id, 
+      isInitialized,
+      hasValidSession
+    });
     debugStorage();
 
     try {
@@ -115,6 +103,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         console.log('AuthContext: User signed out or deleted, cleaning up...');
         setSession(null);
         setUser(null);
+        setHasValidSession(false);
         processedUsers.clear();
         localStorage.removeItem('supabase.auth.token');
         sessionStorage.removeItem('supabase.auth.token');
@@ -123,7 +112,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
       } else if (event === 'SIGNED_IN' && newSession?.user) {
         console.log('AuthContext: User signed in, updating state...');
-        updateAuthState(newSession, !isInitialized);
+        setSession(newSession);
+        setUser(newSession.user);
+        setHasValidSession(true);
+        
+        // Only navigate after initialization is complete
+        if (isInitialized) {
+          console.log('AuthContext: User authenticated, navigating to assistant...');
+          navigate('/assistant', { replace: true });
+        }
         
         // Ensure client record exists in background after session is established
         setTimeout(() => {
@@ -133,23 +130,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         console.log('AuthContext: Token refreshed, updating session...');
         setSession(newSession);
         setUser(newSession.user);
+        setHasValidSession(true);
       } else if (event === 'INITIAL_SESSION') {
-        // Handle initial session - only clear if there's no existing session state
-        if (newSession?.user) {
-          console.log('AuthContext: Initial session found, updating state...');
-          updateAuthState(newSession, true); // Skip navigation on initial load
-        } else if (!session) {
-          // Only clear if we don't already have a session
-          console.log('AuthContext: No initial session found, clearing state...');
-          setSession(null);
-          setUser(null);
+        // Only handle initial session if we don't already have a valid session
+        if (!hasValidSession) {
+          if (newSession?.user) {
+            console.log('AuthContext: Initial session found, updating state...');
+            setSession(newSession);
+            setUser(newSession.user);
+            setHasValidSession(true);
+          } else {
+            console.log('AuthContext: No initial session found');
+            setSession(null);
+            setUser(null);
+            setHasValidSession(false);
+          }
         } else {
-          console.log('AuthContext: No initial session but keeping existing session state');
+          console.log('AuthContext: Ignoring INITIAL_SESSION - already have valid session');
         }
-      } else if (!newSession && !session) {
-        console.log('AuthContext: No session, clearing state...');
-        setSession(null);
-        setUser(null);
       }
     } catch (error) {
       console.error('AuthContext: Error in handleAuthStateChange:', error);
@@ -182,17 +180,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           console.log('AuthContext: No session after refresh attempt');
           setSession(null);
           setUser(null);
+          setHasValidSession(false);
           return;
         }
         
         console.log('AuthContext: Session refreshed successfully');
         setSession(refreshedSession);
         setUser(refreshedSession.user);
+        setHasValidSession(true);
         ensureClientRecord(refreshedSession.user.id, refreshedSession.user.email || '');
       } else {
         console.log('AuthContext: Using existing session');
         setSession(currentSession);
         setUser(currentSession.user);
+        setHasValidSession(true);
         ensureClientRecord(currentSession.user.id, currentSession.user.email || '');
       }
     } catch (error) {
@@ -200,6 +201,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // On error, clear session state
       setSession(null);
       setUser(null);
+      setHasValidSession(false);
       localStorage.removeItem('supabase.auth.token');
       sessionStorage.removeItem('supabase.auth.token');
     } finally {
@@ -223,6 +225,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.log('AuthContext: Signed out successfully, cleaning up...');
       setSession(null);
       setUser(null);
+      setHasValidSession(false);
       processedUsers.clear();
       
       localStorage.removeItem('supabase.auth.token');
@@ -263,23 +266,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             userId: initialSession.user.id,
             expiresAt: initialSession.expires_at
           });
-          // Don't call handleAuthStateChange here as it will be called by the listener
           setSession(initialSession);
           setUser(initialSession.user);
+          setHasValidSession(true);
         } else {
           console.log('AuthContext: No initial session found');
           setSession(null);
           setUser(null);
+          setHasValidSession(false);
         }
-        
-        // Mark as initialized
-        setIsInitialized(true);
-        setIsLoading(false);
         
       } catch (error) {
         console.error('AuthContext: Error in initializeAuth:', error);
         setSession(null);
         setUser(null);
+        setHasValidSession(false);
+      } finally {
+        // Mark as initialized after everything is done
         setIsInitialized(true);
         setIsLoading(false);
       }
@@ -293,12 +296,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         subscription.unsubscribe();
       }
     };
-  }, []); // Remove navigate dependency to prevent re-initialization
+  }, []);
 
   const value = {
     user,
     session,
-    isAuthenticated: !!session,
+    isAuthenticated: !!session && hasValidSession,
     isLoading,
     signOut,
     refreshSession,
