@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -457,7 +458,7 @@ const useAssistantChat = (): AssistantState => {
             id: userMessageData[0].id,
             role: 'user',
             content: userMessageData[0].content,
-            createdAt: userMessageData[0].createdAt
+            createdAt: userMessageData[0].created_at
           } : msg
         ));
       }
