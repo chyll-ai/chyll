@@ -326,11 +326,11 @@ export async function handleFunctionCall(toolCall, thread_id, run_id) {
           return;
         }
         
-        // Check if profile exists and has data
-        const hasBasicData = profileData && 
-                           profileData.company_name && 
-                           profileData.industry && 
-                           profileData.icp_title;
+        // Check if profile exists and has data - FIX: Return boolean instead of string
+        const hasBasicData = !!(profileData && 
+                               profileData.company_name && 
+                               profileData.industry && 
+                               profileData.icp_title);
         
         const isMarkedComplete = profileData && profileData.is_complete === true;
         
@@ -354,9 +354,9 @@ export async function handleFunctionCall(toolCall, thread_id, run_id) {
           }
         }
         
-        // Submit le statut du profil à l'assistant
+        // Submit le statut du profil à l'assistant - FIX: Use boolean value
         await submitToolOutput(thread_id, run_id, toolCall.id, {
-          profile_complete: hasBasicData, // Use the real check, not just the flag
+          profile_complete: hasBasicData, // Now correctly returns a boolean
           profile_data: profileData,
           message: hasBasicData 
             ? "Profile is complete. User should be guided to lead generation instead of profile completion." 
