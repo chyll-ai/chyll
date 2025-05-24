@@ -32,8 +32,8 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
       if (data) {
         const profileData: ClientProfile = {
           ...data,
-          created_at: data.created_at || new Date().toISOString(),
-          updated_at: data.updated_at || new Date().toISOString()
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
         };
         setProfile(profileData);
       } else {

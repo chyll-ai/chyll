@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -151,7 +152,7 @@ const useAssistantChat = (): AssistantState => {
         .select('*')
         .eq('client_id', userId)
         .eq('type', conversationType)
-        .order('createdAt', { ascending: false })
+        .order('created_at', { ascending: false })
         .limit(1);
       
       if (error) {
