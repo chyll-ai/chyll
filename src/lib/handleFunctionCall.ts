@@ -447,13 +447,25 @@ export async function handleFunctionCall(toolCall, thread_id, run_id) {
         
         toast.success(`${result.leads_count} leads générés avec succès!`);
         
-        // Submit success to OpenAI
+        // Déclencher un refresh de la page leads si l'utilisateur est sur cette page
+        if (window.location.pathname.includes('/leads') || window.location.pathname.includes('/dashboard')) {
+          console.log("Déclenchement du refresh automatique des leads");
+          // Déclencher un événement personnalisé pour refresh les leads
+          window.dispatchEvent(new CustomEvent('leadsUpdated', { 
+            detail: { 
+              count: result.leads_count,
+              keyword: result.keyword 
+            } 
+          }));
+        }
+        
         await submitToolOutput(thread_id, run_id, toolCall.id, { 
           success: true,
-          message: result.message,
+          message: `Excellent ! J'ai généré ${result.leads_count} leads qualifiés pour "${result.keyword}". Ces prospects correspondent parfaitement à votre cible. Voulez-vous que je vous aide à créer des messages personnalisés pour cette liste basés sur votre activité et votre proposition de valeur ?`,
           leads_count: result.leads_count,
           keyword: result.keyword,
-          location: result.location
+          location: result.location,
+          next_action: "personalized_outreach"
         });
         
       } catch (error) {
@@ -609,7 +621,6 @@ const checkForGmailToken = async (clientId, threadId, runId, toolCallId, attempt
     console.log("Nombre maximum de tentatives atteint");
     toast.error("La connexion Gmail n'a pas pu être finalisée. Veuillez réessayer.");
     
-    // Submit failure back to assistant
     if (threadId && runId && toolCallId) {
       await submitToolOutput(threadId, runId, toolCallId, {
         connected: false,
@@ -620,10 +631,8 @@ const checkForGmailToken = async (clientId, threadId, runId, toolCallId, attempt
   }
   
   try {
-    // Attendre quelques secondes avant de vérifier
     await new Promise(resolve => setTimeout(resolve, 3000));
     
-    // Vérifier si le token existe
     const { data, error } = await supabase
       .from('tokens')
       .select('access_token')
@@ -632,7 +641,6 @@ const checkForGmailToken = async (clientId, threadId, runId, toolCallId, attempt
       
     if (error) {
       console.error("Erreur lors de la vérification du token Gmail:", error);
-      // Continue polling despite the error
       checkForGmailToken(clientId, threadId, runId, toolCallId, attempts + 1);
       return;
     }
@@ -641,7 +649,6 @@ const checkForGmailToken = async (clientId, threadId, runId, toolCallId, attempt
       console.log("Token Gmail trouvé!");
       toast.success("Connexion Gmail réussie!");
       
-      // Submit success to OpenAI if we have the necessary IDs
       if (threadId && runId && toolCallId) {
         await submitToolOutput(threadId, runId, toolCallId, { 
           connected: true, 
@@ -651,13 +658,11 @@ const checkForGmailToken = async (clientId, threadId, runId, toolCallId, attempt
       return;
     }
     
-    // Si pas encore de token, vérifier à nouveau après un délai
     console.log(`Aucun token trouvé pour l'instant, nouvelle vérification... (tentative ${attempts + 1})`);
     checkForGmailToken(clientId, threadId, runId, toolCallId, attempts + 1);
     
   } catch (error) {
     console.error("Erreur lors de la vérification du token:", error);
-    // Continue polling despite the error
     checkForGmailToken(clientId, threadId, runId, toolCallId, attempts + 1);
   }
 };

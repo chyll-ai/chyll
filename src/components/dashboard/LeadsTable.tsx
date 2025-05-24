@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { 
@@ -72,51 +71,68 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
   const [currentLead, setCurrentLead] = useState<Lead | null>(null);
   const [updatingStatus, setUpdatingStatus] = useState(false);
   
-  useEffect(() => {
-    const fetchLeads = async () => {
-      try {
-        // Fetch leads with their associated email jobs
-        const { data, error } = await supabase
-          .from('leads')
-          .select(`
-            id,
-            full_name,
-            job_title,
-            email,
-            company,
+  const fetchLeads = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('leads')
+        .select(`
+          id,
+          full_name,
+          job_title,
+          email,
+          company,
+          status,
+          created_at,
+          email_jobs (
             status,
-            created_at,
-            email_jobs (
-              status,
-              sent_at,
-              subject,
-              body
-            )
-          `)
-          .eq('client_id', userId)
-          .order('created_at', { ascending: false });
-          
-        if (error) {
-          throw error;
-        }
+            sent_at,
+            subject,
+            body
+          )
+        `)
+        .eq('client_id', userId)
+        .order('created_at', { ascending: false });
         
-        // Set default status for leads without status
-        const leadsWithStatus = data?.map(lead => ({
-          ...lead,
-          status: lead.status || 'à contacter'
-        })) || [];
-        
-        setLeads(leadsWithStatus);
-      } catch (error) {
-        console.error('Error fetching leads:', error);
-        toast.error('Erreur lors du chargement des leads');
-      } finally {
-        setLoading(false);
+      if (error) {
+        throw error;
       }
-    };
-    
+      
+      const leadsWithStatus = data?.map(lead => ({
+        ...lead,
+        status: lead.status || 'à contacter'
+      })) || [];
+      
+      setLeads(leadsWithStatus);
+    } catch (error) {
+      console.error('Error fetching leads:', error);
+      toast.error('Erreur lors du chargement des leads');
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  useEffect(() => {
     fetchLeads();
   }, [userId]);
+
+  // Écouter l'événement personnalisé pour refresh automatique
+  useEffect(() => {
+    const handleLeadsUpdated = (event: CustomEvent) => {
+      console.log("Événement leadsUpdated reçu:", event.detail);
+      toast.success(`${event.detail.count} nouveaux leads ajoutés !`);
+      
+      // Refresh les leads après un petit délai
+      setTimeout(() => {
+        fetchLeads();
+      }, 1000);
+    };
+
+    window.addEventListener('leadsUpdated', handleLeadsUpdated as EventListener);
+    
+    return () => {
+      window.removeEventListener('leadsUpdated', handleLeadsUpdated as EventListener);
+    };
+  }, []);
   
   const handleViewMessage = (subject: string, body: string) => {
     setSelectedEmail({ subject, body });
@@ -125,7 +141,6 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
   
   const handleFollowupLead = async (leadId: string) => {
     try {
-      // Get current user token
       const { data } = await supabase.auth.getSession();
       const access_token = data.session?.access_token;
       const client_id = data.session?.user?.id;
@@ -173,7 +188,6 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
         
       if (error) throw error;
       
-      // Update local state
       setLeads(prevLeads => 
         prevLeads.map(lead => 
           lead.id === currentLead.id ? { ...lead, status: newStatus } : lead
@@ -218,18 +232,15 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
     }
   };
 
-  // Filter leads based on search query and selected statuses
   const filteredLeads = useMemo(() => {
     if (!searchQuery && selectedStatuses.length === 0) return leads;
     
     return leads.filter(lead => {
-      // Filter by search query
       const matchesSearch = searchQuery === '' || 
         (lead.full_name && lead.full_name.toLowerCase().includes(searchQuery.toLowerCase())) ||
         (lead.company && lead.company.toLowerCase().includes(searchQuery.toLowerCase())) ||
         (lead.job_title && lead.job_title.toLowerCase().includes(searchQuery.toLowerCase()));
       
-      // Filter by selected statuses
       const matchesStatus = selectedStatuses.length === 0 || 
         (lead.status && selectedStatuses.includes(lead.status));
       
