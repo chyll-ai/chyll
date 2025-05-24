@@ -6,7 +6,7 @@ import type { Database } from '@/types/supabase';
 const supabaseUrl = 'https://atsfuqwxfrezkxtnctmk.supabase.co';
 const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF0c2Z1cXd4ZnJlemt4dG5jdG1rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc2NjE3MjEsImV4cCI6MjA2MzIzNzcyMX0.FO6bvv2rFL0jhzN5aZ3m1QvNaM_ZNt7Ycmo859PSnJE';
 
-// Custom storage implementation with improved error handling
+// Simplified custom storage implementation
 const customStorage = {
   getItem: (key: string): string | null => {
     try {
@@ -22,31 +22,35 @@ const customStorage = {
         console.debug(`[Storage] No item found for key: ${key}`);
         return null;
       }
-      
-      // Parse and validate the stored session
-      const session = JSON.parse(item);
-      
-      // Check for required session properties
-      if (!session || typeof session !== 'object') {
-        console.debug(`[Storage] Invalid session format for key: ${key}`);
-        localStorage.removeItem(key);
-        sessionStorage.removeItem(key);
-        return null;
-      }
 
-      // Check session expiration with a 5-minute buffer
-      const expiresAt = session.expires_at ? new Date(session.expires_at) : null;
-      const now = new Date();
-      const fiveMinutes = 5 * 60 * 1000; // 5 minutes in milliseconds
-      
-      if (expiresAt && (expiresAt.getTime() - now.getTime()) < fiveMinutes) {
-        console.debug(`[Storage] Session expired or expiring soon for key: ${key}`);
-        localStorage.removeItem(key);
-        sessionStorage.removeItem(key);
-        return null;
+      // For OAuth flow, allow non-JSON values (like code verifier strings)
+      if (key.includes('code_verifier') || key.includes('state')) {
+        return item;
       }
-
-      return item;
+      
+      // For session data, validate JSON format
+      try {
+        const parsed = JSON.parse(item);
+        
+        // Check session expiration with a 5-minute buffer for session data
+        if (parsed.expires_at) {
+          const expiresAt = new Date(parsed.expires_at);
+          const now = new Date();
+          const fiveMinutes = 5 * 60 * 1000; // 5 minutes in milliseconds
+          
+          if ((expiresAt.getTime() - now.getTime()) < fiveMinutes) {
+            console.debug(`[Storage] Session expired or expiring soon for key: ${key}`);
+            localStorage.removeItem(key);
+            sessionStorage.removeItem(key);
+            return null;
+          }
+        }
+        
+        return item;
+      } catch (parseError) {
+        // If it's not JSON, return as-is (for OAuth flow strings)
+        return item;
+      }
     } catch (error) {
       console.error('[Storage] Error reading from storage:', error);
       // Clean up potentially corrupted data
@@ -57,10 +61,26 @@ const customStorage = {
   },
   setItem: (key: string, value: string): void => {
     try {
-      // Validate that the value is a valid JSON string before storing
-      const parsed = JSON.parse(value);
-      if (!parsed || typeof parsed !== 'object') {
-        throw new Error('Invalid session data format');
+      // For OAuth flow values (code verifier, state), store directly
+      if (key.includes('code_verifier') || key.includes('state')) {
+        localStorage.setItem(key, value);
+        sessionStorage.setItem(key, value);
+        console.debug(`[Storage] Successfully stored OAuth item for key: ${key}`);
+        return;
+      }
+      
+      // For session data, validate JSON format
+      try {
+        const parsed = JSON.parse(value);
+        if (!parsed || typeof parsed !== 'object') {
+          throw new Error('Invalid session data format');
+        }
+      } catch (parseError) {
+        // If it's not JSON, store it anyway (for OAuth strings)
+        localStorage.setItem(key, value);
+        sessionStorage.setItem(key, value);
+        console.debug(`[Storage] Successfully stored non-JSON item for key: ${key}`);
+        return;
       }
       
       // Store in both localStorage and sessionStorage for redundancy
