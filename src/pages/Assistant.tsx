@@ -1,9 +1,10 @@
-
 import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
 import useAssistantChat from '@/hooks/assistant/useAssistantChat';
 import { handleFunctionCall } from '@/lib/handleFunctionCall';
+import { useOAuthHandler } from '@/hooks/assistant/useOAuthHandler';
+import { useProfileCheck } from '@/hooks/assistant/useProfileCheck';
+import { useProfile } from '@/context/ProfileContext';
 import ChatHeader from '@/components/chat/ChatHeader';
 import ChatMessageList from '@/components/chat/ChatMessageList';
 import ChatInputForm from '@/components/chat/ChatInputForm';
@@ -16,216 +17,58 @@ interface AssistantProps {
 
 const Assistant = ({ embedded = false }: AssistantProps) => {
   const navigate = useNavigate();
-  const [checkingProfile, setCheckingProfile] = useState(!embedded);
-  const [processedToolCalls, setProcessedToolCalls] = useState<Set<string>>(new Set());
-  const [oauthInProgress, setOauthInProgress] = useState(false);
   const [redirecting, setRedirecting] = useState(false);
+  const [processedToolCalls] = useState<Set<string>>(new Set());
   
-  const {
-    loading,
-    sending,
-    messages,
-    sendMessage,
-    threadId,
-    currentRunId,
-    userId,
-    hasProfile,
-    conversationId
-  } = useAssistantChat();
+  const { profile, isComplete } = useProfile();
+  const { loading, sending, messages, sendMessage, threadId, currentRunId, conversationId } = useAssistantChat();
   
-  // Handle OAuth redirect with authorization code
-  useEffect(() => {
-    const checkForOAuthCode = async () => {
-      // Extract authorization code from URL if present
-      const urlParams = new URLSearchParams(window.location.search);
-      const code = urlParams.get('code');
-      const state = urlParams.get('state');
-      
-      if (code && state && !oauthInProgress) {
-        try {
-          setOauthInProgress(true);
-          console.log("OAuth code detected in URL, completing Gmail connection...");
-          
-          // Get user token for authentication
-          const { data } = await supabase.auth.getSession();
-          if (!data.session) {
-            console.error("No active session found");
-            toast.error("Vous devez être connecté pour finaliser la connexion Gmail");
-            setOauthInProgress(false);
-            return;
-          }
-          
-          const user_token = data.session.access_token;
-          const client_id = data.session.user.id;
-          
-          // Exchange the code for tokens
-          const response = await fetch(`https://atsfuqwxfrezkxtnctmk.supabase.co/functions/v1/connect-gmail`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${user_token}`
-            },
-            body: JSON.stringify({
-              action: 'exchange_code',
-              code,
-              client_id,
-              redirect_url: window.location.origin + window.location.pathname
-            })
-          });
-          
-          if (!response.ok) {
-            const errorData = await response.json();
-            console.error("Error exchanging code for tokens:", errorData);
-            toast.error("Erreur lors de la finalisation de la connexion Gmail");
-            setOauthInProgress(false);
-            return;
-          }
-          
-          const result = await response.json();
-          console.log("Code exchange result:", result);
-          
-          if (result.status === "success") {
-            toast.success("Connexion Gmail réussie!");
-            
-            // Add a delay before sending a message to the assistant
-            setTimeout(() => {
-              sendMessage("La connexion Gmail a été établie avec succès. Je peux maintenant vous aider à rédiger et envoyer des emails.");
-            }, 2000);
-          }
-          
-          // Clean up the URL to remove the code
-          window.history.replaceState({}, document.title, window.location.pathname);
-          setOauthInProgress(false);
-          
-        } catch (error) {
-          console.error("Error handling OAuth callback:", error);
-          toast.error("Erreur lors de la finalisation de la connexion Gmail");
-          setOauthInProgress(false);
-        }
-      }
-    };
-    
-    checkForOAuthCode();
-  }, [sendMessage, oauthInProgress]);
-  
-  // Check if user profile exists and redirect to dashboard if needed (only when not embedded)
-  useEffect(() => {
-    // Skip this check if the component is embedded in another page
-    if (embedded) {
-      setCheckingProfile(false);
-      return;
+  // Handle OAuth flow
+  const { oauthInProgress } = useOAuthHandler({
+    onSuccess: () => {
+      setTimeout(() => {
+        sendMessage("La connexion Gmail a été établie avec succès. Je peux maintenant vous aider à rédiger et envoyer des emails.");
+      }, 2000);
     }
+  });
 
-    const checkUserProfile = async () => {
-      try {
-        // Get current user
-        const { data: userData, error: userError } = await supabase.auth.getUser();
-        if (userError || !userData.user) {
-          console.error("No user found:", userError);
-          navigate('/login');
-          return;
-        }
-
-        // Check if user has a profile and if it's complete
-        const { data: profileData, error: profileError } = await supabase
-          .from('client_profile')
-          .select('*, is_complete')
-          .eq('client_id', userData.user.id)
-          .maybeSingle();
-          
-        if (profileError) {
-          console.error("Error retrieving profile:", profileError);
-          setCheckingProfile(false);
-          return;
-        }
-        
-        // Only redirect to dashboard if profile exists AND is marked as complete
-        if (profileData && profileData.is_complete === true && !embedded) {
-          console.log("Complete profile found, redirecting to dashboard");
-          navigate('/dashboard', { replace: true });
-          return;
-        }
-        
-        setCheckingProfile(false);
-      } catch (error) {
-        console.error("Error checking profile:", error);
-        setCheckingProfile(false);
+  // Handle profile checking
+  const { checkingProfile } = useProfileCheck({ 
+    embedded,
+    onComplete: () => {
+      if (!embedded) {
+        setRedirecting(true);
+        toast.success("Votre profil est complet ! Redirection vers le tableau de bord...");
+        setTimeout(() => navigate('/dashboard'), 1500);
       }
-    };
-    
-    checkUserProfile();
-  }, [navigate, embedded]);
+    }
+  });
   
-  // Handle function call to redirect to dashboard
-  const handleRedirectToDashboard = useCallback(() => {
-    if (redirecting) return;
-
-    setRedirecting(true);
-    toast.success("Votre profil est complet ! Redirection vers le tableau de bord...");
-    
-    // Small delay to show the toast before redirecting
-    setTimeout(() => {
-      navigate('/dashboard');
-    }, 1500);
-  }, [navigate, redirecting]);
-  
-  // Handle any tool calls from the assistant
+  // Handle tool calls from the assistant
   const processToolCalls = useCallback((toolCalls) => {
-    if (!toolCalls || !Array.isArray(toolCalls)) return;
-    
-    console.log("Processing tool calls:", toolCalls);
+    if (!toolCalls?.length) return;
     
     toolCalls.forEach(toolCall => {
-      // Only process each tool call once to prevent loops
-      if (processedToolCalls.has(toolCall.id)) {
-        console.log(`Tool call ${toolCall.id} already processed, skipping`);
-        return;
+      if (processedToolCalls.has(toolCall.id) || toolCall.type !== 'function') return;
+      
+      if (toolCall.function?.name === 'redirect_to_dashboard' && !redirecting) {
+        setRedirecting(true);
+        toast.success("Votre profil est complet ! Redirection vers le tableau de bord...");
+        setTimeout(() => navigate('/dashboard'), 1500);
+      } else if (threadId && currentRunId) {
+        handleFunctionCall(toolCall, threadId, currentRunId, { profile, isComplete });
       }
       
-      if (toolCall.type === 'function') {
-        // Check for redirect_to_dashboard function call
-        if (toolCall.function?.name === 'redirect_to_dashboard') {
-          console.log('Redirect to dashboard function called by assistant');
-          handleRedirectToDashboard();
-        }
-        // Process other function calls normally
-        else if (threadId && currentRunId) {
-          console.log(`Processing function call: ${toolCall.function?.name}`);
-          handleFunctionCall(toolCall, threadId, currentRunId);
-        }
-        
-        // Mark this tool call as processed
-        setProcessedToolCalls(prev => {
-          const updated = new Set(prev);
-          updated.add(toolCall.id);
-          return updated;
-        });
-      }
+      processedToolCalls.add(toolCall.id);
     });
-  }, [threadId, currentRunId, processedToolCalls, handleRedirectToDashboard]);
-  
-  // Reset processedToolCalls when the thread ID changes
-  useEffect(() => {
-    if (threadId) {
-      setProcessedToolCalls(new Set());
-    }
-  }, [threadId]);
-  
+  }, [threadId, currentRunId, processedToolCalls, navigate, redirecting, profile, isComplete]);
+
   if (checkingProfile || loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
+    return <LoadingScreen />;
   }
   
   if (redirecting) {
-    return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-background gap-4">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        <p className="text-lg font-medium">Redirection en cours...</p>
-      </div>
-    );
+    return <LoadingScreen message="Redirection en cours..." />;
   }
   
   return (
@@ -236,5 +79,12 @@ const Assistant = ({ embedded = false }: AssistantProps) => {
     </div>
   );
 };
+
+const LoadingScreen = ({ message }: { message?: string }) => (
+  <div className="flex min-h-screen flex-col items-center justify-center bg-background gap-4">
+    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+    {message && <p className="text-lg font-medium">{message}</p>}
+  </div>
+);
 
 export default Assistant;

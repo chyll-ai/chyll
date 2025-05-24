@@ -1,9 +1,8 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/components/ui/sonner';
-import { Message } from './types';
+import { Message, AssistantState } from '@/types/assistant';
 import { handleFunctionCall } from '@/lib/handleFunctionCall';
 import { isProfileQuestion } from './profileUtils';
 import { 
@@ -16,10 +15,11 @@ import {
 
 export { handleFunctionCall } from '@/lib/handleFunctionCall';
 
-const useAssistantChat = () => {
+const useAssistantChat = (): AssistantState => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [userId, setUserId] = useState<string | null>(null);
   const [hasProfile, setHasProfile] = useState<boolean | null>(null);
@@ -151,7 +151,7 @@ const useAssistantChat = () => {
         .select('*')
         .eq('client_id', userId)
         .eq('type', conversationType)
-        .order('created_at', { ascending: false })
+        .order('createdAt', { ascending: false })
         .limit(1);
       
       if (error) {
@@ -202,7 +202,7 @@ const useAssistantChat = () => {
         .select('*')
         .eq('client_id', userId)
         .eq('conversation_id', conversationId)
-        .order('created_at', { ascending: true });
+        .order('createdAt', { ascending: true });
       
       if (error) {
         console.error("Erreur lors de la récupération des messages:", error);
@@ -219,7 +219,7 @@ const useAssistantChat = () => {
           id: msg.id,
           role: role,
           content: msg.content,
-          created_at: msg.created_at
+          createdAt: msg.createdAt
         };
         
         // Only add toolCalls if they exist in the database message
@@ -374,12 +374,12 @@ const useAssistantChat = () => {
                 id: newMessage.id,
                 role: role,
                 content: newMessage.content,
-                created_at: newMessage.created_at,
+                createdAt: newMessage.createdAt,
                 // Only add toolCalls if they exist in the message
                 ...(newMessage.toolCalls && { toolCalls: newMessage.toolCalls })
               };
               return [...current, typedMessage].sort((a, b) => 
-                new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+                new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
               );
             });
           }
@@ -392,7 +392,15 @@ const useAssistantChat = () => {
     return messagesChannel;
   };
 
-  const sendMessage = async (content: string) => {
+  const createMessage = (content: string, role: 'user' | 'assistant', toolCalls?: any[]) => ({
+    id: crypto.randomUUID(),
+    content,
+    role,
+    toolCalls,
+    createdAt: new Date().toISOString()
+  });
+
+  const sendMessage = useCallback(async (content: string) => {
     if (!content.trim() || !userId || !conversationId) {
       console.log("Message vide, utilisateur non connecté ou conversation non définie");
       return;
@@ -405,25 +413,16 @@ const useAssistantChat = () => {
     
     try {
       setSending(true);
+      setIsGenerating(true);
       
       // Create a temporary message to display immediately in the UI
-      const tempUserMessage: Message = {
-        id: "temp-" + Date.now(),
-        role: 'user',
-        content: content.trim(),
-        created_at: new Date().toISOString()
-      };
+      const tempUserMessage = createMessage(content, 'user');
       
       // Update the UI immediately with the user message
       setMessages(prev => [...prev, tempUserMessage]);
       
       // 1. Insert user message
-      const userMessage = {
-        client_id: userId,
-        role: 'user' as const,
-        content: content.trim(),
-        conversation_id: conversationId
-      };
+      const userMessage = createMessage(content, 'user');
       
       console.log("Envoi du message utilisateur à Supabase:", userMessage);
       const { data: userMessageData, error: userMessageError } = await supabase
@@ -444,7 +443,7 @@ const useAssistantChat = () => {
             id: userMessageData[0].id,
             role: 'user',
             content: userMessageData[0].content,
-            created_at: userMessageData[0].created_at
+            createdAt: userMessageData[0].createdAt
           } : msg
         ));
       }
@@ -468,12 +467,7 @@ const useAssistantChat = () => {
       }
       
       // Show typing indicator
-      const typingMessage: Message = {
-        id: "typing-indicator",
-        role: 'assistant',
-        content: "...",
-        created_at: new Date().toISOString()
-      };
+      const typingMessage = createMessage("...", 'assistant');
       
       setMessages(prev => [...prev, typingMessage]);
       
@@ -490,13 +484,7 @@ const useAssistantChat = () => {
       }
       
       // 4. Insert assistant's response
-      const assistantMessage = {
-        client_id: userId,
-        role: 'assistant' as const,
-        content: data.message,
-        conversation_id: conversationId,
-        toolCalls: data.toolCalls  // Make sure toolCalls is properly saved
-      };
+      const assistantMessage = createMessage(data.message, 'assistant', data.toolCalls);
       
       console.log("Enregistrement de la réponse de l'assistant:", assistantMessage);
       const { data: assistantMessageData, error: assistantMessageError } = await supabase
@@ -512,26 +500,7 @@ const useAssistantChat = () => {
       // Add the assistant message to the UI immediately
       if (assistantMessageData && assistantMessageData.length > 0) {
         console.log("Réponse de l'assistant enregistrée avec succès:", assistantMessageData[0]);
-        const newAssistantMessage: Message = {
-          id: assistantMessageData[0].id,
-          role: 'assistant',
-          content: assistantMessageData[0].content,
-          created_at: assistantMessageData[0].created_at
-        };
-        
-        // If there are any tool calls, add them to the message
-        if (data.toolCalls && data.toolCalls.length > 0) {
-          newAssistantMessage.toolCalls = data.toolCalls;
-          
-          // Update the message in the database to include tool calls
-          try {
-            await updateMessageWithToolCalls(newAssistantMessage.id, data.toolCalls);
-          } catch (error) {
-            console.error("Error updating toolCalls in database:", error);
-          }
-        }
-        
-        setMessages(prev => [...prev.filter(msg => msg.id !== "typing-indicator"), newAssistantMessage]);
+        setMessages(prev => [...prev.filter(msg => msg.id !== "typing-indicator"), assistantMessage]);
       }
       
     } catch (error) {
@@ -543,11 +512,22 @@ const useAssistantChat = () => {
     } finally {
       setSending(false);
     }
-  };
+  }, [userId, conversationId, sending, threadId, isGenerating]);
+
+  // Add effect to handle response completion
+  useEffect(() => {
+    if (messages.length > 0) {
+      const lastMessage = messages[messages.length - 1];
+      if (lastMessage.role === 'assistant') {
+        setIsGenerating(false);
+      }
+    }
+  }, [messages]);
 
   return {
     loading,
     sending,
+    isGenerating,
     messages,
     sendMessage,
     userId,

@@ -1,8 +1,19 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/sonner";
+import { useProfile } from '@/context/ProfileContext';
+import { ClientProfile } from "@/types/api";
 
-export async function handleFunctionCall(toolCall, thread_id, run_id) {
+interface ProfileData {
+  profile: ClientProfile | null;
+  isComplete: boolean;
+}
+
+export async function handleFunctionCall(
+  toolCall: any, 
+  thread_id: string, 
+  run_id: string,
+  profileData?: ProfileData
+) {
   try {
     // Récupère la session utilisateur pour obtenir le token d'accès
     const { data } = await supabase.auth.getSession();
@@ -286,106 +297,59 @@ export async function handleFunctionCall(toolCall, thread_id, run_id) {
         });
       }
     } else if (toolCall.function?.name === "check_profile_status") {
-      console.log("Appel de la fonction check_profile_status");
-      
-      try {
-        // Récupérer automatiquement le client_id depuis la session Supabase
-        const { data: sessionData } = await supabase.auth.getSession();
-        const authenticatedClientId = sessionData.session?.user?.id;
-        
-        if (!authenticatedClientId) {
-          console.error("Aucun utilisateur authentifié trouvé");
-          await submitToolOutput(thread_id, run_id, toolCall.id, {
-            profile_complete: false,
-            error: "No authenticated user found",
-            message: "User must be logged in to check profile status"
-          });
-          return;
-        }
-        
-        console.log("Vérification du profil pour client_id:", authenticatedClientId);
-        
-        // Vérifier si le profil existe et est complet
-        const { data: profileData, error: profileError } = await supabase
-          .from('client_profile')
-          .select('*')
-          .eq('client_id', authenticatedClientId)
-          .maybeSingle();
-          
-        console.log("Données du profil récupérées:", profileData);
-        console.log("Erreur de récupération:", profileError);
-          
-        if (profileError) {
-          console.error("Erreur lors de la vérification du profil:", profileError);
-          
-          // Submit error to OpenAI
-          await submitToolOutput(thread_id, run_id, toolCall.id, {
-            profile_complete: false,
-            error: "Failed to check profile status",
-            debug_info: profileError.message
-          });
-          return;
-        }
-        
-        // Check if profile exists and has data - Return boolean instead of string
-        const hasBasicData = !!(profileData && 
-                               profileData.company_name && 
-                               profileData.industry && 
-                               profileData.icp_title);
-        
-        const isMarkedComplete = profileData && profileData.is_complete === true;
-        
-        console.log("Profil trouvé:", !!profileData);
-        console.log("Données de base présentes:", hasBasicData);
-        console.log("Marqué comme complet:", isMarkedComplete);
-        console.log("Évaluation finale:", hasBasicData);
-        
-        // Si le profil a les données de base mais n'est pas marqué comme complet, le marquer
-        if (hasBasicData && !isMarkedComplete) {
-          console.log("Mise à jour du profil pour le marquer comme complet");
-          const { error: updateError } = await supabase
-            .from('client_profile')
-            .update({ is_complete: true })
-            .eq('client_id', authenticatedClientId);
-            
-          if (updateError) {
-            console.error("Erreur lors de la mise à jour du statut:", updateError);
-          } else {
-            console.log("Profil marqué comme complet avec succès");
-          }
-        }
-        
-        // FIX: Si le profil est complet, retourner directement le message de lead generation
-        const responseMessage = hasBasicData 
-          ? "Profile already complete! Ready to launch lead search. Would you like me to generate qualified leads for your business based on your target criteria?" 
-          : "Profile needs to be completed first.";
-        
-        // Submit le statut du profil à l'assistant - Use boolean value
+      // If we're on the dashboard, profile must be complete
+      if (window.location.pathname.includes('/dashboard')) {
         await submitToolOutput(thread_id, run_id, toolCall.id, {
-          profile_complete: hasBasicData, // Now correctly returns a boolean
-          profile_data: profileData,
-          message: responseMessage,
-          next_action: hasBasicData ? "launch_search" : "complete_profile",
-          debug_info: {
-            client_id: authenticatedClientId,
-            profile_exists: !!profileData,
-            has_basic_data: hasBasicData,
-            is_marked_complete: isMarkedComplete,
-            company_name: profileData?.company_name,
-            industry: profileData?.industry,
-            icp_title: profileData?.icp_title
-          }
+          profile_complete: true,
+          message: "Profile is complete. Ready to launch lead search. Would you like me to generate qualified leads for your business based on your target criteria?",
+          next_action: "launch_search"
         });
+        return;
+      }
+
+      // If profile data is provided
+      if (profileData) {
+        const { profile, isComplete } = profileData;
         
-      } catch (error) {
-        console.error("Erreur lors de la vérification du statut du profil:", error);
-        
-        // Submit error to OpenAI
+        if (profile && isComplete) {
+          await submitToolOutput(thread_id, run_id, toolCall.id, {
+            profile_complete: true,
+            profile_data: profile,
+            message: "Profile already complete! Ready to launch lead search. Would you like me to generate qualified leads for your business based on your target criteria?",
+            next_action: "launch_search"
+          });
+          return;
+        }
+
         await submitToolOutput(thread_id, run_id, toolCall.id, {
           profile_complete: false,
-          error: error.message || "Failed to check profile status"
+          profile_data: profile,
+          message: "Profile needs to be completed first.",
+          next_action: "complete_profile"
         });
+        return;
       }
+
+      // Fallback if no profile data provided
+      const { data: fetchedProfile, error: profileError } = await supabase
+        .from('client_profile')
+        .select('*')
+        .eq('client_id', client_id)
+        .maybeSingle();
+
+      if (profileError) {
+        throw new Error('Failed to fetch profile data');
+      }
+
+      const isComplete = fetchedProfile?.is_complete ?? false;
+      await submitToolOutput(thread_id, run_id, toolCall.id, {
+        profile_complete: isComplete,
+        profile_data: fetchedProfile,
+        message: isComplete 
+          ? "Profile already complete! Ready to launch lead search. Would you like me to generate qualified leads for your business based on your target criteria?"
+          : "Profile needs to be completed first.",
+        next_action: isComplete ? "launch_search" : "complete_profile"
+      });
     } else if (toolCall.function?.name === "redirect_to_dashboard") {
       console.log("Appel de la fonction redirect_to_dashboard");
       
