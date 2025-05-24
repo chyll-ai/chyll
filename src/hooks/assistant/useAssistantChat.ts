@@ -202,7 +202,7 @@ const useAssistantChat = (): AssistantState => {
         .select('*')
         .eq('client_id', userId)
         .eq('conversation_id', conversationId)
-        .order('createdAt', { ascending: true });
+        .order('created_at', { ascending: true });
       
       if (error) {
         console.error("Erreur lors de la récupération des messages:", error);
@@ -219,7 +219,7 @@ const useAssistantChat = (): AssistantState => {
           id: msg.id,
           role: role,
           content: msg.content,
-          createdAt: msg.createdAt
+          createdAt: msg.created_at // Use created_at from database
         };
         
         // Only add toolCalls if they exist in the database message
@@ -374,7 +374,7 @@ const useAssistantChat = (): AssistantState => {
                 id: newMessage.id,
                 role: role,
                 content: newMessage.content,
-                createdAt: newMessage.createdAt,
+                createdAt: newMessage.created_at, // Use created_at from database
                 // Only add toolCalls if they exist in the message
                 ...(newMessage.toolCalls && { toolCalls: newMessage.toolCalls })
               };

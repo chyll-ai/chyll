@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { ClientProfile } from '@/types/api';
@@ -26,7 +27,18 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
         .maybeSingle();
 
       if (error) throw error;
-      setProfile(data);
+      
+      // Transform the data to match ClientProfile type by adding default timestamps if missing
+      if (data) {
+        const profileData: ClientProfile = {
+          ...data,
+          created_at: data.created_at || new Date().toISOString(),
+          updated_at: data.updated_at || new Date().toISOString()
+        };
+        setProfile(profileData);
+      } else {
+        setProfile(null);
+      }
       setError(null);
     } catch (err: any) {
       console.error('Error fetching profile:', err);
@@ -80,4 +92,4 @@ export const useProfile = () => {
     throw new Error('useProfile must be used within a ProfileProvider');
   }
   return context;
-}; 
+};
