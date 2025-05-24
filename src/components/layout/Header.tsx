@@ -1,11 +1,16 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { LogOut } from 'lucide-react';
+import { LogOut, LogIn } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
 const Header = () => {
   const { isAuthenticated, signOut } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSignIn = () => {
+    navigate('/login');
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -15,7 +20,7 @@ const Header = () => {
         </Link>
 
         <nav className="flex items-center gap-4">
-          {isAuthenticated && (
+          {isAuthenticated ? (
             <Button
               variant="ghost"
               size="icon"
@@ -24,6 +29,16 @@ const Header = () => {
               title="Sign out"
             >
               <LogOut className="h-4 w-4" />
+            </Button>
+          ) : (
+            <Button
+              variant="default"
+              size="sm"
+              onClick={handleSignIn}
+              className="flex items-center gap-2"
+            >
+              <LogIn className="h-4 w-4" />
+              Sign in
             </Button>
           )}
         </nav>
