@@ -36,24 +36,41 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.log('AuthContext: Ensuring client record exists for:', userId);
       processedUsers.add(userId);
       
-      // Simple upsert - create if doesn't exist, ignore if exists
-      const { error } = await supabase
+      // First check if client record already exists
+      const { data: existingClient, error: selectError } = await supabase
         .from('clients')
-        .upsert({
+        .select('id')
+        .eq('id', userId)
+        .maybeSingle();
+
+      if (selectError) {
+        console.error('AuthContext: Error checking existing client:', selectError);
+        return;
+      }
+
+      if (existingClient) {
+        console.log('AuthContext: Client record already exists');
+        return;
+      }
+
+      // If no existing client, try to create one
+      const { error: insertError } = await supabase
+        .from('clients')
+        .insert({
           id: userId,
           email: email
-        }, {
-          onConflict: 'id',
-          ignoreDuplicates: true
         });
 
-      if (error && error.code !== '23505') {
-        console.error('AuthContext: Error upserting client record:', error);
-      } else {
-        console.log('AuthContext: Client record ensured successfully');
+      if (insertError) {
+        console.error('AuthContext: Error creating client record:', insertError);
+        // Don't throw error - continue with authentication even if client record creation fails
+        return;
       }
+
+      console.log('AuthContext: Client record created successfully');
     } catch (error) {
       console.error('AuthContext: Error in ensureClientRecord:', error);
+      // Don't throw error - continue with authentication
     }
   };
 
@@ -75,9 +92,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setSession(newSession);
         setUser(newSession.user);
         
-        // Ensure client record exists in background
+        // Ensure client record exists in background (don't block authentication)
         if (event === 'SIGNED_IN') {
-          ensureClientRecord(newSession.user.id, newSession.user.email || '');
+          setTimeout(() => {
+            ensureClientRecord(newSession.user.id, newSession.user.email || '');
+          }, 100);
         }
       } else {
         console.log('AuthContext: No session, clearing state...');
