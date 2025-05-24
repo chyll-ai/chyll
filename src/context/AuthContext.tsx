@@ -11,7 +11,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   signOut: () => Promise<void>;
-  refreshSession: () => Promise<void>;
+  refreshSession: () => Promise<Session | null>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -21,7 +21,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isInitialized, setIsInitialized] = useState(false);
 
   const ensureClientRecord = async (userId: string, email: string) => {
     try {
@@ -74,7 +73,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const refreshSession = async () => {
+  const refreshSession = async (): Promise<Session | null> => {
     try {
       console.log('AuthContext: Refreshing session...');
       const { data: { session: refreshedSession }, error } = await supabase.auth.refreshSession();
@@ -133,7 +132,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (mounted) {
           console.log('AuthContext: Initial session found:', !!initialSession);
           updateAuthState(initialSession);
-          setIsInitialized(true);
           setIsLoading(false);
           
           // Navigate based on session status and current path
@@ -147,7 +145,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } catch (error) {
         console.error('AuthContext: Error in initialization:', error);
         if (mounted) {
-          setIsInitialized(true);
           setIsLoading(false);
         }
       }
@@ -161,19 +158,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       if (event === 'SIGNED_IN' && newSession) {
         updateAuthState(newSession);
-        if (isInitialized) {
-          console.log('AuthContext: User signed in, navigating to assistant...');
-          navigate('/assistant', { replace: true });
-        }
+        console.log('AuthContext: User signed in, navigating to assistant...');
+        navigate('/assistant', { replace: true });
       } else if (event === 'SIGNED_OUT') {
         updateAuthState(null);
-        if (isInitialized) {
-          navigate('/login', { replace: true });
-        }
+        navigate('/login', { replace: true });
       } else if (event === 'TOKEN_REFRESHED' && newSession) {
         updateAuthState(newSession);
       }
-      // Ignore INITIAL_SESSION events to prevent conflicts
     });
 
     initializeAuth();
