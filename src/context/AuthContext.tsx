@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
@@ -34,6 +33,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       
       console.log('AuthContext: Ensuring client record exists for:', userId);
+      
+      // Wait a bit to ensure the session is fully established
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Get fresh session to ensure we have valid auth context
+      const { data: { session: currentSession } } = await supabase.auth.getSession();
+      if (!currentSession) {
+        console.log('AuthContext: No session available for client record creation');
+        return;
+      }
+      
       processedUsers.add(userId);
       
       // First check if client record already exists
@@ -63,14 +73,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (insertError) {
         console.error('AuthContext: Error creating client record:', insertError);
-        // Don't throw error - continue with authentication even if client record creation fails
+        // Remove from processed set so we can try again later
+        processedUsers.delete(userId);
         return;
       }
 
       console.log('AuthContext: Client record created successfully');
     } catch (error) {
       console.error('AuthContext: Error in ensureClientRecord:', error);
-      // Don't throw error - continue with authentication
+      // Remove from processed set so we can try again later
+      processedUsers.delete(userId);
     }
   };
 
@@ -92,11 +104,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setSession(newSession);
         setUser(newSession.user);
         
-        // Ensure client record exists in background (don't block authentication)
+        // Ensure client record exists in background after session is established
         if (event === 'SIGNED_IN') {
+          // Use a longer delay to ensure the session is fully propagated
           setTimeout(() => {
             ensureClientRecord(newSession.user.id, newSession.user.email || '');
-          }, 100);
+          }, 1000);
         }
       } else {
         console.log('AuthContext: No session, clearing state...');
