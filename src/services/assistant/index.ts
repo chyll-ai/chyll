@@ -1,7 +1,7 @@
 import OpenAI from 'openai';
 import { supabase } from '@/lib/supabase';
 import type { Database } from '@/types/supabase';
-import type { ChatCompletionMessageParam, ChatCompletionTool } from 'openai/resources/chat/completions';
+import type { ChatCompletionMessageParam, ChatCompletionTool } from 'openai/resources';
 import { toast } from '@/components/ui/sonner';
 
 // Message interface definition
@@ -438,7 +438,7 @@ export class AssistantService {
       try {
         // Get response from OpenAI
         const completion = await this.openaiClient.chat.completions.create({
-          model: 'gpt-4-turbo-preview',
+          model: 'gpt-4o-mini',
           messages: contextEnhancedMessages,
           tools: availableTools,
           tool_choice: 'auto',
@@ -1072,4 +1072,4 @@ export class AssistantService {
 
     return { message: formattedMessage };
   }
-} 
+}
