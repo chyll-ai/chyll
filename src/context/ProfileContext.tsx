@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/supabase';
 import { useAuth } from './AuthContext';
 import { ClientProfile } from '@/types/api';
 import { Database } from '@/types/supabase';

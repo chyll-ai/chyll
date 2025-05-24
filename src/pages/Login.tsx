@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react';
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/supabase";
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/sonner';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Mail } from 'lucide-react';
+import { debugStorage } from '@/lib/supabase';
 
 const Login = () => {
   const location = useLocation();
@@ -12,33 +13,28 @@ const Login = () => {
   useEffect(() => {
     const handleAuthChange = async () => {
       try {
-        // Check for OAuth response in URL
-        const params = new URLSearchParams(window.location.search);
-        const code = params.get('code');
+        console.log('Checking auth state on Login page...');
+        debugStorage();
         
-        if (code) {
-          // If we have a code, we're in the OAuth callback
-          const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-          
-          if (sessionError) {
-            throw sessionError;
-          }
-
-          if (session?.user) {
-            await checkProfileAndRedirect(session.user.id);
-          }
-          return;
-        }
-
         // Check if user is already logged in
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
+        console.log('Current session state:', {
+          exists: !!session,
+          userId: session?.user?.id,
+          expiresAt: session?.expires_at
+        });
+        
         if (sessionError) {
+          console.error('Session error:', sessionError);
           throw sessionError;
         }
 
         if (session?.user) {
+          console.log('Found active session, checking profile...');
           await checkProfileAndRedirect(session.user.id);
+        } else {
+          console.log('No active session found');
         }
       } catch (error) {
         console.error("Error in auth change handler:", error);
@@ -47,11 +43,27 @@ const Login = () => {
     };
 
     handleAuthChange();
+
+    // Set up auth state change listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Auth state changed:', { event, userId: session?.user?.id });
+      
+      if (event === 'SIGNED_IN' && session?.user) {
+        console.log('User signed in, checking profile...');
+        await checkProfileAndRedirect(session.user.id);
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, [location, navigate]);
 
   const checkProfileAndRedirect = async (userId: string) => {
     try {
-      // Create client record if it doesn't exist
+      console.log('Starting checkProfileAndRedirect for user:', userId);
+      
+      // Check if client record exists (it should have been created by the Edge Function)
       const { data: client, error: clientError } = await supabase
         .from('clients')
         .select('*')
@@ -60,24 +72,13 @@ const Login = () => {
 
       if (clientError) {
         console.error("Error checking client:", clientError);
-        throw new Error("Error checking client");
+        console.log("Client record may not exist yet, proceeding anyway");
       }
 
-      if (!client) {
-        console.log("Client not found, creating...");
-        const { data: userData } = await supabase.auth.getUser();
-        const email = userData?.user?.email || '';
-        
-        await supabase
-          .from('clients')
-          .insert({
-            id: userId,
-            email: email
-          });
-        console.log("Client created successfully");
-      }
+      console.log('Client check result:', { exists: !!client, client });
 
       // Check if the user has a profile and if it's complete
+      console.log('Checking for user profile...');
       const { data: profile, error: profileError } = await supabase
         .from('client_profile')
         .select('*, is_complete')
@@ -89,6 +90,8 @@ const Login = () => {
         toast.error("Error fetching your profile");
         return;
       }
+
+      console.log('Profile check result:', { exists: !!profile, isComplete: profile?.is_complete });
 
       // Redirect based on whether the user has a complete profile
       if (profile && profile.is_complete === true) {
@@ -104,28 +107,31 @@ const Login = () => {
     }
   };
 
-  const handleGoogleLogin = async () => {
+  const handleGoogleSignIn = async () => {
     try {
+      console.log('Starting Google OAuth sign in...');
+      debugStorage();
+      
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/login`,
+          redirectTo: `${window.location.origin}/assistant`,
           queryParams: {
             access_type: 'offline',
-            prompt: 'consent'
+            prompt: 'consent',
           },
-          skipBrowserRedirect: false
-        }
+        },
       });
 
       if (error) {
+        console.error('Google OAuth error:', error);
         throw error;
       }
 
-      // The page will redirect to Google at this point
+      console.log('Google OAuth initiated successfully:', data);
     } catch (error: any) {
       console.error("Google authentication error:", error);
-      toast.error(error.message || "Failed to connect with Google");
+      toast.error(error.message || "Failed to sign in with Google");
     }
   };
 
@@ -133,21 +139,25 @@ const Login = () => {
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="w-full max-w-md space-y-8 rounded-xl border border-border bg-card p-8 shadow-lg">
         <div className="text-center">
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">Connexion</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">Welcome to Chyll</h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Connectez-vous avec votre compte Google
+            Sign in with Google to get started
           </p>
         </div>
 
         <div className="mt-8">
           <Button
-            onClick={handleGoogleLogin}
+            onClick={handleGoogleSignIn}
             className="w-full flex items-center justify-center gap-2"
             variant="outline"
           >
             <Mail className="h-5 w-5" />
-            Se connecter avec Gmail
+            Sign in with Google
           </Button>
+          
+          <p className="mt-4 text-xs text-center text-muted-foreground">
+            You'll set up Gmail permissions later when you're ready to send emails.
+          </p>
         </div>
       </div>
     </div>

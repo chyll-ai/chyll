@@ -1,5 +1,4 @@
-
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/supabase';
 import { toast } from '@/components/ui/sonner';
 import { Message, DatabaseMessage } from './types';
 
@@ -10,7 +9,8 @@ export const createThread = async () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF0c2Z1cXd4ZnJlemt4dG5jdG1rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc2NjE3MjEsImV4cCI6MjA2MzIzNzcyMX0.FO6bvv2rFL0jhzN5aZ3m1QvNaM_ZNt7Ycmo859PSnJE'}`
+        'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF0c2Z1cXd4ZnJlemt4dG5jdG1rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc2NjE3MjEsImV4cCI6MjA2MzIzNzcyMX0.FO6bvv2rFL0jhzN5aZ3m1QvNaM_ZNt7Ycmo859PSnJE'}`,
+        'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF0c2Z1cXd4ZnJlemt4dG5jdG1rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc2NjE3MjEsImV4cCI6MjA2MzIzNzcyMX0.FO6bvv2rFL0jhzN5aZ3m1QvNaM_ZNt7Ycmo859PSnJE'
       },
       body: JSON.stringify({
         action: 'create_thread'
@@ -35,9 +35,9 @@ export const fetchMessages = async (userId: string): Promise<Message[]> => {
   try {
     const { data, error } = await supabase
       .from('messages')
-      .select('*')
+      .select('id, role, content, toolCalls, client_id, conversation_id, chat_session_id')
       .eq('client_id', userId)
-      .order('created_at', { ascending: true });
+      .order('id', { ascending: true });
       
     if (error) {
       throw error;
@@ -57,8 +57,7 @@ export const fetchMessages = async (userId: string): Promise<Message[]> => {
       const message: Message = {
         id: dbMessage.id,
         role: role,
-        content: dbMessage.content,
-        created_at: dbMessage.created_at
+        content: dbMessage.content
       };
       
       // Only add toolCalls if they exist in the database message
@@ -86,9 +85,10 @@ export const sendWelcomeMessage = async (userId: string, content: string, conver
         client_id: userId,
         role: 'assistant',
         content: content,
-        conversation_id: conversationId
+        conversation_id: conversationId,
+        toolCalls: null
       }])
-      .select();
+      .select('id, role, content, toolCalls, client_id, conversation_id, chat_session_id');
       
     if (error) throw error;
     
@@ -97,8 +97,7 @@ export const sendWelcomeMessage = async (userId: string, content: string, conver
       const welcomeMsg: Message = {
         id: data[0].id,
         role: 'assistant',
-        content: content,
-        created_at: data[0].created_at
+        content: content
         // Note: No toolCalls for welcome message
       };
       return welcomeMsg;
@@ -117,7 +116,8 @@ export const sendMessageToOpenAI = async (threadId: string, content: string) => 
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF0c2Z1cXd4ZnJlemt4dG5jdG1rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc2NjE3MjEsImV4cCI6MjA2MzIzNzcyMX0.FO6bvv2rFL0jhzN5aZ3m1QvNaM_ZNt7Ycmo859PSnJE'}`
+        'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF0c2Z1cXd4ZnJlemt4dG5jdG1rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc2NjE3MjEsImV4cCI6MjA2MzIzNzcyMX0.FO6bvv2rFL0jhzN5aZ3m1QvNaM_ZNt7Ycmo859PSnJE'}`,
+        'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF0c2Z1cXd4ZnJlemt4dG5jdG1rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc2NjE3MjEsImV4cCI6MjA2MzIzNzcyMX0.FO6bvv2rFL0jhzN5aZ3m1QvNaM_ZNt7Ycmo859PSnJE'
       },
       body: JSON.stringify({
         action: 'send_message',

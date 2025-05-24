@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -8,7 +7,6 @@ interface Message {
   id: string;
   role: 'user' | 'assistant';
   content: string;
-  created_at: string;
   toolCalls?: any[];
 }
 

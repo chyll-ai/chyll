@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/supabase';
 import Assistant from '@/pages/Assistant';
 import LeadsTable from '@/components/dashboard/LeadsTable';
 import { Loader2, LogOut } from 'lucide-react';

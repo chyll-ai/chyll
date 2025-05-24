@@ -1,9 +1,7 @@
-
 export interface Message {
   id: string;
   role: 'user' | 'assistant';
   content: string;
-  created_at: string;
   toolCalls?: any[];
 }
 
@@ -11,10 +9,10 @@ export interface DatabaseMessage {
   id: string;
   role: string;
   content: string;
-  created_at: string;
   client_id: string;
+  conversation_id: string;
   chat_session_id?: string;
-  toolCalls?: any;
+  toolCalls?: Json | null;
 }
 
 export interface ClientProfile {
@@ -37,3 +35,6 @@ export interface UpdateMessageToolcallsParams {
   message_id: string;
   tool_calls: string | any;
 }
+
+// Add Json type if not already defined
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];

@@ -5,7 +5,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.38.4';
 // @ts-ignore
 import { google } from 'npm:googleapis@126.0.1';
 // @ts-ignore
-import { generateEmailContent } from '../_shared/openai.ts';
+import { generateEmailContent, EmailContext } from '../_shared/openai.ts';
 
 interface RequestEvent {
   method: string;
@@ -27,17 +27,21 @@ declare const Deno: {
 };
 
 serve(async (req: RequestEvent) => {
+  console.log('send-cold-email function called');
+  
   if (req.method === 'OPTIONS') {
     return new Response('ok', { 
       headers: corsHeaders,
-      status: 200 // Explicitly set 200 status for OPTIONS
+      status: 200
     });
   }
 
   try {
     const { lead_id, user_id } = await req.json();
+    console.log('Received request with lead_id:', lead_id, 'user_id:', user_id);
 
     if (!lead_id || !user_id) {
+      console.error('Missing required parameters:', { lead_id, user_id });
       return new Response(
         JSON.stringify({ error: 'lead_id and user_id are required' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
@@ -45,12 +49,14 @@ serve(async (req: RequestEvent) => {
     }
 
     // Initialize Supabase client
+    console.log('Initializing Supabase client');
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    // Get lead details and their last email
+    // Get lead details
+    console.log('Fetching lead details for lead_id:', lead_id);
     const { data: lead, error: leadError } = await supabaseClient
       .from('leads')
       .select(`
@@ -62,33 +68,30 @@ serve(async (req: RequestEvent) => {
         client_id,
         status,
         industry,
-        linkedin_url,
-        email_jobs (
-          sent_at,
-          type,
-          subject,
-          thread_id
-        )
+        linkedin_url
       `)
       .eq('id', lead_id)
       .eq('client_id', user_id)
       .single();
 
     if (leadError || !lead) {
+      console.error('Error fetching lead:', leadError);
       return new Response(
         JSON.stringify({ error: 'Lead not found or unauthorized' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 404 }
       );
     }
+    console.log('Lead found:', { name: lead.full_name, email: lead.email });
 
-    // Get user's email template and Gmail token
+    // Get user details
+    console.log('Fetching user details for user_id:', user_id);
     const { data: user, error: userError } = await supabaseClient
       .from('users')
       .select(`
         id,
         email,
         full_name,
-        followup_template,
+        cold_email_template,
         gmail_refresh_token,
         company_name,
         job_title,
@@ -105,13 +108,16 @@ serve(async (req: RequestEvent) => {
       .single();
 
     if (userError || !user) {
+      console.error('Error fetching user:', userError);
       return new Response(
         JSON.stringify({ error: 'User not found' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 404 }
       );
     }
+    console.log('User found:', { name: user.full_name, email: user.email });
 
     if (!user.gmail_refresh_token) {
+      console.error('Gmail not connected for user:', user_id);
       return new Response(
         JSON.stringify({ error: 'Gmail not connected. Please connect your Gmail account first.' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
@@ -119,6 +125,7 @@ serve(async (req: RequestEvent) => {
     }
 
     // Initialize Gmail API client
+    console.log('Initializing Gmail API client');
     const oauth2Client = new google.auth.OAuth2(
       Deno.env.get('GOOGLE_CLIENT_ID'),
       Deno.env.get('GOOGLE_CLIENT_SECRET'),
@@ -131,15 +138,10 @@ serve(async (req: RequestEvent) => {
 
     const gmail = google.gmail({ version: 'v1', auth: oauth2Client });
 
-    // Get the last email sent to this lead
-    const lastEmail = lead.email_jobs?.[0];
-    const daysSinceLastEmail = lastEmail 
-      ? Math.floor((Date.now() - new Date(lastEmail.sent_at).getTime()) / (1000 * 60 * 60 * 24))
-      : undefined;
-
     // Generate email content using OpenAI
-    const emailContent = await generateEmailContent({
-      type: 'followup',
+    console.log('Generating email content with OpenAI');
+    const emailContext: EmailContext = {
+      type: 'cold_email' as const,
       lead: {
         full_name: lead.full_name,
         job_title: lead.job_title,
@@ -159,12 +161,12 @@ serve(async (req: RequestEvent) => {
         company_description: user.company_description,
         unique_selling_points: user.unique_selling_points,
         preferred_meeting_duration: user.preferred_meeting_duration
-      },
-      previousContact: {
-        daysSince: daysSinceLastEmail,
-        lastEmailSubject: lastEmail?.subject
       }
-    });
+    };
+    console.log('Email context:', emailContext);
+
+    const emailContent = await generateEmailContent(emailContext);
+    console.log('Generated email content:', emailContent);
 
     // Create email
     const emailLines = [
@@ -172,61 +174,96 @@ serve(async (req: RequestEvent) => {
       'MIME-Version: 1.0',
       `To: ${lead.email}`,
       `From: ${user.email}`,
-      `Subject: Re: ${lastEmail?.subject || 'Prise de contact professionnelle'}`,
+      'Subject: Prise de contact professionnelle',
       '',
       emailContent
     ].join('\n');
 
     const encodedEmail = btoa(emailLines).replace(/\+/g, '-').replace(/\//g, '_');
+    console.log('Email prepared for sending to:', lead.email);
 
     // Send email
-    await gmail.users.messages.send({
-      userId: 'me',
-      requestBody: {
-        raw: encodedEmail,
-        threadId: lastEmail?.thread_id
-      }
-    });
+    try {
+      console.log('Sending email via Gmail API');
+      const emailResponse = await gmail.users.messages.send({
+        userId: 'me',
+        requestBody: {
+          raw: encodedEmail
+        }
+      });
+      console.log('Gmail API response:', emailResponse);
+    } catch (gmailError) {
+      console.error('Error sending email via Gmail API:', gmailError);
+      throw gmailError;
+    }
 
     // Update lead status
-    await supabaseClient
-      .from('leads')
-      .update({ 
-        status: 'à relancer',
-        last_contacted_at: new Date().toISOString()
-      })
-      .eq('id', lead_id);
+    try {
+      console.log('Updating lead status to "email envoyé"');
+      const { error: updateError } = await supabaseClient
+        .from('leads')
+        .update({ 
+          status: 'email envoyé',
+          last_contacted_at: new Date().toISOString()
+        })
+        .eq('id', lead_id);
+
+      if (updateError) {
+        console.error('Error updating lead status:', updateError);
+        throw updateError;
+      }
+      console.log('Lead status updated successfully');
+    } catch (updateError) {
+      console.error('Error updating lead:', updateError);
+      throw updateError;
+    }
 
     // Log the email in email_jobs table
-    await supabaseClient
-      .from('email_jobs')
-      .insert({
+    try {
+      console.log('Inserting record into email_jobs table');
+      const emailJob = {
         lead_id: lead.id,
-        user_id: user_id,
-        type: 'followup',
+        client_id: user_id,
+        type: 'cold_email',
         status: 'sent',
-        subject: `Re: ${lastEmail?.subject || 'Prise de contact professionnelle'}`,
+        subject: 'Prise de contact professionnelle',
         body: emailContent,
-        thread_id: lastEmail?.thread_id
-      });
+        sent_at: new Date().toISOString()
+      };
+      console.log('Email job data:', emailJob);
 
+      const { error: insertError } = await supabaseClient
+        .from('email_jobs')
+        .insert(emailJob);
+
+      if (insertError) {
+        console.error('Error inserting email job:', insertError);
+        throw insertError;
+      }
+      console.log('Email job recorded successfully');
+    } catch (insertError) {
+      console.error('Error logging email job:', insertError);
+      throw insertError;
+    }
+
+    console.log('Cold email process completed successfully');
     return new Response(
       JSON.stringify({
-        message: `Follow-up email sent to ${lead.full_name}`,
+        message: `Cold email sent to ${lead.full_name}`,
         lead: {
           id: lead.id,
           name: lead.full_name,
-          status: 'à relancer'
+          status: 'email envoyé'
         }
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
   } catch (error: any) {
-    console.error('Error sending follow-up email:', error);
+    console.error('Error in send-cold-email function:', error);
     return new Response(
       JSON.stringify({ error: error.message }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
     );
   }
-});
+}); 

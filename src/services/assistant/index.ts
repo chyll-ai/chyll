@@ -1,5 +1,5 @@
 import OpenAI from 'openai';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/supabase';
 import type { Database } from '@/types/supabase';
 import type { ChatCompletionMessageParam, ChatCompletionTool } from 'openai/resources/chat/completions';
 import { toast } from '@/components/ui/sonner';
@@ -289,7 +289,7 @@ export class AssistantService {
         .select('*')
         .eq('client_id', this.userId)
         .eq('action', 'campaign_metrics')
-        .order('created_at', { ascending: false })
+        .order('id', { ascending: false })
         .limit(1);
       
       this.performanceMetrics = metrics?.[0]?.context;
@@ -576,8 +576,8 @@ export class AssistantService {
         .select('*')
         .eq('client_id', this.userId)
         .eq('action', 'campaign_metrics')
-        .gte('created_at', this.getTimeframeDate(timeframe))
-        .order('created_at', { ascending: false });
+        .gte('id', this.getTimeframeDate(timeframe))
+        .order('id', { ascending: false });
 
       if (error) {
         console.error('Error fetching sales performance:', error);
@@ -651,7 +651,7 @@ export class AssistantService {
         .select('*')
         .eq('client_id', this.userId)
         .eq('location', location)
-        .order('created_at', { ascending: false })
+        .order('id', { ascending: false })
         .limit(10);
 
       if (error) {
@@ -971,14 +971,13 @@ export class AssistantService {
         conversation_id: this.conversationId,
         role: message.role,
         content: message.content,
-        toolCalls: message.toolCalls || null,
-        created_at: new Date().toISOString()
+        toolCalls: message.toolCalls ? JSON.stringify(message.toolCalls) : null
       };
 
       const { data, error } = await supabase
         .from('messages')
         .insert(messageData)
-        .select()
+        .select('id, role, content, toolCalls, client_id, conversation_id, chat_session_id')
         .single();
 
       if (error) {

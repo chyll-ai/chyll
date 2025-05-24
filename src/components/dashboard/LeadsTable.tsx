@@ -298,12 +298,13 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
         const baseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://atsfuqwxfrezkxtnctmk.supabase.co';
         const response = await fetch(`${baseUrl}/functions/v1/chat-action`, {
           method: 'POST',
-          mode: 'cors',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${access_token}`,
-            'Accept': 'application/json'
+            'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY || '',
+            'x-client-info': '@supabase/auth-helpers-nextjs@0.7.4'
           },
+          credentials: 'include',
           body: JSON.stringify({
             lead_id: leadId,
             lead_name: leadName,
@@ -373,7 +374,65 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
   
   const saveLeadStatus = async (newStatus: string) => {
     if (!currentLead) return;
-    await handleChatAction(currentLead.id, 'update_status', newStatus);
+    
+    try {
+      const { data: session } = await supabase.auth.getSession();
+      const access_token = session?.session?.access_token;
+      const client_id = session?.session?.user?.id;
+      
+      if (!access_token || !client_id) {
+        toast.error('Vous devez être connecté pour effectuer cette action');
+        return;
+      }
+
+      setUpdatingStatus(true);
+      
+      const baseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://atsfuqwxfrezkxtnctmk.supabase.co';
+      const response = await fetch(`${baseUrl}/functions/v1/update-lead-status`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${access_token}`,
+          'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY || '',
+          'x-client-info': '@supabase/auth-helpers-nextjs@0.7.4'
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          lead_id: currentLead.id,
+          status: newStatus,
+          user_id: client_id
+        })
+      });
+
+      if (!response.ok) {
+        const result = await response.json().catch(() => ({ error: 'Failed to parse response' }));
+        throw new Error(result.error || `Error: ${response.status}`);
+      }
+
+      const result = await response.json();
+      toast.success(result.message || 'Statut mis à jour avec succès');
+      
+      // Update local state
+      setLeads(prevLeads => 
+        prevLeads.map(l => 
+          l.id === currentLead.id ? { ...l, status: newStatus } : l
+        )
+      );
+      
+      setStatusUpdateDialogOpen(false);
+    } catch (error: any) {
+      console.error('Error updating status:', error);
+      toast.error(error.message || 'Erreur lors de la mise à jour du statut');
+      
+      // Revert local state if there was an error
+      setLeads(prevLeads => 
+        prevLeads.map(l => 
+          l.id === currentLead.id ? { ...l, status: currentLead.status } : l
+        )
+      );
+    } finally {
+      setUpdatingStatus(false);
+    }
   };
 
   const handleScheduleCall = async (leadId: string) => {

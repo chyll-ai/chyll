@@ -311,7 +311,6 @@ export type Database = {
           client_id: string | null
           content: string
           conversation_id: string | null
-          created_at: string | null
           id: string
           role: string
           toolCalls: Json | null
@@ -321,7 +320,6 @@ export type Database = {
           client_id?: string | null
           content: string
           conversation_id?: string | null
-          created_at?: string | null
           id?: string
           role: string
           toolCalls?: Json | null
@@ -331,7 +329,6 @@ export type Database = {
           client_id?: string | null
           content?: string
           conversation_id?: string | null
-          created_at?: string | null
           id?: string
           role?: string
           toolCalls?: Json | null
@@ -357,7 +354,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "conversations"
             referencedColumns: ["id"]
-          },
+          }
         ]
       }
       queue_search: {

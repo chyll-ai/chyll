@@ -1,16 +1,16 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Send } from 'lucide-react';
+import { Send, Loader2 } from 'lucide-react';
 import { toast } from '@/components/ui/sonner';
 
 interface ChatInputFormProps {
-  onSendMessage: (message: string) => void;
+  onSubmit: (message: string) => void;
   disabled: boolean;
+  loading?: boolean;
 }
 
-const ChatInputForm: React.FC<ChatInputFormProps> = ({ onSendMessage, disabled }) => {
+const ChatInputForm: React.FC<ChatInputFormProps> = ({ onSubmit, disabled, loading = false }) => {
   const [inputMessage, setInputMessage] = useState('');
   
   const handleSubmit = (e: React.FormEvent) => {
@@ -21,16 +21,16 @@ const ChatInputForm: React.FC<ChatInputFormProps> = ({ onSendMessage, disabled }
     }
     
     if (disabled) {
-      toast.error("Veuillez patienter, un message est déjà en cours d'envoi");
+      toast.error("Please wait, a message is already being sent");
       return;
     }
     
     try {
-      onSendMessage(inputMessage);
+      onSubmit(inputMessage);
       setInputMessage('');
     } catch (error) {
-      console.error("Erreur lors de l'envoi du message:", error);
-      toast.error("Impossible d'envoyer le message. Veuillez réessayer.");
+      console.error("Error sending message:", error);
+      toast.error("Failed to send message. Please try again.");
     }
   };
   
@@ -40,17 +40,21 @@ const ChatInputForm: React.FC<ChatInputFormProps> = ({ onSendMessage, disabled }
         <Input
           value={inputMessage}
           onChange={(e) => setInputMessage(e.target.value)}
-          placeholder="Tapez votre message..."
+          placeholder="Type your message..."
           disabled={disabled}
           className="flex-1"
         />
         <Button 
           type="submit" 
           disabled={!inputMessage.trim() || disabled}
-          aria-label="Envoyer le message"
+          aria-label="Send message"
         >
-          <Send className="h-4 w-4 mr-2" />
-          Envoyer
+          {loading ? (
+            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+          ) : (
+            <Send className="h-4 w-4 mr-2" />
+          )}
+          Send
         </Button>
       </form>
     </footer>

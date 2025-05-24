@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/supabase';
 import { toast } from '@/components/ui/sonner';
 import { Message, AssistantState, Lead } from '@/types/assistant';
 import { AssistantService } from '@/services/assistant';
@@ -10,8 +10,7 @@ const convertToMessage = (dbMessage: any): Message => ({
   id: dbMessage.id,
   role: dbMessage.role,
   content: dbMessage.content,
-  toolCalls: dbMessage.toolCalls,
-  created_at: dbMessage.created_at,
+  toolCalls: dbMessage.toolCalls || undefined,
   client_id: dbMessage.client_id,
   conversation_id: dbMessage.conversation_id,
   chat_session_id: dbMessage.chat_session_id
@@ -159,7 +158,7 @@ const useAssistantChat = (): AssistantState => {
           .from('messages')
           .select('*')
           .eq('conversation_id', currentConversation.id)
-          .order('created_at', { ascending: true });
+          .order('id', { ascending: true });
           
         if (messagesError) {
           console.error("Error fetching messages:", messagesError);
@@ -231,8 +230,7 @@ const useAssistantChat = (): AssistantState => {
           conversation_id: conversationId,
           client_id: userId,
           role: 'user',
-          content: content.trim(),
-          created_at: new Date().toISOString()
+          content: content.trim()
         })
         .select()
         .single();
@@ -257,8 +255,7 @@ const useAssistantChat = (): AssistantState => {
           client_id: userId,
           role: 'assistant',
           content: response.message,
-          toolCalls: response.toolCalls,
-          created_at: new Date().toISOString()
+          toolCalls: response.toolCalls
         })
         .select()
         .single();

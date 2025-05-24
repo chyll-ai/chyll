@@ -5,7 +5,7 @@ import ChatButton from "@/components/ChatButton";
 import { Button } from "@/components/ui/button";
 import { Mail } from "lucide-react";
 import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/supabase";
 
 interface LeadActionsProps {
   leadId: string;

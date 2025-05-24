@@ -22,13 +22,6 @@ declare const Deno: {
   };
 };
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': 'http://localhost:8080',  // During development
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, accept',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Max-Age': '86400'
-};
-
 interface ChatActionRequest {
   lead_id?: string;
   lead_name?: string;
@@ -37,6 +30,13 @@ interface ChatActionRequest {
   user_id: string;
   notes?: string;
 }
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': 'http://localhost:8080',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Credentials': 'true'
+};
 
 const VALID_STATUSES = [
   'à contacter',
@@ -51,17 +51,11 @@ const VALID_STATUSES = [
 serve(async (req: RequestEvent) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    return new Response(null, { 
-      status: 204,
-      headers: corsHeaders
+    return new Response('ok', { 
+      headers: corsHeaders,
+      status: 200 // Explicitly set 200 status for OPTIONS
     });
   }
-
-  // Add CORS headers to all responses
-  const responseHeaders = {
-    ...corsHeaders,
-    'Content-Type': 'application/json'
-  };
 
   try {
     const { lead_id, lead_name, action, status, user_id, notes } = await req.json() as ChatActionRequest;
@@ -87,7 +81,7 @@ serve(async (req: RequestEvent) => {
       if (!foundLeads || foundLeads.length === 0) {
         return new Response(
           JSON.stringify({ error: `Lead "${lead_name}" not found` }),
-          { headers: responseHeaders, status: 404 }
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 404 }
         );
       }
 
@@ -97,7 +91,7 @@ serve(async (req: RequestEvent) => {
             error: 'Multiple leads found with this name',
             leads: foundLeads.map((l: Lead) => ({ id: l.id, name: l.full_name, company: l.company }))
           }),
-          { headers: responseHeaders, status: 300 }
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 300 }
         );
       }
 
@@ -114,7 +108,7 @@ serve(async (req: RequestEvent) => {
       if (leadError || !foundLead) {
         return new Response(
           JSON.stringify({ error: 'Lead not found or unauthorized' }),
-          { headers: responseHeaders, status: 404 }
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 404 }
         );
       }
 
@@ -122,7 +116,7 @@ serve(async (req: RequestEvent) => {
     } else {
       return new Response(
         JSON.stringify({ error: 'Either lead_id or lead_name must be provided' }),
-        { headers: responseHeaders, status: 400 }
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
       );
     }
 
@@ -227,13 +221,13 @@ serve(async (req: RequestEvent) => {
 
     return new Response(
       JSON.stringify(result),
-      { headers: responseHeaders }
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
   } catch (error: any) {
     return new Response(
       JSON.stringify({ error: error.message }),
-      { headers: responseHeaders, status: 400 }
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
     );
   }
 }); 
