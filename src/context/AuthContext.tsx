@@ -21,7 +21,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [hasInitialized, setHasInitialized] = useState(false);
 
   const ensureClientRecord = async (userId: string, email: string) => {
     try {
@@ -133,7 +132,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (mounted) {
           console.log('AuthContext: Initial session found:', !!initialSession);
           await updateAuthState(initialSession);
-          setHasInitialized(true);
           setIsLoading(false);
           
           // Only navigate if we have a session and we're on login page
@@ -145,7 +143,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } catch (error) {
         console.error('AuthContext: Error in initialization:', error);
         if (mounted) {
-          setHasInitialized(true);
           setIsLoading(false);
         }
       }
@@ -153,7 +150,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, newSession) => {
-      if (!mounted || !hasInitialized) return;
+      if (!mounted) return;
       
       console.log('AuthContext: Auth state change:', event, !!newSession);
       
@@ -178,7 +175,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       mounted = false;
       subscription.unsubscribe();
     };
-  }, [navigate, hasInitialized]);
+  }, [navigate]);
 
   const value = {
     user,
