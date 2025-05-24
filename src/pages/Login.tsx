@@ -14,31 +14,32 @@ const Login = () => {
   useEffect(() => {
     const handleAuthChange = async () => {
       try {
-        console.log('Checking auth state on Login page...');
+        console.log('Login: Checking auth state...');
         debugStorage();
         
         // Check if user is already logged in
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
-        console.log('Current session state:', {
+        console.log('Login: Current session state:', {
           exists: !!session,
           userId: session?.user?.id,
           expiresAt: session?.expires_at
         });
         
         if (sessionError) {
-          console.error('Session error:', sessionError);
-          throw sessionError;
+          console.error('Login: Session error:', sessionError);
+          return;
         }
 
         if (session?.user) {
-          console.log('Found active session, checking profile...');
-          await checkProfileAndRedirect(session.user.id);
+          console.log('Login: Found active session, redirecting to assistant...');
+          // Direct redirect to assistant - let the assistant page handle profile checks
+          navigate('/assistant', { replace: true });
         } else {
-          console.log('No active session found');
+          console.log('Login: No active session found');
         }
       } catch (error) {
-        console.error("Error in auth change handler:", error);
+        console.error("Login: Error in auth change handler:", error);
         toast.error("Authentication error. Please try again.");
       }
     };
@@ -47,11 +48,12 @@ const Login = () => {
 
     // Set up auth state change listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Auth state changed:', { event, userId: session?.user?.id });
+      console.log('Login: Auth state changed:', { event, userId: session?.user?.id });
       
       if (event === 'SIGNED_IN' && session?.user) {
-        console.log('User signed in, checking profile...');
-        await checkProfileAndRedirect(session.user.id);
+        console.log('Login: User signed in, redirecting to assistant...');
+        // Direct redirect to assistant - let the assistant page handle profile checks
+        navigate('/assistant', { replace: true });
       }
     });
 
@@ -60,64 +62,16 @@ const Login = () => {
     };
   }, [location, navigate]);
 
-  const checkProfileAndRedirect = async (userId: string) => {
-    try {
-      console.log('Starting checkProfileAndRedirect for user:', userId);
-      
-      // Check if client record exists (it should have been created by the Edge Function)
-      const { data: client, error: clientError } = await supabase
-        .from('clients')
-        .select('*')
-        .eq('id', userId)
-        .maybeSingle();
-
-      if (clientError) {
-        console.error("Error checking client:", clientError);
-        console.log("Client record may not exist yet, proceeding anyway");
-      }
-
-      console.log('Client check result:', { exists: !!client, client });
-
-      // Check if the user has a profile and if it's complete
-      console.log('Checking for user profile...');
-      const { data: profile, error: profileError } = await supabase
-        .from('client_profile')
-        .select('*, is_complete')
-        .eq('client_id', userId)
-        .maybeSingle();
-
-      if (profileError) {
-        console.error("Error fetching profile:", profileError);
-        toast.error("Error fetching your profile");
-        return;
-      }
-
-      console.log('Profile check result:', { exists: !!profile, isComplete: profile?.is_complete });
-
-      // Redirect based on whether the user has a complete profile
-      if (profile && profile.is_complete === true) {
-        console.log("Complete profile found, redirecting to dashboard");
-        navigate('/dashboard', { replace: true });
-      } else {
-        console.log("No complete profile found, redirecting to assistant");
-        navigate('/assistant', { replace: true });
-      }
-    } catch (error: any) {
-      console.error("Error in checkProfileAndRedirect:", error);
-      toast.error(error.message || "An error occurred");
-    }
-  };
-
   const handleGoogleSignIn = async () => {
     try {
-      console.log('Starting Google OAuth sign in...');
+      console.log('Login: Starting Google OAuth sign in...');
       debugStorage();
       
       // Get the current URL without any hash or query parameters
       const currentOrigin = window.location.origin;
       const redirectTo = `${currentOrigin}/assistant`;
       
-      console.log('OAuth redirect URL:', redirectTo);
+      console.log('Login: OAuth redirect URL:', redirectTo);
       
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
@@ -131,15 +85,15 @@ const Login = () => {
       });
 
       if (error) {
-        console.error('Google OAuth error:', error);
+        console.error('Login: Google OAuth error:', error);
         throw error;
       }
 
-      console.log('Google OAuth initiated successfully:', data);
+      console.log('Login: Google OAuth initiated successfully:', data);
       
       // The redirect will happen automatically, no need to do anything else here
     } catch (error: any) {
-      console.error("Google authentication error:", error);
+      console.error("Login: Google authentication error:", error);
       toast.error(error.message || "Failed to sign in with Google");
     }
   };

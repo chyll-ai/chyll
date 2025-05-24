@@ -1,3 +1,4 @@
+
 import React, { useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAssistantChat from '@/hooks/assistant/useAssistantChat';
@@ -33,41 +34,22 @@ const Assistant = ({ embedded = false }: AssistantProps) => {
   const { isConnected, isChecking, checkConnection } = useGmailAuth();
   const { oauthInProgress } = useOAuthHandler();
 
+  // Simple auth check - if no user after loading is done, redirect to login
   useEffect(() => {
-    const checkAuthState = async () => {
-      console.log('Checking auth state on Assistant page...');
-      debugStorage();
-      
-      const { data: { session: currentSession }, error: sessionError } = await supabase.auth.getSession();
-      
-      console.log('Current session state:', {
-        exists: !!currentSession,
-        userId: currentSession?.user?.id,
-        expiresAt: currentSession?.expires_at
-      });
-      
-      if (sessionError) {
-        console.error('Session error:', sessionError);
-        return;
-      }
-      
-      if (!currentSession) {
-        console.log('No active session found, redirecting to login...');
-        navigate('/login');
-      }
-    };
-    
-    checkAuthState();
-  }, [navigate]);
+    if (!authLoading && !user) {
+      console.log('Assistant: No authenticated user, redirecting to login...');
+      navigate('/login');
+    }
+  }, [user, authLoading, navigate]);
 
   const handleGoToLogin = useCallback(() => {
-    console.log('Redirecting to login page...');
+    console.log('Assistant: Redirecting to login page...');
     navigate('/login');
   }, [navigate]);
 
   const handleConnectGmail = useCallback(async () => {
     if (!user?.id || !session?.access_token) {
-      console.log('Cannot connect Gmail - missing user or session:', {
+      console.log('Assistant: Cannot connect Gmail - missing user or session:', {
         userId: user?.id,
         hasAccessToken: !!session?.access_token
       });
@@ -76,7 +58,7 @@ const Assistant = ({ embedded = false }: AssistantProps) => {
     }
 
     try {
-      console.log('Initiating Gmail OAuth...', {
+      console.log('Assistant: Initiating Gmail OAuth...', {
         userId: user.id,
         redirectUrl: `${window.location.origin}/assistant`
       });
@@ -97,37 +79,37 @@ const Assistant = ({ embedded = false }: AssistantProps) => {
 
       if (!response.ok) {
         const result = await response.json();
-        console.error('Failed to get OAuth URL:', result);
+        console.error('Assistant: Failed to get OAuth URL:', result);
         throw new Error(result.error || 'Failed to initiate Gmail connection');
       }
 
       const result = await response.json();
-      console.log('Received OAuth response:', result);
+      console.log('Assistant: Received OAuth response:', result);
       
       if (result.oauth_url) {
-        console.log('Redirecting to Google OAuth URL...');
+        console.log('Assistant: Redirecting to Google OAuth URL...');
         window.location.href = result.oauth_url;
       } else {
         throw new Error('Invalid response from server');
       }
     } catch (error: any) {
-      console.error('Failed to connect Gmail:', error);
+      console.error('Assistant: Failed to connect Gmail:', error);
       toast.error(error.message || 'Failed to connect Gmail');
     }
   }, [user, session]);
 
   const handleRefreshGmailConnection = useCallback(async () => {
     if (user?.id) {
-      console.log('Refreshing Gmail connection for user:', user.id);
+      console.log('Assistant: Refreshing Gmail connection for user:', user.id);
       await checkConnection(user.id);
     } else {
-      console.log('Cannot refresh Gmail connection - no user ID');
+      console.log('Assistant: Cannot refresh Gmail connection - no user ID');
     }
   }, [user, checkConnection]);
 
   // Debug function to check auth state
   const handleDebugAuth = useCallback(async () => {
-    console.group('[Auth Debug]');
+    console.group('[Assistant Auth Debug]');
     console.log('User:', user);
     console.log('Session:', session);
     console.log('User ID:', user?.id);
@@ -152,14 +134,14 @@ const Assistant = ({ embedded = false }: AssistantProps) => {
   // Check Gmail connection when user becomes available
   useEffect(() => {
     if (user?.id && !isChecking) {
-      console.log('Checking Gmail connection for user:', user.id);
+      console.log('Assistant: Checking Gmail connection for user:', user.id);
       checkConnection(user.id);
     }
   }, [user?.id, checkConnection, isChecking]);
 
   // Show loading state while checking auth
   if (authLoading) {
-    console.log('Auth loading state...');
+    console.log('Assistant: Auth loading state...');
     return (
       <div className="flex h-screen items-center justify-center">
         <div className="text-center">
@@ -172,7 +154,7 @@ const Assistant = ({ embedded = false }: AssistantProps) => {
 
   // Show login prompt if user is not authenticated
   if (!user || !session) {
-    console.log('No authenticated user found');
+    console.log('Assistant: No authenticated user found');
     return (
       <div className="flex h-screen items-center justify-center bg-background">
         <div className="text-center max-w-md mx-auto p-8">
@@ -214,7 +196,7 @@ const Assistant = ({ embedded = false }: AssistantProps) => {
   const isInitialLoading = chatLoading && !messages.length;
 
   if (isInitialLoading) {
-    console.log('Initial chat loading state...');
+    console.log('Assistant: Initial chat loading state...');
     return (
       <div className="flex h-screen items-center justify-center">
         <div className="text-center">

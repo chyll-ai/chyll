@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
@@ -16,8 +17,8 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Create a Set to track in-progress client creation attempts
-const clientCreationInProgress = new Set<string>();
+// Simple tracking to prevent duplicate client creation
+const processedUsers = new Set<string>();
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const navigate = useNavigate();
@@ -27,77 +28,64 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const ensureClientRecord = async (userId: string, email: string) => {
     try {
-      if (clientCreationInProgress.has(userId)) {
-        console.log('Client creation already in progress for:', userId);
+      if (processedUsers.has(userId)) {
+        console.log('AuthContext: Client already processed for:', userId);
         return;
       }
       
-      console.log('Ensuring client record exists for:', userId);
-      clientCreationInProgress.add(userId);
+      console.log('AuthContext: Ensuring client record exists for:', userId);
+      processedUsers.add(userId);
       
-      const { data: client, error: clientError } = await supabase
+      // Simple upsert - create if doesn't exist, ignore if exists
+      const { error } = await supabase
         .from('clients')
-        .select('*')
-        .eq('id', userId)
-        .maybeSingle();
+        .upsert({
+          id: userId,
+          email: email
+        }, {
+          onConflict: 'id',
+          ignoreDuplicates: true
+        });
 
-      if (clientError) {
-        console.error('Error checking client record:', clientError);
-        return;
-      }
-
-      if (!client) {
-        console.log('Creating new client record for:', userId);
-        const { error: createError } = await supabase
-          .from('clients')
-          .insert({
-            id: userId,
-            email: email
-          });
-
-        if (createError && createError.code !== '23505') {
-          console.error('Error creating client record:', createError);
-        } else {
-          console.log('Client record created successfully');
-        }
+      if (error && error.code !== '23505') {
+        console.error('AuthContext: Error upserting client record:', error);
       } else {
-        console.log('Client record already exists');
+        console.log('AuthContext: Client record ensured successfully');
       }
     } catch (error) {
-      console.error('Error in ensureClientRecord:', error);
-    } finally {
-      clientCreationInProgress.delete(userId);
+      console.error('AuthContext: Error in ensureClientRecord:', error);
     }
   };
 
   const handleAuthStateChange = async (event: string, newSession: Session | null) => {
-    console.log('Auth state changed:', { event, userId: newSession?.user?.id });
+    console.log('AuthContext: Auth state changed:', { event, userId: newSession?.user?.id });
     debugStorage();
 
     try {
-      if (event === 'SIGNED_IN' && newSession?.user) {
-        console.log('User signed in, ensuring client record...');
-        await ensureClientRecord(newSession.user.id, newSession.user.email || '');
-      }
-
       if (event === 'SIGNED_OUT' || event === 'USER_DELETED') {
-        console.log('User signed out or deleted, cleaning up...');
+        console.log('AuthContext: User signed out or deleted, cleaning up...');
         setSession(null);
         setUser(null);
+        processedUsers.clear();
         localStorage.removeItem('supabase.auth.token');
         sessionStorage.removeItem('supabase.auth.token');
         navigate('/login', { replace: true });
-      } else if (event === 'TOKEN_REFRESHED' && newSession) {
-        console.log('Token refreshed, updating session...');
+      } else if (newSession?.user) {
+        console.log('AuthContext: Updating session state...');
         setSession(newSession);
         setUser(newSession.user);
+        
+        // Ensure client record exists in background
+        if (event === 'SIGNED_IN') {
+          ensureClientRecord(newSession.user.id, newSession.user.email || '');
+        }
       } else {
-        console.log('Updating session state...');
-        setSession(newSession);
-        setUser(newSession?.user ?? null);
+        console.log('AuthContext: No session, clearing state...');
+        setSession(null);
+        setUser(null);
       }
     } catch (error) {
-      console.error('Error in handleAuthStateChange:', error);
+      console.error('AuthContext: Error in handleAuthStateChange:', error);
     } finally {
       setIsLoading(false);
     }
@@ -105,40 +93,40 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const refreshSession = async () => {
     try {
-      console.log('Attempting to refresh session...');
+      console.log('AuthContext: Attempting to refresh session...');
       setIsLoading(true);
       debugStorage();
       
       const { data: { session: currentSession } } = await supabase.auth.getSession();
       
       if (!currentSession) {
-        console.log('No current session, trying to refresh...');
+        console.log('AuthContext: No current session, trying to refresh...');
         const { data: { session: refreshedSession }, error: refreshError } = await supabase.auth.refreshSession();
         
         if (refreshError) {
-          console.error('Error refreshing session:', refreshError);
+          console.error('AuthContext: Error refreshing session:', refreshError);
           throw refreshError;
         }
         
         if (!refreshedSession) {
-          console.log('No session after refresh attempt');
+          console.log('AuthContext: No session after refresh attempt');
           setSession(null);
           setUser(null);
           return;
         }
         
-        console.log('Session refreshed successfully');
+        console.log('AuthContext: Session refreshed successfully');
         setSession(refreshedSession);
         setUser(refreshedSession.user);
-        await ensureClientRecord(refreshedSession.user.id, refreshedSession.user.email || '');
+        ensureClientRecord(refreshedSession.user.id, refreshedSession.user.email || '');
       } else {
-        console.log('Using existing session');
+        console.log('AuthContext: Using existing session');
         setSession(currentSession);
         setUser(currentSession.user);
-        await ensureClientRecord(currentSession.user.id, currentSession.user.email || '');
+        ensureClientRecord(currentSession.user.id, currentSession.user.email || '');
       }
     } catch (error) {
-      console.error('Error in refreshSession:', error);
+      console.error('AuthContext: Error in refreshSession:', error);
       // On error, clear session state
       setSession(null);
       setUser(null);
@@ -151,20 +139,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signOut = async () => {
     try {
-      console.log('Signing out...');
+      console.log('AuthContext: Signing out...');
       setIsLoading(true);
       debugStorage();
       
       const { error } = await supabase.auth.signOut();
       
       if (error) {
-        console.error('Error during sign out:', error);
+        console.error('AuthContext: Error during sign out:', error);
         throw error;
       }
       
-      console.log('Signed out successfully, cleaning up...');
+      console.log('AuthContext: Signed out successfully, cleaning up...');
       setSession(null);
       setUser(null);
+      processedUsers.clear();
       
       localStorage.removeItem('supabase.auth.token');
       sessionStorage.removeItem('supabase.auth.token');
@@ -172,7 +161,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       navigate('/login', { replace: true });
       toast.success('Signed out successfully');
     } catch (error: any) {
-      console.error('Error signing out:', error);
+      console.error('AuthContext: Error signing out:', error);
       toast.error(error.message || 'Failed to sign out');
     } finally {
       setIsLoading(false);
@@ -182,29 +171,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     const initializeAuth = async () => {
       try {
-        console.log('Initializing auth state...');
+        console.log('AuthContext: Initializing auth state...');
         debugStorage();
         
         const { data: { session: initialSession }, error: sessionError } = await supabase.auth.getSession();
         
         if (sessionError) {
-          console.error('Error getting initial session:', sessionError);
+          console.error('AuthContext: Error getting initial session:', sessionError);
           throw sessionError;
         }
         
         if (!initialSession) {
-          console.log('No initial session found');
+          console.log('AuthContext: No initial session found');
           await handleAuthStateChange('INITIAL', null);
           return;
         }
 
-        console.log('Found initial session:', {
+        console.log('AuthContext: Found initial session:', {
           userId: initialSession.user.id,
           expiresAt: initialSession.expires_at
         });
         await handleAuthStateChange('INITIAL', initialSession);
       } catch (error) {
-        console.error('Error in initializeAuth:', error);
+        console.error('AuthContext: Error in initializeAuth:', error);
         await handleAuthStateChange('INITIAL', null);
       }
     };
@@ -214,7 +203,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const { data: { subscription } } = supabase.auth.onAuthStateChange(handleAuthStateChange);
 
     return () => {
-      console.log('Cleaning up auth subscriptions');
+      console.log('AuthContext: Cleaning up auth subscriptions');
       subscription.unsubscribe();
     };
   }, [navigate]);
@@ -241,4 +230,4 @@ export const useAuth = () => {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
-}; 
+};
