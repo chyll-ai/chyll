@@ -21,6 +21,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [hasInitialized, setHasInitialized] = useState(false);
 
   const ensureClientRecord = async (userId: string, email: string) => {
     try {
@@ -60,7 +61,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const updateAuthState = (newSession: Session | null) => {
+  const updateAuthState = async (newSession: Session | null) => {
     console.log('AuthContext: Updating auth state with session:', !!newSession);
     setSession(newSession);
     setUser(newSession?.user || null);
@@ -83,11 +84,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         throw error;
       }
       
-      updateAuthState(refreshedSession);
+      await updateAuthState(refreshedSession);
       return refreshedSession;
     } catch (error) {
       console.error('AuthContext: Failed to refresh session:', error);
-      updateAuthState(null);
+      await updateAuthState(null);
       throw error;
     }
   };
@@ -104,7 +105,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         throw error;
       }
       
-      updateAuthState(null);
+      await updateAuthState(null);
       navigate('/login', { replace: true });
       toast.success('Signed out successfully');
     } catch (error: any) {
@@ -131,40 +132,43 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         
         if (mounted) {
           console.log('AuthContext: Initial session found:', !!initialSession);
-          updateAuthState(initialSession);
+          await updateAuthState(initialSession);
+          setHasInitialized(true);
           setIsLoading(false);
           
-          // Navigate based on session status and current path
-          if (initialSession) {
-            if (window.location.pathname === '/login' || window.location.pathname === '/') {
-              console.log('AuthContext: User authenticated, navigating to assistant...');
-              navigate('/assistant', { replace: true });
-            }
+          // Only navigate if we have a session and we're on login page
+          if (initialSession && window.location.pathname === '/login') {
+            console.log('AuthContext: User authenticated on login page, navigating to assistant...');
+            navigate('/assistant', { replace: true });
           }
         }
       } catch (error) {
         console.error('AuthContext: Error in initialization:', error);
         if (mounted) {
+          setHasInitialized(true);
           setIsLoading(false);
         }
       }
     };
 
     // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, newSession) => {
-      if (!mounted) return;
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, newSession) => {
+      if (!mounted || !hasInitialized) return;
       
       console.log('AuthContext: Auth state change:', event, !!newSession);
       
       if (event === 'SIGNED_IN' && newSession) {
-        updateAuthState(newSession);
-        console.log('AuthContext: User signed in, navigating to assistant...');
-        navigate('/assistant', { replace: true });
+        await updateAuthState(newSession);
+        // Only navigate to assistant if we're currently on login page
+        if (window.location.pathname === '/login' || window.location.pathname === '/') {
+          console.log('AuthContext: User signed in, navigating to assistant...');
+          navigate('/assistant', { replace: true });
+        }
       } else if (event === 'SIGNED_OUT') {
-        updateAuthState(null);
+        await updateAuthState(null);
         navigate('/login', { replace: true });
       } else if (event === 'TOKEN_REFRESHED' && newSession) {
-        updateAuthState(newSession);
+        await updateAuthState(newSession);
       }
     });
 
@@ -174,7 +178,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       mounted = false;
       subscription.unsubscribe();
     };
-  }, [navigate]);
+  }, [navigate, hasInitialized]);
 
   const value = {
     user,
