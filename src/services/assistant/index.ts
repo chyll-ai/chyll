@@ -1,7 +1,7 @@
 import OpenAI from 'openai';
 import { supabase } from '@/lib/supabase';
 import type { Database } from '@/types/supabase';
-import type { ChatCompletionMessageParam, ChatCompletionTool } from 'openai/resources';
+import type { ChatCompletionMessageParam, ChatCompletionTool } from 'openai/resources/chat/completions';
 import { toast } from '@/components/ui/sonner';
 
 // Message interface definition
@@ -22,6 +22,8 @@ class OpenAIClientError extends Error {
 // Initialize OpenAI client with proper error handling
 const initializeOpenAI = async () => {
   try {
+    console.log('Initializing OpenAI client...');
+    
     // Get the application's OpenAI API key from Supabase
     const { data: apiKeyData, error } = await supabase
       .from('api_keys')
@@ -271,8 +273,11 @@ export class AssistantService {
 
   private async initializeAssistant() {
     try {
-      // Initialize OpenAI client (now without userId)
+      console.log('AssistantService: Initializing assistant...');
+      
+      // Initialize OpenAI client
       this.openaiClient = await initializeOpenAI();
+      console.log('AssistantService: OpenAI client initialized');
 
       // Load user profile
       const { data: profile } = await supabase
@@ -295,6 +300,7 @@ export class AssistantService {
       this.performanceMetrics = metrics?.[0]?.context;
 
     } catch (error) {
+      console.error('AssistantService: Error initializing assistant:', error);
       if (error instanceof OpenAIClientError) {
         toast.error(error.message);
       } else {
@@ -306,6 +312,8 @@ export class AssistantService {
 
   async sendMessage(content: string): Promise<{ message: string; toolCalls?: any[] }> {
     try {
+      console.log('AssistantService: Sending message:', { content });
+      
       if (!this.openaiClient) {
         console.error('OpenAI client not initialized');
         throw new OpenAIClientError('OpenAI client not initialized. Please check your API key.');
@@ -322,7 +330,6 @@ export class AssistantService {
         /(?:à|a)\s+contacter/i,
         
         // Job Title Patterns
-        /qui\s+(sont|est)\s+les?\s+(ceo|pdg|dg|directeur|président)/i,
         /qui\s+(sont|est)\s+les?\s+([^?\s]+\s+[^?\s]+)/i,  // For two-word titles
         /qui\s+(sont|est)\s+les?\s+([^?\s]+)/i,  // For single-word titles
         

@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
@@ -15,22 +16,33 @@ const Dashboard = () => {
   const { isComplete, isLoading: profileLoading } = useProfile();
 
   useEffect(() => {
+    console.log('Dashboard: Auth state changed', { 
+      user: !!user, 
+      authLoading, 
+      isComplete, 
+      profileLoading 
+    });
+
     if (!authLoading && !user) {
+      console.log('Dashboard: No user, redirecting to login');
       navigate('/login');
       return;
     }
 
     if (!profileLoading && !isComplete) {
+      console.log('Dashboard: Profile incomplete, redirecting to assistant');
       navigate('/assistant');
       return;
     }
 
     if (user) {
+      console.log('Dashboard: Setting userId', user.id);
       setUserId(user.id);
     }
   }, [user, authLoading, isComplete, profileLoading, navigate]);
 
   if (authLoading || profileLoading) {
+    console.log('Dashboard: Loading state');
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -39,8 +51,11 @@ const Dashboard = () => {
   }
 
   if (!user || !isComplete) {
+    console.log('Dashboard: User or profile check failed');
     return null;
   }
+
+  console.log('Dashboard: Rendering main dashboard');
 
   return (
     <div className="flex flex-col h-screen bg-background">
