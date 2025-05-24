@@ -1,6 +1,6 @@
 
 import React from 'react';
-import Navbar from '@/components/Navbar';
+import Header from '@/components/layout/Header';
 import { Footer2 } from '@/components/ui/footer2';
 import { ContactForm } from '@/components/contact/contact-form';
 import { ContactInfoSection } from '@/components/contact/contact-info-section';
@@ -11,7 +11,7 @@ const Contact = () => {
   
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar />
+      <Header />
       
       <section className="flex-grow py-16 bg-white">
         <div className="container-custom">

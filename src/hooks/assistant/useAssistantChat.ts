@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -351,6 +350,14 @@ const useAssistantChat = (): AssistantState => {
       setLastProfileQuestion(null);
     }
   }, [messages, lastProfileQuestion, hasProfile]);
+
+  const sortMessagesByTimestamp = useCallback((messages: any[]) => {
+    return messages.sort((a, b) => {
+      const timeA = new Date(a.created_at).getTime();
+      const timeB = new Date(b.created_at).getTime();
+      return timeA - timeB;
+    });
+  }, []);
 
   const setupSubscription = (userId: string, conversationId: string) => {
     const messagesChannel = supabase

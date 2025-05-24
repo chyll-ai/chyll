@@ -1,6 +1,5 @@
-
 import React from 'react';
-import Navbar from '@/components/Navbar';
+import Header from '@/components/layout/Header';
 import HowItWorks from '@/components/HowItWorks';
 import { Hero } from '@/components/ui/animated-hero';
 import { FeaturesSectionWithHoverEffectsDemo } from '@/components/ui/feature-section-with-hover-effects-demo';
@@ -207,7 +206,7 @@ const Index = () => {
         </div>
       </noscript>
       
-      <Navbar />
+      <Header />
       
       {/* Hero Section with Canvas */}
       <section id="home" aria-label="Accueil" className="relative">

@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import Navbar from '@/components/Navbar';
+import Header from '@/components/layout/Header';
 import { Footer2 } from '@/components/ui/footer2';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
@@ -20,7 +20,7 @@ const BlogPostPage = () => {
   if (!post) {
     return (
       <div className="min-h-screen flex flex-col">
-        <Navbar currentPath="/blog" />
+        <Header />
         <div className="flex-1 container mx-auto py-20 flex flex-col items-center justify-center">
           <h1 className="text-3xl font-bold mb-4">{t.blog.postNotFound}</h1>
           <p className="mb-8">{t.blog.postNotFoundDesc}</p>
@@ -36,7 +36,7 @@ const BlogPostPage = () => {
   
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar currentPath="/blog" />
+      <Header />
       
       <article className="flex-1 container mx-auto py-16 px-4">
         <Button onClick={() => navigate('/blog')} variant="outline" className="mb-8">
