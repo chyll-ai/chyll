@@ -284,6 +284,49 @@ export async function handleFunctionCall(toolCall, thread_id, run_id) {
           error: error.message || "Failed to save profile"
         });
       }
+    } else if (toolCall.function?.name === "check_profile_status") {
+      console.log("Appel de la fonction check_profile_status");
+      
+      try {
+        // Vérifier si le profil existe et est complet
+        const { data: profileData, error: profileError } = await supabase
+          .from('client_profile')
+          .select('*, is_complete')
+          .eq('client_id', client_id)
+          .maybeSingle();
+          
+        if (profileError) {
+          console.error("Erreur lors de la vérification du profil:", profileError);
+          
+          // Submit error to OpenAI
+          await submitToolOutput(thread_id, run_id, toolCall.id, {
+            profile_complete: false,
+            error: "Failed to check profile status"
+          });
+          return;
+        }
+        
+        const isComplete = profileData && profileData.is_complete === true;
+        console.log("Statut du profil:", isComplete ? "Complet" : "Incomplet");
+        
+        // Submit le statut du profil à l'assistant
+        await submitToolOutput(thread_id, run_id, toolCall.id, {
+          profile_complete: isComplete,
+          profile_data: profileData,
+          message: isComplete 
+            ? "Profile is complete. User should be guided to lead generation." 
+            : "Profile needs to be completed first."
+        });
+        
+      } catch (error) {
+        console.error("Erreur lors de la vérification du statut du profil:", error);
+        
+        // Submit error to OpenAI
+        await submitToolOutput(thread_id, run_id, toolCall.id, {
+          profile_complete: false,
+          error: error.message || "Failed to check profile status"
+        });
+      }
     } else if (toolCall.function?.name === "redirect_to_dashboard") {
       console.log("Appel de la fonction redirect_to_dashboard");
       
