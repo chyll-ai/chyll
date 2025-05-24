@@ -288,13 +288,27 @@ export async function handleFunctionCall(toolCall, thread_id, run_id) {
       console.log("Appel de la fonction check_profile_status");
       
       try {
-        console.log("Vérification du profil pour client_id:", client_id);
+        // Récupérer automatiquement le client_id depuis la session Supabase
+        const { data: sessionData } = await supabase.auth.getSession();
+        const authenticatedClientId = sessionData.session?.user?.id;
+        
+        if (!authenticatedClientId) {
+          console.error("Aucun utilisateur authentifié trouvé");
+          await submitToolOutput(thread_id, run_id, toolCall.id, {
+            profile_complete: false,
+            error: "No authenticated user found",
+            message: "User must be logged in to check profile status"
+          });
+          return;
+        }
+        
+        console.log("Vérification du profil pour client_id:", authenticatedClientId);
         
         // Vérifier si le profil existe et est complet
         const { data: profileData, error: profileError } = await supabase
           .from('client_profile')
           .select('*')
-          .eq('client_id', client_id)
+          .eq('client_id', authenticatedClientId)
           .maybeSingle();
           
         console.log("Données du profil récupérées:", profileData);
@@ -323,9 +337,7 @@ export async function handleFunctionCall(toolCall, thread_id, run_id) {
         console.log("Profil trouvé:", !!profileData);
         console.log("Données de base présentes:", hasBasicData);
         console.log("Marqué comme complet:", isMarkedComplete);
-        console.log("Évaluation finale:", hasBasicData && isMarkedComplete);
-        
-        const isComplete = hasBasicData && isMarkedComplete;
+        console.log("Évaluation finale:", hasBasicData);
         
         // Si le profil a les données de base mais n'est pas marqué comme complet, le marquer
         if (hasBasicData && !isMarkedComplete) {
@@ -333,7 +345,7 @@ export async function handleFunctionCall(toolCall, thread_id, run_id) {
           const { error: updateError } = await supabase
             .from('client_profile')
             .update({ is_complete: true })
-            .eq('client_id', client_id);
+            .eq('client_id', authenticatedClientId);
             
           if (updateError) {
             console.error("Erreur lors de la mise à jour du statut:", updateError);
@@ -350,6 +362,7 @@ export async function handleFunctionCall(toolCall, thread_id, run_id) {
             ? "Profile is complete. User should be guided to lead generation instead of profile completion." 
             : "Profile needs to be completed first.",
           debug_info: {
+            client_id: authenticatedClientId,
             profile_exists: !!profileData,
             has_basic_data: hasBasicData,
             is_marked_complete: isMarkedComplete,
