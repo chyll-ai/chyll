@@ -37,7 +37,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.log('AuthContext: Ensuring client record exists for:', userId);
       
       // Wait a bit to ensure the session is fully established
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
       // Get fresh session to ensure we have valid auth context
       const { data: { session: currentSession } } = await supabase.auth.getSession();
@@ -88,18 +88,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const updateAuthState = (newSession: Session | null) => {
+  const updateAuthState = (newSession: Session | null, skipNavigation = false) => {
     console.log('AuthContext: Updating auth state:', { 
       hasSession: !!newSession, 
       userId: newSession?.user?.id,
-      isInitialized 
+      isInitialized,
+      skipNavigation
     });
     
     setSession(newSession);
     setUser(newSession?.user || null);
     
-    // Only navigate if we're fully initialized to prevent redirects during setup
-    if (isInitialized && newSession?.user) {
+    // Only navigate if we're fully initialized and not skipping navigation
+    if (isInitialized && !skipNavigation && newSession?.user) {
       console.log('AuthContext: User authenticated, navigating to assistant...');
       navigate('/assistant', { replace: true });
     }
@@ -122,24 +123,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
       } else if (event === 'SIGNED_IN' && newSession?.user) {
         console.log('AuthContext: User signed in, updating state...');
-        updateAuthState(newSession);
+        updateAuthState(newSession, !isInitialized);
         
         // Ensure client record exists in background after session is established
         setTimeout(() => {
           ensureClientRecord(newSession.user.id, newSession.user.email || '');
-        }, 1000);
+        }, 1500);
       } else if (event === 'TOKEN_REFRESHED' && newSession) {
         console.log('AuthContext: Token refreshed, updating session...');
         setSession(newSession);
         setUser(newSession.user);
-      } else if (event.startsWith('INITIAL') && newSession?.user) {
-        console.log('AuthContext: Initial session found, updating state...');
-        updateAuthState(newSession);
-      } else if (event.startsWith('INITIAL') && !newSession) {
-        console.log('AuthContext: No initial session found');
-        setSession(null);
-        setUser(null);
-      } else if (!newSession) {
+      } else if (event === 'INITIAL_SESSION') {
+        // Handle initial session - only clear if there's no existing session state
+        if (newSession?.user) {
+          console.log('AuthContext: Initial session found, updating state...');
+          updateAuthState(newSession, true); // Skip navigation on initial load
+        } else if (!session) {
+          // Only clear if we don't already have a session
+          console.log('AuthContext: No initial session found, clearing state...');
+          setSession(null);
+          setUser(null);
+        } else {
+          console.log('AuthContext: No initial session but keeping existing session state');
+        }
+      } else if (!newSession && !session) {
         console.log('AuthContext: No session, clearing state...');
         setSession(null);
         setUser(null);
@@ -147,7 +154,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch (error) {
       console.error('AuthContext: Error in handleAuthStateChange:', error);
     } finally {
-      setIsLoading(false);
+      if (!isInitialized) {
+        setIsLoading(false);
+        setIsInitialized(true);
+      }
     }
   };
 
@@ -229,13 +239,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   useEffect(() => {
+    let subscription: any = null;
+    
     const initializeAuth = async () => {
       try {
         console.log('AuthContext: Initializing auth state...');
         debugStorage();
         
         // Set up auth state listener first
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(handleAuthStateChange);
+        const { data: { subscription: authSubscription } } = supabase.auth.onAuthStateChange(handleAuthStateChange);
+        subscription = authSubscription;
         
         // Then check for existing session
         const { data: { session: initialSession }, error: sessionError } = await supabase.auth.getSession();
@@ -250,30 +263,35 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             userId: initialSession.user.id,
             expiresAt: initialSession.expires_at
           });
-          await handleAuthStateChange('INITIAL_SESSION', initialSession);
+          // Don't call handleAuthStateChange here as it will be called by the listener
+          setSession(initialSession);
+          setUser(initialSession.user);
         } else {
           console.log('AuthContext: No initial session found');
-          await handleAuthStateChange('INITIAL_SESSION', null);
+          setSession(null);
+          setUser(null);
         }
         
         // Mark as initialized
         setIsInitialized(true);
+        setIsLoading(false);
         
-        return () => {
-          console.log('AuthContext: Cleaning up auth subscriptions');
-          subscription.unsubscribe();
-        };
       } catch (error) {
         console.error('AuthContext: Error in initializeAuth:', error);
-        await handleAuthStateChange('INITIAL_SESSION', null);
+        setSession(null);
+        setUser(null);
         setIsInitialized(true);
+        setIsLoading(false);
       }
     };
 
-    const cleanup = initializeAuth();
+    initializeAuth();
     
     return () => {
-      cleanup.then(cleanupFn => cleanupFn?.());
+      console.log('AuthContext: Cleaning up auth subscriptions');
+      if (subscription) {
+        subscription.unsubscribe();
+      }
     };
   }, []); // Remove navigate dependency to prevent re-initialization
 
