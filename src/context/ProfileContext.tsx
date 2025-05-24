@@ -1,10 +1,14 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './AuthContext';
+import { ClientProfile } from '@/types/api';
+import { Database } from '@/types/supabase';
 
 interface ProfileContextType {
+  profile: ClientProfile | null;
   isComplete: boolean;
   isLoading: boolean;
+  error: string | null;
   refreshProfile: () => Promise<void>;
 }
 
@@ -12,26 +16,40 @@ const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
 
 export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user } = useAuth();
-  const [isComplete, setIsComplete] = useState(false);
+  const [profile, setProfile] = useState<ClientProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const checkProfile = async (userId: string) => {
+  const fetchProfile = async (userId: string) => {
     try {
       setIsLoading(true);
-      const { data: profileData, error: profileError } = await supabase
+      const { data, error } = await supabase
         .from('client_profile')
-        .select('*, is_complete')
+        .select('*')
         .eq('client_id', userId)
         .maybeSingle();
 
-      if (profileError) {
-        throw profileError;
+      if (error) throw error;
+      
+      if (data) {
+        const profileData: ClientProfile = {
+          client_id: data.client_id || userId,
+          company_name: data.company_name || '',
+          industry: data.industry || '',
+          icp_title: data.icp_title || '',
+          calendly_url: data.calendly_url || '',
+          is_complete: data.is_complete || false,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        };
+        setProfile(profileData);
+      } else {
+        setProfile(null);
       }
-
-      setIsComplete(!!profileData?.is_complete);
-    } catch (error) {
-      console.error('Error checking profile:', error);
-      setIsComplete(false);
+      setError(null);
+    } catch (err: any) {
+      console.error('Error fetching profile:', err);
+      setError(err.message);
     } finally {
       setIsLoading(false);
     }
@@ -39,27 +57,30 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const refreshProfile = async () => {
     if (user?.id) {
-      await checkProfile(user.id);
+      setIsLoading(true);
+      await fetchProfile(user.id);
     }
   };
 
   useEffect(() => {
     if (user?.id) {
-      checkProfile(user.id);
+      fetchProfile(user.id);
     } else {
-      setIsComplete(false);
+      setProfile(null);
       setIsLoading(false);
     }
   }, [user]);
 
+  const value = {
+    profile,
+    isComplete: profile?.is_complete ?? false,
+    isLoading,
+    error,
+    refreshProfile
+  };
+
   return (
-    <ProfileContext.Provider
-      value={{
-        isComplete,
-        isLoading,
-        refreshProfile,
-      }}
-    >
+    <ProfileContext.Provider value={value}>
       {children}
     </ProfileContext.Provider>
   );
@@ -71,4 +92,4 @@ export const useProfile = () => {
     throw new Error('useProfile must be used within a ProfileProvider');
   }
   return context;
-}; 
+};
