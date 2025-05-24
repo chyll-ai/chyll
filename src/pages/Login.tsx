@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import { supabase } from "@/lib/supabase";
 import { Button } from '@/components/ui/button';
@@ -112,10 +113,16 @@ const Login = () => {
       console.log('Starting Google OAuth sign in...');
       debugStorage();
       
+      // Get the current URL without any hash or query parameters
+      const currentOrigin = window.location.origin;
+      const redirectTo = `${currentOrigin}/assistant`;
+      
+      console.log('OAuth redirect URL:', redirectTo);
+      
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/assistant`,
+          redirectTo: redirectTo,
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',
@@ -129,6 +136,8 @@ const Login = () => {
       }
 
       console.log('Google OAuth initiated successfully:', data);
+      
+      // The redirect will happen automatically, no need to do anything else here
     } catch (error: any) {
       console.error("Google authentication error:", error);
       toast.error(error.message || "Failed to sign in with Google");

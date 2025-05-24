@@ -96,7 +96,7 @@ export const supabase = createClient<Database>(
       detectSessionInUrl: true,
       storageKey: 'supabase.auth.token',
       storage: customStorage,
-      flowType: 'implicit'
+      flowType: 'pkce' // Use PKCE flow instead of implicit for better security
     },
     db: {
       schema: 'public'
