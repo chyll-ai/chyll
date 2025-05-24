@@ -19,7 +19,7 @@ export async function handleFunctionCall(toolCall, thread_id, run_id) {
     if (toolCall.function?.name === "connect_gmail") {
       console.log("Appel de la fonction connect_gmail");
       
-      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL || 'https://atsfuqwxfrezkxtnctmk.supabase.co'}/functions/v1/connect-gmail`, {
+      const response = await fetch(`https://atsfuqwxfrezkxtnctmk.supabase.co/functions/v1/connect-gmail`, {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
@@ -306,33 +306,62 @@ export async function handleFunctionCall(toolCall, thread_id, run_id) {
         if (!keyword) {
           console.error("Mot-clé manquant pour la recherche");
           toast.error("Impossible de lancer la recherche: mot-clé manquant");
-          return;
-        }
-        
-        // Insertion d'une nouvelle recherche dans la table queue_search
-        const { error: insertError } = await supabase
-          .from("queue_search")
-          .insert({
-            client_id,
-            keyword,
-            parsed_filters: filters || {}
-          });
           
-        if (insertError) {
-          console.error("Erreur lors de l'ajout de la recherche à la file d'attente:", insertError);
-          toast.error("Erreur lors du lancement de la recherche");
+          // Submit error to OpenAI
+          await submitToolOutput(thread_id, run_id, toolCall.id, {
+            success: false,
+            error: "Missing keyword parameter"
+          });
           return;
         }
         
-        toast.success("Recherche lancée avec succès!");
+        console.log("Lancement de la recherche avec:", { keyword, filters });
+        toast.loading("Génération des leads en cours...");
+        
+        // Appel à la nouvelle edge function launch-search
+        const response = await fetch(`https://atsfuqwxfrezkxtnctmk.supabase.co/functions/v1/launch-search`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${access_token}`
+          },
+          body: JSON.stringify({
+            keyword,
+            filters: filters || {},
+            client_id
+          })
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          console.error("Erreur lors du lancement de la recherche:", errorData);
+          toast.error("Erreur lors de la génération des leads");
+          
+          // Submit error to OpenAI
+          await submitToolOutput(thread_id, run_id, toolCall.id, {
+            success: false,
+            error: errorData.error || "Search launch failed"
+          });
+          return;
+        }
+        
+        const result = await response.json();
+        console.log("Résultat de la génération de leads:", result);
+        
+        toast.success(`${result.leads_count} leads générés avec succès!`);
         
         // Submit success to OpenAI
         await submitToolOutput(thread_id, run_id, toolCall.id, { 
-          success: true 
+          success: true,
+          message: result.message,
+          leads_count: result.leads_count,
+          keyword: result.keyword,
+          location: result.location
         });
+        
       } catch (error) {
         console.error("Erreur lors du lancement de la recherche:", error);
-        toast.error("Erreur lors du lancement de la recherche");
+        toast.error("Erreur lors de la génération des leads");
         
         // Submit error to OpenAI
         await submitToolOutput(thread_id, run_id, toolCall.id, {
