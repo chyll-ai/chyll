@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/sonner";
 
@@ -77,7 +78,7 @@ export async function handleFunctionCall(toolCall, thread_id, run_id) {
       
       try {
         // Call the is-gmail-connected edge function
-        const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL || 'https://atsfuqwxfrezkxtnctmk.supabase.co'}/functions/v1/is-gmail-connected`, {
+        const response = await fetch(`https://atsfuqwxfrezkxtnctmk.supabase.co/functions/v1/is-gmail-connected`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${access_token}`
@@ -170,7 +171,7 @@ export async function handleFunctionCall(toolCall, thread_id, run_id) {
       }
       
       // Appel à la fonction Edge pour envoyer l'email
-      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL || 'https://atsfuqwxfrezkxtnctmk.supabase.co'}/functions/v1/connect-gmail`, {
+      const response = await fetch(`https://atsfuqwxfrezkxtnctmk.supabase.co/functions/v1/connect-gmail`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -326,7 +327,7 @@ export async function handleFunctionCall(toolCall, thread_id, run_id) {
           return;
         }
         
-        // Check if profile exists and has data - FIX: Return boolean instead of string
+        // Check if profile exists and has data - Return boolean instead of string
         const hasBasicData = !!(profileData && 
                                profileData.company_name && 
                                profileData.industry && 
@@ -354,13 +355,17 @@ export async function handleFunctionCall(toolCall, thread_id, run_id) {
           }
         }
         
-        // Submit le statut du profil à l'assistant - FIX: Use boolean value
+        // FIX: Si le profil est complet, retourner directement le message de lead generation
+        const responseMessage = hasBasicData 
+          ? "Profile already complete! Ready to launch lead search. Would you like me to generate qualified leads for your business based on your target criteria?" 
+          : "Profile needs to be completed first.";
+        
+        // Submit le statut du profil à l'assistant - Use boolean value
         await submitToolOutput(thread_id, run_id, toolCall.id, {
           profile_complete: hasBasicData, // Now correctly returns a boolean
           profile_data: profileData,
-          message: hasBasicData 
-            ? "Profile is complete. User should be guided to lead generation instead of profile completion." 
-            : "Profile needs to be completed first.",
+          message: responseMessage,
+          next_action: hasBasicData ? "launch_search" : "complete_profile",
           debug_info: {
             client_id: authenticatedClientId,
             profile_exists: !!profileData,
@@ -461,11 +466,11 @@ export async function handleFunctionCall(toolCall, thread_id, run_id) {
         
         await submitToolOutput(thread_id, run_id, toolCall.id, { 
           success: true,
-          message: `Excellent ! J'ai généré ${result.leads_count} leads qualifiés pour "${result.keyword}". Ces prospects correspondent parfaitement à votre cible. Voulez-vous que je vous aide à créer des messages personnalisés pour cette liste basés sur votre activité et votre proposition de valeur ?`,
+          message: `Parfait ! J'ai généré ${result.leads_count} leads qualifiés pour "${result.keyword}". Ces prospects correspondent parfaitement à votre cible. Voulez-vous que je vous aide à créer une campagne d'emails personnalisés pour cette liste ? Je peux rédiger des messages adaptés à votre activité et votre proposition de valeur.`,
           leads_count: result.leads_count,
           keyword: result.keyword,
           location: result.location,
-          next_action: "personalized_outreach"
+          next_action: "email_campaign"
         });
         
       } catch (error) {
