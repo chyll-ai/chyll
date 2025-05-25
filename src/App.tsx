@@ -25,38 +25,71 @@ import Assistant from '@/pages/Assistant';
 import Leads from '@/pages/Leads';
 import NotFound from '@/pages/NotFound';
 
+// Wrap protected components with auth
+const ProtectedDashboard = () => (
+  <AuthProvider>
+    <ProtectedRoute>
+      <Dashboard />
+    </ProtectedRoute>
+  </AuthProvider>
+);
+
+const ProtectedOnboarding = () => (
+  <AuthProvider>
+    <ProtectedRoute>
+      <Onboarding />
+    </ProtectedRoute>
+  </AuthProvider>
+);
+
+const ProtectedAssistant = () => (
+  <AuthProvider>
+    <ProtectedRoute>
+      <Assistant />
+    </ProtectedRoute>
+  </AuthProvider>
+);
+
+const ProtectedLeads = () => (
+  <AuthProvider>
+    <ProtectedRoute>
+      <Leads />
+    </ProtectedRoute>
+  </AuthProvider>
+);
+
 function App() {
   return (
     <HelmetProvider>
       <LanguageProvider>
         <Router>
-          <AuthProvider>
-            <Routes>
-              {/* Public Routes */}
-              <Route path="/" element={<Index />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/terms" element={<Terms />} />
-              <Route path="/privacy" element={<Privacy />} />
-              <Route path="/cookies" element={<Cookies />} />
-              <Route path="/faq" element={<FAQ />} />
-              <Route path="/blog" element={<Blog />} />
-              <Route path="/blog/:id" element={<BlogPostPage />} />
-              <Route path="/about-us" element={<AboutUs />} />
-              <Route path="/login" element={<Login />} />
-
-              {/* Protected Routes */}
-              <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
-              <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-              <Route path="/assistant" element={<ProtectedRoute><Assistant /></ProtectedRoute>} />
-              <Route path="/leads" element={<ProtectedRoute><Leads /></ProtectedRoute>} />
-
-              {/* 404 Route */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-            <Toaster />
-            <SonnerToaster position="bottom-right" />
-            <CookieConsent />
-          </AuthProvider>
+          <Routes>
+            {/* Public Routes - No Auth Required */}
+            <Route path="/" element={<Index />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/cookies" element={<Cookies />} />
+            <Route path="/faq" element={<FAQ />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/blog/:id" element={<BlogPostPage />} />
+            <Route path="/about-us" element={<AboutUs />} />
+            
+            {/* Auth Routes */}
+            <Route path="/login" element={<AuthProvider><Login /></AuthProvider>} />
+            
+            {/* Protected Routes */}
+            <Route path="/dashboard" element={<ProtectedDashboard />} />
+            <Route path="/onboarding" element={<ProtectedOnboarding />} />
+            <Route path="/assistant" element={<ProtectedAssistant />} />
+            <Route path="/leads" element={<ProtectedLeads />} />
+            
+            {/* 404 Route */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+          <Toaster />
+          <SonnerToaster position="bottom-right" />
+          <CookieConsent />
         </Router>
       </LanguageProvider>
     </HelmetProvider>
