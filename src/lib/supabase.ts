@@ -138,21 +138,18 @@ export const supabase = createClient<Database>(
 supabase.auth.onAuthStateChange((event, session) => {
   console.log('[Auth] State change:', { event, userId: session?.user?.id, path: window.location.pathname });
   
-  // Only handle session storage if we have a session and we're not on the home page
-  if (session && window.location.pathname !== '/') {
+  // Ignore auth state changes on the home page
+  if (window.location.pathname === '/') {
+    console.log('[Auth] On home page, ignoring auth state change');
+    return;
+  }
+
+  // Only handle session storage if we have a session
+  if (session) {
     if (event === 'SIGNED_IN') {
       customStorage.setItem('supabase.auth.token', JSON.stringify(session));
     } else if (event === 'SIGNED_OUT') {
       customStorage.removeItem('supabase.auth.token');
-    }
-  } else {
-    // If no session and we're not on a protected route, do nothing
-    const protectedRoutes = ['/dashboard', '/onboarding', '/assistant', '/leads'];
-    const isProtectedRoute = protectedRoutes.some(route => window.location.pathname.startsWith(route));
-    
-    if (!isProtectedRoute) {
-      console.log('[Auth] No session but on public route, no action needed');
-      return;
     }
   }
 });

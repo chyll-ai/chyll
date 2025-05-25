@@ -27,7 +27,7 @@ const Login = () => {
       
       // Get the current URL without any hash or query parameters
       const currentOrigin = window.location.origin;
-      const redirectTo = `${currentOrigin}/login`;
+      const redirectTo = `${currentOrigin}/dashboard`; // Redirect to dashboard after login
       
       console.log('Login: OAuth redirect URL:', redirectTo);
       
