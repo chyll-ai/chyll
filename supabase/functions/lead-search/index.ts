@@ -12,6 +12,7 @@ declare const Deno: {
 interface RequestData {
   searchQuery: string;
   count?: number;
+  userId?: string;
 }
 
 interface Lead {
@@ -22,6 +23,14 @@ interface Lead {
   email: string;
   phone_number: string;
   linkedin_url: string;
+  client_id: string;
+  id: string;
+  created_at: string;
+  status: string;
+  enriched_from: {
+    source: string;
+    timestamp: string;
+  };
 }
 
 const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
@@ -81,9 +90,14 @@ serve(async (req: Request) => {
 
     const requestData: RequestData = await req.json();
     const { searchQuery, count = 5 } = requestData;
+    const userId = requestData.userId || '';
 
     if (!searchQuery) {
       throw new Error('Search query is required');
+    }
+
+    if (!userId) {
+      throw new Error('User ID is required');
     }
 
     const openai = new OpenAI({
@@ -112,7 +126,9 @@ Return ONLY a JSON object matching the example format.`;
       response_format: { type: "json_object" },
       max_tokens: 2000,
       presence_penalty: 0.3,
-      frequency_penalty: 0.3
+      frequency_penalty: 0.3,
+      timeout: 30,
+      stream: false
     });
 
     const responseContent = completion.choices[0]?.message?.content;
@@ -126,50 +142,42 @@ Return ONLY a JSON object matching the example format.`;
       throw new Error('Invalid response format from OpenAI');
     }
 
-    // Strict validation of each lead
     const validatedLeads = parsedResponse.leads.map((lead: any, index: number) => {
-      // Ensure only allowed fields are present
       const allowedFields = ['full_name', 'job_title', 'company', 'location', 'email', 'phone_number', 'linkedin_url'];
       const extraFields = Object.keys(lead).filter(key => !allowedFields.includes(key));
       if (extraFields.length > 0) {
         throw new Error(`Lead ${index + 1} contains unauthorized fields: ${extraFields.join(', ')}`);
       }
 
-      // Check all required fields exist
-      const missingFields = allowedFields.filter(field => !(field in lead));
-      if (missingFields.length > 0) {
-        throw new Error(`Lead ${index + 1} is missing required fields: ${missingFields.join(', ')}`);
+      const missingOrEmptyFields = allowedFields.filter(field => !lead[field] || String(lead[field]).trim() === '');
+      if (missingOrEmptyFields.length > 0) {
+        throw new Error(`Lead ${index + 1} has missing or empty fields: ${missingOrEmptyFields.join(', ')}`);
       }
 
-      // Clean and validate each field
       const validatedLead: Lead = {
-        full_name: String(lead.full_name || '').trim(),
-        job_title: String(lead.job_title || '').trim(),
-        company: String(lead.company || '').trim(),
-        location: String(lead.location || '').trim(),
-        email: String(lead.email || '').trim().toLowerCase(),
-        phone_number: String(lead.phone_number || '').trim(),
-        linkedin_url: String(lead.linkedin_url || '').trim()
+        full_name: String(lead.full_name).trim(),
+        job_title: String(lead.job_title).trim(),
+        company: String(lead.company).trim(),
+        location: String(lead.location).trim(),
+        email: String(lead.email).trim().toLowerCase(),
+        phone_number: String(lead.phone_number).trim(),
+        linkedin_url: String(lead.linkedin_url).trim(),
+        client_id: userId,
+        id: crypto.randomUUID(),
+        created_at: new Date().toISOString(),
+        status: 'new',
+        enriched_from: {
+          source: 'assistant',
+          timestamp: new Date().toISOString()
+        }
       };
 
-      // Check for empty values
-      Object.entries(validatedLead).forEach(([key, value]) => {
-        if (!value) {
-          throw new Error(`Lead ${index + 1} has empty ${key}`);
-        }
-      });
-
-      // Validate email format
-      if (!validatedLead.email.includes('@') || !validatedLead.email.includes('.')) {
+      if (!validatedLead.email.includes('@') || !validatedLead.email.endsWith('.fr')) {
         throw new Error(`Lead ${index + 1} has invalid email format: ${validatedLead.email}`);
       }
-
-      // Validate phone number format
       if (!validatedLead.phone_number.startsWith('+33')) {
         throw new Error(`Lead ${index + 1} has invalid phone number format: ${validatedLead.phone_number}`);
       }
-
-      // Validate LinkedIn URL format
       if (!validatedLead.linkedin_url.startsWith('linkedin.com/in/')) {
         throw new Error(`Lead ${index + 1} has invalid LinkedIn URL format: ${validatedLead.linkedin_url}`);
       }

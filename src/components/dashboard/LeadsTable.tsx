@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
-import { RealtimeChannel } from '@supabase/supabase-js';
 import { Lead } from '@/types/assistant';
 import { 
   Table, 
@@ -21,7 +20,6 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
 import {
   Select,
   SelectContent,
@@ -31,38 +29,10 @@ import {
 } from '@/components/ui/select';
 import LeadStatusBadge from './LeadStatusBadge';
 import LeadFilterBar from './LeadFilterBar';
-import { AssistantService } from '@/services/assistant';
 
 interface LeadsTableProps {
   userId: string;
-  assistantService?: AssistantService;
-  initialLeads?: Lead[];
 }
-
-interface SearchLeadsResponse {
-  message: string;
-  total: number;
-  leads: Lead[];
-}
-
-interface ActionButtonProps {
-  onClick: () => void;
-  icon: React.ReactNode;
-  label: string;
-  variant?: "default" | "outline" | "secondary" | "ghost" | "link" | "destructive";
-}
-
-const ActionButton: React.FC<ActionButtonProps> = ({ onClick, icon, label, variant = "outline" }) => (
-  <Button
-    variant={variant}
-    size="sm"
-    onClick={onClick}
-    className="whitespace-nowrap"
-  >
-    {icon}
-    <span className="ml-2">{label}</span>
-  </Button>
-);
 
 const LEAD_STATUS_OPTIONS = [
   'new',
@@ -75,31 +45,8 @@ const LEAD_STATUS_OPTIONS = [
   'RDV manqué'
 ];
 
-const normalizeStatus = (status: string): string => {
-  if (!status) return 'new';
-  
-  const normalized = status.toLowerCase().trim();
-  
-  // Direct match for 'new'
-  if (normalized === 'new') return 'new';
-  
-  // Check for exact matches first
-  const exactMatch = LEAD_STATUS_OPTIONS.find(s => s.toLowerCase() === normalized);
-  if (exactMatch) return exactMatch;
-  
-  // Then check for partial matches
-  const partialMatch = LEAD_STATUS_OPTIONS.find(s => 
-    normalized.includes(s.toLowerCase()) || 
-    s.toLowerCase().includes(normalized)
-  );
-  if (partialMatch) return partialMatch;
-  
-  // If no match found, return 'new'
-  return 'new';
-};
-
-const LeadsTable: React.FC<LeadsTableProps> = ({ userId, assistantService, initialLeads = [] }) => {
-  const [leads, setLeads] = useState<Lead[]>(initialLeads);
+const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
+  const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
   const [emailDialogOpen, setEmailDialogOpen] = useState(false);
   const [selectedEmail, setSelectedEmail] = useState<{ subject: string; body: string } | null>(null);
@@ -108,230 +55,54 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId, assistantService, initi
   const [statusUpdateDialogOpen, setStatusUpdateDialogOpen] = useState(false);
   const [currentLead, setCurrentLead] = useState<Lead | null>(null);
   const [updatingStatus, setUpdatingStatus] = useState(false);
-  const channelRef = useRef<RealtimeChannel | null>(null);
-  const isInitialFetchRef = useRef(true);
-  const unmountingRef = useRef(false);
 
-  // Update leads when initialLeads changes
-  useEffect(() => {
-    if (initialLeads.length > 0) {
-      console.log('LeadsTable: Received initial leads:', initialLeads);
-      setLeads(currentLeads => {
-        // Merge new leads with existing ones, avoiding duplicates
-        const existingIds = new Set(currentLeads.map(lead => lead.id));
-        const newLeads = initialLeads.filter(lead => !existingIds.has(lead.id));
-        const updatedLeads = [...newLeads, ...currentLeads];
-        console.log('LeadsTable: Updated leads with initial data:', updatedLeads);
-        return updatedLeads;
-      });
-    }
-  }, [initialLeads]);
-
+  // Simple fetch leads function
   const fetchLeads = async () => {
     try {
-      console.log('LeadsTable: Fetching leads from database');
+      console.log('Fetching leads...');
       const { data, error } = await supabase
         .from('leads')
-        .select(`
-          id,
-          full_name,
-          job_title,
-          email,
-          company,
-          status,
-          created_at,
-          location,
-          phone_number,
-          linkedin_url,
-          enriched_from,
-          client_id,
-          email_jobs (
-            status,
-            sent_at,
-            subject,
-            body
-          )
-        `)
+        .select('*')
         .eq('client_id', userId)
         .order('created_at', { ascending: false });
         
-      if (error) {
-        throw error;
-      }
+      if (error) throw error;
       
-      const leadsWithDefaults = (data || []).map(lead => ({
-        ...lead,
-        status: lead.status || 'à contacter',
-        location: lead.location || 'Paris',
-        phone_number: lead.phone_number || '',
-        linkedin_url: lead.linkedin_url || '',
-        client_id: lead.client_id,
-        created_at: lead.created_at || new Date().toISOString()
-      })) as Lead[];
-      
-      console.log('LeadsTable: Fetched leads from database:', leadsWithDefaults);
-      setLeads(leadsWithDefaults);
+      console.log('Leads fetched:', data?.length || 0);
+      setLeads(data || []);
     } catch (error) {
       console.error('Error fetching leads:', error);
       toast.error('Erreur lors du chargement des leads');
     } finally {
       setLoading(false);
-      isInitialFetchRef.current = false;
     }
   };
-  
-  useEffect(() => {
-    if (!userId || !isInitialFetchRef.current) return;
-    fetchLeads();
-  }, [userId]);
 
+  // Initial fetch and realtime subscription
   useEffect(() => {
     if (!userId) return;
 
-    unmountingRef.current = false;
+    // Initial fetch
+    fetchLeads();
 
-    const setupSubscription = async () => {
-      if (unmountingRef.current) return;
-
-      try {
-        const channelId = `public:leads:client_id=eq.${userId}`;
-        
-        const channel = supabase.channel(channelId, {
-          config: {
-            broadcast: { self: true },
-            presence: { key: '' },
-          }
-        })
-        .on('postgres_changes', { 
-          event: '*', 
-          schema: 'public', 
-          table: 'leads',
-          filter: `client_id=eq.${userId}`
-        }, async (payload: any) => {
-          if (unmountingRef.current) return;
-            
-          try {
-            if (payload.eventType === 'INSERT') {
-              setLeads(currentLeads => {
-                if (currentLeads.some(lead => lead.id === payload.new.id)) {
-                  return currentLeads;
-                }
-                const newLead: Lead = {
-                  ...payload.new,
-                  status: payload.new.status || 'à contacter',
-                  location: payload.new.location || 'Paris',
-                  phone_number: payload.new.phone_number || '',
-                  linkedin_url: payload.new.linkedin_url || '',
-                  client_id: payload.new.client_id,
-                  created_at: payload.new.created_at || new Date().toISOString()
-                };
-                return [newLead, ...currentLeads];
-              });
-            } else if (payload.eventType === 'UPDATE') {
-              setLeads(currentLeads => 
-                currentLeads.map(lead => {
-                  if (lead.id === payload.new.id) {
-                    const hasChanges = 
-                      lead.status !== payload.new.status ||
-                      lead.full_name !== payload.new.full_name ||
-                      lead.job_title !== payload.new.job_title ||
-                      lead.email !== payload.new.email ||
-                      lead.company !== payload.new.company ||
-                      lead.location !== payload.new.location ||
-                      lead.phone_number !== payload.new.phone_number ||
-                      lead.linkedin_url !== payload.new.linkedin_url;
-
-                    if (hasChanges) {
-                      return {
-                        ...lead,
-                        ...payload.new,
-                        status: payload.new.status || lead.status || 'à contacter',
-                        location: payload.new.location || lead.location || 'Paris',
-                        phone_number: payload.new.phone_number || lead.phone_number || '',
-                        linkedin_url: payload.new.linkedin_url || lead.linkedin_url || '',
-                        created_at: payload.new.created_at || lead.created_at,
-                        email_jobs: lead.email_jobs || []
-                      };
-                    }
-                  }
-                  return lead;
-                })
-              );
-            } else if (payload.eventType === 'DELETE') {
-              setLeads(currentLeads => 
-                currentLeads.filter(lead => lead.id !== payload.old.id)
-              );
-            }
-          } catch (error) {
-            console.error('Error processing real-time update:', error);
-          }
-        });
-
-        channel.subscribe(async (status) => {
-          if (unmountingRef.current) return;
-          
-          if (status === 'SUBSCRIBED') {
-            channelRef.current = channel;
-          } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
-            if (channelRef.current) {
-              await channelRef.current.unsubscribe();
-              channelRef.current = null;
-            }
-            if (!unmountingRef.current) {
-              setTimeout(setupSubscription, 5000);
-            }
-          }
-        });
-
-        channelRef.current = channel;
-      } catch (error) {
-        console.error('Error setting up realtime subscription:', error);
-      }
-    };
-
-    setupSubscription();
+    // Simple realtime subscription
+    const channel = supabase.channel('any')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'leads' },
+        () => {
+          console.log('Change detected in leads table, refreshing...');
+          fetchLeads();
+        }
+      )
+      .subscribe((status) => {
+        console.log('Subscription status:', status);
+      });
 
     return () => {
-      unmountingRef.current = true;
-      if (channelRef.current) {
-        channelRef.current.unsubscribe();
-        channelRef.current = null;
-      }
+      channel.unsubscribe();
     };
   }, [userId]);
-
-  // Set up listener for assistant-generated leads
-  useEffect(() => {
-    if (assistantService) {
-      console.log('LeadsTable: Setting up AssistantService callback');
-      assistantService.setLeadsUpdateCallback((newLeads) => {
-        console.log('LeadsTable: Received leads from AssistantService:', newLeads);
-        setLeads(currentLeads => {
-          // Filter out any duplicates by email and client_id
-          const newLeadsFiltered = newLeads.filter(
-            newLead => !currentLeads.some(
-              existingLead => 
-                existingLead.email === newLead.email && 
-                existingLead.client_id === newLead.client_id
-            )
-          );
-          
-          console.log('LeadsTable: Filtered new leads:', newLeadsFiltered);
-          
-          // Add new leads at the beginning
-          const updatedLeads = [...newLeadsFiltered, ...currentLeads];
-          console.log('LeadsTable: Updated leads state:', updatedLeads);
-          
-          return updatedLeads;
-        });
-        
-        // Show success toast with the actual number of new leads
-        if (newLeads.length > 0) {
-          toast.success(`${newLeads.length} nouveaux leads ajoutés au tableau de bord`);
-        }
-      });
-    }
-  }, [assistantService]);
 
   const handleViewMessage = (subject: string, body: string) => {
     setSelectedEmail({ subject, body });
@@ -558,123 +329,139 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId, assistantService, initi
   };
 
   // Filter leads based on search query and selected statuses
-  const filteredLeads = useMemo(() => {
-    if (!searchQuery && selectedStatuses.length === 0) return leads;
+  const filteredLeads = leads.filter(lead => {
+    const matchesSearch = searchQuery === '' || 
+      (lead.full_name && lead.full_name.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (lead.company && lead.company.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (lead.job_title && lead.job_title.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (lead.email && lead.email.toLowerCase().includes(searchQuery.toLowerCase()));
     
-    return leads.filter(lead => {
-      const matchesSearch = searchQuery === '' || 
-        (lead.full_name && lead.full_name.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        (lead.company && lead.company.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        (lead.job_title && lead.job_title.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        (lead.email && lead.email.toLowerCase().includes(searchQuery.toLowerCase()));
-      
-      const matchesStatus = selectedStatuses.length === 0 || 
-        (lead.status && selectedStatuses.includes(lead.status));
-      
-      return matchesSearch && matchesStatus;
-    });
-  }, [leads, searchQuery, selectedStatuses]);
+    const matchesStatus = selectedStatuses.length === 0 || 
+      (lead.status && selectedStatuses.includes(lead.status));
+    
+    return matchesSearch && matchesStatus;
+  });
   
   const getLeadActions = (lead: Lead) => {
     const hasEmailJobs = lead.email_jobs && lead.email_jobs.length > 0;
     const rawStatus = lead.status || 'new';
-    const status = normalizeStatus(rawStatus);
+    const status = rawStatus.toLowerCase();
 
     const actions = [];
 
     // View message button (if there are email jobs)
     if (hasEmailJobs && lead.email_jobs![0].subject && lead.email_jobs![0].body) {
       actions.push(
-        <ActionButton
+        <Button
           key="view"
+          variant="outline"
+          size="sm"
           onClick={() => handleViewMessage(lead.email_jobs![0].subject, lead.email_jobs![0].body)}
-          icon={<Eye className="h-4 w-4" />}
-          label="Voir message"
-        />
+        >
+          <Eye className="h-4 w-4" />
+          <span className="ml-2">Voir message</span>
+        </Button>
       );
     }
 
     // Status-based actions
-    switch (status.toLowerCase()) {
+    switch (status) {
       case 'new':
       case 'à contacter':
         actions.push(
-          <ActionButton
+          <Button
             key="cold-email"
+            variant="outline"
+            size="sm"
             onClick={() => handleSendColdEmail(lead.id)}
-            icon={<Mail className="h-4 w-4" />}
-            label="Envoyer email initial"
-            variant="default"
-          />
+          >
+            <Mail className="h-4 w-4" />
+            <span className="ml-2">Envoyer email initial</span>
+          </Button>
         );
         break;
 
       case 'email envoyé':
         actions.push(
-          <ActionButton
+          <Button
             key="followup"
+            variant="outline"
+            size="sm"
             onClick={() => handleFollowupLead(lead.id)}
-            icon={<ArrowRight className="h-4 w-4" />}
-            label="Relancer"
-          />
+          >
+            <ArrowRight className="h-4 w-4" />
+            <span className="ml-2">Relancer</span>
+          </Button>
         );
         break;
 
       case 'répondu':
         actions.push(
-          <ActionButton
+          <Button
             key="schedule"
+            variant="outline"
+            size="sm"
             onClick={() => handleScheduleCall(lead.id)}
-            icon={<Phone className="h-4 w-4" />}
-            label="Planifier appel"
-            variant="secondary"
-          />
+          >
+            <Phone className="h-4 w-4" />
+            <span className="ml-2">Planifier appel</span>
+          </Button>
         );
         break;
 
       case 'à relancer':
         actions.push(
-          <ActionButton
+          <Button
             key="followup-urgent"
+            variant="outline"
+            size="sm"
             onClick={() => handleFollowupLead(lead.id)}
-            icon={<ArrowRight className="h-4 w-4" />}
-            label="Relancer"
-            variant="destructive"
-          />
+          >
+            <ArrowRight className="h-4 w-4" />
+            <span className="ml-2">Relancer</span>
+          </Button>
         );
         break;
 
       case 'appel prévu':
         actions.push(
-          <ActionButton
+          <Button
             key="call-reminder"
+            variant="outline"
+            size="sm"
             onClick={() => handleViewCallDetails(lead.id)}
-            icon={<Calendar className="h-4 w-4" />}
-            label="Voir RDV"
-          />
+          >
+            <Calendar className="h-4 w-4" />
+            <span className="ml-2">Voir RDV</span>
+          </Button>
         );
         break;
 
       case 'rdv':
         actions.push(
-          <ActionButton
+          <Button
             key="meeting-notes"
+            variant="outline"
+            size="sm"
             onClick={() => handleAddMeetingNotes(lead.id)}
-            icon={<FileText className="h-4 w-4" />}
-            label="Notes RDV"
-          />
+          >
+            <FileText className="h-4 w-4" />
+            <span className="ml-2">Notes RDV</span>
+          </Button>
         );
         break;
 
       case 'rdv manqué':
         actions.push(
-          <ActionButton
+          <Button
             key="reschedule"
+            variant="outline"
+            size="sm"
             onClick={() => handleRescheduleCall(lead.id)}
-            icon={<RefreshCw className="h-4 w-4" />}
-            label="Replanifier"
-            variant="secondary"
-          />
+          >
+            <RefreshCw className="h-4 w-4" />
+            <span className="ml-2">Replanifier</span>
+          </Button>
         );
         break;
     }

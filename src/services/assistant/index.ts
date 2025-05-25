@@ -179,41 +179,45 @@ Répondre au format suivant:
       console.log('AssistantService: Extracted leads:', JSON.stringify(leads, null, 2));
 
       // Save leads to database
-      const savedLeads = [];
-      for (const lead of leads) {
-        try {
-          const { data, error } = await supabase
-            .from('leads')
-            .upsert([lead], {
-              onConflict: 'client_id,email',
-              ignoreDuplicates: true
-            })
-            .select();
+      try {
+        console.log('AssistantService: Starting batch save of leads');
+        const { data: savedLeads, error } = await supabase
+          .from('leads')
+          .upsert(leads, {
+            onConflict: 'client_id,email',
+            ignoreDuplicates: true
+          })
+          .select('*, email_jobs(*)');  // Include email_jobs in the response
 
-          if (error) {
-            console.error('AssistantService: Error saving lead:', error);
-            continue;
-          }
-
-          if (data && data[0]) {
-            console.log('AssistantService: Successfully saved lead:', {
-              id: data[0].id,
-              full_name: data[0].full_name,
-              email: data[0].email
-            });
-            savedLeads.push(data[0]);
-          }
-        } catch (error) {
-          console.error('AssistantService: Error saving individual lead:', error);
+        if (error) {
+          console.error('AssistantService: Error batch saving leads:', error);
+          toast.error('Erreur lors de la sauvegarde des leads');
+          return;
         }
-      }
 
-      // Update UI if we have saved leads
-      if (savedLeads.length > 0 && this.onLeadsUpdate) {
-        console.log('AssistantService: Updating UI with saved leads:', JSON.stringify(savedLeads, null, 2));
-        this.onLeadsUpdate(savedLeads);
-        toast.success(`${savedLeads.length} nouveaux leads ajoutés au tableau de bord`);
-      } else {
+        // Update UI if we have saved leads
+        if (savedLeads && savedLeads.length > 0) {
+          console.log('AssistantService: Successfully saved leads:', savedLeads.length);
+          
+          // Emit realtime event for each saved lead
+          for (const lead of savedLeads) {
+            await supabase
+              .from('leads')
+              .update({ updated_at: new Date().toISOString() })
+              .eq('id', lead.id);
+          }
+          
+          // Update UI through callback
+          if (this.onLeadsUpdate) {
+            this.onLeadsUpdate(savedLeads);
+          }
+          
+          toast.success(`${savedLeads.length} nouveaux leads ajoutés au tableau de bord`);
+        } else if (!savedLeads || savedLeads.length === 0) {
+          toast.error('Aucun nouveau lead n\'a été ajouté');
+        }
+      } catch (error) {
+        console.error('AssistantService: Error in batch save operation:', error);
         toast.error('Erreur lors de la sauvegarde des leads');
       }
     } catch (error) {
