@@ -110,8 +110,8 @@ export const supabase = createClient<Database>(
   supabaseAnonKey,
   {
     auth: {
-      autoRefreshToken: true,
-      persistSession: true,
+      autoRefreshToken: false, // Disable auto refresh
+      persistSession: false, // Don't persist session
       detectSessionInUrl: false, // Disable automatic session detection
       storage: customStorage,
       storageKey: 'supabase.auth.token',
@@ -138,8 +138,8 @@ export const supabase = createClient<Database>(
 supabase.auth.onAuthStateChange((event, session) => {
   console.log('[Auth] State change:', { event, userId: session?.user?.id, path: window.location.pathname });
   
-  // Only handle session storage if we have a session
-  if (session) {
+  // Only handle session storage if we have a session and we're not on the home page
+  if (session && window.location.pathname !== '/') {
     if (event === 'SIGNED_IN') {
       customStorage.setItem('supabase.auth.token', JSON.stringify(session));
     } else if (event === 'SIGNED_OUT') {
