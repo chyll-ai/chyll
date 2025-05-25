@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
@@ -24,7 +23,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const ensureClientRecord = async (userId: string, email: string) => {
     try {
-      console.log('AuthContext: Creating/checking client record for:', userId);
+      // First check if we have a valid session
+      const { data: { session: currentSession }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError) {
+        console.error('AuthContext: Session error in ensureClientRecord:', {
+          error: sessionError,
+          message: sessionError.message,
+          status: sessionError.status
+        });
+        return;
+      }
+
+      if (!currentSession?.access_token) {
+        console.error('AuthContext: No valid access token available');
+        return;
+      }
+
+      console.log('AuthContext: Creating/checking client record for:', {
+        userId,
+        hasAccessToken: !!currentSession?.access_token,
+        tokenExpiry: currentSession?.expires_at
+      });
       
       const { data: existingClient, error: selectError } = await supabase
         .from('clients')
@@ -33,7 +53,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .maybeSingle();
 
       if (selectError) {
-        console.error('AuthContext: Error checking existing client:', selectError);
+        console.error('AuthContext: Error checking existing client:', {
+          error: selectError,
+          message: selectError.message,
+          details: selectError.details
+        });
         return;
       }
 
@@ -50,26 +74,61 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         });
 
       if (insertError) {
-        console.error('AuthContext: Error creating client record:', insertError);
+        console.error('AuthContext: Error creating client record:', {
+          error: insertError,
+          message: insertError.message,
+          details: insertError.details
+        });
         return;
       }
 
       console.log('AuthContext: Client record created successfully');
-    } catch (error) {
-      console.error('AuthContext: Error in ensureClientRecord:', error);
+    } catch (error: any) {
+      console.error('AuthContext: Error in ensureClientRecord:', {
+        error,
+        message: error.message,
+        status: error?.status,
+        details: error?.details
+      });
     }
   };
 
   const updateAuthState = async (newSession: Session | null) => {
-    console.log('AuthContext: Updating auth state with session:', !!newSession);
+    console.log('AuthContext: Updating auth state with session:', {
+      hasSession: !!newSession,
+      userId: newSession?.user?.id,
+      expiresAt: newSession?.expires_at
+    });
+
+    // Update state
     setSession(newSession);
     setUser(newSession?.user || null);
     
-    if (newSession?.user) {
-      // Create client record in background
-      setTimeout(() => {
-        ensureClientRecord(newSession.user.id, newSession.user.email || '');
-      }, 1000);
+    // If we have a session with a user, ensure client record exists
+    if (newSession?.user && newSession?.access_token) {
+      try {
+        // Wait a bit to ensure auth is fully initialized
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Verify session is still valid before proceeding
+        const { data: { session: currentSession }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError || !currentSession?.access_token) {
+          console.error('AuthContext: Session validation failed before creating client record:', {
+            error: sessionError,
+            hasAccessToken: !!currentSession?.access_token
+          });
+          return;
+        }
+
+        // Now safe to create/check client record
+        await ensureClientRecord(newSession.user.id, newSession.user.email || '');
+      } catch (error: any) {
+        console.error('AuthContext: Error in delayed client record creation:', {
+          error,
+          message: error.message
+        });
+      }
     }
   };
 
@@ -120,29 +179,45 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     const initializeAuth = async () => {
       try {
-        console.log('AuthContext: Initializing auth...');
+        console.log('AuthContext: Starting auth initialization...');
+        setIsLoading(true);
         
         // Get initial session
-        const { data: { session: initialSession }, error } = await supabase.auth.getSession();
+        const { data: { session: initialSession }, error: sessionError } = await supabase.auth.getSession();
         
-        if (error) {
-          console.error('AuthContext: Error getting initial session:', error);
+        console.log('AuthContext: Initial session check result:', {
+          hasSession: !!initialSession,
+          hasError: !!sessionError,
+          userId: initialSession?.user?.id
+        });
+
+        if (sessionError) {
+          console.error('AuthContext: Error getting initial session:', {
+            error: sessionError,
+            message: sessionError.message
+          });
+          toast.error('Error initializing authentication');
+          return;
         }
         
         if (mounted) {
-          console.log('AuthContext: Initial session found:', !!initialSession);
           await updateAuthState(initialSession);
-          setIsLoading(false);
           
           // Only navigate if we have a session and we're on login page
-          if (initialSession && window.location.pathname === '/login') {
-            console.log('AuthContext: User authenticated on login page, navigating to assistant...');
-            navigate('/assistant', { replace: true });
+          if (initialSession?.user) {
+            const currentPath = window.location.pathname;
+            if (currentPath === '/login' || currentPath === '/') {
+              console.log('AuthContext: User authenticated, navigating to assistant...');
+              navigate('/assistant', { replace: true });
+            }
           }
         }
       } catch (error) {
         console.error('AuthContext: Error in initialization:', error);
+        toast.error('Error initializing authentication');
+      } finally {
         if (mounted) {
+          console.log('AuthContext: Completing initialization, setting loading to false');
           setIsLoading(false);
         }
       }
@@ -152,20 +227,37 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, newSession) => {
       if (!mounted) return;
       
-      console.log('AuthContext: Auth state change:', event, !!newSession);
+      console.log('AuthContext: Auth state change:', {
+        event,
+        hasSession: !!newSession,
+        userId: newSession?.user?.id
+      });
       
-      if (event === 'SIGNED_IN' && newSession) {
-        await updateAuthState(newSession);
-        // Only navigate to assistant if we're currently on login page
-        if (window.location.pathname === '/login' || window.location.pathname === '/') {
-          console.log('AuthContext: User signed in, navigating to assistant...');
-          navigate('/assistant', { replace: true });
+      try {
+        setIsLoading(true);
+        
+        if (event === 'SIGNED_IN' && newSession) {
+          await updateAuthState(newSession);
+          const currentPath = window.location.pathname;
+          // Only navigate if on login or root page
+          if (currentPath === '/login' || currentPath === '/') {
+            console.log('AuthContext: User signed in, navigating to assistant...');
+            navigate('/assistant', { replace: true });
+          }
+        } else if (event === 'SIGNED_OUT') {
+          await updateAuthState(null);
+          navigate('/login', { replace: true });
+        } else if (event === 'TOKEN_REFRESHED' && newSession) {
+          await updateAuthState(newSession);
         }
-      } else if (event === 'SIGNED_OUT') {
-        await updateAuthState(null);
-        navigate('/login', { replace: true });
-      } else if (event === 'TOKEN_REFRESHED' && newSession) {
-        await updateAuthState(newSession);
+      } catch (error) {
+        console.error('AuthContext: Error handling auth state change:', error);
+        toast.error('Error updating authentication state');
+      } finally {
+        if (mounted) {
+          console.log('AuthContext: Completing auth state change, setting loading to false');
+          setIsLoading(false);
+        }
       }
     });
 

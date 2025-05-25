@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { supabase } from "@/lib/supabase";
 import { Button } from '@/components/ui/button';
@@ -69,14 +68,14 @@ const Login = () => {
       
       // Get the current URL without any hash or query parameters
       const currentOrigin = window.location.origin;
-      const redirectTo = `${currentOrigin}/assistant`;
+      const redirectTo = `${currentOrigin}/login`;
       
       console.log('Login: OAuth redirect URL:', redirectTo);
       
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: redirectTo,
+          redirectTo,
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',
