@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { User } from '@supabase/supabase-js';
 
@@ -14,37 +14,49 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user || null);
+      const newUser = session?.user || null;
+      setUser(newUser);
       setIsLoading(false);
+
+      // Only redirect to /login if the current path is a protected route
+      const protectedRoutes = ['/dashboard', '/onboarding', '/assistant', '/leads'];
+      const isProtectedRoute = protectedRoutes.some(route => location.pathname.startsWith(route));
+      const isLoginPage = location.pathname === '/login';
+
+      if (!newUser && isProtectedRoute && !isLoginPage) {
+        navigate('/login');
+      }
     });
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('[AuthContext] Auth state change:', { event, userId: session?.user?.id });
       const newUser = session?.user || null;
       setUser(newUser);
       
       // Only redirect to /login if the current path is a protected route
       const protectedRoutes = ['/dashboard', '/onboarding', '/assistant', '/leads'];
-      if (
-        !newUser &&
-        protectedRoutes.some(route => window.location.pathname.startsWith(route)) &&
-        window.location.pathname !== '/login'
-      ) {
+      const isProtectedRoute = protectedRoutes.some(route => location.pathname.startsWith(route));
+      const isLoginPage = location.pathname === '/login';
+
+      if (!newUser && isProtectedRoute && !isLoginPage) {
         navigate('/login');
       }
     });
 
     return () => subscription.unsubscribe();
-  }, [navigate]);
+  }, [navigate, location]);
 
   const signOut = async () => {
     await supabase.auth.signOut();
+    navigate('/');
   };
 
   const value = {

@@ -113,7 +113,7 @@ export const supabase = createClient<Database>(
       autoRefreshToken: true,
       persistSession: true,
       detectSessionInUrl: true,
-      storage: localStorage,
+      storage: customStorage,
       storageKey: 'supabase.auth.token'
     },
     db: {
@@ -132,11 +132,11 @@ supabase.auth.onAuthStateChange((event, session) => {
   console.log('[Auth] State change:', { event, userId: session?.user?.id });
   
   if (event === 'SIGNED_IN' && session) {
-    localStorage.setItem('supabase.auth.token', JSON.stringify(session));
+    customStorage.setItem('supabase.auth.token', JSON.stringify(session));
   }
   
   if (event === 'SIGNED_OUT') {
-    localStorage.removeItem('supabase.auth.token');
+    customStorage.removeItem('supabase.auth.token');
   }
 });
 
