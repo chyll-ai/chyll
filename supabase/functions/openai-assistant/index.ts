@@ -1,6 +1,29 @@
-
+// @ts-ignore: Deno imports
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+// @ts-ignore: Deno imports
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
+
+interface RequestData {
+  message: string;
+  userId: string;
+}
+
+interface AssistantMessage {
+  role: string;
+  content: Array<{
+    text: {
+      value: string;
+    };
+  }>;
+  created_at: string;
+}
+
+interface ToolOutput {
+  threadId: string;
+  runId: string;
+  toolCallId: string;
+  output: any;
+}
 
 const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
 const ASSISTANT_ID = 'asst_6NuMm7dgWLw3P6FcdVvD7uut';
@@ -10,8 +33,8 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-serve(async (req) => {
-  console.log("Requête reçue:", req.url);
+serve(async (req: Request) => {
+  console.log("Request received:", req.url);
   
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -19,155 +42,109 @@ serve(async (req) => {
   }
 
   try {
-    const requestData = await req.json();
-    const { action, message, threadId, runId, toolOutputs } = requestData;
-    console.log("Action:", action, "ThreadId:", threadId);
+    const requestData: RequestData = await req.json();
+    const { message, userId } = requestData;
+    
+    if (!message) {
+      throw new Error('Message is required');
+    }
+
+    if (!userId) {
+      throw new Error('UserId is required');
+    }
+
+    console.log("Processing message for userId:", userId);
 
     if (!OPENAI_API_KEY) {
-      console.error("OPENAI_API_KEY n'est pas configurée");
+      console.error("OPENAI_API_KEY is not configured");
       throw new Error('OPENAI_API_KEY is not configured');
     }
 
-    switch (action) {
-      case 'create_thread':
-        return handleCreateThread();
-      case 'send_message':
-        if (!threadId || !message) {
-          throw new Error('Missing threadId or message');
-        }
-        return handleSendMessage(threadId, message);
-      case 'submit_tool_outputs':
-        if (!threadId || !runId || !toolOutputs) {
-          throw new Error('Missing threadId, runId, or toolOutputs');
-        }
-        return handleSubmitToolOutputs(threadId, runId, toolOutputs);
-      default:
-        throw new Error(`Unknown action: ${action}`);
-    }
-  } catch (error) {
-    console.error('Error:', error);
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      { 
-        status: 400, 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      }
-    );
-  }
-});
+    // Check if this is a tool output submission
+    try {
+      const toolOutput: ToolOutput = JSON.parse(message);
+      if (toolOutput.threadId && toolOutput.runId && toolOutput.toolCallId) {
+        // Handle tool output submission
+        const response = await fetch(`https://api.openai.com/v1/threads/${toolOutput.threadId}/runs/${toolOutput.runId}/submit_tool_outputs`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${OPENAI_API_KEY}`,
+            'Content-Type': 'application/json',
+            'OpenAI-Beta': 'assistants=v2',
+          },
+          body: JSON.stringify({
+            tool_outputs: [{
+              tool_call_id: toolOutput.toolCallId,
+              output: JSON.stringify(toolOutput.output)
+            }]
+          })
+        });
 
-async function handleCreateThread() {
-  try {
-    console.log("Création d'un nouveau thread...");
-    const response = await fetch('https://api.openai.com/v1/threads', {
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(`Failed to submit tool outputs: ${JSON.stringify(errorData)}`);
+        }
+
+        return new Response(
+          JSON.stringify({ message: "Tool outputs submitted successfully" }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+    } catch (e) {
+      // Not a tool output, continue with regular message processing
+      console.log("Not a tool output, processing as regular message");
+    }
+
+    // Create a new thread for each message
+    const threadResponse = await fetch('https://api.openai.com/v1/threads', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${OPENAI_API_KEY}`,
         'Content-Type': 'application/json',
-        'OpenAI-Beta': 'assistants=v2',  // Updated to v2
+        'OpenAI-Beta': 'assistants=v2',
       },
       body: JSON.stringify({})
     });
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error("Erreur de l'API OpenAI:", errorData);
-      throw new Error(`OpenAI API Error: ${JSON.stringify(errorData)}`);
+    if (!threadResponse.ok) {
+      const errorData = await threadResponse.json();
+      console.error("Error creating thread:", errorData);
+      throw new Error(`Failed to create thread: ${JSON.stringify(errorData)}`);
     }
 
-    const thread = await response.json();
-    console.log("Thread créé:", thread.id);
-    
-    return new Response(
-      JSON.stringify({ threadId: thread.id }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
-  } catch (error) {
-    console.error("Erreur lors de la création du thread:", error);
-    throw error;
-  }
-}
+    const thread = await threadResponse.json();
+    const threadId = thread.id;
+    console.log("Thread created:", threadId);
 
-async function handleSendMessage(threadId: string, messageContent: string) {
-  try {
-    // Check if there's an active run on this thread
-    console.log("Checking for active runs on thread:", threadId);
-    const listRunsResponse = await fetch(`https://api.openai.com/v1/threads/${threadId}/runs`, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${OPENAI_API_KEY}`,
-        'Content-Type': 'application/json',
-        'OpenAI-Beta': 'assistants=v2',
-      }
-    });
-    
-    if (!listRunsResponse.ok) {
-      const errorData = await listRunsResponse.json();
-      console.error("Error checking runs:", errorData);
-    } else {
-      const runsData = await listRunsResponse.json();
-      const activeRuns = runsData.data.filter(run => 
-        ['queued', 'in_progress', 'requires_action'].includes(run.status)
-      );
-      
-      // Cancel any active runs before proceeding
-      if (activeRuns.length > 0) {
-        console.log(`Found ${activeRuns.length} active runs, cancelling them...`);
-        for (const run of activeRuns) {
-          try {
-            const cancelResponse = await fetch(`https://api.openai.com/v1/threads/${threadId}/runs/${run.id}/cancel`, {
-              method: 'POST',
-              headers: {
-                'Authorization': `Bearer ${OPENAI_API_KEY}`,
-                'Content-Type': 'application/json',
-                'OpenAI-Beta': 'assistants=v2',
-              }
-            });
-            
-            if (!cancelResponse.ok) {
-              console.error(`Failed to cancel run ${run.id}:`, await cancelResponse.json());
-            } else {
-              console.log(`Successfully cancelled run ${run.id}`);
-            }
-          } catch (error) {
-            console.error(`Error cancelling run ${run.id}:`, error);
-          }
-          
-          // Wait briefly to ensure the cancellation is processed
-          await new Promise(resolve => setTimeout(resolve, 1000));
-        }
-      }
-    }
-
-    // 1. Add the message to the thread
-    console.log(`Ajout du message au thread ${threadId}:`, messageContent);
+    // Add the message to the thread
+    console.log(`Adding message to thread ${threadId}:`, message);
     const messageResponse = await fetch(`https://api.openai.com/v1/threads/${threadId}/messages`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${OPENAI_API_KEY}`,
         'Content-Type': 'application/json',
-        'OpenAI-Beta': 'assistants=v2',  // Updated to v2
+        'OpenAI-Beta': 'assistants=v2',
       },
       body: JSON.stringify({
         role: 'user',
-        content: messageContent
+        content: message
       })
     });
 
     if (!messageResponse.ok) {
       const errorData = await messageResponse.json();
-      console.error("Erreur lors de l'ajout du message:", errorData);
+      console.error("Error adding message:", errorData);
       throw new Error(`Failed to add message: ${JSON.stringify(errorData)}`);
     }
 
-    // 2. Create a run with the assistant
-    console.log("Création d'un run avec l'assistant...");
+    // Create a run with the assistant
+    console.log("Creating run with assistant...");
     const runResponse = await fetch(`https://api.openai.com/v1/threads/${threadId}/runs`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${OPENAI_API_KEY}`,
         'Content-Type': 'application/json',
-        'OpenAI-Beta': 'assistants=v2',  // Updated to v2
+        'OpenAI-Beta': 'assistants=v2',
       },
       body: JSON.stringify({
         assistant_id: ASSISTANT_ID
@@ -176,153 +153,66 @@ async function handleSendMessage(threadId: string, messageContent: string) {
 
     if (!runResponse.ok) {
       const errorData = await runResponse.json();
-      console.error("Erreur lors de la création du run:", errorData);
+      console.error("Error creating run:", errorData);
       throw new Error(`Failed to create run: ${JSON.stringify(errorData)}`);
     }
 
     const runData = await runResponse.json();
     const runId = runData.id;
-    console.log("Run créé:", runId);
+    console.log("Run created:", runId);
 
-    // 3. Poll for the run completion
-    console.log("Attente de la complétion du run...");
+    // Poll for the run completion
+    console.log("Waiting for run completion...");
     let runStatus = await pollRunStatus(threadId, runId);
 
-    // 4. If there were tool calls, capture them but don't process them in the edge function
-    // Instead, return them to the frontend for processing
-    let toolCalls = null;
-    if (runStatus.required_action?.type === 'submit_tool_outputs') {
-      console.log("Des appels d'outils sont requis");
-      toolCalls = runStatus.required_action.submit_tool_outputs.tool_calls;
-      
-      // Since we're returning the tool calls to the frontend for processing,
-      // we're not completing the run here. The frontend will handle it.
-      console.log("Returning tool calls to frontend:", toolCalls);
-    }
-
-    // 5. Get the assistant's messages
-    console.log("Récupération des messages de l'assistant...");
+    // Get the assistant's messages
+    console.log("Retrieving assistant messages...");
     const messagesResponse = await fetch(`https://api.openai.com/v1/threads/${threadId}/messages`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${OPENAI_API_KEY}`,
         'Content-Type': 'application/json',
-        'OpenAI-Beta': 'assistants=v2',  // Updated to v2
+        'OpenAI-Beta': 'assistants=v2',
       }
     });
 
     if (!messagesResponse.ok) {
       const errorData = await messagesResponse.json();
-      console.error("Erreur lors de la récupération des messages:", errorData);
+      console.error("Error retrieving messages:", errorData);
       throw new Error(`Failed to get messages: ${JSON.stringify(errorData)}`);
     }
 
     const messagesData = await messagesResponse.json();
     
     // Get the most recent assistant message
-    const assistantMessages = messagesData.data
+    const assistantMessages = (messagesData.data as AssistantMessage[])
       .filter(msg => msg.role === 'assistant')
       .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
     const assistantResponse = assistantMessages.length > 0 
       ? assistantMessages[0].content[0]?.text?.value || ""
-      : "Je n'ai pas pu générer une réponse.";
+      : "I couldn't generate a response.";
 
-    console.log("Réponse de l'assistant:", assistantResponse.substring(0, 100) + "...");
+    console.log("Assistant response:", assistantResponse.substring(0, 100) + "...");
 
-    // Return the assistant's response along with any tool calls and the runId for the frontend
+    // Return the assistant's response
     return new Response(
       JSON.stringify({ 
-        message: assistantResponse,
-        toolCalls: toolCalls,
-        runId: runId
+        message: assistantResponse
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
-  } catch (error) {
-    console.error("Erreur lors de l'envoi du message:", error);
-    throw error;
-  }
-}
-
-async function handleSubmitToolOutputs(threadId: string, runId: string, toolOutputs: any[]) {
-  try {
-    console.log(`Submitting tool outputs for thread ${threadId}, run ${runId}:`);
-    console.log("Tool outputs:", JSON.stringify(toolOutputs));
-    
-    const response = await fetch(`https://api.openai.com/v1/threads/${threadId}/runs/${runId}/submit_tool_outputs`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${OPENAI_API_KEY}`,
-        'Content-Type': 'application/json',
-        'OpenAI-Beta': 'assistants=v2',
-      },
-      body: JSON.stringify({
-        tool_outputs: toolOutputs
-      })
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error("Error submitting tool outputs:", errorData);
-      throw new Error(`Failed to submit tool outputs: ${JSON.stringify(errorData)}`);
-    }
-
-    const data = await response.json();
-    console.log("Tool outputs submitted successfully, run status:", data.status);
-    
-    // After submitting tool outputs, poll for completion and return the assistant's message
-    let runStatus = await pollRunStatus(threadId, runId);
-    console.log("Run status after tool outputs:", runStatus.status);
-    
-    // Get the assistant's messages after tool output submission
-    const messagesResponse = await fetch(`https://api.openai.com/v1/threads/${threadId}/messages`, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${OPENAI_API_KEY}`,
-        'Content-Type': 'application/json',
-        'OpenAI-Beta': 'assistants=v2',
+  } catch (error: unknown) {
+    console.error('Error:', error);
+    return new Response(
+      JSON.stringify({ error: error instanceof Error ? error.message : 'An unknown error occurred' }),
+      { 
+        status: 400, 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       }
-    });
-
-    if (!messagesResponse.ok) {
-      console.error("Error retrieving messages after tool outputs:", await messagesResponse.json());
-      return new Response(
-        JSON.stringify({ success: true, status: data.status }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    const messagesData = await messagesResponse.json();
-    
-    // Get the most recent assistant message
-    const assistantMessages = messagesData.data
-      .filter(msg => msg.role === 'assistant')
-      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-
-    const assistantResponse = assistantMessages.length > 0 
-      ? assistantMessages[0].content[0]?.text?.value || ""
-      : "";
-
-    console.log("Latest assistant response after tool outputs:", assistantResponse.substring(0, 100) + "...");
-    
-    return new Response(
-      JSON.stringify({ 
-        success: true, 
-        status: data.status,
-        message: assistantResponse,
-        // If there are new tool calls, include them
-        toolCalls: runStatus.required_action?.type === 'submit_tool_outputs' 
-          ? runStatus.required_action.submit_tool_outputs.tool_calls 
-          : null
-      }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
-  } catch (error) {
-    console.error("Error submitting tool outputs:", error);
-    throw error;
   }
-}
+});
 
 async function pollRunStatus(threadId: string, runId: string) {
   let status = 'queued';
@@ -341,7 +231,7 @@ async function pollRunStatus(threadId: string, runId: string) {
         headers: {
           'Authorization': `Bearer ${OPENAI_API_KEY}`,
           'Content-Type': 'application/json',
-          'OpenAI-Beta': 'assistants=v2',  // Updated to v2
+          'OpenAI-Beta': 'assistants=v2',
         }
       });
 
