@@ -30,7 +30,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const newUser = session?.user || null;
       setUser(newUser);
       
-      if (!newUser && window.location.pathname !== '/login') {
+      // Only redirect to /login if the current path is a protected route
+      const protectedRoutes = ['/dashboard', '/onboarding', '/assistant', '/leads'];
+      if (
+        !newUser &&
+        protectedRoutes.some(route => window.location.pathname.startsWith(route)) &&
+        window.location.pathname !== '/login'
+      ) {
         navigate('/login');
       }
     });
@@ -48,10 +54,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     isLoading,
     signOut
   };
-
-  if (!user) {
-    return <Index />;
-  }
 
   return (
     <AuthContext.Provider value={value}>
