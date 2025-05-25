@@ -3,8 +3,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { LogOut, LogIn, UserPlus } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
+import { AuthProvider } from '@/context/AuthContext';
 
-const Header = () => {
+const HeaderContent = () => {
   const { isAuthenticated, signOut, user } = useAuth();
   const navigate = useNavigate();
 
@@ -76,5 +77,11 @@ const Header = () => {
     </header>
   );
 };
+
+const Header = () => (
+  <AuthProvider>
+    <HeaderContent />
+  </AuthProvider>
+);
 
 export default Header;

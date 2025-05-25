@@ -25,61 +25,45 @@ import Assistant from '@/pages/Assistant';
 import Leads from '@/pages/Leads';
 import NotFound from '@/pages/NotFound';
 
+// Wrap a component with AuthProvider and ProtectedRoute
+const ProtectedComponent = ({ children }: { children: React.ReactNode }) => (
+  <AuthProvider>
+    <ProtectedRoute>
+      {children}
+    </ProtectedRoute>
+  </AuthProvider>
+);
+
 function App() {
   return (
     <HelmetProvider>
       <LanguageProvider>
         <Router>
-          <AuthProvider>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/terms" element={<Terms />} />
-              <Route path="/privacy" element={<Privacy />} />
-              <Route path="/cookies" element={<Cookies />} />
-              <Route path="/faq" element={<FAQ />} />
-              <Route path="/blog" element={<Blog />} />
-              <Route path="/blog/:id" element={<BlogPostPage />} />
-              <Route path="/about-us" element={<AboutUs />} />
-              <Route path="/login" element={<Login />} />
-              <Route 
-                path="/onboarding" 
-                element={
-                  <ProtectedRoute>
-                    <Onboarding />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/dashboard" 
-                element={
-                  <ProtectedRoute>
-                    <Dashboard />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/assistant" 
-                element={
-                  <ProtectedRoute>
-                    <Assistant />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/leads" 
-                element={
-                  <ProtectedRoute>
-                    <Leads />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-            <Toaster />
-            <SonnerToaster position="bottom-right" />
-            <CookieConsent />
-          </AuthProvider>
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/" element={<Index />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/cookies" element={<Cookies />} />
+            <Route path="/faq" element={<FAQ />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/blog/:id" element={<BlogPostPage />} />
+            <Route path="/about-us" element={<AboutUs />} />
+            <Route path="/login" element={<Login />} />
+
+            {/* Protected Routes */}
+            <Route path="/onboarding" element={<ProtectedComponent><Onboarding /></ProtectedComponent>} />
+            <Route path="/dashboard" element={<ProtectedComponent><Dashboard /></ProtectedComponent>} />
+            <Route path="/assistant" element={<ProtectedComponent><Assistant /></ProtectedComponent>} />
+            <Route path="/leads" element={<ProtectedComponent><Leads /></ProtectedComponent>} />
+
+            {/* 404 Route */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+          <Toaster />
+          <SonnerToaster position="bottom-right" />
+          <CookieConsent />
         </Router>
       </LanguageProvider>
     </HelmetProvider>
