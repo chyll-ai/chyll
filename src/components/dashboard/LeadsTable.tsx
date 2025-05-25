@@ -214,50 +214,22 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
     if (!currentLead) return;
     
     try {
-      const { data: session } = await supabase.auth.getSession();
-      const access_token = session?.session?.access_token;
-      const client_id = session?.session?.user?.id;
-      
-      if (!access_token || !client_id) {
-        toast.error('Vous devez être connecté pour effectuer cette action');
-        return;
-      }
-
       setUpdatingStatus(true);
       
-      const baseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://atsfuqwxfrezkxtnctmk.supabase.co';
-      const response = await fetch(`${baseUrl}/functions/v1/update-lead-status`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${access_token}`,
-          'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY || '',
-          'x-client-info': '@supabase/auth-helpers-nextjs@0.7.4'
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          lead_id: currentLead.id,
-          status: newStatus,
-          user_id: client_id
-        })
-      });
+      // Update only the status
+      const { error } = await supabase
+        .from('leads')
+        .update({ status: newStatus })
+        .eq('id', currentLead.id)
+        .eq('client_id', userId);
 
-      if (!response.ok) {
-        const result = await response.json().catch(() => ({ error: 'Failed to parse response' }));
-        throw new Error(result.error || `Error: ${response.status}`);
+      if (error) {
+        throw error;
       }
 
-      const result = await response.json();
-      toast.success(result.message || 'Statut mis à jour avec succès');
-      
-      // Update local state
-      setLeads(prevLeads => 
-        prevLeads.map(l => 
-          l.id === currentLead.id ? { ...l, status: newStatus } : l
-        )
-      );
-      
+      toast.success('Statut mis à jour avec succès');
       setStatusUpdateDialogOpen(false);
+      
     } catch (error: any) {
       console.error('Error updating status:', error);
       toast.error(error.message || 'Erreur lors de la mise à jour du statut');
