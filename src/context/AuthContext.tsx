@@ -12,6 +12,14 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// Define protected routes
+const PROTECTED_ROUTES = ['/dashboard', '/onboarding', '/assistant', '/leads'];
+
+// Check if a route is protected
+const isProtectedRoute = (pathname: string): boolean => {
+  return PROTECTED_ROUTES.some(route => pathname.startsWith(route));
+};
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -25,29 +33,33 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(newUser);
       setIsLoading(false);
 
-      // Only redirect to /login if the current path is a protected route
-      const protectedRoutes = ['/dashboard', '/onboarding', '/assistant', '/leads'];
-      const isProtectedRoute = protectedRoutes.some(route => location.pathname.startsWith(route));
-      const isLoginPage = location.pathname === '/login';
-
-      if (!newUser && isProtectedRoute && !isLoginPage) {
+      // Only redirect if it's a protected route and user is not authenticated
+      if (!newUser && isProtectedRoute(location.pathname)) {
+        console.log('[AuthContext] Redirecting to login from protected route:', location.pathname);
         navigate('/login');
+      } else {
+        console.log('[AuthContext] No redirect needed for path:', location.pathname);
       }
     });
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log('[AuthContext] Auth state change:', { event, userId: session?.user?.id });
+      console.log('[AuthContext] Auth state change:', { 
+        event, 
+        userId: session?.user?.id, 
+        path: location.pathname,
+        isProtectedRoute: isProtectedRoute(location.pathname)
+      });
+
       const newUser = session?.user || null;
       setUser(newUser);
       
-      // Only redirect to /login if the current path is a protected route
-      const protectedRoutes = ['/dashboard', '/onboarding', '/assistant', '/leads'];
-      const isProtectedRoute = protectedRoutes.some(route => location.pathname.startsWith(route));
-      const isLoginPage = location.pathname === '/login';
-
-      if (!newUser && isProtectedRoute && !isLoginPage) {
+      // Only redirect if it's a protected route and user is not authenticated
+      if (!newUser && isProtectedRoute(location.pathname)) {
+        console.log('[AuthContext] Redirecting to login from protected route:', location.pathname);
         navigate('/login');
+      } else {
+        console.log('[AuthContext] No redirect needed for path:', location.pathname);
       }
     });
 

@@ -112,9 +112,11 @@ export const supabase = createClient<Database>(
     auth: {
       autoRefreshToken: true,
       persistSession: true,
-      detectSessionInUrl: true,
+      detectSessionInUrl: false, // Disable automatic session detection
       storage: customStorage,
-      storageKey: 'supabase.auth.token'
+      storageKey: 'supabase.auth.token',
+      flowType: 'pkce', // Use PKCE flow for better security
+      debug: true // Enable debug logging
     },
     db: {
       schema: 'public'
@@ -123,30 +125,53 @@ export const supabase = createClient<Database>(
       params: {
         eventsPerSecond: 10
       }
+    },
+    global: {
+      headers: {
+        'X-Client-Info': 'supabase-js-v2'
+      }
     }
   }
 );
 
 // Set up auth state change handler
 supabase.auth.onAuthStateChange((event, session) => {
-  console.log('[Auth] State change:', { event, userId: session?.user?.id });
+  console.log('[Auth] State change:', { event, userId: session?.user?.id, path: window.location.pathname });
   
-  if (event === 'SIGNED_IN' && session) {
-    customStorage.setItem('supabase.auth.token', JSON.stringify(session));
-  }
-  
-  if (event === 'SIGNED_OUT') {
-    customStorage.removeItem('supabase.auth.token');
+  // Only handle session storage if we have a session
+  if (session) {
+    if (event === 'SIGNED_IN') {
+      customStorage.setItem('supabase.auth.token', JSON.stringify(session));
+    } else if (event === 'SIGNED_OUT') {
+      customStorage.removeItem('supabase.auth.token');
+    }
+  } else {
+    // If no session and we're not on a protected route, do nothing
+    const protectedRoutes = ['/dashboard', '/onboarding', '/assistant', '/leads'];
+    const isProtectedRoute = protectedRoutes.some(route => window.location.pathname.startsWith(route));
+    
+    if (!isProtectedRoute) {
+      console.log('[Auth] No session but on public route, no action needed');
+      return;
+    }
   }
 });
 
 // Debug utility to inspect storage
 export const debugStorage = () => {
-  console.group('Local Storage Debug');
+  console.group('Storage Debug');
+  console.log('Local Storage:');
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i);
     if (key?.includes('supabase')) {
       console.log(`${key}:`, localStorage.getItem(key));
+    }
+  }
+  console.log('\nSession Storage:');
+  for (let i = 0; i < sessionStorage.length; i++) {
+    const key = sessionStorage.key(i);
+    if (key?.includes('supabase')) {
+      console.log(`${key}:`, sessionStorage.getItem(key));
     }
   }
   console.groupEnd();
