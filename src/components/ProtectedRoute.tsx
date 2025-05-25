@@ -1,10 +1,12 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
+import { useProfile } from '@/context/ProfileContext';
 import { Loader2 } from 'lucide-react';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
+  requireCompleteProfile?: boolean;
 }
 
 const LoadingSpinner = () => (
@@ -14,17 +16,19 @@ const LoadingSpinner = () => (
   </div>
 );
 
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  const { isAuthenticated, isLoading, user } = useAuth();
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requireCompleteProfile = false }) => {
+  const { isAuthenticated, isLoading: authLoading, user } = useAuth();
+  const { isComplete, isLoading: profileLoading } = useProfile();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
+    if (!authLoading && !isAuthenticated) {
       navigate('/login', { replace: true });
+      return;
     }
-  }, [isAuthenticated, isLoading, navigate]);
+  }, [isAuthenticated, authLoading, navigate]);
 
-  if (isLoading) {
+  if (authLoading || (requireCompleteProfile && profileLoading)) {
     return <LoadingSpinner />;
   }
 

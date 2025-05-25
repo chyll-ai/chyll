@@ -1,12 +1,8 @@
 export interface Message {
-  id?: string;
-  role: 'user' | 'assistant' | 'system' | 'function';
+  id: string;
+  role: 'user' | 'assistant';
   content: string;
-  toolCalls?: any[];
-  client_id?: string;
-  conversation_id?: string;
-  chat_session_id?: string;
-  name?: string;  // For function messages
+  client_id: string;
 }
 
 export interface Lead {
@@ -25,9 +21,6 @@ export interface AssistantState {
   sending: boolean;
   isGenerating: boolean;
   messages: Message[];
-  leads: Lead[];
   sendMessage: (content: string) => Promise<void>;
   userId: string;
-  hasProfile: boolean;
-  conversationId: string;
 } 

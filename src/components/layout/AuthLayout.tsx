@@ -27,16 +27,6 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ requireCompleteProfile = false 
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  // If complete profile is required but profile is not complete, redirect to assistant
-  if (requireCompleteProfile && !isComplete) {
-    return <Navigate to="/assistant" replace />;
-  }
-
-  // If profile is complete and we're on assistant page, redirect to dashboard
-  if (isComplete && location.pathname === '/assistant' && !location.search) {
-    return <Navigate to="/dashboard" replace />;
-  }
-
   return <Outlet />;
 };
 

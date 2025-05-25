@@ -13,10 +13,10 @@ const Login = () => {
   const { user, isLoading: authLoading } = useAuth();
 
   useEffect(() => {
-    // If we have a user and auth is done loading, redirect to assistant
+    // If we have a user and auth is done loading, redirect to dashboard
     if (!authLoading && user?.id) {
-      console.log('Login: User already authenticated, redirecting to assistant...');
-      navigate('/assistant', { replace: true });
+      console.log('Login: User already authenticated, redirecting to dashboard...');
+      navigate('/dashboard', { replace: true });
     }
   }, [user, authLoading, navigate]);
 

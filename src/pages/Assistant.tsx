@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import useAssistantChat from '@/hooks/assistant/useAssistantChat';
 import ChatHeader from '@/components/chat/ChatHeader';
 import ChatMessageList from '@/components/chat/ChatMessageList';
@@ -13,13 +13,14 @@ interface AssistantProps {
 
 const Assistant = ({ embedded = false }: AssistantProps) => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const leadId = searchParams.get('leadId');
   const {
     loading: chatLoading,
     sending,
     isGenerating,
     messages,
     sendMessage,
-    conversationId,
   } = useAssistantChat();
 
   const { user, isLoading: authLoading } = useAuth();
@@ -49,8 +50,8 @@ const Assistant = ({ embedded = false }: AssistantProps) => {
     <div className="flex h-screen flex-col">
       {!embedded && (
         <ChatHeader 
-          conversationId={conversationId}
           showBackButton={true}
+          backTo={leadId ? '/dashboard' : '/'}
         />
       )}
 

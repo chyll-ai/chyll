@@ -29,9 +29,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const newUser = session?.user || null;
       setUser(newUser);
       
-      if (newUser && window.location.pathname === '/login') {
-        navigate('/assistant');
-      } else if (!newUser && window.location.pathname !== '/login') {
+      if (!newUser && window.location.pathname !== '/login') {
         navigate('/login');
       }
     });

@@ -353,17 +353,6 @@ export async function handleFunctionCall(
           : "Profile needs to be completed first.",
         next_action: isComplete ? "launch_search" : "complete_profile"
       });
-    } else if (toolCall.function?.name === "redirect_to_dashboard") {
-      console.log("Appel de la fonction redirect_to_dashboard");
-      
-      // This function will be handled by the Assistant component directly
-      // We still need to submit a success response to OpenAI
-      await submitToolOutput(thread_id, run_id, toolCall.id, {
-        success: true,
-        message: "Redirect initiated. User should be guided to lead generation first.",
-        next_step: "lead_generation"
-      });
-      
     } else if (toolCall.function?.name === "launch_search") {
       console.log("Appel de la fonction launch_search");
       

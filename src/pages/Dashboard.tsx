@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
@@ -7,20 +6,16 @@ import LeadsTable from '@/components/dashboard/LeadsTable';
 import { Loader2, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthContext';
-import { useProfile } from '@/context/ProfileContext';
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [userId, setUserId] = useState<string | null>(null);
   const { signOut, user, isLoading: authLoading } = useAuth();
-  const { isComplete, isLoading: profileLoading } = useProfile();
 
   useEffect(() => {
     console.log('Dashboard: Auth state changed', { 
       user: !!user, 
-      authLoading, 
-      isComplete, 
-      profileLoading 
+      authLoading
     });
 
     if (!authLoading && !user) {
@@ -29,19 +24,13 @@ const Dashboard = () => {
       return;
     }
 
-    if (!profileLoading && !isComplete) {
-      console.log('Dashboard: Profile incomplete, redirecting to assistant');
-      navigate('/assistant');
-      return;
-    }
-
     if (user) {
       console.log('Dashboard: Setting userId', user.id);
       setUserId(user.id);
     }
-  }, [user, authLoading, isComplete, profileLoading, navigate]);
+  }, [user, authLoading, navigate]);
 
-  if (authLoading || profileLoading) {
+  if (authLoading) {
     console.log('Dashboard: Loading state');
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
@@ -50,8 +39,8 @@ const Dashboard = () => {
     );
   }
 
-  if (!user || !isComplete) {
-    console.log('Dashboard: User or profile check failed');
+  if (!user) {
+    console.log('Dashboard: User check failed');
     return null;
   }
 

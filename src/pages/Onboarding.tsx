@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,15 +13,13 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { NotFoundRedirect } from '@/components/NotFoundRedirect';
+import { useAuth } from '@/context/AuthContext';
 
 const Onboarding = () => {
   const navigate = useNavigate();
-  const location = useLocation();
+  const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [authChecked, setAuthChecked] = useState(false);
-  const [hasSession, setHasSession] = useState(false);
   const [formData, setFormData] = useState({
     company_name: '',
     industry: '',
@@ -38,148 +36,46 @@ const Onboarding = () => {
   });
 
   useEffect(() => {
-    const processAuth = async () => {
+    const loadProfile = async () => {
+      if (!user) return;
+
       try {
-        // Vérifier si la page est chargée avec un hash (pour l'authentification) ou si le hash est passé via le state
-        const hashToProcess = location.hash || (location.state && location.state.hash);
-        
-        if (hashToProcess && hashToProcess.includes('access_token')) {
-          console.log("Hash détecté dans l'URL ou le state, processing auth dans Onboarding");
-          
-          const hashParams = new URLSearchParams(
-            hashToProcess.substring(1) || (location.state && location.state.hash.substring(1))
-          );
-          const accessToken = hashParams.get('access_token');
-          
-          if (accessToken) {
-            // Définir la session avec le token d'accès
-            console.log("Setting session with access token in Onboarding");
-            const { error } = await supabase.auth.setSession({
-              access_token: accessToken,
-              refresh_token: hashParams.get('refresh_token') || '',
-            });
-            
-            if (error) {
-              console.error("Erreur lors de la définition de la session:", error);
-              toast.error("Erreur d'authentification. Veuillez réessayer.");
-              navigate('/login', { replace: true });
-              return;
-            }
-            
-            // Nettoyer l'URL en retirant le hash
-            if (location.hash) {
-              window.history.replaceState({}, document.title, window.location.pathname);
-            }
-            
-            console.log("Session définie avec succès dans Onboarding, URL nettoyée");
-          }
+        const { data: profile, error } = await supabase
+          .from('client_profile')
+          .select('*')
+          .eq('client_id', user.id)
+          .maybeSingle();
+
+        if (error) {
+          console.error("Error loading profile:", error);
+          return;
         }
-        
-        // Vérifier si l'utilisateur est authentifié
-        const checkSession = async () => {
-          try {
-            const { data, error } = await supabase.auth.getSession();
-            
-            if (error || !data.session) {
-              // Pas de session, redirection vers la page de connexion
-              console.log("Pas de session dans Onboarding, redirection vers login");
-              setAuthChecked(true);
-              setHasSession(false);
-              return;
-            }
 
-            console.log("Session trouvée dans Onboarding:", data.session.user.email);
-            setHasSession(true);
-
-            // Vérifier si l'utilisateur a déjà un profil
-            const userId = data.session.user.id;
-            console.log("ID utilisateur récupéré:", userId);
-            
-            // Vérifier si l'utilisateur existe dans la table clients
-            const { data: clientData, error: clientError } = await supabase
-              .from('clients')
-              .select('*')
-              .eq('id', userId)
-              .maybeSingle();
-              
-            if (clientError) {
-              console.error("Erreur lors de la vérification du client:", clientError);
-            }
-            
-            // Si le client n'existe pas, créer un nouveau client
-            if (!clientData) {
-              console.log("Client non trouvé, création d'un nouveau client dans la table clients");
-              const { error: insertClientError } = await supabase
-                .from('clients')
-                .insert({
-                  id: userId,
-                  email: data.session.user.email || '',
-                });
-                
-              if (insertClientError) {
-                console.error("Erreur lors de la création du client:", insertClientError);
-                toast.error("Erreur lors de la création du profil client.");
-                return;
-              }
-              
-              console.log("Nouveau client créé avec succès");
-            } else {
-              console.log("Client trouvé dans la base de données");
-            }
-
-            // Vérifier si l'utilisateur a déjà un profil
-            const { data: profileData, error: profileError } = await supabase
-              .from('client_profile')
-              .select('*')
-              .eq('client_id', userId)
-              .maybeSingle();
-
-            if (profileError) {
-              console.error("Erreur lors de la vérification du profil:", profileError);
-            }
-
-            if (profileData) {
-              // Remplir le formulaire avec les données existantes
-              console.log("Profil trouvé, remplissage du formulaire");
-              setFormData({
-                company_name: profileData.company_name || '',
-                industry: profileData.industry || '',
-                icp_title: profileData.icp_title || '',
-                icp_size: profileData.icp_size || '',
-                icp_location: profileData.icp_location || '',
-                value_prop: profileData.value_prop || '',
-                tone: profileData.tone || '',
-                common_objections: profileData.common_objections || '',
-                primary_goal: profileData.primary_goal || '',
-                calendly_url: profileData.calendly_url || '',
-                linkedin_url: profileData.linkedin_url || '',
-                banned_phrases: profileData.banned_phrases || '',
-              });
-            } else {
-              console.log("Pas de profil trouvé, formulaire vide");
-            }
-
-            setLoading(false);
-            setAuthChecked(true);
-          } catch (error: any) {
-            console.error("Erreur lors de la vérification de la session:", error);
-            toast.error(error.message || "Une erreur s'est produite");
-            setAuthChecked(true);
-            setHasSession(false);
-          }
-        };
-        
-        await checkSession();
-      } catch (error: any) {
-        console.error("Erreur lors du traitement de l'authentification:", error);
-        toast.error(error.message || "Une erreur s'est produite");
-        setAuthChecked(true);
-        setHasSession(false);
+        if (profile) {
+          setFormData({
+            company_name: profile.company_name || '',
+            industry: profile.industry || '',
+            icp_title: profile.icp_title || '',
+            icp_size: profile.icp_size || '',
+            icp_location: profile.icp_location || '',
+            value_prop: profile.value_prop || '',
+            tone: profile.tone || '',
+            common_objections: profile.common_objections || '',
+            primary_goal: profile.primary_goal || '',
+            calendly_url: profile.calendly_url || '',
+            linkedin_url: profile.linkedin_url || '',
+            banned_phrases: profile.banned_phrases || '',
+          });
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
-    processAuth();
-  }, [navigate, location]);
+    loadProfile();
+  }, [user]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -193,128 +89,56 @@ const Onboarding = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    if (!user) {
+      toast.error("Vous devez être connecté pour enregistrer votre profil");
+      return;
+    }
+
     try {
       setSubmitting(true);
-      console.log("Début de la soumission du formulaire...");
       
-      // Récupérer l'ID de l'utilisateur connecté
-      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
-      
-      if (sessionError || !sessionData.session) {
-        throw new Error("Vous n'êtes pas connecté");
-      }
-      
-      const userId = sessionData.session.user.id;
-      console.log("ID utilisateur récupéré:", userId);
-      
-      // IMPORTANT: Vérifier d'abord si le client existe, si non, le créer
-      let clientExists = false;
-      
-      // Vérifier si le client existe dans la table clients
-      const { data: clientData, error: clientCheckError } = await supabase
-        .from('clients')
-        .select('*')
-        .eq('id', userId)
-        .maybeSingle();
-      
-      if (clientCheckError) {
-        console.error("Erreur lors de la vérification du client:", clientCheckError);
-        throw new Error("Erreur lors de la vérification du client");
-      }
-      
-      // Si le client n'existe pas, créer un nouveau client
-      if (!clientData) {
-        console.log("Client non trouvé, création d'un nouveau client dans la table clients");
-        const { error: insertClientError } = await supabase
-          .from('clients')
-          .insert({
-            id: userId,
-            email: sessionData.session.user.email || '',
-          });
-          
-        if (insertClientError) {
-          console.error("Erreur lors de la création du client:", insertClientError);
-          throw new Error("Erreur lors de la création du profil client");
-        }
-        
-        console.log("Nouveau client créé avec succès");
-      } else {
-        console.log("Client déjà existant dans la table clients:", clientData);
-        clientExists = true;
-      }
-      
-      // Vérification supplémentaire après l'insertion pour s'assurer que le client existe maintenant
-      if (!clientExists) {
-        const { data: verifyClientData, error: verifyClientError } = await supabase
-          .from('clients')
-          .select('*')
-          .eq('id', userId)
-          .maybeSingle();
-        
-        if (verifyClientError || !verifyClientData) {
-          console.error("Erreur de vérification après création du client:", verifyClientError);
-          throw new Error("Le client n'a pas pu être créé correctement");
-        }
-        
-        console.log("Vérification réussie: client bien créé:", verifyClientData);
-      }
-      
-      // Vérifier si le profil existe déjà
-      const { data: existingProfile, error: profileCheckError } = await supabase
+      // Check if profile exists
+      const { data: existingProfile, error: checkError } = await supabase
         .from('client_profile')
         .select('*')
-        .eq('client_id', userId)
+        .eq('client_id', user.id)
         .maybeSingle();
       
-      if (profileCheckError) {
-        console.error("Erreur lors de la vérification du profil:", profileCheckError);
+      if (checkError) {
+        throw new Error("Erreur lors de la vérification du profil");
       }
-      
-      console.log("Profil existant:", existingProfile);
       
       let error;
       
       if (existingProfile) {
-        // Mettre à jour le profil existant
-        console.log("Mise à jour du profil existant...");
+        // Update existing profile
         const { error: updateError } = await supabase
           .from('client_profile')
           .update({
             ...formData,
-            client_id: userId,
+            is_complete: true
           })
-          .eq('client_id', userId);
+          .eq('client_id', user.id);
         
         error = updateError;
-        if (updateError) {
-          console.error("Erreur lors de la mise à jour du profil:", updateError);
-        }
       } else {
-        // Insérer le nouveau profil
-        console.log("Création d'un nouveau profil...");
+        // Create new profile
         const { error: insertError } = await supabase
           .from('client_profile')
           .insert({
             ...formData,
-            client_id: userId,
+            client_id: user.id,
+            is_complete: true
           });
         
         error = insertError;
-        if (insertError) {
-          console.error("Erreur lors de l'insertion du profil:", insertError);
-        }
       }
       
       if (error) {
         throw error;
       }
       
-      console.log("Profil enregistré avec succès");
       toast.success("✅ Profil enregistré avec succès");
-      
-      // Redirection vers l'assistant au lieu du dashboard
-      console.log("Redirection vers l'assistant...");
-      navigate('/assistant', { replace: true });
       
     } catch (error: any) {
       console.error("Erreur lors de l'enregistrement du profil:", error);
@@ -323,19 +147,6 @@ const Onboarding = () => {
       setSubmitting(false);
     }
   };
-
-  if (!authChecked) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
-        <p className="text-lg">Vérification de l'authentification...</p>
-      </div>
-    );
-  }
-
-  // Si l'authentification a été vérifiée mais qu'il n'y a pas de session, rediriger vers login
-  if (authChecked && !loading && !hasSession) {
-    return <NotFoundRedirect message="Vous devez vous connecter pour accéder à cette page" redirectTo="/login" />;
-  }
 
   if (loading) {
     return (

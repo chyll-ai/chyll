@@ -39,10 +39,6 @@ export const useProfileCheck = ({ embedded = false, onComplete }: UseProfileChec
         
         if (profile?.is_complete) {
           onComplete?.();
-          if (!embedded) {
-            navigate('/dashboard', { replace: true });
-            return;
-          }
         }
       } catch (error) {
         console.error("Error checking profile:", error);
