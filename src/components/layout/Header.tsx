@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { LogOut, LogIn, UserPlus } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
-import Index from '@/pages/Index';
 
 const Header = () => {
   const { isAuthenticated, signOut, user } = useAuth();
