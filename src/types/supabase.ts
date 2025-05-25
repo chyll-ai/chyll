@@ -13,20 +13,29 @@ export interface Database {
         Row: {
           id: string
           email: string
-          full_name: string | null
-          avatar_url: string | null
+          created_at: string
+          updated_at: string
+          is_active: boolean
+          plan: string
+          stripe_id: string | null
         }
         Insert: {
           id?: string
           email: string
-          full_name?: string | null
-          avatar_url?: string | null
+          created_at?: string
+          updated_at?: string
+          is_active?: boolean
+          plan?: string
+          stripe_id?: string | null
         }
         Update: {
           id?: string
           email?: string
-          full_name?: string | null
-          avatar_url?: string | null
+          created_at?: string
+          updated_at?: string
+          is_active?: boolean
+          plan?: string
+          stripe_id?: string | null
         }
       }
       conversations: {
@@ -76,29 +85,29 @@ export interface Database {
         Row: {
           id: string
           client_id: string
-          conversation_id: string
-          chat_session_id: string | null
           role: string
           content: string
           toolCalls: Json | null
+          created_at: string
+          updated_at: string
         }
         Insert: {
           id?: string
           client_id: string
-          conversation_id: string
-          chat_session_id?: string | null
           role: string
           content: string
           toolCalls?: Json | null
+          created_at?: string
+          updated_at?: string
         }
         Update: {
           id?: string
           client_id?: string
-          conversation_id?: string
-          chat_session_id?: string | null
           role?: string
           content?: string
           toolCalls?: Json | null
+          created_at?: string
+          updated_at?: string
         }
       }
       client_profile: {
@@ -140,41 +149,50 @@ export interface Database {
         Row: {
           id: string
           client_id: string
-          search_id: string | null
-          full_name: string | null
+          full_name: string
           job_title: string | null
           company: string | null
           location: string | null
           email: string | null
+          phone_number: string | null
           linkedin_url: string | null
+          linkedin_profile_data: Json | null
           status: string
-          notes: string | null
+          last_contact_date: string | null
+          created_at: string
+          updated_at: string
         }
         Insert: {
           id?: string
           client_id: string
-          search_id?: string | null
-          full_name?: string | null
+          full_name: string
           job_title?: string | null
           company?: string | null
           location?: string | null
           email?: string | null
+          phone_number?: string | null
           linkedin_url?: string | null
+          linkedin_profile_data?: Json | null
           status?: string
-          notes?: string | null
+          last_contact_date?: string | null
+          created_at?: string
+          updated_at?: string
         }
         Update: {
           id?: string
           client_id?: string
-          search_id?: string | null
-          full_name?: string | null
+          full_name?: string
           job_title?: string | null
           company?: string | null
           location?: string | null
           email?: string | null
+          phone_number?: string | null
           linkedin_url?: string | null
+          linkedin_profile_data?: Json | null
           status?: string
-          notes?: string | null
+          last_contact_date?: string | null
+          created_at?: string
+          updated_at?: string
         }
       }
       tokens: {

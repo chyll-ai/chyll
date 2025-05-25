@@ -13,10 +13,18 @@ export interface OpenAIResponse {
 export class APIClient {
   private baseUrl: string;
   private anonKey: string;
+  private static instance: APIClient;
 
-  constructor() {
+  private constructor() {
     this.baseUrl = import.meta.env.VITE_SUPABASE_URL;
     this.anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+  }
+
+  public static getInstance(): APIClient {
+    if (!APIClient.instance) {
+      APIClient.instance = new APIClient();
+    }
+    return APIClient.instance;
   }
 
   async post(endpoint: string, data: any) {
@@ -42,6 +50,6 @@ export class APIClient {
   }
 
   async sendMessage(data: OpenAIRequest): Promise<OpenAIResponse> {
-    return this.post('/assistant/chat', data);
+    return this.post('/openai-assistant', data);
   }
-} 
+}

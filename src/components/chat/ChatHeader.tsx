@@ -5,13 +5,11 @@ import { ChevronLeft, MessageSquareText } from 'lucide-react';
 interface ChatHeaderProps {
   showBackButton?: boolean;
   backTo?: string;
-  conversationId?: string;
 }
 
 const ChatHeader: React.FC<ChatHeaderProps> = ({ 
   showBackButton = false,
-  backTo = '/',
-  conversationId 
+  backTo = '/'
 }) => {
   return (
     <header className="flex items-center justify-between p-4 border-b border-border bg-card">

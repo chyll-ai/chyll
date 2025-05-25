@@ -6,7 +6,7 @@ import LeadsTable from '@/components/dashboard/LeadsTable';
 import { Loader2, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthContext';
-import { AssistantService } from '@/services/assistant';
+import { AssistantService } from '@/services/assistant/index';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -23,7 +23,7 @@ const Dashboard = () => {
 
     if (user && !isInitializedRef.current) {
       setUserId(user.id);
-      assistantServiceRef.current = new AssistantService(user.id, crypto.randomUUID());
+      assistantServiceRef.current = new AssistantService(user.id);
       isInitializedRef.current = true;
     }
   }, [user, authLoading, navigate]);
@@ -41,40 +41,29 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-background">
-      {/* Dashboard Header */}
-      <div className="w-full border-b border-border p-4 flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Dashboard</h1>
-        <Button
-          variant="outline"
-          onClick={signOut}
-          className="flex items-center gap-2"
-        >
-          <LogOut className="h-4 w-4" />
-          Logout
-        </Button>
+    <div className="flex h-screen">
+      {/* Main content */}
+      <div className="flex-1 flex flex-col">
+        <header className="border-b border-border p-4 bg-background">
+          <div className="flex justify-between items-center">
+            <h1 className="text-2xl font-bold">Dashboard</h1>
+            <Button variant="ghost" size="icon" onClick={signOut}>
+              <LogOut className="h-5 w-5" />
+            </Button>
+          </div>
+        </header>
+
+        <main className="flex-1 p-6 overflow-auto">
+          <LeadsTable userId={user.id} />
+        </main>
       </div>
 
-      {/* Main Content */}
-      <div className="flex flex-1 md:flex-row h-[calc(100vh-73px)]">
-        {/* Assistant Chat Column (40%) */}
-        <div className="w-full md:w-2/5 h-full border-r border-border">
-          <Assistant 
-            embedded={true}
-            assistantService={assistantServiceRef.current}
-          />
-        </div>
-        
-        {/* Leads Table Column (60%) */}
-        <div className="w-full md:w-3/5 h-full overflow-auto p-4">
-          <h2 className="text-xl font-semibold mb-4">Leads</h2>
-          {userId && (
-            <LeadsTable 
-              userId={userId}
-              assistantService={assistantServiceRef.current}
-            />
-          )}
-        </div>
+      {/* Assistant */}
+      <div className="w-[400px] border-l border-border">
+        <Assistant 
+          embedded={true} 
+          assistantService={assistantServiceRef.current || undefined} 
+        />
       </div>
     </div>
   );

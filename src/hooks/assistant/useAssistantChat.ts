@@ -25,8 +25,7 @@ const useAssistantChat = (existingAssistantService?: AssistantService): Assistan
       if (existingAssistantService) {
         assistantServiceRef.current = existingAssistantService;
       } else {
-        const conversationId = crypto.randomUUID();
-        assistantServiceRef.current = new AssistantService(user.id, conversationId);
+        assistantServiceRef.current = new AssistantService(user.id);
       }
 
       // Initialize with welcome message if no messages exist

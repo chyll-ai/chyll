@@ -10,9 +10,9 @@ export interface DatabaseMessage {
   role: string;
   content: string;
   client_id: string;
-  conversation_id: string;
-  chat_session_id?: string;
   toolCalls?: Json | null;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface ClientProfile {
