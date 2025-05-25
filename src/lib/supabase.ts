@@ -115,6 +115,9 @@ export const supabase = createClient<Database>(
       detectSessionInUrl: true,
       storage: localStorage,
       storageKey: 'supabase.auth.token'
+    },
+    db: {
+      schema: 'public'
     }
   }
 );

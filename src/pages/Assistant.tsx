@@ -34,20 +34,20 @@ const Assistant = ({ embedded = false }: AssistantProps) => {
   }, [user, authLoading, navigate]);
 
   // Show loading state while checking auth
-  if (authLoading) {
-    console.log('Assistant: Auth loading state...');
+  if (authLoading || chatLoading) {
+    console.log('Assistant: Auth or chat loading state...');
     return (
-      <div className="flex h-screen items-center justify-center">
+      <div className="flex h-full items-center justify-center">
         <div className="text-center">
           <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto mb-4" />
-          <p className="text-sm text-muted-foreground">Checking authentication...</p>
+          <p className="text-sm text-muted-foreground">Loading chat...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex h-screen flex-col">
+    <div className={`flex flex-col ${embedded ? 'h-full' : 'h-screen'}`}>
       {!embedded && (
         <ChatHeader 
           showBackButton={true}
@@ -55,18 +55,20 @@ const Assistant = ({ embedded = false }: AssistantProps) => {
         />
       )}
 
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 overflow-y-auto">
         <ChatMessageList 
           messages={messages} 
           isGenerating={isGenerating}
         />
       </div>
 
-      <ChatInputForm 
-        onSubmit={sendMessage} 
-        disabled={sending || isGenerating} 
-        loading={sending}
-      />
+      <div className="border-t border-border p-4 bg-background">
+        <ChatInputForm 
+          onSubmit={sendMessage} 
+          disabled={sending || isGenerating} 
+          loading={sending}
+        />
+      </div>
     </div>
   );
 };

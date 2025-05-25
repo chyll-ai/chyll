@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from './AuthContext';
 import { ClientProfile } from '@/types/api';
+import { toast } from '@/components/ui/sonner';
 
 interface ProfileContextType {
   profile: ClientProfile | null;
@@ -21,13 +22,21 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setIsLoading(true);
     
     try {
-      const { data } = await supabase
+      console.log('Fetching profile for user:', userId);
+      const { data, error } = await supabase
         .from('client_profile')
         .select('*')
         .eq('client_id', userId)
         .maybeSingle();
 
+      if (error) {
+        console.error('Error fetching profile:', error);
+        toast.error('Failed to load profile');
+        throw error;
+      }
+
       if (data) {
+        console.log('Profile loaded:', data);
         setProfile({
           client_id: data.client_id,
           company_name: data.company_name || '',
@@ -39,9 +48,36 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
           updated_at: data.updated_at
         });
       } else {
-        setProfile(null);
+        console.log('No profile found, creating default profile');
+        // Create a default profile if none exists
+        const { data: newProfile, error: createError } = await supabase
+          .from('client_profile')
+          .insert({
+            client_id: userId,
+            is_complete: false
+          })
+          .select()
+          .single();
+
+        if (createError) {
+          console.error('Error creating default profile:', createError);
+          toast.error('Failed to create profile');
+          throw createError;
+        }
+
+        setProfile({
+          client_id: newProfile.client_id,
+          company_name: '',
+          industry: '',
+          icp_title: '',
+          calendly_url: '',
+          is_complete: false,
+          created_at: newProfile.created_at,
+          updated_at: newProfile.updated_at
+        });
       }
-    } catch {
+    } catch (error) {
+      console.error('Error in profile fetch/create:', error);
       setProfile(null);
     } finally {
       setIsLoading(false);
