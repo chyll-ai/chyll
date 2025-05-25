@@ -1,9 +1,9 @@
-
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { LogOut, LogIn, UserPlus } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
+import Index from '@/pages/Index';
 
 const Header = () => {
   const { isAuthenticated, signOut, user } = useAuth();
@@ -16,6 +16,10 @@ const Header = () => {
   const handleDashboard = () => {
     navigate('/dashboard');
   };
+
+  if (!user) {
+    return <Index />;
+  }
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">

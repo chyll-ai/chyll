@@ -97,7 +97,7 @@ serve(async (req) => {
         const isDevelopment = redirect_url?.includes('localhost');
         const finalRedirectUrl = redirect_url || (isDevelopment 
           ? "http://localhost:8080/login"
-          : "https://chyll.ai/login");
+          : "https://chyll.ai/");
 
         console.log("Unified OAuth Configuration:", {
           clientId: GOOGLE_CLIENT_ID,
@@ -146,7 +146,7 @@ serve(async (req) => {
         const isDevelopment = redirect_url?.includes('localhost');
         const finalRedirectUrl = redirect_url || (isDevelopment 
           ? "http://localhost:8080/login"
-          : "https://chyll.ai/login");
+          : "https://chyll.ai/");
         
         // Exchange the authorization code for tokens
         const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
@@ -247,8 +247,8 @@ serve(async (req) => {
       // Use the provided redirect URL or determine based on environment
       const isDevelopment = redirect_url?.includes('localhost');
       const finalRedirectUrl = redirect_url || (isDevelopment 
-        ? "http://localhost:8080/assistant"
-        : "https://chyll.ai/assistant");
+        ? "http://localhost:8080/login"
+        : "https://chyll.ai/");
 
       console.log("OAuth Configuration:", {
         clientId: GOOGLE_CLIENT_ID,
@@ -294,8 +294,8 @@ serve(async (req) => {
       // Use the provided redirect URL or determine based on environment
       const isDevelopment = redirect_url?.includes('localhost');
       const finalRedirectUrl = redirect_url || (isDevelopment 
-        ? "http://localhost:8080/assistant"
-        : "https://chyll.ai/assistant");
+        ? "http://localhost:8080/login"
+        : "https://chyll.ai/");
       
       // Exchange the authorization code for tokens
       const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {

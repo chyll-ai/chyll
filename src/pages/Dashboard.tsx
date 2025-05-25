@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthContext';
 import { AssistantService } from '@/services/assistant/index';
 import { Lead } from '@/types/assistant';
+import Index from '@/pages/Index';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -16,10 +17,11 @@ const Dashboard = () => {
   const assistantServiceRef = useRef<AssistantService | null>(null);
   const isInitializedRef = useRef(false);
   const [leads, setLeads] = useState<Lead[]>([]);
+  const [showHome, setShowHome] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) {
-      navigate('/login');
+      setShowHome(true);
       return;
     }
 
@@ -39,7 +41,11 @@ const Dashboard = () => {
       
       isInitializedRef.current = true;
     }
-  }, [user, authLoading, navigate]);
+  }, [user, authLoading]);
+
+  if (showHome) {
+    return <Index />;
+  }
 
   if (authLoading) {
     return (

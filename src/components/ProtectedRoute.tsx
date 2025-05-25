@@ -1,7 +1,8 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { Loader2 } from 'lucide-react';
+import Index from '@/pages/Index';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -16,16 +17,21 @@ const LoadingSpinner = () => (
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const { isAuthenticated, isLoading: authLoading, user } = useAuth();
   const navigate = useNavigate();
+  const [showHome, setShowHome] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
-      navigate('/login', { replace: true });
+      setShowHome(true);
       return;
     }
-  }, [isAuthenticated, authLoading, navigate]);
+  }, [isAuthenticated, authLoading]);
 
   if (authLoading) {
     return <LoadingSpinner />;
+  }
+
+  if (showHome) {
+    return <Index />;
   }
 
   if (!user) {

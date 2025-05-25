@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { User } from '@supabase/supabase-js';
+import Index from '@/pages/Index';
 
 interface AuthContextType {
   user: User | null;
@@ -47,6 +48,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     isLoading,
     signOut
   };
+
+  if (!user) {
+    return <Index />;
+  }
 
   return (
     <AuthContext.Provider value={value}>
