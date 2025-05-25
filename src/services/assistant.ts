@@ -18,7 +18,6 @@ export class AssistantService {
     this.userId = userId;
     this.conversationId = conversationId || crypto.randomUUID();
     this.apiClient = new APIClient();
-    console.log('AssistantService: Initialized with enhanced OpenAI implementation');
   }
 
   setMessages(messages: Message[]) {

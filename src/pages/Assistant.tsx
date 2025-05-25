@@ -1,12 +1,11 @@
-import React, { useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import React from 'react';
+import { useSearchParams } from 'react-router-dom';
 import useAssistantChat from '@/hooks/assistant/useAssistantChat';
 import ChatHeader from '@/components/chat/ChatHeader';
 import ChatMessageList from '@/components/chat/ChatMessageList';
 import ChatInputForm from '@/components/chat/ChatInputForm';
 import { Loader2 } from 'lucide-react';
-import { useAuth } from '@/context/AuthContext';
-import { AssistantService } from '@/services/assistant';
+import { AssistantService } from '@/services/assistant/index';
 
 interface AssistantProps {
   embedded?: boolean;
@@ -14,7 +13,6 @@ interface AssistantProps {
 }
 
 const Assistant = ({ embedded = false, assistantService }: AssistantProps) => {
-  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const leadId = searchParams.get('leadId');
   const {
@@ -25,19 +23,8 @@ const Assistant = ({ embedded = false, assistantService }: AssistantProps) => {
     sendMessage,
   } = useAssistantChat(assistantService);
 
-  const { user, isLoading: authLoading } = useAuth();
-
-  // Simple auth check - if no user after loading is done, redirect to login
-  useEffect(() => {
-    if (!authLoading && !user) {
-      console.log('Assistant: No authenticated user, redirecting to login...');
-      navigate('/login');
-    }
-  }, [user, authLoading, navigate]);
-
-  // Show loading state while checking auth
-  if (authLoading || chatLoading) {
-    console.log('Assistant: Auth or chat loading state...');
+  // Show loading state while initializing chat
+  if (chatLoading) {
     return (
       <div className="flex h-full items-center justify-center">
         <div className="text-center">

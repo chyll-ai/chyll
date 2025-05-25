@@ -13,19 +13,18 @@ const Dashboard = () => {
   const [userId, setUserId] = useState<string | null>(null);
   const { signOut, user, isLoading: authLoading } = useAuth();
   const assistantServiceRef = useRef<AssistantService | null>(null);
+  const isInitializedRef = useRef(false);
 
   useEffect(() => {
     if (!authLoading && !user) {
-      console.log('Dashboard: No user, redirecting to login');
       navigate('/login');
       return;
     }
 
-    if (user) {
-      console.log('Dashboard: Setting userId', user.id);
+    if (user && !isInitializedRef.current) {
       setUserId(user.id);
-      // Initialize AssistantService with enhanced version
       assistantServiceRef.current = new AssistantService(user.id, crypto.randomUUID());
+      isInitializedRef.current = true;
     }
   }, [user, authLoading, navigate]);
 

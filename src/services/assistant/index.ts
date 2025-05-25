@@ -20,7 +20,7 @@ export class AssistantService {
     this.userId = userId;
     this.conversationId = conversationId;
     this.messages = [];
-    this.apiClient = APIClient.getInstance();
+    this.apiClient = new APIClient();
     console.log('AssistantService: Initialized');
   }
 

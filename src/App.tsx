@@ -6,7 +6,6 @@ import { Toaster as SonnerToaster } from '@/components/ui/sonner';
 import CookieConsent from '@/components/CookieConsent';
 import { LanguageProvider } from '@/context/LanguageContext';
 import { AuthProvider } from '@/context/AuthContext';
-import { ProfileProvider } from '@/context/ProfileContext';
 import ProtectedRoute from '@/components/ProtectedRoute';
 
 // Pages
@@ -32,56 +31,54 @@ function App() {
       <LanguageProvider>
         <Router>
           <AuthProvider>
-            <ProfileProvider>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/contact" element={<Contact />} />
-                <Route path="/terms" element={<Terms />} />
-                <Route path="/privacy" element={<Privacy />} />
-                <Route path="/cookies" element={<Cookies />} />
-                <Route path="/faq" element={<FAQ />} />
-                <Route path="/blog" element={<Blog />} />
-                <Route path="/blog/:id" element={<BlogPostPage />} />
-                <Route path="/about-us" element={<AboutUs />} />
-                <Route path="/login" element={<Login />} />
-                <Route 
-                  path="/onboarding" 
-                  element={
-                    <ProtectedRoute>
-                      <Onboarding />
-                    </ProtectedRoute>
-                  } 
-                />
-                <Route 
-                  path="/dashboard" 
-                  element={
-                    <ProtectedRoute requireCompleteProfile={true}>
-                      <Dashboard />
-                    </ProtectedRoute>
-                  } 
-                />
-                <Route 
-                  path="/assistant" 
-                  element={
-                    <ProtectedRoute>
-                      <Assistant />
-                    </ProtectedRoute>
-                  } 
-                />
-                <Route 
-                  path="/leads" 
-                  element={
-                    <ProtectedRoute requireCompleteProfile={true}>
-                      <Leads />
-                    </ProtectedRoute>
-                  } 
-                />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-              <Toaster />
-              <SonnerToaster position="bottom-right" />
-              <CookieConsent />
-            </ProfileProvider>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/privacy" element={<Privacy />} />
+              <Route path="/cookies" element={<Cookies />} />
+              <Route path="/faq" element={<FAQ />} />
+              <Route path="/blog" element={<Blog />} />
+              <Route path="/blog/:id" element={<BlogPostPage />} />
+              <Route path="/about-us" element={<AboutUs />} />
+              <Route path="/login" element={<Login />} />
+              <Route 
+                path="/onboarding" 
+                element={
+                  <ProtectedRoute>
+                    <Onboarding />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/dashboard" 
+                element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/assistant" 
+                element={
+                  <ProtectedRoute>
+                    <Assistant />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/leads" 
+                element={
+                  <ProtectedRoute>
+                    <Leads />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+            <Toaster />
+            <SonnerToaster position="bottom-right" />
+            <CookieConsent />
           </AuthProvider>
         </Router>
       </LanguageProvider>

@@ -40,4 +40,8 @@ export class APIClient {
 
     return response.json();
   }
+
+  async sendMessage(data: OpenAIRequest): Promise<OpenAIResponse> {
+    return this.post('/assistant/chat', data);
+  }
 } 

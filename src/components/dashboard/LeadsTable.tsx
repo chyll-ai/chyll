@@ -113,7 +113,6 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId, assistantService }) => 
 
   const fetchLeads = async () => {
     try {
-      console.log('Fetching leads for user:', userId);
       const { data, error } = await supabase
         .from('leads')
         .select(`
@@ -164,26 +163,19 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId, assistantService }) => 
   };
   
   useEffect(() => {
-    // Initial fetch
+    if (!userId || !isInitialFetchRef.current) return;
     fetchLeads();
   }, [userId]);
 
   useEffect(() => {
-    if (!userId) {
-      return;
-    }
+    if (!userId) return;
 
     unmountingRef.current = false;
 
     const setupSubscription = async () => {
-      if (unmountingRef.current) {
-        return;
-      }
+      if (unmountingRef.current) return;
 
       try {
-        // First ensure we have the latest data
-        await fetchLeads();
-
         const channelId = `public:leads:client_id=eq.${userId}`;
         
         const channel = supabase.channel(channelId, {
@@ -257,32 +249,18 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId, assistantService }) => 
           }
         });
 
-      // Handle channel status
-      channel
-        .subscribe(async (status) => {
+        channel.subscribe(async (status) => {
           if (unmountingRef.current) return;
           
           if (status === 'SUBSCRIBED') {
-            console.log('Successfully subscribed to leads changes');
             channelRef.current = channel;
-          } else if (status === 'CHANNEL_ERROR') {
-            console.error('Channel error, attempting to reconnect...');
-            // Clean up existing subscription
+          } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
             if (channelRef.current) {
               await channelRef.current.unsubscribe();
               channelRef.current = null;
             }
-            // Attempt to reconnect after a delay
-            setTimeout(() => {
-              if (!unmountingRef.current) {
-                setupSubscription();
-              }
-            }, 5000);
-          } else if (status === 'TIMED_OUT') {
-            console.error('Channel connection timed out, attempting to reconnect...');
-            // Attempt to reconnect immediately
             if (!unmountingRef.current) {
-              setupSubscription();
+              setTimeout(setupSubscription, 5000);
             }
           }
         });

@@ -3,36 +3,30 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { toast } from '@/components/ui/sonner';
 import { Message, AssistantState } from '@/types/assistant';
-import { AssistantService } from '@/services/assistant';
+import { AssistantService } from '@/services/assistant/index';
+import { useAuth } from '@/context/AuthContext';
 
 const useAssistantChat = (existingAssistantService?: AssistantService): AssistantState => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
-  const [userId, setUserId] = useState<string | null>(null);
   const assistantServiceRef = useRef<AssistantService | null>(null);
   const initializationAttempted = useRef(false);
 
   // Initialize AssistantService
   const initializeAssistantService = useCallback(async () => {
-    if (initializationAttempted.current) return;
+    if (initializationAttempted.current || !user) return;
     initializationAttempted.current = true;
 
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.user) {
-        console.error("No session found during initialization");
-        return;
-      }
-
       if (existingAssistantService) {
         assistantServiceRef.current = existingAssistantService;
       } else {
-        console.log('Initializing new AssistantService');
         const conversationId = crypto.randomUUID();
-        assistantServiceRef.current = new AssistantService(session.user.id, conversationId);
+        assistantServiceRef.current = new AssistantService(user.id, conversationId);
       }
 
       // Initialize with welcome message if no messages exist
@@ -42,66 +36,27 @@ const useAssistantChat = (existingAssistantService?: AssistantService): Assistan
           id: crypto.randomUUID(),
           role: 'assistant',
           content: welcomeMessage,
-          client_id: session.user.id
+          client_id: user.id
         };
         setMessages([typedMessage]);
         assistantServiceRef.current.setMessages([typedMessage]);
       }
+      
+      setLoading(false);
     } catch (error) {
       console.error("Error initializing AssistantService:", error);
       toast.error("Une erreur est survenue lors de l'initialisation");
     }
-  }, [existingAssistantService, messages.length]);
+  }, [existingAssistantService, messages.length, user]);
 
   useEffect(() => {
-    let mounted = true;
-    
-    const checkAuth = async () => {
-      try {
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-        
-        if (sessionError) {
-          console.error("Session error:", sessionError);
-          throw sessionError;
-        }
-        
-        if (!session?.user || !mounted) {
-          console.log("No valid session found");
-          navigate('/login');
-          return;
-        }
-        
-        setUserId(session.user.id);
-        await initializeAssistantService();
-        setLoading(false);
-      } catch (error) {
-        if (mounted) {
-          console.error("Error in checkAuth:", error);
-          toast.error("Une erreur est survenue lors de l'initialisation");
-          navigate('/login');
-        }
-      }
-    };
-    
-    checkAuth();
-    
-    return () => {
-      mounted = false;
-    };
-  }, [navigate, initializeAssistantService]);
+    if (user) {
+      initializeAssistantService();
+    }
+  }, [user, initializeAssistantService]);
 
   const sendMessage = useCallback(async (content: string) => {
-    // Ensure AssistantService is initialized
-    if (!assistantServiceRef.current) {
-      await initializeAssistantService();
-    }
-
-    if (!content.trim() || !userId || !assistantServiceRef.current) {
-      console.error("Cannot send message: missing required data", {
-        contentExists: !!content.trim(),
-        userId,
-        assistantServiceExists: !!assistantServiceRef.current
-      });
+    if (!content.trim() || !user || !assistantServiceRef.current) {
       toast.error("Une erreur est survenue. Veuillez réessayer.");
       return;
     }
@@ -115,7 +70,7 @@ const useAssistantChat = (existingAssistantService?: AssistantService): Assistan
         id: crypto.randomUUID(),
         role: 'user',
         content: content.trim(),
-        client_id: userId
+        client_id: user.id
       };
       
       setMessages(prev => {
@@ -132,7 +87,7 @@ const useAssistantChat = (existingAssistantService?: AssistantService): Assistan
         id: crypto.randomUUID(),
         role: 'assistant',
         content: response.message,
-        client_id: userId
+        client_id: user.id
       };
       
       setMessages(prev => {
@@ -148,7 +103,7 @@ const useAssistantChat = (existingAssistantService?: AssistantService): Assistan
       setSending(false);
       setIsGenerating(false);
     }
-  }, [userId, initializeAssistantService]);
+  }, [user]);
 
   return {
     loading,
@@ -156,7 +111,7 @@ const useAssistantChat = (existingAssistantService?: AssistantService): Assistan
     isGenerating,
     messages,
     sendMessage,
-    userId: userId || '',
+    userId: user?.id || '',
   };
 };
 
