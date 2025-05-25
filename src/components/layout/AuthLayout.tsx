@@ -2,7 +2,6 @@ import React from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { Loader2 } from 'lucide-react';
-import Index from '@/pages/Index';
 
 const AuthLayout: React.FC = () => {
   const location = useLocation();
@@ -19,7 +18,7 @@ const AuthLayout: React.FC = () => {
 
   // Redirect to login if not authenticated
   if (!isAuthenticated) {
-    return <Index />;
+    return <Navigate to="/login" replace />;
   }
 
   return <Outlet />;
