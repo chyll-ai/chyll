@@ -6,12 +6,14 @@ import ChatMessageList from '@/components/chat/ChatMessageList';
 import ChatInputForm from '@/components/chat/ChatInputForm';
 import { Loader2 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
+import { AssistantService } from '@/services/assistant';
 
 interface AssistantProps {
   embedded?: boolean;
+  assistantService?: AssistantService;
 }
 
-const Assistant = ({ embedded = false }: AssistantProps) => {
+const Assistant = ({ embedded = false, assistantService }: AssistantProps) => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const leadId = searchParams.get('leadId');
@@ -21,7 +23,7 @@ const Assistant = ({ embedded = false }: AssistantProps) => {
     isGenerating,
     messages,
     sendMessage,
-  } = useAssistantChat();
+  } = useAssistantChat(assistantService);
 
   const { user, isLoading: authLoading } = useAuth();
 
@@ -67,6 +69,7 @@ const Assistant = ({ embedded = false }: AssistantProps) => {
           onSubmit={sendMessage} 
           disabled={sending || isGenerating} 
           loading={sending}
+          placeholder="Demandez-moi de trouver des leads ou de vous aider avec vos prospects..."
         />
       </div>
     </div>

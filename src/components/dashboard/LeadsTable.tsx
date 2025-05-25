@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
 import { RealtimeChannel } from '@supabase/supabase-js';
+import { Lead } from '@/types/assistant';
 import { 
   Table, 
   TableBody, 
@@ -30,25 +31,11 @@ import {
 } from '@/components/ui/select';
 import LeadStatusBadge from './LeadStatusBadge';
 import LeadFilterBar from './LeadFilterBar';
+import { AssistantService } from '@/services/assistant';
 
 interface LeadsTableProps {
   userId: string;
-}
-
-interface Lead {
-  id: string;
-  full_name: string;
-  job_title: string;
-  email: string;
-  company: string;
-  status: string | null;
-  created_at: string;
-  email_jobs?: {
-    status: string;
-    sent_at: string;
-    subject: string;
-    body: string;
-  }[];
+  assistantService?: AssistantService;
 }
 
 interface SearchLeadsResponse {
@@ -110,7 +97,7 @@ const normalizeStatus = (status: string): string => {
   return 'new';
 };
 
-const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
+const LeadsTable: React.FC<LeadsTableProps> = ({ userId, assistantService }) => {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
   const [emailDialogOpen, setEmailDialogOpen] = useState(false);
@@ -137,6 +124,11 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
           company,
           status,
           created_at,
+          location,
+          phone_number,
+          linkedin_url,
+          enriched_from,
+          client_id,
           email_jobs (
             status,
             sent_at,
@@ -151,12 +143,17 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
         throw error;
       }
       
-      const leadsWithStatus = data?.map(lead => ({
+      const leadsWithDefaults = (data || []).map(lead => ({
         ...lead,
-        status: lead.status || 'à contacter'
-      })) || [];
+        status: lead.status || 'à contacter',
+        location: lead.location || 'Paris',
+        phone_number: lead.phone_number || '',
+        linkedin_url: lead.linkedin_url || '',
+        client_id: lead.client_id,
+        created_at: lead.created_at || new Date().toISOString()
+      })) as Lead[];
       
-      setLeads(leadsWithStatus);
+      setLeads(leadsWithDefaults);
     } catch (error) {
       console.error('Error fetching leads:', error);
       toast.error('Erreur lors du chargement des leads');
@@ -178,14 +175,23 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
 
     unmountingRef.current = false;
 
-    const setupSubscription = () => {
+    const setupSubscription = async () => {
       if (unmountingRef.current) {
         return;
       }
 
-      const channelId = `realtime:public:leads:client_id=eq.${userId}`;
-      
-      const channel = supabase.channel(channelId)
+      try {
+        // First ensure we have the latest data
+        await fetchLeads();
+
+        const channelId = `public:leads:client_id=eq.${userId}`;
+        
+        const channel = supabase.channel(channelId, {
+          config: {
+            broadcast: { self: true },
+            presence: { key: '' },
+          }
+        })
         .on('postgres_changes', { 
           event: '*', 
           schema: 'public', 
@@ -200,28 +206,39 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
                 if (currentLeads.some(lead => lead.id === payload.new.id)) {
                   return currentLeads;
                 }
-                return [{ ...payload.new, status: payload.new.status || 'à contacter' }, ...currentLeads];
+                const newLead: Lead = {
+                  ...payload.new,
+                  status: payload.new.status || 'à contacter',
+                  location: payload.new.location || 'Paris',
+                  phone_number: payload.new.phone_number || '',
+                  linkedin_url: payload.new.linkedin_url || '',
+                  client_id: payload.new.client_id,
+                  created_at: payload.new.created_at || new Date().toISOString()
+                };
+                return [newLead, ...currentLeads];
               });
             } else if (payload.eventType === 'UPDATE') {
               setLeads(currentLeads => 
                 currentLeads.map(lead => {
                   if (lead.id === payload.new.id) {
-                    // Only update if there are actual changes
                     const hasChanges = 
                       lead.status !== payload.new.status ||
                       lead.full_name !== payload.new.full_name ||
                       lead.job_title !== payload.new.job_title ||
                       lead.email !== payload.new.email ||
-                      lead.company !== payload.new.company;
+                      lead.company !== payload.new.company ||
+                      lead.location !== payload.new.location ||
+                      lead.phone_number !== payload.new.phone_number ||
+                      lead.linkedin_url !== payload.new.linkedin_url;
 
                     if (hasChanges) {
                       return {
                         ...lead,
+                        ...payload.new,
                         status: payload.new.status || lead.status || 'à contacter',
-                        full_name: payload.new.full_name || lead.full_name,
-                        job_title: payload.new.job_title || lead.job_title,
-                        email: payload.new.email || lead.email,
-                        company: payload.new.company || lead.company,
+                        location: payload.new.location || lead.location || 'Paris',
+                        phone_number: payload.new.phone_number || lead.phone_number || '',
+                        linkedin_url: payload.new.linkedin_url || lead.linkedin_url || '',
                         created_at: payload.new.created_at || lead.created_at,
                         email_jobs: lead.email_jobs || []
                       };
@@ -240,22 +257,43 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
           }
         });
 
-      channel.subscribe((status, err) => {
-        if (unmountingRef.current) return;
-        
-        if (status === 'SUBSCRIBED') {
-          channelRef.current = channel;
-        } else if (status === 'CHANNEL_ERROR') {
-          console.error('Channel error:', err);
-          toast.error('Erreur de connexion temps réel - Actualisez la page');
-        }
-      });
+      // Handle channel status
+      channel
+        .subscribe(async (status) => {
+          if (unmountingRef.current) return;
+          
+          if (status === 'SUBSCRIBED') {
+            console.log('Successfully subscribed to leads changes');
+            channelRef.current = channel;
+          } else if (status === 'CHANNEL_ERROR') {
+            console.error('Channel error, attempting to reconnect...');
+            // Clean up existing subscription
+            if (channelRef.current) {
+              await channelRef.current.unsubscribe();
+              channelRef.current = null;
+            }
+            // Attempt to reconnect after a delay
+            setTimeout(() => {
+              if (!unmountingRef.current) {
+                setupSubscription();
+              }
+            }, 5000);
+          } else if (status === 'TIMED_OUT') {
+            console.error('Channel connection timed out, attempting to reconnect...');
+            // Attempt to reconnect immediately
+            if (!unmountingRef.current) {
+              setupSubscription();
+            }
+          }
+        });
 
-      channelRef.current = channel;
-      return channel;
+        channelRef.current = channel;
+      } catch (error) {
+        console.error('Error setting up realtime subscription:', error);
+      }
     };
 
-    const channel = setupSubscription();
+    setupSubscription();
 
     return () => {
       unmountingRef.current = true;
@@ -265,6 +303,28 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
       }
     };
   }, [userId]);
+
+  // Set up listener for assistant-generated leads
+  useEffect(() => {
+    if (assistantService) {
+      assistantService.setLeadsUpdateCallback((newLeads) => {
+        setLeads(currentLeads => {
+          // Filter out any duplicates
+          const newLeadsFiltered = newLeads.filter(
+            newLead => !currentLeads.some(
+              existingLead => existingLead.id === newLead.id
+            )
+          );
+          
+          // Add new leads at the beginning
+          return [...newLeadsFiltered, ...currentLeads];
+        });
+        
+        // Show success toast
+        toast.success(`${newLeads.length} nouveaux leads ajoutés`);
+      });
+    }
+  }, [assistantService]);
 
   const handleViewMessage = (subject: string, body: string) => {
     setSelectedEmail({ subject, body });

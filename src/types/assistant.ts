@@ -12,8 +12,17 @@ export interface Lead {
   company: string;
   location: string;
   email: string;
+  phone_number: string;
   linkedin_url: string;
   status: string;
+  client_id: string;
+  created_at: string;
+  email_jobs?: {
+    status: string;
+    sent_at: string;
+    subject: string;
+    body: string;
+  }[];
 }
 
 export interface AssistantState {

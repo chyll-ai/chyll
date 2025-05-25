@@ -1,59 +1,58 @@
-import React, { useState } from 'react';
+import React, { useState, FormEvent } from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Send, Loader2 } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
+import { Loader2, Send } from 'lucide-react';
 import { toast } from '@/components/ui/sonner';
 
-interface ChatInputFormProps {
-  onSubmit: (message: string) => void;
-  disabled: boolean;
+export interface ChatInputFormProps {
+  onSubmit: (content: string) => void;
+  disabled?: boolean;
   loading?: boolean;
+  placeholder?: string;
 }
 
-const ChatInputForm: React.FC<ChatInputFormProps> = ({ onSubmit, disabled, loading = false }) => {
-  const [inputMessage, setInputMessage] = useState('');
+const ChatInputForm: React.FC<ChatInputFormProps> = ({ 
+  onSubmit, 
+  disabled = false, 
+  loading = false,
+  placeholder = "Type your message..."
+}) => {
+  const [content, setContent] = useState('');
   
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     
-    if (!inputMessage.trim()) {
-      return;
-    }
-    
-    if (disabled) {
-      toast.error("Please wait, a message is already being sent");
-      return;
-    }
-    
-    try {
-      onSubmit(inputMessage);
-      setInputMessage('');
-    } catch (error) {
-      console.error("Error sending message:", error);
-      toast.error("Failed to send message. Please try again.");
+    if (content.trim() && !disabled) {
+      onSubmit(content);
+      setContent('');
     }
   };
   
   return (
     <form onSubmit={handleSubmit} className="flex gap-2">
-      <Input
-        value={inputMessage}
-        onChange={(e) => setInputMessage(e.target.value)}
-        placeholder="Type your message..."
+      <Textarea
+        value={content}
+        onChange={(e) => setContent(e.target.value)}
+        placeholder={placeholder}
         disabled={disabled}
-        className="flex-1"
+        className="min-h-[44px] max-h-[200px]"
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            handleSubmit(e);
+          }
+        }}
       />
       <Button 
         type="submit" 
-        disabled={!inputMessage.trim() || disabled}
-        aria-label="Send message"
+        disabled={!content.trim() || disabled}
+        className="px-3"
       >
         {loading ? (
-          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+          <Loader2 className="h-4 w-4 animate-spin" />
         ) : (
-          <Send className="h-4 w-4 mr-2" />
+          <Send className="h-4 w-4" />
         )}
-        Send
       </Button>
     </form>
   );
