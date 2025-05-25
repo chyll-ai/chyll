@@ -42,18 +42,46 @@ export class AssistantService {
           content.toLowerCase().includes('recherche')) {
         console.log('AssistantService: Detected search query');
         
-        // Process leads in the background
-        this.processSearchQuery(content).catch(error => {
-          console.error('AssistantService: Background lead processing failed:', error);
+        // Send the search request to the API
+        const response = await this.apiClient.sendMessage({
+          message: `Je vais générer des leads B2B pour votre recherche: "${content}"
+
+Instructions pour la génération des leads:
+1. Générer 5 leads détaillés
+2. Pour chaque lead, fournir:
+   - Nom complet (format français)
+   - Poste (pertinent pour la recherche)
+   - Entreprise (entreprise tech française réelle)
+   - Localisation (ville française)
+   - Email (format: prenom.nom@entreprise.fr)
+   - Téléphone (format: +33 6XX XX XX XX)
+   - LinkedIn (format: linkedin.com/in/prenom-nom-xxxx)
+
+Répondre au format suivant:
+
+### Lead 1
+**Nom:** [nom complet]
+**Poste:** [poste]
+**Entreprise:** [entreprise]
+**Localisation:** [ville]
+**Email:** [email]
+**Téléphone:** [téléphone]
+**LinkedIn:** [url]
+
+[Répéter pour chaque lead]`,
+          userId: this.userId
         });
 
-        // Return immediately with acknowledgment
+        // Process the response to extract leads
+        await this.processLeadsFromMarkdown(response.message);
+
+        // Return success message
         return {
           message: "Je recherche des leads correspondant à vos critères. Ils apparaîtront dans votre tableau de bord dans quelques instants."
         };
       }
 
-      // Send message to Edge Function
+      // For non-search messages, proceed with normal message handling
       const response = await this.apiClient.sendMessage({
         message: content,
         userId: this.userId
@@ -65,25 +93,14 @@ export class AssistantService {
         content
       };
       
-      // Save message to database
       await this.saveMessageToDatabase(userMessage);
       this.messages.push(userMessage);
 
-      // Add assistant's response
       const assistantMessage: Message = {
         role: 'assistant',
         content: response.message
       };
 
-      // Check if the response contains lead data
-      if (response.message.includes('### Lead')) {
-        console.log('AssistantService: Detected lead data in response');
-        this.processLeadsFromMarkdown(response.message).catch(error => {
-          console.error('AssistantService: Lead processing failed:', error);
-        });
-      }
-
-      // Save message to database
       await this.saveMessageToDatabase(assistantMessage);
       this.messages.push(assistantMessage);
 
@@ -97,52 +114,6 @@ export class AssistantService {
     }
   }
 
-  private async processSearchQuery(query: string): Promise<void> {
-    try {
-      console.log('AssistantService: Processing search query:', { query });
-      
-      // Call the lead-search function
-      const baseUrl = import.meta.env.VITE_SUPABASE_URL;
-      if (!baseUrl) {
-        throw new Error('VITE_SUPABASE_URL is not defined');
-      }
-
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.access_token) {
-        throw new Error('No valid session found');
-      }
-
-      console.log('AssistantService: Calling lead-search function');
-      const response = await fetch(`${baseUrl}/functions/v1/lead-search`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`,
-        },
-        body: JSON.stringify({
-          searchQuery: query,
-          clientId: this.userId,
-          isDemoData: true
-        })
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(`Lead search failed: ${errorData.error || response.statusText}`);
-      }
-
-      const { leads } = await response.json();
-      console.log(`AssistantService: Received ${leads?.length || 0} leads from search`);
-
-      if (leads?.length > 0) {
-        await this.saveLeadsToSupabase(leads);
-      }
-    } catch (error) {
-      console.error('AssistantService: Error in processSearchQuery:', error);
-      throw error;
-    }
-  }
-
   private async processLeadsFromMarkdown(content: string): Promise<void> {
     try {
       console.log('AssistantService: Starting lead extraction from markdown');
@@ -151,59 +122,66 @@ export class AssistantService {
       const leadSections = content.split('### Lead').slice(1);
       console.log(`AssistantService: Found ${leadSections.length} lead sections`);
 
-      const leads = leadSections.map(section => {
+      if (leadSections.length === 0) {
+        throw new Error('No leads found in response');
+      }
+
+      const leads = leadSections.map((section, index) => {
         const lines = section.split('\n').filter(line => line.trim());
         const leadData: any = {};
         
         lines.forEach(line => {
           if (line.includes('**')) {
             const [key, value] = line.split(':**').map(s => s.trim());
-            const cleanKey = key.replace('**', '').toLowerCase().replace(/ /g, '_');
+            const cleanKey = key.replace('**', '').toLowerCase();
             const cleanValue = value.replace(/\[|\]|\(|\)|#/g, '').trim();
-            leadData[cleanKey] = cleanValue;
+            
+            // Map markdown keys to database fields
+            const fieldMap: { [key: string]: string } = {
+              'nom': 'full_name',
+              'poste': 'job_title',
+              'entreprise': 'company',
+              'localisation': 'location',
+              'email': 'email',
+              'téléphone': 'phone_number',
+              'linkedin': 'linkedin_url'
+            };
+
+            const dbField = fieldMap[cleanKey];
+            if (dbField) {
+              leadData[dbField] = cleanValue;
+            }
           }
         });
 
+        // Validate required fields
+        const requiredFields = ['full_name', 'job_title', 'company', 'location', 'email', 'phone_number', 'linkedin_url'];
+        const missingFields = requiredFields.filter(field => !leadData[field]);
+        
+        if (missingFields.length > 0) {
+          console.error(`Lead ${index + 1} missing fields:`, missingFields);
+          throw new Error(`Lead ${index + 1} is missing required fields: ${missingFields.join(', ')}`);
+        }
+
         return {
-          id: crypto.randomUUID(),
+          ...leadData,
           client_id: this.userId,
-          full_name: leadData.nom || '',
-          job_title: leadData.poste || null,
-          company: leadData.entreprise || null,
-          location: leadData.localisation || leadData.adresse || null,
-          email: leadData.email?.toLowerCase() || null,
-          phone_number: leadData.telephone || null,
-          linkedin_url: leadData.linkedin || null,
-          status: 'à contacter',
-          enriched_from: { 
-            source: 'assistant', 
-            timestamp: new Date().toISOString(),
-            notes: leadData.notes || null
-          },
-          created_at: new Date().toISOString()
+          id: crypto.randomUUID(),
+          created_at: new Date().toISOString(),
+          status: 'new',
+          enriched_from: {
+            source: 'assistant',
+            timestamp: new Date().toISOString()
+          }
         };
       });
 
-      await this.saveLeadsToSupabase(leads);
-    } catch (error) {
-      console.error('AssistantService: Error processing leads:', error);
-      throw error;
-    }
-  }
+      console.log('AssistantService: Extracted leads:', JSON.stringify(leads, null, 2));
 
-  private async saveLeadsToSupabase(leads: Lead[]): Promise<void> {
-    try {
-      console.log('AssistantService: Starting Supabase lead insertion');
-      
-      // Insert leads one by one to handle duplicates gracefully
+      // Save leads to database
+      const savedLeads = [];
       for (const lead of leads) {
         try {
-          console.log('AssistantService: Inserting lead:', { 
-            full_name: lead.full_name,
-            email: lead.email,
-            company: lead.company 
-          });
-
           const { data, error } = await supabase
             .from('leads')
             .upsert([lead], {
@@ -213,26 +191,33 @@ export class AssistantService {
             .select();
 
           if (error) {
-            console.error('AssistantService: Error inserting lead:', error);
+            console.error('AssistantService: Error saving lead:', error);
             continue;
           }
 
-          if (data && data[0] && this.onLeadsUpdate) {
-            console.log('AssistantService: Successfully inserted lead:', {
+          if (data && data[0]) {
+            console.log('AssistantService: Successfully saved lead:', {
               id: data[0].id,
-              full_name: data[0].full_name
+              full_name: data[0].full_name,
+              email: data[0].email
             });
-            this.onLeadsUpdate([data[0]]);
+            savedLeads.push(data[0]);
           }
         } catch (error) {
-          console.error('AssistantService: Error processing individual lead:', error);
-          continue;
+          console.error('AssistantService: Error saving individual lead:', error);
         }
       }
 
-      console.log(`AssistantService: Completed lead insertion`);
+      // Update UI if we have saved leads
+      if (savedLeads.length > 0 && this.onLeadsUpdate) {
+        console.log('AssistantService: Updating UI with saved leads:', JSON.stringify(savedLeads, null, 2));
+        this.onLeadsUpdate(savedLeads);
+        toast.success(`${savedLeads.length} nouveaux leads ajoutés au tableau de bord`);
+      } else {
+        toast.error('Erreur lors de la sauvegarde des leads');
+      }
     } catch (error) {
-      console.error('AssistantService: Error in saveLeadsToSupabase:', error);
+      console.error('AssistantService: Error processing leads:', error);
       throw error;
     }
   }

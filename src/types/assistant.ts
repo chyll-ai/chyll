@@ -7,6 +7,7 @@ export interface Message {
 
 export interface Lead {
   id: string;
+  client_id: string;
   full_name: string;
   job_title: string;
   company: string;
@@ -15,14 +16,27 @@ export interface Lead {
   phone_number: string;
   linkedin_url: string;
   status: string;
-  client_id: string;
   created_at: string;
+  enriched_from?: {
+    source: string;
+    timestamp: string;
+    notes?: string;
+  };
   email_jobs?: {
     status: string;
     sent_at: string;
     subject: string;
     body: string;
   }[];
+  linkedin_profile_data?: {
+    headline?: string;
+    summary?: string;
+    experience?: string[];
+    skills?: string[];
+    education?: string[];
+    languages?: string[];
+    connections?: number;
+  };
 }
 
 export interface AssistantState {

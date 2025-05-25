@@ -36,6 +36,7 @@ import { AssistantService } from '@/services/assistant';
 interface LeadsTableProps {
   userId: string;
   assistantService?: AssistantService;
+  initialLeads?: Lead[];
 }
 
 interface SearchLeadsResponse {
@@ -97,8 +98,8 @@ const normalizeStatus = (status: string): string => {
   return 'new';
 };
 
-const LeadsTable: React.FC<LeadsTableProps> = ({ userId, assistantService }) => {
-  const [leads, setLeads] = useState<Lead[]>([]);
+const LeadsTable: React.FC<LeadsTableProps> = ({ userId, assistantService, initialLeads = [] }) => {
+  const [leads, setLeads] = useState<Lead[]>(initialLeads);
   const [loading, setLoading] = useState(true);
   const [emailDialogOpen, setEmailDialogOpen] = useState(false);
   const [selectedEmail, setSelectedEmail] = useState<{ subject: string; body: string } | null>(null);
@@ -111,8 +112,24 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId, assistantService }) => 
   const isInitialFetchRef = useRef(true);
   const unmountingRef = useRef(false);
 
+  // Update leads when initialLeads changes
+  useEffect(() => {
+    if (initialLeads.length > 0) {
+      console.log('LeadsTable: Received initial leads:', initialLeads);
+      setLeads(currentLeads => {
+        // Merge new leads with existing ones, avoiding duplicates
+        const existingIds = new Set(currentLeads.map(lead => lead.id));
+        const newLeads = initialLeads.filter(lead => !existingIds.has(lead.id));
+        const updatedLeads = [...newLeads, ...currentLeads];
+        console.log('LeadsTable: Updated leads with initial data:', updatedLeads);
+        return updatedLeads;
+      });
+    }
+  }, [initialLeads]);
+
   const fetchLeads = async () => {
     try {
+      console.log('LeadsTable: Fetching leads from database');
       const { data, error } = await supabase
         .from('leads')
         .select(`
@@ -152,6 +169,7 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId, assistantService }) => 
         created_at: lead.created_at || new Date().toISOString()
       })) as Lead[];
       
+      console.log('LeadsTable: Fetched leads from database:', leadsWithDefaults);
       setLeads(leadsWithDefaults);
     } catch (error) {
       console.error('Error fetching leads:', error);
@@ -285,21 +303,32 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId, assistantService }) => 
   // Set up listener for assistant-generated leads
   useEffect(() => {
     if (assistantService) {
+      console.log('LeadsTable: Setting up AssistantService callback');
       assistantService.setLeadsUpdateCallback((newLeads) => {
+        console.log('LeadsTable: Received leads from AssistantService:', newLeads);
         setLeads(currentLeads => {
-          // Filter out any duplicates
+          // Filter out any duplicates by email and client_id
           const newLeadsFiltered = newLeads.filter(
             newLead => !currentLeads.some(
-              existingLead => existingLead.id === newLead.id
+              existingLead => 
+                existingLead.email === newLead.email && 
+                existingLead.client_id === newLead.client_id
             )
           );
           
+          console.log('LeadsTable: Filtered new leads:', newLeadsFiltered);
+          
           // Add new leads at the beginning
-          return [...newLeadsFiltered, ...currentLeads];
+          const updatedLeads = [...newLeadsFiltered, ...currentLeads];
+          console.log('LeadsTable: Updated leads state:', updatedLeads);
+          
+          return updatedLeads;
         });
         
-        // Show success toast
-        toast.success(`${newLeads.length} nouveaux leads ajoutés`);
+        // Show success toast with the actual number of new leads
+        if (newLeads.length > 0) {
+          toast.success(`${newLeads.length} nouveaux leads ajoutés au tableau de bord`);
+        }
       });
     }
   }, [assistantService]);

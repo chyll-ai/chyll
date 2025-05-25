@@ -2,7 +2,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 // @ts-ignore: Deno imports
 import OpenAI from 'npm:openai@4.24.1';
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.0';
 
 declare const Deno: {
   env: {
@@ -12,20 +11,10 @@ declare const Deno: {
 
 interface RequestData {
   searchQuery: string;
-  clientProfile: {
-    company_name: string;
-    industry: string;
-    value_prop: string;
-    icp_title: string;
-    icp_location: string;
-    icp_size: string;
-  };
   count?: number;
-  isDemoData?: boolean;
-  clientId: string; // Required for database insertion
 }
 
-interface GeneratedLead {
+interface Lead {
   full_name: string;
   job_title: string;
   company: string;
@@ -33,193 +22,192 @@ interface GeneratedLead {
   email: string;
   phone_number: string;
   linkedin_url: string;
-  linkedin_profile_data: {
-    headline?: string;
-    summary?: string;
-    experience?: string[];
-    skills?: string[];
-    education?: string[];
-    languages?: string[];
-    connections?: number;
-  };
-  status: string;
 }
 
 const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
-const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
-const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Max-Age': '86400',
 };
 
-const SYSTEM_PROMPT = `You are an expert at finding and generating relevant B2B leads based on user queries and company profiles.
-Your task is to generate or find realistic French business leads that match the search criteria.
+const EXAMPLE_RESPONSE = {
+  "leads": [
+    {
+      "full_name": "Sophie Martin",
+      "job_title": "CTO",
+      "company": "DataTech SAS",
+      "location": "Paris",
+      "email": "sophie.martin@datatech.fr",
+      "phone_number": "+33 612345678",
+      "linkedin_url": "linkedin.com/in/sophie-martin-tech"
+    }
+  ]
+};
 
-Guidelines for lead generation and search:
-- Generate or find leads based on the user's natural language query
-- Focus on French business professionals and companies
-- Ensure all contact information follows French conventions:
-  - Phone numbers in French format (+33 6XX XX XX XX or +33 7XX XX XX XX)
-  - Professional email addresses with French domains
-  - LinkedIn URLs for French professionals
-- Provide rich professional profiles including:
-  - Current and past positions
-  - Company details (size, industry, location)
-  - Professional background
-  - Languages (always including French)
-  - Education from French institutions
-- For company information:
-  - Use real French business entities (SA, SARL, SAS, etc.)
-  - Focus on companies matching the target profile
-  - Include company size and industry details
-- For contact generation:
-  - Create realistic French names and titles
-  - Match job titles with target ICP
-  - Ensure location data is specific to French cities/regions
-  - Generate appropriate status flags for lead tracking
+const SYSTEM_PROMPT = `You are a lead generation expert. Generate French tech leads matching the search criteria.
 
-When processing user queries:
-1. Analyze the search intent (industry, role, location, etc.)
-2. Generate leads matching the criteria
-3. Include complete contact details for immediate use
-4. Format data for direct database insertion
-5. Ensure all generated data is realistic and usable
+Your response must be a JSON object with EXACTLY this structure:
+${JSON.stringify(EXAMPLE_RESPONSE, null, 2)}
 
-The response should be immediately usable for:
-- Dashboard display
-- Lead tracking
-- Contact management
-- Sales outreach
-- Profile enrichment`;
+Requirements:
+1. Return EXACTLY the requested number of leads
+2. Each lead must have ONLY these fields:
+   - full_name: French full name
+   - job_title: Tech job title
+   - company: French tech company
+   - location: French city
+   - email: firstname.lastname@company.fr
+   - phone_number: +33 6XXXXXXXX
+   - linkedin_url: linkedin.com/in/firstname-lastname-xxxx
+3. NO additional fields
+4. NO empty values
+5. Focus on French tech companies
+6. Use real company names when possible
 
-async function insertLeadsToSupabase(leads: GeneratedLead[], clientId: string) {
-  if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
-    throw new Error('Supabase configuration is missing');
-  }
-
-  const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
-  
-  const leadsToInsert = leads.map(lead => ({
-    client_id: clientId,
-    full_name: lead.full_name,
-    job_title: lead.job_title,
-    company: lead.company,
-    location: lead.location,
-    email: lead.email,
-    phone_number: lead.phone_number,
-    linkedin_url: lead.linkedin_url,
-    status: lead.status,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
-  }));
-
-  const { data, error } = await supabase
-    .from('leads')
-    .insert(leadsToInsert)
-    .select();
-
-  if (error) {
-    throw new Error(`Failed to insert leads: ${error.message}`);
-  }
-
-  return data;
-}
+The response must be valid JSON and follow the exact format shown above.`;
 
 serve(async (req: Request) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const requestData: RequestData = await req.json();
-    const { searchQuery, clientProfile, count = 5, isDemoData = false, clientId } = requestData;
-    
-    if (!clientProfile) {
-      throw new Error('Client profile is required');
-    }
-
-    if (!clientId) {
-      throw new Error('Client ID is required');
-    }
-
     if (!OPENAI_API_KEY) {
-      throw new Error('OPENAI_API_KEY is not configured');
+      throw new Error('OpenAI API key is not configured');
     }
 
-    // Initialize OpenAI client
+    const requestData: RequestData = await req.json();
+    const { searchQuery, count = 5 } = requestData;
+
+    if (!searchQuery) {
+      throw new Error('Search query is required');
+    }
+
     const openai = new OpenAI({
       apiKey: OPENAI_API_KEY
     });
 
-    const userPrompt = `Generate ${count} relevant B2B leads based on the following criteria:
+    const userPrompt = `Generate ${count} French tech leads matching: "${searchQuery}"
 
-CLIENT PROFILE:
-- Company: ${clientProfile.company_name}
-- Industry: ${clientProfile.industry}
-- Value Proposition: ${clientProfile.value_prop}
-- Target Job Titles: ${clientProfile.icp_title}
-- Target Location: ${clientProfile.icp_location}
-- Target Company Size: ${clientProfile.icp_size}
+Requirements:
+1. Return EXACTLY ${count} leads
+2. Follow the exact JSON format shown in the system message
+3. Include ONLY the specified fields
+4. ALL fields must be filled with realistic values
+5. Focus on tech companies in France
+6. Make sure positions match: ${searchQuery}
 
-SEARCH QUERY:
-${searchQuery}
+Return ONLY a JSON object matching the example format.`;
 
-${isDemoData ? 'GENERATE DEMO DATA: Yes - create diverse, complete profiles for demonstration purposes' : ''}
-
-For each lead, provide:
-1. Full Name (realistic French name)
-2. Job Title (matching ICP)
-3. Company (realistic French company name with appropriate legal entity)
-4. Location (specific French city)
-5. Professional Email (realistic format)
-6. Phone Number (French mobile format)
-7. LinkedIn URL (realistic format)
-8. LinkedIn Profile Data including:
-   - Professional headline
-   - Summary
-   - Recent experience (1-2 entries)
-   - Key skills (5-8 relevant to industry)
-   - Education (1-2 entries)
-   - Languages (French + others)
-   - Approximate number of connections
-9. Status (should be "à contacter" for new leads)
-
-Format the response as a JSON object with a 'leads' array containing the generated leads.`;
-
-    // Call OpenAI Chat Completions API
     const completion = await openai.chat.completions.create({
       model: 'gpt-4-turbo-preview',
       messages: [
         { role: 'system', content: SYSTEM_PROMPT },
         { role: 'user', content: userPrompt }
       ],
-      temperature: isDemoData ? 0.8 : 0.7, // Slightly higher temperature for more varied demo data
-      max_tokens: 3000,
-      response_format: { type: "json_object" }
+      temperature: 0.7,
+      response_format: { type: "json_object" },
+      max_tokens: 2000,
+      presence_penalty: 0.3,
+      frequency_penalty: 0.3
     });
 
-    const responseText = completion.choices[0]?.message?.content || "[]";
-    const { leads } = JSON.parse(responseText);
+    const responseContent = completion.choices[0]?.message?.content;
+    if (!responseContent) {
+      throw new Error('No response from OpenAI');
+    }
 
-    // Insert leads into Supabase
-    const insertedLeads = await insertLeadsToSupabase(leads, clientId);
+    const parsedResponse = JSON.parse(responseContent);
+    
+    if (!parsedResponse.leads || !Array.isArray(parsedResponse.leads)) {
+      throw new Error('Invalid response format from OpenAI');
+    }
+
+    // Strict validation of each lead
+    const validatedLeads = parsedResponse.leads.map((lead: any, index: number) => {
+      // Ensure only allowed fields are present
+      const allowedFields = ['full_name', 'job_title', 'company', 'location', 'email', 'phone_number', 'linkedin_url'];
+      const extraFields = Object.keys(lead).filter(key => !allowedFields.includes(key));
+      if (extraFields.length > 0) {
+        throw new Error(`Lead ${index + 1} contains unauthorized fields: ${extraFields.join(', ')}`);
+      }
+
+      // Check all required fields exist
+      const missingFields = allowedFields.filter(field => !(field in lead));
+      if (missingFields.length > 0) {
+        throw new Error(`Lead ${index + 1} is missing required fields: ${missingFields.join(', ')}`);
+      }
+
+      // Clean and validate each field
+      const validatedLead: Lead = {
+        full_name: String(lead.full_name || '').trim(),
+        job_title: String(lead.job_title || '').trim(),
+        company: String(lead.company || '').trim(),
+        location: String(lead.location || '').trim(),
+        email: String(lead.email || '').trim().toLowerCase(),
+        phone_number: String(lead.phone_number || '').trim(),
+        linkedin_url: String(lead.linkedin_url || '').trim()
+      };
+
+      // Check for empty values
+      Object.entries(validatedLead).forEach(([key, value]) => {
+        if (!value) {
+          throw new Error(`Lead ${index + 1} has empty ${key}`);
+        }
+      });
+
+      // Validate email format
+      if (!validatedLead.email.includes('@') || !validatedLead.email.includes('.')) {
+        throw new Error(`Lead ${index + 1} has invalid email format: ${validatedLead.email}`);
+      }
+
+      // Validate phone number format
+      if (!validatedLead.phone_number.startsWith('+33')) {
+        throw new Error(`Lead ${index + 1} has invalid phone number format: ${validatedLead.phone_number}`);
+      }
+
+      // Validate LinkedIn URL format
+      if (!validatedLead.linkedin_url.startsWith('linkedin.com/in/')) {
+        throw new Error(`Lead ${index + 1} has invalid LinkedIn URL format: ${validatedLead.linkedin_url}`);
+      }
+
+      return validatedLead;
+    });
+
+    if (validatedLeads.length !== count) {
+      throw new Error(`Expected ${count} leads but got ${validatedLeads.length}`);
+    }
 
     return new Response(
-      JSON.stringify({ 
-        message: 'Leads generated and inserted successfully',
-        leads: insertedLeads 
+      JSON.stringify({
+        message: 'Leads generated successfully',
+        leads: validatedLeads
       }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      { 
+        headers: { 
+          ...corsHeaders,
+          'Content-Type': 'application/json'
+        } 
+      }
     );
 
-  } catch (error: unknown) {
-    console.error('Error:', error);
+  } catch (error) {
+    console.error('Error generating leads:', error);
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : 'An unknown error occurred' }),
-      { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      JSON.stringify({ 
+        error: error instanceof Error ? error.message : 'An unknown error occurred',
+        leads: [] 
+      }),
+      { 
+        status: 500,
+        headers: { 
+          ...corsHeaders,
+          'Content-Type': 'application/json'
+        }
+      }
     );
   }
 });

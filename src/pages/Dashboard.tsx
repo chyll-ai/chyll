@@ -7,6 +7,7 @@ import { Loader2, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthContext';
 import { AssistantService } from '@/services/assistant/index';
+import { Lead } from '@/types/assistant';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -14,6 +15,7 @@ const Dashboard = () => {
   const { signOut, user, isLoading: authLoading } = useAuth();
   const assistantServiceRef = useRef<AssistantService | null>(null);
   const isInitializedRef = useRef(false);
+  const [leads, setLeads] = useState<Lead[]>([]);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -24,6 +26,17 @@ const Dashboard = () => {
     if (user && !isInitializedRef.current) {
       setUserId(user.id);
       assistantServiceRef.current = new AssistantService(user.id);
+      
+      // Set up the leads update callback
+      assistantServiceRef.current.setLeadsUpdateCallback((newLeads) => {
+        console.log('Dashboard: Received new leads from AssistantService:', newLeads);
+        setLeads(currentLeads => {
+          const updatedLeads = [...newLeads, ...currentLeads];
+          console.log('Dashboard: Updated leads state:', updatedLeads);
+          return updatedLeads;
+        });
+      });
+      
       isInitializedRef.current = true;
     }
   }, [user, authLoading, navigate]);
@@ -42,7 +55,15 @@ const Dashboard = () => {
 
   return (
     <div className="flex h-screen">
-      {/* Main content */}
+      {/* Assistant - Now on the left */}
+      <div className="w-[400px] border-r border-border">
+        <Assistant 
+          embedded={true} 
+          assistantService={assistantServiceRef.current || undefined} 
+        />
+      </div>
+
+      {/* Main content - Now on the right */}
       <div className="flex-1 flex flex-col">
         <header className="border-b border-border p-4 bg-background">
           <div className="flex justify-between items-center">
@@ -54,16 +75,12 @@ const Dashboard = () => {
         </header>
 
         <main className="flex-1 p-6 overflow-auto">
-          <LeadsTable userId={user.id} />
+          <LeadsTable 
+            userId={user.id} 
+            assistantService={assistantServiceRef.current || undefined}
+            initialLeads={leads}
+          />
         </main>
-      </div>
-
-      {/* Assistant */}
-      <div className="w-[400px] border-l border-border">
-        <Assistant 
-          embedded={true} 
-          assistantService={assistantServiceRef.current || undefined} 
-        />
       </div>
     </div>
   );
