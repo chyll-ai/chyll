@@ -38,6 +38,8 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const fetchProfile = async (userId: string) => {
     let shouldRetry = false;
+    let shouldClearProfile = false;
+    
     setIsLoading(true);
     
     try {
@@ -49,13 +51,14 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
         currentTime: new Date().toISOString()
       });
 
-      // Verify we have a valid session
+      // Early exit conditions - all handled within try block
       if (!session?.access_token) {
         console.error('ProfileContext: No valid access token available');
         setError('Authentication token not available. Please try logging in again.');
+        shouldClearProfile = true;
         return;
       }
-      
+
       // First verify the user exists in clients table
       const { data: clientData, error: clientError } = await supabase
         .from('clients')
@@ -71,16 +74,20 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
           details: clientError.details
         });
         setError('Error verifying user record');
+        shouldRetry = true;
+        shouldClearProfile = true;
         return;
       }
 
       if (!clientData) {
         console.error('ProfileContext: Client record not found for user:', userId);
         setError('User record not found');
+        shouldRetry = true;
+        shouldClearProfile = true;
         return;
       }
 
-      // Now fetch the profile
+      // Now fetch the profile - missing profile is an expected state
       const { data, error: fetchError } = await supabase
         .from('client_profile')
         .select('*')
@@ -97,7 +104,20 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
         dataClientId: data?.client_id
       });
 
+      // Handle specific error cases
       if (fetchError) {
+        // 404/406 means profile doesn't exist - this is expected for new users
+        if (fetchError.code === '404' || fetchError.code === '406') {
+          console.log('ProfileContext: Profile not found (expected for new users):', {
+            error: fetchError,
+            code: fetchError.code
+          });
+          shouldClearProfile = true;
+          setError(null);
+          return;
+        }
+
+        // 401 means unauthorized - user needs to log in again
         if (fetchError.code === '401') {
           console.error('ProfileContext: Unauthorized access to profile:', {
             error: fetchError,
@@ -107,9 +127,11 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
           });
           setError('Session expired. Please log in again.');
           toast.error('Session expired. Please log in again.');
+          shouldClearProfile = true;
           return;
         }
 
+        // 403 means forbidden - RLS policy blocking access
         if (fetchError.code === '403') {
           console.error('ProfileContext: Forbidden access to profile (RLS policy):', {
             error: fetchError,
@@ -120,9 +142,12 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
           });
           setError('Access denied. Please check permissions.');
           toast.error('Access denied');
+          shouldRetry = true;
+          shouldClearProfile = true;
           return;
         }
 
+        // Any other error should trigger a retry
         console.error('ProfileContext: Error fetching profile:', {
           error: fetchError,
           message: fetchError.message,
@@ -131,9 +156,11 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
         setError('Failed to load profile. Please try again.');
         toast.error('Failed to load profile');
         shouldRetry = true;
+        shouldClearProfile = true;
         return;
       }
 
+      // Profile exists - parse and set it
       if (data) {
         const profileData: ClientProfile = {
           client_id: data.client_id || userId,
@@ -153,13 +180,13 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
         });
         
         setProfile(profileData);
+        setError(null);
       } else {
-        // Profile doesn't exist yet - this is expected for new users
+        // No data but also no error - profile doesn't exist yet
         console.log('ProfileContext: No profile exists yet for user:', userId);
-        setProfile(null);
+        shouldClearProfile = true;
       }
       
-      setError(null);
       setLastFetchTime(Date.now());
       setRetryCount(0);
     } catch (err: any) {
@@ -171,7 +198,15 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
       setError('An unexpected error occurred. Please try again.');
       toast.error('Unexpected error loading profile');
       shouldRetry = true;
+      shouldClearProfile = true;
     } finally {
+      // Always clear profile if needed
+      if (shouldClearProfile) {
+        console.log('ProfileContext: Clearing profile state');
+        setProfile(null);
+      }
+      
+      // Always set loading to false
       setIsLoading(false);
       
       // Handle retries outside the main try/catch
@@ -190,57 +225,73 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }
   };
 
+  // Split the initialization logic into two effects:
+  // 1. Handle auth loading state changes
+  useEffect(() => {
+    console.log('ProfileContext: Auth loading state changed:', {
+      authLoading,
+      hasUser: !!user,
+      hasSession: !!session,
+      hasAccessToken: !!session?.access_token,
+      currentError: error
+    });
+
+    // Clear profile when auth is loading or no user
+    if (authLoading || !user) {
+      console.log('ProfileContext: Clearing profile state due to auth loading or no user');
+      setProfile(null);
+      setIsLoading(false);
+      setError(null);
+    }
+  }, [authLoading, user, session]);
+
+  // 2. Handle profile fetching once auth is ready
   useEffect(() => {
     let mounted = true;
-    
+    let timeoutId: NodeJS.Timeout;
+
     const initializeProfile = async () => {
-      console.log('ProfileContext: Auth state changed:', {
-        hasUser: !!user,
-        userId: user?.id,
-        authLoading,
+      // Only proceed if auth is ready and we have a user
+      if (!mounted) return;
+
+      if (authLoading) {
+        console.log('ProfileContext: Auth still loading, will retry');
+        return;
+      }
+
+      if (!user?.id || !session?.access_token) {
+        console.log('ProfileContext: Missing user or session:', {
+          hasUser: !!user,
+          hasUserId: !!user?.id,
+          hasAccessToken: !!session?.access_token
+        });
+        return;
+      }
+
+      console.log('ProfileContext: Ready to fetch profile:', {
+        userId: user.id,
         hasAccessToken: !!session?.access_token,
-        currentError: error,
-        isLoading
+        authLoading,
+        currentError: error
       });
 
-      // Don't fetch while auth is still loading
-      if (authLoading) {
-        console.log('ProfileContext: Waiting for auth to complete...');
-        return;
-      }
-
-      // Clear profile if no user
-      if (!user) {
-        console.log('ProfileContext: No user, clearing profile');
-        if (mounted) {
-          setProfile(null);
-          setIsLoading(false);
-          setError(null);
-        }
-        return;
-      }
-
-      // Only fetch if we have both user and access token
-      if (user.id && session?.access_token) {
-        console.log('ProfileContext: User and token available, fetching profile...');
+      try {
         if (mounted) {
           await fetchProfile(user.id);
         }
-      } else {
-        console.log('ProfileContext: Missing user ID or access token');
-        if (mounted) {
-          setIsLoading(false);
-          setError('Authentication required');
-        }
+      } catch (err) {
+        console.error('ProfileContext: Error in profile initialization:', err);
       }
     };
 
-    initializeProfile();
-    
+    // Add a small delay to ensure auth state is settled
+    timeoutId = setTimeout(initializeProfile, 100);
+
     return () => {
       mounted = false;
+      clearTimeout(timeoutId);
     };
-  }, [user, authLoading, session, error]);
+  }, [authLoading, user, session, error]);
 
   // Show error UI if there's an error and we're not loading
   if (error && !isLoading && !authLoading) {

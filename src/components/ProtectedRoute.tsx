@@ -29,61 +29,67 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 
   useEffect(() => {
     const checkAuth = async () => {
-      // Wait for auth to initialize
-      if (authLoading) {
-        setLoadingMessage('Checking authentication...');
-        return;
-      }
-
-      console.log('ProtectedRoute: Checking auth state:', {
-        isAuthenticated,
-        hasSession: !!session,
-        hasAccessToken: !!session?.access_token,
-        authLoading,
-        requireCompleteProfile,
-        hasProfile: !!profile,
-        isComplete,
-        profileLoading,
-        profileError
-      });
-
-      // Verify we have a valid session with access token
-      if (!isAuthenticated || !session?.access_token) {
-        console.log('ProtectedRoute: Not authenticated or missing access token, redirecting to login');
-        navigate('/login', { replace: true });
-        return;
-      }
-
-      // Only wait for profile loading if we require a complete profile
-      if (requireCompleteProfile && profileLoading) {
-        setLoadingMessage('Loading profile...');
-        return;
-      }
-
-      // Handle profile errors only if we require a complete profile
-      if (requireCompleteProfile && profileError) {
-        console.error('ProtectedRoute: Profile error:', profileError);
-        setLoadingMessage('Error loading profile. Retrying...');
-        return;
-      }
-
-      // If profile completion is required, check both existence and completion
-      if (requireCompleteProfile) {
-        if (!profile) {
-          console.log('ProtectedRoute: Profile required but does not exist, redirecting to assistant');
-          navigate('/assistant', { replace: true });
-          return;
-        }
-        
-        if (!isComplete) {
-          console.log('ProtectedRoute: Profile exists but incomplete, redirecting to assistant');
-          navigate('/assistant', { replace: true });
-          return;
-        }
-      }
-
-      // Verify session is still valid
+      let shouldRedirectToLogin = false;
+      let shouldRedirectToAssistant = false;
+      
       try {
+        // Wait for auth to initialize
+        if (authLoading) {
+          setLoadingMessage('Checking authentication...');
+          return;
+        }
+
+        console.log('ProtectedRoute: Checking auth state:', {
+          isAuthenticated,
+          hasSession: !!session,
+          hasAccessToken: !!session?.access_token,
+          authLoading,
+          requireCompleteProfile,
+          hasProfile: !!profile,
+          isComplete,
+          profileLoading,
+          profileError,
+          isInitialized
+        });
+
+        // Not authenticated - mark for redirect to login
+        if (!isAuthenticated || !session?.access_token) {
+          console.log('ProtectedRoute: Not authenticated, will redirect to login');
+          shouldRedirectToLogin = true;
+          return;
+        }
+
+        // Only wait for profile if we require it
+        if (requireCompleteProfile && profileLoading) {
+          setLoadingMessage('Loading profile...');
+          return;
+        }
+
+        // Only handle profile errors if we require a complete profile
+        if (requireCompleteProfile && profileError) {
+          console.error('ProtectedRoute: Profile error:', profileError);
+          setLoadingMessage('Error loading profile. Retrying...');
+          return;
+        }
+
+        // Check profile requirements
+        if (requireCompleteProfile) {
+          // No profile exists - mark for redirect to onboarding
+          if (!profile) {
+            console.log('ProtectedRoute: Profile required but missing, will redirect to assistant');
+            shouldRedirectToAssistant = true;
+            return;
+          }
+          
+          // Profile exists but incomplete - mark for redirect to onboarding
+          if (!isComplete) {
+            console.log('ProtectedRoute: Profile incomplete, will redirect to assistant');
+            shouldRedirectToAssistant = true;
+            return;
+          }
+        }
+
+        // Verify session is still valid
         setLoadingMessage('Verifying session...');
         const { data: { session: currentSession }, error: sessionError } = await supabase.auth.getSession();
         
@@ -92,20 +98,27 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
             error: sessionError,
             hasAccessToken: !!currentSession?.access_token
           });
-          navigate('/login', { replace: true });
+          shouldRedirectToLogin = true;
           return;
         }
 
-        // All checks passed
-        setIsInitialized(true);
-        setLoadingMessage('Loading...');
+        console.log('ProtectedRoute: All checks passed');
       } catch (error: any) {
-        console.error('ProtectedRoute: Error validating session:', {
+        console.error('ProtectedRoute: Error in auth check:', {
           error,
           message: error.message
         });
-        navigate('/login', { replace: true });
-        return;
+        shouldRedirectToLogin = true;
+      } finally {
+        // Always set initialized to true
+        setIsInitialized(true);
+        
+        // Handle any pending redirects
+        if (shouldRedirectToLogin) {
+          navigate('/login', { replace: true });
+        } else if (shouldRedirectToAssistant) {
+          navigate('/assistant', { replace: true });
+        }
       }
     };
 
@@ -123,8 +136,8 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   ]);
 
   // Only show loading state if:
-  // 1. Auth is still loading
-  // 2. Not initialized yet
+  // 1. Auth is still loading, or
+  // 2. Not initialized yet, or
   // 3. Profile is loading AND we require a complete profile
   if (authLoading || !isInitialized || (requireCompleteProfile && profileLoading)) {
     return <LoadingSpinner message={loadingMessage} />;

@@ -100,36 +100,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       expiresAt: newSession?.expires_at
     });
 
-    // Update state
     setSession(newSession);
     setUser(newSession?.user || null);
-    
-    // If we have a session with a user, ensure client record exists
-    if (newSession?.user && newSession?.access_token) {
-      try {
-        // Wait a bit to ensure auth is fully initialized
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // Verify session is still valid before proceeding
-        const { data: { session: currentSession }, error: sessionError } = await supabase.auth.getSession();
-        
-        if (sessionError || !currentSession?.access_token) {
-          console.error('AuthContext: Session validation failed before creating client record:', {
-            error: sessionError,
-            hasAccessToken: !!currentSession?.access_token
-          });
-          return;
-        }
-
-        // Now safe to create/check client record
-        await ensureClientRecord(newSession.user.id, newSession.user.email || '');
-      } catch (error: any) {
-        console.error('AuthContext: Error in delayed client record creation:', {
-          error,
-          message: error.message
-        });
-      }
-    }
+    setIsLoading(false); // Set loading to false after updating state
   };
 
   const refreshSession = async (): Promise<Session | null> => {
@@ -197,29 +170,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             message: sessionError.message
           });
           toast.error('Error initializing authentication');
+          if (mounted) setIsLoading(false);
           return;
         }
         
         if (mounted) {
           await updateAuthState(initialSession);
-          
-          // Only navigate if we have a session and we're on login page
-          if (initialSession?.user) {
-            const currentPath = window.location.pathname;
-            if (currentPath === '/login' || currentPath === '/') {
-              console.log('AuthContext: User authenticated, navigating to assistant...');
-              navigate('/assistant', { replace: true });
-            }
-          }
         }
       } catch (error) {
         console.error('AuthContext: Error in initialization:', error);
         toast.error('Error initializing authentication');
-      } finally {
-        if (mounted) {
-          console.log('AuthContext: Completing initialization, setting loading to false');
-          setIsLoading(false);
-        }
+        if (mounted) setIsLoading(false);
       }
     };
 
@@ -238,12 +199,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         
         if (event === 'SIGNED_IN' && newSession) {
           await updateAuthState(newSession);
-          const currentPath = window.location.pathname;
-          // Only navigate if on login or root page
-          if (currentPath === '/login' || currentPath === '/') {
-            console.log('AuthContext: User signed in, navigating to assistant...');
-            navigate('/assistant', { replace: true });
-          }
         } else if (event === 'SIGNED_OUT') {
           await updateAuthState(null);
           navigate('/login', { replace: true });
@@ -255,7 +210,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         toast.error('Error updating authentication state');
       } finally {
         if (mounted) {
-          console.log('AuthContext: Completing auth state change, setting loading to false');
           setIsLoading(false);
         }
       }
@@ -272,10 +226,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const value = {
     user,
     session,
-    isAuthenticated: !!session,
+    isAuthenticated: !!session?.access_token,
     isLoading,
     signOut,
-    refreshSession,
+    refreshSession: async () => {
+      try {
+        const { data: { session: refreshedSession }, error } = await supabase.auth.refreshSession();
+        if (error) throw error;
+        await updateAuthState(refreshedSession);
+        return refreshedSession;
+      } catch (error) {
+        console.error('AuthContext: Failed to refresh session:', error);
+        await updateAuthState(null);
+        throw error;
+      }
+    }
   };
 
   return (
