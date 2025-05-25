@@ -1,4 +1,3 @@
-
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from '@/types/supabase';
 
@@ -105,7 +104,7 @@ const customStorage = {
   }
 };
 
-// Create the Supabase client with proper configuration
+// Create the Supabase client with minimal configuration
 export const supabase = createClient<Database>(
   supabaseUrl,
   supabaseAnonKey,
@@ -114,64 +113,22 @@ export const supabase = createClient<Database>(
       autoRefreshToken: true,
       persistSession: true,
       detectSessionInUrl: true,
-      storageKey: 'supabase.auth.token',
-      storage: customStorage,
-      flowType: 'pkce' // Use PKCE flow instead of implicit for better security
-    },
-    db: {
-      schema: 'public'
-    },
-    global: {
-      headers: {
-        'X-Client-Info': 'supabase-js-v2'
-      }
+      storage: localStorage,
+      storageKey: 'supabase.auth.token'
     }
   }
 );
 
 // Set up auth state change handler
 supabase.auth.onAuthStateChange((event, session) => {
-  console.debug('[Auth] State change:', { event, userId: session?.user?.id });
+  console.log('[Auth] State change:', { event, userId: session?.user?.id });
   
-  if (event === 'SIGNED_IN') {
-    console.debug('[Auth] User signed in, storing session');
-    if (session) {
-      customStorage.setItem('supabase.auth.token', JSON.stringify(session));
-    }
-  }
-  
-  if (event === 'TOKEN_REFRESHED') {
-    console.debug('[Auth] Token refreshed successfully');
-    if (session) {
-      customStorage.setItem('supabase.auth.token', JSON.stringify(session));
-    }
+  if (event === 'SIGNED_IN' && session) {
+    localStorage.setItem('supabase.auth.token', JSON.stringify(session));
   }
   
   if (event === 'SIGNED_OUT') {
-    console.debug('[Auth] User signed out, cleaning up storage');
-    customStorage.removeItem('supabase.auth.token');
-  }
-
-  // Handle session recovery
-  if (event === 'INITIAL_SESSION') {
-    console.debug('[Auth] Initial session setup');
-    if (!session) {
-      console.debug('[Auth] No initial session, checking storage');
-      debugStorage();
-      const storedSession = customStorage.getItem('supabase.auth.token');
-      if (storedSession) {
-        try {
-          const parsed = JSON.parse(storedSession);
-          if (parsed.expires_at && new Date(parsed.expires_at) < new Date()) {
-            console.debug('[Auth] Found expired session, cleaning up');
-            customStorage.removeItem('supabase.auth.token');
-          }
-        } catch (error) {
-          console.error('[Auth] Error parsing stored session:', error);
-          customStorage.removeItem('supabase.auth.token');
-        }
-      }
-    }
+    localStorage.removeItem('supabase.auth.token');
   }
 });
 

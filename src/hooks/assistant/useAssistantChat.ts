@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
@@ -100,6 +99,34 @@ const useAssistantChat = (): AssistantState => {
         }
         
         setUserId(session.user.id);
+        
+        // First ensure client record exists
+        const { data: clientData, error: clientError } = await supabase
+          .from('clients')
+          .select('id')
+          .eq('id', session.user.id)
+          .maybeSingle();
+          
+        if (clientError) {
+          console.error("Error checking client:", clientError);
+          throw clientError;
+        }
+        
+        // Create client record if it doesn't exist
+        if (!clientData) {
+          console.log("Creating client record for user:", session.user.id);
+          const { error: createError } = await supabase
+            .from('clients')
+            .insert({
+              id: session.user.id,
+              email: session.user.email || ''
+            });
+            
+          if (createError) {
+            console.error("Error creating client:", createError);
+            throw createError;
+          }
+        }
         
         // Check if user has a profile
         const { data: profile, error: profileError } = await supabase

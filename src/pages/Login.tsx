@@ -5,61 +5,20 @@ import { toast } from '@/components/ui/sonner';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Mail } from 'lucide-react';
 import { debugStorage } from '@/lib/supabase';
+import { useAuth } from '@/context/AuthContext';
 
 const Login = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { user, isLoading: authLoading } = useAuth();
 
   useEffect(() => {
-    const handleAuthChange = async () => {
-      try {
-        console.log('Login: Checking auth state...');
-        debugStorage();
-        
-        // Check if user is already logged in
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-        
-        console.log('Login: Current session state:', {
-          exists: !!session,
-          userId: session?.user?.id,
-          expiresAt: session?.expires_at
-        });
-        
-        if (sessionError) {
-          console.error('Login: Session error:', sessionError);
-          return;
-        }
-
-        if (session?.user) {
-          console.log('Login: Found active session, redirecting to assistant...');
-          // Direct redirect to assistant - let the assistant page handle profile checks
-          navigate('/assistant', { replace: true });
-        } else {
-          console.log('Login: No active session found');
-        }
-      } catch (error) {
-        console.error("Login: Error in auth change handler:", error);
-        toast.error("Authentication error. Please try again.");
-      }
-    };
-
-    handleAuthChange();
-
-    // Set up auth state change listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Login: Auth state changed:', { event, userId: session?.user?.id });
-      
-      if (event === 'SIGNED_IN' && session?.user) {
-        console.log('Login: User signed in, redirecting to assistant...');
-        // Direct redirect to assistant - let the assistant page handle profile checks
-        navigate('/assistant', { replace: true });
-      }
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [location, navigate]);
+    // If we have a user and auth is done loading, redirect to assistant
+    if (!authLoading && user?.id) {
+      console.log('Login: User already authenticated, redirecting to assistant...');
+      navigate('/assistant', { replace: true });
+    }
+  }, [user, authLoading, navigate]);
 
   const handleGoogleSignIn = async () => {
     try {
@@ -96,6 +55,18 @@ const Login = () => {
       toast.error(error.message || "Failed to sign in with Google");
     }
   };
+
+  // Show loading state while checking auth
+  if (authLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background px-4">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto" />
+          <p className="mt-4 text-sm text-muted-foreground">Checking authentication...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
