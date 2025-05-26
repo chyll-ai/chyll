@@ -1,93 +1,119 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+
+import { Suspense, lazy } from 'react';
+import { Toaster } from '@/components/ui/sonner';
+import { TooltipProvider } from '@/components/ui/tooltip';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
-import { Toaster } from '@/components/ui/toaster';
-import { Toaster as SonnerToaster } from '@/components/ui/sonner';
-import CookieConsent from '@/components/CookieConsent';
-import { LanguageProvider } from '@/context/LanguageContext';
 import { AuthProvider } from '@/context/AuthContext';
+import { LanguageProvider } from '@/context/LanguageContext';
 import ProtectedRoute from '@/components/ProtectedRoute';
+import NotFoundRedirect from '@/components/NotFoundRedirect';
+import './App.css';
 
-// Pages
-import Index from '@/pages/Index';
-import Contact from '@/pages/Contact';
-import Terms from '@/pages/Terms';
-import Privacy from '@/pages/Privacy';
-import Cookies from '@/pages/Cookies';
-import FAQ from '@/pages/FAQ';
-import Blog from '@/pages/Blog';
-import BlogPostPage from '@/pages/BlogPostPage';
-import AboutUs from '@/pages/AboutUs';
-import Login from '@/pages/Login';
-import Onboarding from '@/pages/Onboarding';
-import Dashboard from '@/pages/Dashboard';
-import Assistant from '@/pages/Assistant';
-import Leads from '@/pages/Leads';
-import NotFound from '@/pages/NotFound';
-import AuthCallback from '@/routes/auth/callback';
+console.log('App: Component loading...');
 
-// Wrap protected components with auth
-const ProtectedDashboard = () => (
-  <ProtectedRoute>
-    <Dashboard />
-  </ProtectedRoute>
-);
+// Lazy load components for better performance
+const Index = lazy(() => import('@/pages/Index'));
+const Dashboard = lazy(() => import('@/pages/Dashboard'));
+const Login = lazy(() => import('@/pages/Login'));
+const Assistant = lazy(() => import('@/pages/Assistant'));
+const Leads = lazy(() => import('@/pages/Leads'));
+const FAQ = lazy(() => import('@/pages/FAQ'));
+const AboutUs = lazy(() => import('@/pages/AboutUs'));
+const Contact = lazy(() => import('@/pages/Contact'));
+const Privacy = lazy(() => import('@/pages/Privacy'));
+const Terms = lazy(() => import('@/pages/Terms'));
+const Cookies = lazy(() => import('@/pages/Cookies'));
+const Blog = lazy(() => import('@/pages/Blog'));
+const BlogPostPage = lazy(() => import('@/pages/BlogPostPage'));
+const Team = lazy(() => import('@/pages/Team'));
+const Careers = lazy(() => import('@/pages/Careers'));
+const Company = lazy(() => import('@/pages/Company'));
+const Support = lazy(() => import('@/pages/Support'));
+const Onboarding = lazy(() => import('@/pages/Onboarding'));
+const AuthCallback = lazy(() => import('@/routes/auth/callback'));
+const AuthConfirm = lazy(() => import('@/routes/auth/confirm'));
 
-const ProtectedOnboarding = () => (
-  <ProtectedRoute>
-    <Onboarding />
-  </ProtectedRoute>
-);
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 60 * 1000,
+      retry: 1,
+    },
+  },
+});
 
-const ProtectedAssistant = () => (
-  <ProtectedRoute>
-    <Assistant />
-  </ProtectedRoute>
-);
-
-const ProtectedLeads = () => (
-  <ProtectedRoute>
-    <Leads />
-  </ProtectedRoute>
+const LoadingSpinner = () => (
+  <div className="flex items-center justify-center min-h-screen">
+    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+  </div>
 );
 
 function App() {
+  console.log('App: Rendering...');
+  
   return (
     <HelmetProvider>
-      <LanguageProvider>
-        <Router>
+      <QueryClientProvider client={queryClient}>
+        <LanguageProvider>
           <AuthProvider>
-            <Routes>
-              {/* Public Routes - No Auth Required */}
-              <Route path="/" element={<Index />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/terms" element={<Terms />} />
-              <Route path="/privacy" element={<Privacy />} />
-              <Route path="/cookies" element={<Cookies />} />
-              <Route path="/faq" element={<FAQ />} />
-              <Route path="/blog" element={<Blog />} />
-              <Route path="/blog/:id" element={<BlogPostPage />} />
-              <Route path="/about-us" element={<AboutUs />} />
-              
-              {/* Auth Routes */}
-              <Route path="/login" element={<Login />} />
-              <Route path="/auth/callback" element={<AuthCallback />} />
-              
-              {/* Protected Routes */}
-              <Route path="/dashboard" element={<ProtectedDashboard />} />
-              <Route path="/onboarding" element={<ProtectedOnboarding />} />
-              <Route path="/assistant" element={<ProtectedAssistant />} />
-              <Route path="/leads" element={<ProtectedLeads />} />
-              
-              {/* 404 Route */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-            <Toaster />
-            <SonnerToaster position="bottom-right" />
-            <CookieConsent />
+            <TooltipProvider>
+              <Toaster />
+              <BrowserRouter>
+                <Suspense fallback={<LoadingSpinner />}>
+                  <Routes>
+                    {/* Public Routes */}
+                    <Route path="/" element={<Index />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/faq" element={<FAQ />} />
+                    <Route path="/about-us" element={<AboutUs />} />
+                    <Route path="/contact" element={<Contact />} />
+                    <Route path="/privacy" element={<Privacy />} />
+                    <Route path="/terms" element={<Terms />} />
+                    <Route path="/cookies" element={<Cookies />} />
+                    <Route path="/blog" element={<Blog />} />
+                    <Route path="/blog/:slug" element={<BlogPostPage />} />
+                    <Route path="/team" element={<Team />} />
+                    <Route path="/careers" element={<Careers />} />
+                    <Route path="/company" element={<Company />} />
+                    <Route path="/support" element={<Support />} />
+                    
+                    {/* Auth Routes */}
+                    <Route path="/auth/callback" element={<AuthCallback />} />
+                    <Route path="/auth/confirm" element={<AuthConfirm />} />
+                    
+                    {/* Protected Routes */}
+                    <Route path="/dashboard" element={
+                      <ProtectedRoute>
+                        <Dashboard />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/assistant" element={
+                      <ProtectedRoute>
+                        <Assistant />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/leads" element={
+                      <ProtectedRoute>
+                        <Leads />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/onboarding" element={
+                      <ProtectedRoute>
+                        <Onboarding />
+                      </ProtectedRoute>
+                    } />
+                    
+                    {/* Catch all route for 404 handling */}
+                    <Route path="*" element={<NotFoundRedirect />} />
+                  </Routes>
+                </Suspense>
+              </BrowserRouter>
+            </TooltipProvider>
           </AuthProvider>
-        </Router>
-      </LanguageProvider>
+        </LanguageProvider>
+      </QueryClientProvider>
     </HelmetProvider>
   );
 }
