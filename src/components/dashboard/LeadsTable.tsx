@@ -15,11 +15,8 @@ interface LeadsTableProps {
 const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [filters, setFilters] = useState({
-    status: 'all',
-    search: '',
-    company: 'all'
-  });
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
 
   const fetchLeads = async () => {
     try {
@@ -47,16 +44,18 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
   }, [userId]);
 
   const filteredLeads = leads.filter(lead => {
-    const matchesStatus = filters.status === 'all' || lead.status === filters.status;
-    const matchesSearch = !filters.search || 
-      lead.full_name?.toLowerCase().includes(filters.search.toLowerCase()) ||
-      lead.email?.toLowerCase().includes(filters.search.toLowerCase());
-    const matchesCompany = filters.company === 'all' || lead.company === filters.company;
+    const matchesSearch = !searchQuery || 
+      lead.full_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      lead.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      lead.company?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      lead.job_title?.toLowerCase().includes(searchQuery.toLowerCase());
     
-    return matchesStatus && matchesSearch && matchesCompany;
+    const matchesStatus = selectedStatuses.length === 0 || selectedStatuses.includes(lead.status);
+    
+    return matchesSearch && matchesStatus;
   });
 
-  const companies = Array.from(new Set(leads.map(lead => lead.company).filter(Boolean)));
+  const statusOptions = Array.from(new Set(leads.map(lead => lead.status).filter(Boolean)));
 
   if (isLoading) {
     return (
@@ -69,9 +68,11 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
   return (
     <div className="space-y-4">
       <LeadFilterBar
-        filters={filters}
-        onFiltersChange={setFilters}
-        companies={companies}
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        selectedStatuses={selectedStatuses}
+        setSelectedStatuses={setSelectedStatuses}
+        statusOptions={statusOptions}
       />
       
       {filteredLeads.length === 0 ? (

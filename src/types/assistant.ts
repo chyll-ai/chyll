@@ -3,6 +3,7 @@ export interface Message {
   role: 'user' | 'assistant';
   content: string;
   client_id: string;
+  toolCalls?: any[];
 }
 
 export interface Lead {
@@ -46,4 +47,4 @@ export interface AssistantState {
   messages: Message[];
   sendMessage: (content: string) => Promise<void>;
   userId: string;
-} 
+}
