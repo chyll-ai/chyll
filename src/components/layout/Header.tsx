@@ -1,22 +1,28 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { LogOut, LogIn, UserPlus } from 'lucide-react';
+import { LogOut, LogIn, UserPlus, Home } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
-import { AuthProvider } from '@/context/AuthContext';
 
 // Separate the auth-dependent part
 const AuthButtons = () => {
-  const { isAuthenticated, signOut } = useAuth();
+  const { isAuthenticated, signOut, isLoading } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleSignIn = () => {
-    navigate('/login');
+    // Store the current location for redirect after login
+    navigate('/login', { state: { from: location.pathname } });
   };
 
   const handleDashboard = () => {
     navigate('/dashboard');
   };
+
+  // Don't show buttons while auth is loading
+  if (isLoading) {
+    return null;
+  }
 
   if (isAuthenticated) {
     return (
@@ -66,25 +72,23 @@ const AuthButtons = () => {
   );
 };
 
-// Main header component
 const Header = () => {
-  return (
-    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-14 items-center justify-between">
-        <Link to="/" className="flex items-center space-x-2">
-          <img 
-            src="/lovable-uploads/6aebfbfd-ba13-4ef3-91a5-c262bd385900.png" 
-            alt="chyll.ai logo" 
-            className="h-8" 
-          />
-          <span className="font-bold">Chyll</span>
-        </Link>
+  const location = useLocation();
+  const isHome = location.pathname === '/';
 
-        <nav className="flex items-center gap-4">
-          <AuthProvider>
-            <AuthButtons />
-          </AuthProvider>
-        </nav>
+  return (
+    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container flex h-14 max-w-screen-2xl items-center">
+        <div className="flex flex-1 items-center justify-between">
+          <Link 
+            to="/" 
+            className="flex items-center space-x-2"
+          >
+            {!isHome && <Home className="h-5 w-5" />}
+            <span className="font-bold">Chyll</span>
+          </Link>
+          <AuthButtons />
+        </div>
       </div>
     </header>
   );

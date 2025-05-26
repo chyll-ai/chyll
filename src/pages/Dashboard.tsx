@@ -1,26 +1,21 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Navigate, useNavigate } from 'react-router-dom';
-import { supabase } from '@/lib/supabase';
+import { Navigate } from 'react-router-dom';
 import Assistant from '@/pages/Assistant';
 import LeadsTable from '@/components/dashboard/LeadsTable';
-import { Loader2, LogOut } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Loader2 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { AssistantService } from '@/services/assistant/index';
 import { Lead } from '@/types/assistant';
 
 const Dashboard = () => {
-  const navigate = useNavigate();
-  const [userId, setUserId] = useState<string | null>(null);
-  const { signOut, user, isLoading: authLoading } = useAuth();
+  const { session, isLoading: authLoading } = useAuth();
   const assistantServiceRef = useRef<AssistantService | null>(null);
   const isInitializedRef = useRef(false);
   const [leads, setLeads] = useState<Lead[]>([]);
 
   useEffect(() => {
-    if (user && !isInitializedRef.current) {
-      setUserId(user.id);
-      assistantServiceRef.current = new AssistantService(user.id);
+    if (session?.user && !isInitializedRef.current) {
+      assistantServiceRef.current = new AssistantService(session.user.id);
       
       // Set up the leads update callback
       assistantServiceRef.current.setLeadsUpdateCallback((newLeads) => {
@@ -34,29 +29,40 @@ const Dashboard = () => {
       
       isInitializedRef.current = true;
     }
-  }, [user]);
+  }, [session]);
 
+  // Show loading state while checking auth
   if (authLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto" />
+          <p className="mt-4 text-sm text-muted-foreground">Loading dashboard...</p>
+        </div>
       </div>
     );
   }
 
-  if (!user) {
-    return <Navigate to="/login" replace />;
+  // Redirect to login if not authenticated
+  if (!session?.user) {
+    return <Navigate to="/login" replace state={{ from: '/dashboard' }} />;
   }
 
   return (
-    <div className="container mx-auto py-6">
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Dashboard</h1>
-        <Button variant="ghost" size="icon" onClick={signOut} title="Sign out">
-          <LogOut className="h-4 w-4" />
-        </Button>
+    <div className="container mx-auto px-4 py-8">
+      <div className="grid gap-6">
+        {/* Assistant Section */}
+        <section className="rounded-lg border bg-card p-6">
+          <h2 className="mb-4 text-2xl font-bold">AI Assistant</h2>
+          <Assistant />
+        </section>
+
+        {/* Leads Section */}
+        <section className="rounded-lg border bg-card p-6">
+          <h2 className="mb-4 text-2xl font-bold">Recent Leads</h2>
+          <LeadsTable userId={session.user.id} />
+        </section>
       </div>
-      <LeadsTable userId={user.id} />
     </div>
   );
 };

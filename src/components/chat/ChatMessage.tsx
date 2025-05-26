@@ -83,9 +83,18 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
   
   return (
     <div className={cn(
-      'flex',
-      isUser ? 'justify-end' : 'justify-start'
+      'flex items-start gap-2',
+      isUser ? 'flex-row-reverse' : 'flex-row'
     )}>
+      <div className="flex-shrink-0 w-8 h-8">
+        <img
+          src={isUser ? '/user-avatar.svg' : '/bot-avatar.svg'}
+          alt={isUser ? 'User Avatar' : 'Assistant Avatar'}
+          className="w-full h-full rounded-full"
+          width={32}
+          height={32}
+        />
+      </div>
       <div className={cn(
         'max-w-[80%] px-4 py-2 rounded-lg',
         isUser ? 'bg-primary text-primary-foreground' : 'bg-muted text-foreground'

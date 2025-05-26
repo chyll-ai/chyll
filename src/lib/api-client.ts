@@ -1,13 +1,12 @@
-import { supabase } from './supabase';
+import { supabase } from '@/lib/supabase';
 
 interface OpenAIRequest {
   message: string;
   userId: string;
 }
 
-export interface OpenAIResponse {
+interface OpenAIResponse {
   message: string;
-  toolCalls?: any[];
 }
 
 export class APIClient {
@@ -16,8 +15,13 @@ export class APIClient {
   private static instance: APIClient;
 
   private constructor() {
-    this.baseUrl = import.meta.env.VITE_SUPABASE_URL;
+    // Use the correct base URL for production
+    this.baseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://atsfuqwxfrezkxtnctmk.supabase.co';
     this.anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+    if (!this.baseUrl || !this.anonKey) {
+      throw new Error('Missing required environment variables');
+    }
   }
 
   public static getInstance(): APIClient {
@@ -28,25 +32,39 @@ export class APIClient {
   }
 
   async post(endpoint: string, data: any) {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) throw new Error('No session found');
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('No session found');
 
-    const response = await fetch(`${this.baseUrl}/functions/v1${endpoint}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${session.access_token}`,
-        'apikey': this.anonKey
-      },
-      body: JSON.stringify(data)
-    });
+      const response = await fetch(`${this.baseUrl}/functions/v1${endpoint}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
+          'apikey': this.anonKey
+        },
+        body: JSON.stringify(data)
+      });
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(`HTTP error! status: ${response.status}, message: ${errorData.error || 'Unknown error'}`);
+      if (!response.ok) {
+        // Try to parse error response
+        let errorMessage = 'Unknown error';
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.error || errorData.message || 'Unknown error';
+        } catch {
+          // If we can't parse JSON, use the status text
+          errorMessage = response.statusText;
+        }
+        throw new Error(`API error: ${errorMessage} (${response.status})`);
+      }
+
+      const responseData = await response.json();
+      return responseData;
+    } catch (error) {
+      console.error('API request failed:', error);
+      throw error;
     }
-
-    return response.json();
   }
 
   async sendMessage(data: OpenAIRequest): Promise<OpenAIResponse> {

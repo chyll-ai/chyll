@@ -1,130 +1,26 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from '@/types/supabase';
 
-// Use the actual Supabase project values
-const supabaseUrl = 'https://atsfuqwxfrezkxtnctmk.supabase.co';
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF0c2Z1cXd4ZnJlemt4dG5jdG1rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc2NjE3MjEsImV4cCI6MjA2MzIzNzcyMX0.FO6bvv2rFL0jhzN5aZ3m1QvNaM_ZNt7Ycmo859PSnJE';
+// Use environment variables for Supabase configuration
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-// Simplified custom storage implementation
-const customStorage = {
-  getItem: (key: string): string | null => {
-    try {
-      // Try localStorage first
-      let item = localStorage.getItem(key);
-      
-      // If not in localStorage, try sessionStorage
-      if (!item) {
-        item = sessionStorage.getItem(key);
-      }
-      
-      if (!item) {
-        console.debug(`[Storage] No item found for key: ${key}`);
-        return null;
-      }
+if (!supabaseUrl || !supabaseAnonKey) {
+  throw new Error('Missing Supabase environment variables');
+}
 
-      // For OAuth flow, allow non-JSON values (like code verifier strings)
-      if (key.includes('code_verifier') || key.includes('state')) {
-        return item;
-      }
-      
-      // For session data, validate JSON format
-      try {
-        const parsed = JSON.parse(item);
-        
-        // Check session expiration with a 5-minute buffer for session data
-        if (parsed.expires_at) {
-          const expiresAt = new Date(parsed.expires_at);
-          const now = new Date();
-          const fiveMinutes = 5 * 60 * 1000; // 5 minutes in milliseconds
-          
-          if ((expiresAt.getTime() - now.getTime()) < fiveMinutes) {
-            console.debug(`[Storage] Session expired or expiring soon for key: ${key}`);
-            localStorage.removeItem(key);
-            sessionStorage.removeItem(key);
-            return null;
-          }
-        }
-        
-        return item;
-      } catch (parseError) {
-        // If it's not JSON, return as-is (for OAuth flow strings)
-        return item;
-      }
-    } catch (error) {
-      console.error('[Storage] Error reading from storage:', error);
-      // Clean up potentially corrupted data
-      localStorage.removeItem(key);
-      sessionStorage.removeItem(key);
-      return null;
-    }
-  },
-  setItem: (key: string, value: string): void => {
-    try {
-      // For OAuth flow values (code verifier, state), store directly
-      if (key.includes('code_verifier') || key.includes('state')) {
-        localStorage.setItem(key, value);
-        sessionStorage.setItem(key, value);
-        console.debug(`[Storage] Successfully stored OAuth item for key: ${key}`);
-        return;
-      }
-      
-      // For session data, validate JSON format
-      try {
-        const parsed = JSON.parse(value);
-        if (!parsed || typeof parsed !== 'object') {
-          throw new Error('Invalid session data format');
-        }
-      } catch (parseError) {
-        // If it's not JSON, store it anyway (for OAuth strings)
-        localStorage.setItem(key, value);
-        sessionStorage.setItem(key, value);
-        console.debug(`[Storage] Successfully stored non-JSON item for key: ${key}`);
-        return;
-      }
-      
-      // Store in both localStorage and sessionStorage for redundancy
-      localStorage.setItem(key, value);
-      sessionStorage.setItem(key, value);
-      console.debug(`[Storage] Successfully stored item for key: ${key}`);
-    } catch (error) {
-      console.error('[Storage] Error writing to storage:', error);
-      // Clean up on error
-      localStorage.removeItem(key);
-      sessionStorage.removeItem(key);
-    }
-  },
-  removeItem: (key: string): void => {
-    try {
-      localStorage.removeItem(key);
-      sessionStorage.removeItem(key);
-      console.debug(`[Storage] Successfully removed item for key: ${key}`);
-    } catch (error) {
-      console.error('[Storage] Error removing from storage:', error);
-    }
-  }
-};
-
-// Create the Supabase client with minimal configuration
+// Create the Supabase client with development-friendly configuration
 export const supabase = createClient<Database>(
   supabaseUrl,
   supabaseAnonKey,
   {
     auth: {
-      autoRefreshToken: false, // Disable auto refresh
-      persistSession: false, // Don't persist session
-      detectSessionInUrl: false, // Disable automatic session detection
-      storage: customStorage,
+      autoRefreshToken: true,
+      persistSession: true,
+      detectSessionInUrl: true,
+      storage: localStorage,
       storageKey: 'supabase.auth.token',
-      flowType: 'pkce', // Use PKCE flow for better security
-      debug: true // Enable debug logging
-    },
-    db: {
-      schema: 'public'
-    },
-    realtime: {
-      params: {
-        eventsPerSecond: 10
-      }
+      flowType: 'implicit'
     },
     global: {
       headers: {
@@ -134,45 +30,21 @@ export const supabase = createClient<Database>(
   }
 );
 
-// Set up auth state change handler
+// Set up auth state change handler with improved session management
 supabase.auth.onAuthStateChange((event, session) => {
-  console.log('[Auth] State change:', { event, userId: session?.user?.id, path: window.location.pathname });
-  
-  // Ignore auth state changes on the home page
-  if (window.location.pathname === '/') {
-    console.log('[Auth] On home page, ignoring auth state change');
-    return;
-  }
-
-  // Only handle session storage if we have a session
-  if (session) {
-    if (event === 'SIGNED_IN') {
-      customStorage.setItem('supabase.auth.token', JSON.stringify(session));
-    } else if (event === 'SIGNED_OUT') {
-      customStorage.removeItem('supabase.auth.token');
+  console.log('[Auth] State change:', { 
+    event, 
+    userId: session?.user?.id,
+    hasSession: !!session,
+    accessToken: session?.access_token ? 'present' : 'missing',
+    currentUrl: window.location.href,
+    origin: window.location.origin,
+    localStorage: {
+      hasToken: !!localStorage.getItem('supabase.auth.token'),
+      allKeys: Object.keys(localStorage)
     }
-  }
+  });
 });
-
-// Debug utility to inspect storage
-export const debugStorage = () => {
-  console.group('Storage Debug');
-  console.log('Local Storage:');
-  for (let i = 0; i < localStorage.length; i++) {
-    const key = localStorage.key(i);
-    if (key?.includes('supabase')) {
-      console.log(`${key}:`, localStorage.getItem(key));
-    }
-  }
-  console.log('\nSession Storage:');
-  for (let i = 0; i < sessionStorage.length; i++) {
-    const key = sessionStorage.key(i);
-    if (key?.includes('supabase')) {
-      console.log(`${key}:`, sessionStorage.getItem(key));
-    }
-  }
-  console.groupEnd();
-};
 
 // Export a singleton instance
 export const supabaseInstance = supabase; 

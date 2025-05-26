@@ -1,4 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { supabase } from '@/lib/supabase';
+import { toast } from '@/components/ui/sonner';
 import Header from '@/components/layout/Header';
 import HowItWorks from '@/components/HowItWorks';
 import { Hero } from '@/components/ui/animated-hero';
@@ -101,8 +104,10 @@ const offersData = [
   }
 ];
 
-const Index = () => {
+export default function Index() {
   const { t } = useLanguage();
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   
   // Generate structured data
   const organizationSchema = getOrganizationSchema();
@@ -130,8 +135,64 @@ const Index = () => {
     'équipes commerciales'
   ];
   
+  useEffect(() => {
+    const handleOAuthCallback = async () => {
+      // Check if this is an OAuth callback
+      const code = searchParams.get('code');
+      const error = searchParams.get('error');
+      const error_description = searchParams.get('error_description');
+
+      if (code || error || error_description) {
+        console.log('OAuth callback detected:', {
+          hasCode: !!code,
+          error,
+          error_description,
+          currentUrl: window.location.href
+        });
+
+        try {
+          // Handle OAuth errors
+          if (error || error_description) {
+            console.error('OAuth error:', { error, error_description });
+            toast.error(error_description || error || 'Authentication failed');
+            navigate('/login', { replace: true });
+            return;
+          }
+
+          // Exchange code for session
+          if (code) {
+            const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+            
+            if (error) {
+              console.error('Error exchanging code for session:', error);
+              toast.error(error.message || 'Authentication failed');
+              navigate('/login', { replace: true });
+              return;
+            }
+
+            if (data.session) {
+              console.log('OAuth authentication successful:', {
+                userId: data.session.user.id,
+                email: data.session.user.email
+              });
+              toast.success('Successfully signed in!');
+              navigate('/dashboard', { replace: true });
+              return;
+            }
+          }
+        } catch (error) {
+          console.error('Error handling OAuth callback:', error);
+          toast.error('Authentication failed');
+          navigate('/login', { replace: true });
+        }
+      }
+    };
+
+    handleOAuthCallback();
+  }, [searchParams, navigate]);
+  
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="flex min-h-screen flex-col">
       <SEOMetadata 
         title="chyll - Assistant commercial IA pour automatiser votre prospection B2B"
         description="chyll automatise la génération de leads et les relances commerciales grâce à l'intelligence artificielle. Gagnez du temps et accélérez vos ventes avec chyll."
@@ -289,6 +350,4 @@ const Index = () => {
       <Footer2 />
     </div>
   );
-};
-
-export default Index;
+}

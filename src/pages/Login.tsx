@@ -4,42 +4,48 @@ import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/sonner';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Mail } from 'lucide-react';
-import { debugStorage } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
 
 const Login = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, isLoading: authLoading } = useAuth();
+  const { session, isLoading: authLoading } = useAuth();
 
   useEffect(() => {
-    // If we have a user and auth is done loading, redirect to dashboard
-    if (!authLoading && user?.id) {
-      console.log('Login: User already authenticated, redirecting to dashboard...');
-      navigate('/dashboard', { replace: true });
+    // If we have a session and auth is done loading, redirect to the intended destination
+    if (!authLoading && session?.user) {
+      console.log('Login: User already authenticated, redirecting...');
+      const from = location.state?.from || '/dashboard';
+      navigate(from, { replace: true });
     }
-  }, [user, authLoading, navigate]);
+  }, [session, authLoading, navigate, location.state]);
 
   const handleGoogleSignIn = async () => {
     try {
       console.log('Login: Starting Google OAuth sign in...');
-      debugStorage();
       
-      // Get the current URL without any hash or query parameters
-      const currentOrigin = window.location.origin;
-      const redirectTo = `${currentOrigin}/dashboard`; // Redirect to dashboard after login
+      // Get the base URL for the current environment
+      const baseUrl = window.location.origin;
+      const redirectTo = `${baseUrl}/auth/callback`;
       
-      console.log('Login: OAuth redirect URL:', redirectTo);
-      
+      console.log('Login: OAuth configuration:', {
+        baseUrl,
+        redirectTo,
+        currentUrl: window.location.href,
+        hostname: window.location.hostname,
+        port: window.location.port,
+        environment: import.meta.env.MODE
+      });
+
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
           redirectTo,
           queryParams: {
             access_type: 'offline',
-            prompt: 'consent',
-          },
-        },
+            prompt: 'consent'
+          }
+        }
       });
 
       if (error) {
@@ -47,9 +53,16 @@ const Login = () => {
         throw error;
       }
 
-      console.log('Login: Google OAuth initiated successfully:', data);
+      if (!data?.url) {
+        console.error('Login: No OAuth URL returned');
+        toast.error('Failed to initialize authentication');
+        return;
+      }
+
+      // Proceed with redirect
+      console.log('Login: Redirecting to OAuth URL:', data.url);
+      window.location.href = data.url;
       
-      // The redirect will happen automatically, no need to do anything else here
     } catch (error: any) {
       console.error("Login: Google authentication error:", error);
       toast.error(error.message || "Failed to sign in with Google");
@@ -63,6 +76,17 @@ const Login = () => {
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto" />
           <p className="mt-4 text-sm text-muted-foreground">Checking authentication...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // If we're already authenticated, show a message
+  if (session?.user) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background px-4">
+        <div className="text-center">
+          <p className="text-sm text-muted-foreground">Already signed in. Redirecting...</p>
         </div>
       </div>
     );
