@@ -85,7 +85,7 @@ const Dashboard = () => {
   // Show loading state while checking auth
   if (authLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-background to-muted/30">
+      <div className="flex h-screen items-center justify-center bg-gradient-to-br from-background to-muted/30">
         <div className="text-center space-y-4">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto" />
           <div className="space-y-2">
@@ -103,20 +103,20 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="h-screen flex flex-col bg-gradient-to-br from-background via-background to-muted/10">
+    <div className="h-screen flex flex-col bg-gradient-to-br from-background via-background to-muted/10 overflow-hidden">
       {/* Header */}
-      <div className="border-b border-border/60 bg-background/95 backdrop-blur-sm">
-        <div className="px-6 py-4">
+      <div className="flex-shrink-0 border-b border-border/60 bg-background/95 backdrop-blur-sm">
+        <div className="px-4 py-3">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+              <h1 className="text-xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
                 Dashboard
               </h1>
-              <p className="text-sm text-muted-foreground mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 Manage your leads and AI assistant
               </p>
             </div>
-            <div className="flex items-center gap-4 text-sm text-muted-foreground">
+            <div className="flex items-center gap-4 text-xs text-muted-foreground">
               <div className="flex items-center gap-2">
                 <div className="h-2 w-2 bg-green-500 rounded-full animate-pulse" />
                 AI Assistant Active
@@ -128,20 +128,20 @@ const Dashboard = () => {
 
       <div 
         ref={containerRef}
-        className="flex-1 flex overflow-hidden"
+        className="flex-1 flex overflow-hidden min-h-0"
       >
         {/* Assistant Panel */}
         <div 
           style={{ width: leftPanelWidth, minWidth: MIN_PANEL_WIDTH }}
-          className="h-full flex flex-col bg-background border-r border-border/60 shadow-sm"
+          className="h-full flex flex-col bg-background border-r border-border/60 shadow-sm overflow-hidden"
         >
-          <div className="px-6 py-4 border-b border-border/40 bg-muted/20">
+          <div className="flex-shrink-0 px-4 py-3 border-b border-border/40 bg-muted/20">
             <div className="flex items-center gap-3">
-              <div className="flex items-center justify-center w-8 h-8 bg-primary/10 rounded-lg">
-                <MessageSquare className="h-4 w-4 text-primary" />
+              <div className="flex items-center justify-center w-6 h-6 bg-primary/10 rounded-lg">
+                <MessageSquare className="h-3 w-3 text-primary" />
               </div>
               <div>
-                <h2 className="text-lg font-semibold">AI Assistant</h2>
+                <h2 className="text-sm font-semibold">AI Assistant</h2>
                 <p className="text-xs text-muted-foreground">Ask me to find leads or help with prospects</p>
               </div>
             </div>
@@ -154,7 +154,7 @@ const Dashboard = () => {
         {/* Resizable Divider */}
         <div
           ref={dividerRef}
-          className="w-1 bg-border/40 hover:bg-primary/20 cursor-col-resize flex items-center justify-center transition-all duration-200 group relative"
+          className="w-1 bg-border/40 hover:bg-primary/20 cursor-col-resize flex items-center justify-center transition-all duration-200 group relative flex-shrink-0"
         >
           <div className="absolute inset-y-0 -inset-x-2 flex items-center justify-center">
             <GripVertical className="h-4 w-4 text-muted-foreground/50 group-hover:text-primary/70 transition-colors" />
@@ -163,19 +163,19 @@ const Dashboard = () => {
 
         {/* Leads Panel */}
         <div className="flex-1 flex flex-col bg-background overflow-hidden" style={{ minWidth: MIN_PANEL_WIDTH }}>
-          <div className="px-6 py-4 border-b border-border/40 bg-muted/20">
+          <div className="flex-shrink-0 px-4 py-3 border-b border-border/40 bg-muted/20">
             <div className="flex items-center gap-3">
-              <div className="flex items-center justify-center w-8 h-8 bg-blue-500/10 rounded-lg">
-                <Users className="h-4 w-4 text-blue-600" />
+              <div className="flex items-center justify-center w-6 h-6 bg-blue-500/10 rounded-lg">
+                <Users className="h-3 w-3 text-blue-600" />
               </div>
               <div>
-                <h2 className="text-lg font-semibold">Recent Leads</h2>
+                <h2 className="text-sm font-semibold">Recent Leads</h2>
                 <p className="text-xs text-muted-foreground">Track and manage your prospects</p>
               </div>
             </div>
           </div>
           <div className="flex-1 overflow-hidden">
-            <div className="h-full overflow-auto p-6">
+            <div className="h-full overflow-auto p-4">
               <LeadsTable userId={session.user.id} />
             </div>
           </div>
