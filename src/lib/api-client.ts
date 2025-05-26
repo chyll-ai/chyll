@@ -1,3 +1,4 @@
+
 import { supabase } from '@/lib/supabase';
 
 interface OpenAIRequest {
@@ -15,13 +16,14 @@ export class APIClient {
   private static instance: APIClient;
 
   private constructor() {
-    // Use the correct base URL for production
+    // Use the correct base URL for production with fallback
     this.baseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://atsfuqwxfrezkxtnctmk.supabase.co';
-    this.anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+    this.anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF0c2Z1cXd4ZnJlemt4dG5jdG1rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc2NjE3MjEsImV4cCI6MjA2MzIzNzcyMX0.FO6bvv2rFL0jhzN5aZ3m1QvNaM_ZNt7Ycmo859PSnJE';
 
-    if (!this.baseUrl || !this.anonKey) {
-      throw new Error('Missing required environment variables');
-    }
+    console.log('APIClient initialized with:', {
+      baseUrl: this.baseUrl,
+      hasAnonKey: !!this.anonKey
+    });
   }
 
   public static getInstance(): APIClient {
