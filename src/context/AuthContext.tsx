@@ -8,17 +8,26 @@ interface AuthContextType {
   session: Session | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  sessionChecked: boolean;
   signOut: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Define protected routes
+// Define protected routes that require authentication
 const PROTECTED_ROUTES = ['/dashboard', '/onboarding', '/assistant', '/leads'];
+
+// Define public routes that should never redirect to login
+const PUBLIC_ROUTES = ['/', '/about', '/contact', '/terms', '/privacy', '/cookies', '/faq', '/blog'];
 
 // Check if a route is protected
 const isProtectedRoute = (pathname: string): boolean => {
   return PROTECTED_ROUTES.some(route => pathname.startsWith(route));
+};
+
+// Check if a route is public
+const isPublicRoute = (pathname: string): boolean => {
+  return PUBLIC_ROUTES.some(route => pathname === route);
 };
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -27,38 +36,52 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [sessionChecked, setSessionChecked] = useState(false);
 
   // Function to handle session updates
   const handleSession = async (newSession: Session | null) => {
     try {
       const newUser = newSession?.user || null;
+      const currentPath = location.pathname;
       
       console.log('[AuthContext] Handling session:', {
         hasUser: !!newUser,
         userId: newUser?.id,
-        path: location.pathname,
+        path: currentPath,
         origin: window.location.origin,
-        isCallback: location.pathname === '/auth/callback'
+        isCallback: currentPath === '/auth/callback',
+        isProtected: isProtectedRoute(currentPath),
+        isPublic: isPublicRoute(currentPath)
       });
 
       // Update state
       setSession(newSession);
       setUser(newUser);
+      setSessionChecked(true);
       setIsLoading(false);
 
-      // Handle redirects based on auth state
+      // Handle routing based on auth state and current path
       if (newUser) {
-        if (location.pathname === '/login') {
+        // User is authenticated
+        if (currentPath === '/login') {
+          // If on login page, redirect to intended destination or dashboard
           const from = location.state?.from || '/dashboard';
           navigate(from, { replace: true });
         }
-      } else if (isProtectedRoute(location.pathname)) {
-        console.log('[AuthContext] Redirecting to login from protected route:', location.pathname);
-        navigate('/login', { replace: true, state: { from: location.pathname } });
+        // Don't redirect if already on a valid route
+      } else {
+        // User is not authenticated
+        if (isProtectedRoute(currentPath)) {
+          // Only redirect to login from protected routes
+          console.log('[AuthContext] Redirecting to login from protected route:', currentPath);
+          navigate('/login', { replace: true, state: { from: currentPath } });
+        }
+        // Don't redirect if on public route or login page
       }
     } catch (error) {
       console.error('[AuthContext] Error handling session:', error);
       setIsLoading(false);
+      setSessionChecked(true);
     }
   };
 
@@ -68,6 +91,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Initialize auth state
     const initializeAuth = async () => {
       try {
+        console.log('[AuthContext] Initializing auth state...');
+        
         // Get initial session
         const { data: { session: initialSession }, error } = await supabase.auth.getSession();
         
@@ -75,6 +100,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           console.error('[AuthContext] Error getting initial session:', error);
           if (mounted) {
             setIsLoading(false);
+            setSessionChecked(true);
           }
           return;
         }
@@ -86,6 +112,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         console.error('[AuthContext] Error during initialization:', error);
         if (mounted) {
           setIsLoading(false);
+          setSessionChecked(true);
         }
       }
     };
@@ -100,6 +127,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         userId: currentSession?.user?.id, 
         path: location.pathname,
         isProtectedRoute: isProtectedRoute(location.pathname),
+        isPublicRoute: isPublicRoute(location.pathname),
         origin: window.location.origin
       });
 
@@ -111,17 +139,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           
           case 'SIGNED_OUT':
             await handleSession(null);
-            navigate('/', { replace: true });
+            // Only redirect to home if not already on a public route
+            if (!isPublicRoute(location.pathname)) {
+              navigate('/', { replace: true });
+            }
             break;
           
           case 'TOKEN_REFRESHED':
-            await handleSession(currentSession);
-            break;
-          
           case 'USER_UPDATED':
-            await handleSession(currentSession);
-            break;
-          
           case 'INITIAL_SESSION':
             await handleSession(currentSession);
             break;
@@ -151,6 +176,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     session,
     isAuthenticated: !!session?.user?.id,
     isLoading,
+    sessionChecked,
     signOut
   };
 
