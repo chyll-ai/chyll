@@ -132,9 +132,8 @@ const Dashboard = () => {
       >
         {/* Assistant Panel */}
         <div 
-          style={{ width: leftPanelWidth }}
+          style={{ width: leftPanelWidth, minWidth: MIN_PANEL_WIDTH }}
           className="h-full flex flex-col bg-background border-r border-border/60 shadow-sm"
-          style={{ minWidth: MIN_PANEL_WIDTH }}
         >
           <div className="px-6 py-4 border-b border-border/40 bg-muted/20">
             <div className="flex items-center gap-3">
