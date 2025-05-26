@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState, useRef } from 'react';
 import { Navigate } from 'react-router-dom';
 import Assistant from '@/pages/Assistant';
@@ -7,7 +8,7 @@ import { useAuth } from '@/context/AuthContext';
 import { AssistantService } from '@/services/assistant/index';
 import { Lead } from '@/types/assistant';
 
-const MIN_PANEL_WIDTH = 300; // Minimum width for each panel in pixels
+const MIN_PANEL_WIDTH = 300;
 
 const Dashboard = () => {
   const { session, isLoading: authLoading } = useAuth();
@@ -63,7 +64,6 @@ const Dashboard = () => {
       const containerRect = container.getBoundingClientRect();
       const newWidth = e.clientX - containerRect.left;
       
-      // Calculate percentage with constraints
       const minPercentage = (MIN_PANEL_WIDTH / containerRect.width) * 100;
       const maxPercentage = 100 - minPercentage;
       const percentage = Math.min(Math.max((newWidth / containerRect.width) * 100, minPercentage), maxPercentage);
@@ -101,12 +101,10 @@ const Dashboard = () => {
 
   return (
     <div className="h-screen flex flex-col bg-background">
-      {/* Main content area */}
       <div 
         ref={containerRef}
         className="flex-1 flex overflow-hidden"
       >
-        {/* Left panel - Assistant */}
         <div 
           style={{ width: leftPanelWidth }}
           className="h-full flex flex-col min-w-[300px] border-r border-border"
@@ -119,7 +117,6 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Resizable divider */}
         <div
           ref={dividerRef}
           className="w-2 bg-border hover:bg-primary/10 cursor-col-resize flex items-center justify-center transition-colors"
@@ -127,7 +124,6 @@ const Dashboard = () => {
           <GripVertical className="h-6 w-6 text-muted-foreground" />
         </div>
 
-        {/* Right panel - Leads Table */}
         <div className="flex-1 flex flex-col min-w-[300px] overflow-hidden">
           <div className="p-4 border-b border-border">
             <h2 className="text-2xl font-bold">Recent Leads</h2>

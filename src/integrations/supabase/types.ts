@@ -31,15 +31,7 @@ export type Database = {
           created_at?: string | null
           id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "activity_logs_client_id_fkey"
-            columns: ["client_id"]
-            isOneToOne: false
-            referencedRelation: "clients"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       chat_sessions: {
         Row: {
@@ -60,23 +52,16 @@ export type Database = {
           id?: string
           title?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "chat_sessions_client_id_fkey"
-            columns: ["client_id"]
-            isOneToOne: false
-            referencedRelation: "clients"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       client_profile: {
         Row: {
           banned_phrases: string | null
           calendly_url: string | null
-          client_id: string | null
+          client_id: string
           common_objections: string | null
           company_name: string | null
+          created_at: string | null
           icp_location: string | null
           icp_size: string | null
           icp_title: string | null
@@ -87,14 +72,16 @@ export type Database = {
           offer: string | null
           primary_goal: string | null
           tone: string | null
+          updated_at: string | null
           value_prop: string | null
         }
         Insert: {
           banned_phrases?: string | null
           calendly_url?: string | null
-          client_id?: string | null
+          client_id: string
           common_objections?: string | null
           company_name?: string | null
+          created_at?: string | null
           icp_location?: string | null
           icp_size?: string | null
           icp_title?: string | null
@@ -105,14 +92,16 @@ export type Database = {
           offer?: string | null
           primary_goal?: string | null
           tone?: string | null
+          updated_at?: string | null
           value_prop?: string | null
         }
         Update: {
           banned_phrases?: string | null
           calendly_url?: string | null
-          client_id?: string | null
+          client_id?: string
           common_objections?: string | null
           company_name?: string | null
+          created_at?: string | null
           icp_location?: string | null
           icp_size?: string | null
           icp_title?: string | null
@@ -123,66 +112,53 @@ export type Database = {
           offer?: string | null
           primary_goal?: string | null
           tone?: string | null
+          updated_at?: string | null
           value_prop?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "client_profile_client_id_fkey"
-            columns: ["client_id"]
-            isOneToOne: false
-            referencedRelation: "clients"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       clients: {
         Row: {
-          created_at: string | null
+          created_at: string
           email: string
           id: string
-          is_active: boolean | null
-          plan: string | null
-          stripe_id: string | null
+          updated_at: string
         }
         Insert: {
-          created_at?: string | null
+          created_at?: string
           email: string
-          id?: string
-          is_active?: boolean | null
-          plan?: string | null
-          stripe_id?: string | null
+          id: string
+          updated_at?: string
         }
         Update: {
-          created_at?: string | null
+          created_at?: string
           email?: string
           id?: string
-          is_active?: boolean | null
-          plan?: string | null
-          stripe_id?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
       conversations: {
         Row: {
-          client_id: string | null
-          created_at: string | null
+          client_id: string
+          created_at: string
           id: string
-          title: string | null
           type: string
+          updated_at: string
         }
         Insert: {
-          client_id?: string | null
-          created_at?: string | null
+          client_id: string
+          created_at?: string
           id?: string
-          title?: string | null
-          type?: string
+          type: string
+          updated_at?: string
         }
         Update: {
-          client_id?: string | null
-          created_at?: string | null
+          client_id?: string
+          created_at?: string
           id?: string
-          title?: string | null
           type?: string
+          updated_at?: string
         }
         Relationships: [
           {
@@ -226,13 +202,6 @@ export type Database = {
           subject?: string | null
         }
         Relationships: [
-          {
-            foreignKeyName: "email_jobs_client_id_fkey"
-            columns: ["client_id"]
-            isOneToOne: false
-            referencedRelation: "clients"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "email_jobs_lead_id_fkey"
             columns: ["lead_id"]
@@ -290,13 +259,6 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "leads_client_id_fkey"
-            columns: ["client_id"]
-            isOneToOne: false
-            referencedRelation: "clients"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "leads_search_id_fkey"
             columns: ["search_id"]
             isOneToOne: false
@@ -307,55 +269,35 @@ export type Database = {
       }
       messages: {
         Row: {
-          chat_session_id: string | null
-          client_id: string | null
+          client_id: string
           content: string
-          conversation_id: string | null
-          created_at: string | null
+          created_at: string
           id: string
           role: string
-          toolCalls: Json | null
+          updated_at: string
         }
         Insert: {
-          chat_session_id?: string | null
-          client_id?: string | null
+          client_id: string
           content: string
-          conversation_id?: string | null
-          created_at?: string | null
+          created_at?: string
           id?: string
           role: string
-          toolCalls?: Json | null
+          updated_at?: string
         }
         Update: {
-          chat_session_id?: string | null
-          client_id?: string | null
+          client_id?: string
           content?: string
-          conversation_id?: string | null
-          created_at?: string | null
+          created_at?: string
           id?: string
           role?: string
-          toolCalls?: Json | null
+          updated_at?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "messages_chat_session_id_fkey"
-            columns: ["chat_session_id"]
-            isOneToOne: false
-            referencedRelation: "chat_sessions"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "messages_client_id_fkey"
             columns: ["client_id"]
             isOneToOne: false
             referencedRelation: "clients"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "messages_conversation_id_fkey"
-            columns: ["conversation_id"]
-            isOneToOne: false
-            referencedRelation: "conversations"
             referencedColumns: ["id"]
           },
         ]
@@ -385,15 +327,7 @@ export type Database = {
           parsed_filters?: Json | null
           status?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "queue_search_client_id_fkey"
-            columns: ["client_id"]
-            isOneToOne: false
-            referencedRelation: "clients"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       tokens: {
         Row: {
@@ -432,15 +366,7 @@ export type Database = {
           scope?: string[] | null
           updated_at?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "tokens_client_id_fkey"
-            columns: ["client_id"]
-            isOneToOne: false
-            referencedRelation: "clients"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
     }
     Views: {

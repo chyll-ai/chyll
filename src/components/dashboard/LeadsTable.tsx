@@ -1,606 +1,146 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Lead } from '@/types/assistant';
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
-} from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { Eye, ArrowRight, Tags, Mail, Phone, Calendar, FileText, RefreshCw } from 'lucide-react';
-import { toast } from '@/components/ui/sonner';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import LeadStatusBadge from './LeadStatusBadge';
 import LeadFilterBar from './LeadFilterBar';
+import { ExternalLink, Mail, Phone } from 'lucide-react';
+import { toast } from '@/components/ui/sonner';
 
 interface LeadsTableProps {
   userId: string;
 }
 
-const LEAD_STATUS_OPTIONS = [
-  'new',
-  'à contacter',
-  'email envoyé',
-  'répondu',
-  'à relancer',
-  'appel prévu',
-  'RDV',
-  'RDV manqué'
-];
-
 const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
   const [leads, setLeads] = useState<Lead[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [emailDialogOpen, setEmailDialogOpen] = useState(false);
-  const [selectedEmail, setSelectedEmail] = useState<{ subject: string; body: string } | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
-  const [statusUpdateDialogOpen, setStatusUpdateDialogOpen] = useState(false);
-  const [currentLead, setCurrentLead] = useState<Lead | null>(null);
-  const [updatingStatus, setUpdatingStatus] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [filters, setFilters] = useState({
+    status: 'all',
+    search: '',
+    company: 'all'
+  });
 
-  // Simple fetch leads function
   const fetchLeads = async () => {
     try {
-      console.log('Fetching leads...');
+      setIsLoading(true);
       const { data, error } = await supabase
         .from('leads')
         .select('*')
         .eq('client_id', userId)
         .order('created_at', { ascending: false });
-        
+
       if (error) throw error;
-      
-      console.log('Leads fetched:', data?.length || 0);
       setLeads(data || []);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching leads:', error);
-      toast.error('Erreur lors du chargement des leads');
+      toast.error('Failed to fetch leads');
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
-  // Initial fetch and realtime subscription
   useEffect(() => {
-    if (!userId) return;
-
-    // Initial fetch
-    fetchLeads();
-
-    // Simple realtime subscription
-    const channel = supabase.channel('any')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'leads' },
-        () => {
-          console.log('Change detected in leads table, refreshing...');
-          fetchLeads();
-        }
-      )
-      .subscribe((status) => {
-        console.log('Subscription status:', status);
-      });
-
-    return () => {
-      channel.unsubscribe();
-    };
+    if (userId) {
+      fetchLeads();
+    }
   }, [userId]);
 
-  const handleViewMessage = (subject: string, body: string) => {
-    setSelectedEmail({ subject, body });
-    setEmailDialogOpen(true);
-  };
-  
-  const handleChatAction = async (leadId: string | null, action: string, status?: string, leadName?: string, notes?: string) => {
-    try {
-      const { data: session } = await supabase.auth.getSession();
-      const access_token = session?.session?.access_token;
-      const client_id = session?.session?.user?.id;
-      
-      if (!access_token || !client_id) {
-        toast.error('Vous devez être connecté pour effectuer cette action');
-        return;
-      }
-
-      // For status updates, only update if the status is actually different
-      if (action === 'update_status' && status && leadId) {
-        const lead = leads.find(l => l.id === leadId);
-        if (lead && lead.status !== status) {
-          setLeads(prevLeads => 
-            prevLeads.map(l => 
-              l.id === leadId ? { ...l, status } : l
-            )
-          );
-        }
-      }
-      
-      try {
-        const baseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://atsfuqwxfrezkxtnctmk.supabase.co';
-        const response = await fetch(`${baseUrl}/functions/v1/chat-action`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${access_token}`,
-            'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY || '',
-            'x-client-info': '@supabase/auth-helpers-nextjs@0.7.4'
-          },
-          credentials: 'include',
-          body: JSON.stringify({
-            lead_id: leadId,
-            lead_name: leadName,
-            action,
-            status,
-            notes,
-            user_id: client_id
-          })
-        });
-
-        if (!response.ok) {
-          const result = await response.json().catch(() => ({ error: 'Failed to parse response' }));
-          if (response.status === 300 && result.leads) {
-            toast.error(`Plusieurs leads trouvés avec ce nom. Veuillez être plus précis.`);
-            return result.leads;
-          }
-          throw new Error(result.error || `Error: ${response.status}`);
-        }
-
-        const result = await response.json();
-        toast.success(result.message || 'Action effectuée avec succès');
-        return result.lead;
-
-      } catch (fetchError: any) {
-        // Handle network errors (including CORS)
-        if (fetchError instanceof TypeError && fetchError.message === 'Failed to fetch') {
-          console.error('Network error (possibly CORS):', fetchError);
-          toast.error('Erreur de connexion au serveur. Veuillez réessayer.');
-        } else {
-          console.error('Error executing chat action:', fetchError);
-          toast.error(fetchError.message || 'Erreur lors de l\'exécution de l\'action');
-        }
-        
-        // If it was a status update that failed, revert the local state
-        if (action === 'update_status' && status && leadId) {
-          const originalLead = leads.find(l => l.id === leadId);
-          if (originalLead) {
-            setLeads(prevLeads => 
-              prevLeads.map(l => 
-                l.id === leadId ? { ...l, status: originalLead.status } : l
-              )
-            );
-          }
-        }
-        return null;
-      }
-
-    } catch (error) {
-      console.error('Error in handleChatAction:', error);
-      toast.error('Une erreur inattendue est survenue');
-      return null;
-    }
-  };
-
-  const handleSendColdEmail = async (leadId: string) => {
-    await handleChatAction(leadId, 'send_cold_email');
-  };
-
-  const handleFollowupLead = async (leadId: string) => {
-    await handleChatAction(leadId, 'send_followup');
-  };
-
-  const handleUpdateStatus = (lead: Lead) => {
-    setCurrentLead(lead);
-    setStatusUpdateDialogOpen(true);
-  };
-  
-  const saveLeadStatus = async (newStatus: string) => {
-    if (!currentLead) return;
-    
-    try {
-      setUpdatingStatus(true);
-      
-      // Update only the status
-      const { error } = await supabase
-        .from('leads')
-        .update({ status: newStatus })
-        .eq('id', currentLead.id)
-        .eq('client_id', userId);
-
-      if (error) {
-        throw error;
-      }
-
-      toast.success('Statut mis à jour avec succès');
-      setStatusUpdateDialogOpen(false);
-      
-    } catch (error: any) {
-      console.error('Error updating status:', error);
-      toast.error(error.message || 'Erreur lors de la mise à jour du statut');
-      
-      // Revert local state if there was an error
-      setLeads(prevLeads => 
-        prevLeads.map(l => 
-          l.id === currentLead.id ? { ...l, status: currentLead.status } : l
-        )
-      );
-    } finally {
-      setUpdatingStatus(false);
-    }
-  };
-
-  const handleScheduleCall = async (leadId: string) => {
-    await handleChatAction(leadId, 'schedule_call');
-  };
-
-  // New function to find a lead by name
-  const findLeadByName = async (name: string) => {
-    return await handleChatAction(null, 'find_lead', undefined, name);
-  };
-
-  const formatDate = (dateString: string) => {
-    if (!dateString) return 'N/A';
-    
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffTime = Math.abs(now.getTime() - date.getTime());
-    const diffMinutes = Math.floor(diffTime / (1000 * 60));
-    
-    // Format the time part
-    const timeStr = date.toLocaleTimeString('fr-FR', {
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-
-    // Today's date at midnight
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    // Yesterday's date at midnight
-    const yesterday = new Date(today);
-    yesterday.setDate(yesterday.getDate() - 1);
-
-    if (date >= today) {
-      // Today
-      if (diffMinutes < 1) {
-        return `À l'instant - ${timeStr}`;
-      } else if (diffMinutes < 60) {
-        return `Il y a ${diffMinutes} min - ${timeStr}`;
-      } else {
-        return `Aujourd'hui - ${timeStr}`;
-      }
-    } else if (date >= yesterday) {
-      // Yesterday
-      return `Hier - ${timeStr}`;
-    } else {
-      // Older dates
-      return date.toLocaleString('fr-FR', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      });
-    }
-  };
-
-  // Filter leads based on search query and selected statuses
   const filteredLeads = leads.filter(lead => {
-    const matchesSearch = searchQuery === '' || 
-      (lead.full_name && lead.full_name.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      (lead.company && lead.company.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      (lead.job_title && lead.job_title.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      (lead.email && lead.email.toLowerCase().includes(searchQuery.toLowerCase()));
+    const matchesStatus = filters.status === 'all' || lead.status === filters.status;
+    const matchesSearch = !filters.search || 
+      lead.full_name?.toLowerCase().includes(filters.search.toLowerCase()) ||
+      lead.email?.toLowerCase().includes(filters.search.toLowerCase());
+    const matchesCompany = filters.company === 'all' || lead.company === filters.company;
     
-    const matchesStatus = selectedStatuses.length === 0 || 
-      (lead.status && selectedStatuses.includes(lead.status));
-    
-    return matchesSearch && matchesStatus;
+    return matchesStatus && matchesSearch && matchesCompany;
   });
-  
-  const getLeadActions = (lead: Lead) => {
-    const hasEmailJobs = lead.email_jobs && lead.email_jobs.length > 0;
-    const rawStatus = lead.status || 'new';
-    const status = rawStatus.toLowerCase();
 
-    const actions = [];
+  const companies = Array.from(new Set(leads.map(lead => lead.company).filter(Boolean)));
 
-    // View message button (if there are email jobs)
-    if (hasEmailJobs && lead.email_jobs![0].subject && lead.email_jobs![0].body) {
-      actions.push(
-        <Button
-          key="view"
-          variant="outline"
-          size="sm"
-          onClick={() => handleViewMessage(lead.email_jobs![0].subject, lead.email_jobs![0].body)}
-        >
-          <Eye className="h-4 w-4" />
-          <span className="ml-2">Voir message</span>
-        </Button>
-      );
-    }
-
-    // Status-based actions
-    switch (status) {
-      case 'new':
-      case 'à contacter':
-        actions.push(
-          <Button
-            key="cold-email"
-            variant="outline"
-            size="sm"
-            onClick={() => handleSendColdEmail(lead.id)}
-          >
-            <Mail className="h-4 w-4" />
-            <span className="ml-2">Envoyer email initial</span>
-          </Button>
-        );
-        break;
-
-      case 'email envoyé':
-        actions.push(
-          <Button
-            key="followup"
-            variant="outline"
-            size="sm"
-            onClick={() => handleFollowupLead(lead.id)}
-          >
-            <ArrowRight className="h-4 w-4" />
-            <span className="ml-2">Relancer</span>
-          </Button>
-        );
-        break;
-
-      case 'répondu':
-        actions.push(
-          <Button
-            key="schedule"
-            variant="outline"
-            size="sm"
-            onClick={() => handleScheduleCall(lead.id)}
-          >
-            <Phone className="h-4 w-4" />
-            <span className="ml-2">Planifier appel</span>
-          </Button>
-        );
-        break;
-
-      case 'à relancer':
-        actions.push(
-          <Button
-            key="followup-urgent"
-            variant="outline"
-            size="sm"
-            onClick={() => handleFollowupLead(lead.id)}
-          >
-            <ArrowRight className="h-4 w-4" />
-            <span className="ml-2">Relancer</span>
-          </Button>
-        );
-        break;
-
-      case 'appel prévu':
-        actions.push(
-          <Button
-            key="call-reminder"
-            variant="outline"
-            size="sm"
-            onClick={() => handleViewCallDetails(lead.id)}
-          >
-            <Calendar className="h-4 w-4" />
-            <span className="ml-2">Voir RDV</span>
-          </Button>
-        );
-        break;
-
-      case 'rdv':
-        actions.push(
-          <Button
-            key="meeting-notes"
-            variant="outline"
-            size="sm"
-            onClick={() => handleAddMeetingNotes(lead.id)}
-          >
-            <FileText className="h-4 w-4" />
-            <span className="ml-2">Notes RDV</span>
-          </Button>
-        );
-        break;
-
-      case 'rdv manqué':
-        actions.push(
-          <Button
-            key="reschedule"
-            variant="outline"
-            size="sm"
-            onClick={() => handleRescheduleCall(lead.id)}
-          >
-            <RefreshCw className="h-4 w-4" />
-            <span className="ml-2">Replanifier</span>
-          </Button>
-        );
-        break;
-    }
-
+  if (isLoading) {
     return (
-      <div className="flex flex-wrap gap-2">
-        {actions}
+      <div className="flex items-center justify-center p-8">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
       </div>
     );
-  };
-
-  const handleViewCallDetails = async (leadId: string) => {
-    // Implement call details viewing logic
-    toast.info('Fonctionnalité à venir');
-  };
-
-  const handleAddMeetingNotes = async (leadId: string) => {
-    // Implement meeting notes logic
-    toast.info('Fonctionnalité à venir');
-  };
-
-  const handleRescheduleCall = async (leadId: string) => {
-    // Implement call rescheduling logic
-    toast.info('Fonctionnalité à venir');
-  };
-
-  if (loading) {
-    return <div className="flex justify-center p-8"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div>;
   }
-  
+
   return (
-    <>
-      <div className="flex flex-col gap-4">
-        <div className="flex gap-4 items-center">
-          <Input
-            placeholder="Rechercher par nom, entreprise, titre ou email"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="flex-1"
-          />
-        </div>
-        <LeadFilterBar 
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          selectedStatuses={selectedStatuses}
-          setSelectedStatuses={setSelectedStatuses}
-          statusOptions={LEAD_STATUS_OPTIONS}
-        />
-      </div>
+    <div className="space-y-4">
+      <LeadFilterBar
+        filters={filters}
+        onFiltersChange={setFilters}
+        companies={companies}
+      />
       
-      <div className="rounded-md border mt-4">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Nom</TableHead>
-              <TableHead>Poste</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Entreprise</TableHead>
-              <TableHead>Date ajout</TableHead>
-              <TableHead>Statut</TableHead>
-              <TableHead>Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredLeads.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={7} className="text-center py-8">
-                  {leads.length === 0 
-                    ? 'Aucun lead trouvé. Demandez à l\'assistant de lancer une recherche.' 
-                    : 'Aucun résultat correspondant à vos critères de recherche.'}
-                </TableCell>
-              </TableRow>
-            ) : (
-              filteredLeads.map((lead) => {
-                return (
-                  <TableRow key={lead.id}>
-                    <TableCell className="font-medium">{lead.full_name || 'N/A'}</TableCell>
-                    <TableCell>{lead.job_title || 'N/A'}</TableCell>
-                    <TableCell>
-                      <div className="flex items-center">
-                        <span className="mr-2">{lead.email || 'N/A'}</span>
-                        {lead.email && (
-                          <button 
-                            onClick={() => {
-                              navigator.clipboard.writeText(lead.email);
-                              toast.success('Email copié !');
-                            }}
-                            className="text-gray-500 hover:text-gray-700"
-                          >
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                              <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
-                              <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" />
-                            </svg>
-                          </button>
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell>{lead.company || 'N/A'}</TableCell>
-                    <TableCell>
-                      {formatDate(lead.created_at)}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <LeadStatusBadge status={lead.status || 'à contacter'} />
+      {filteredLeads.length === 0 ? (
+        <div className="text-center p-8 text-muted-foreground">
+          {leads.length === 0 ? 'No leads found' : 'No leads match your filters'}
+        </div>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse">
+            <thead>
+              <tr className="border-b">
+                <th className="text-left p-3">Name</th>
+                <th className="text-left p-3">Company</th>
+                <th className="text-left p-3">Title</th>
+                <th className="text-left p-3">Status</th>
+                <th className="text-left p-3">Contact</th>
+                <th className="text-left p-3">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredLeads.map((lead) => (
+                <tr key={lead.id} className="border-b hover:bg-muted/50">
+                  <td className="p-3">{lead.full_name}</td>
+                  <td className="p-3">{lead.company}</td>
+                  <td className="p-3">{lead.job_title}</td>
+                  <td className="p-3">
+                    <LeadStatusBadge status={lead.status} />
+                  </td>
+                  <td className="p-3">
+                    <div className="flex gap-2">
+                      {lead.email && (
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => handleUpdateStatus(lead)}
-                          className="ml-2"
+                          onClick={() => window.open(`mailto:${lead.email}`)}
                         >
-                          <Tags className="h-4 w-4" />
+                          <Mail className="h-4 w-4" />
                         </Button>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      {getLeadActions(lead)}
-                    </TableCell>
-                  </TableRow>
-                );
-              })
-            )}
-          </TableBody>
-        </Table>
-      </div>
-      
-      {/* Email Dialog */}
-      <Dialog open={emailDialogOpen} onOpenChange={setEmailDialogOpen}>
-        <DialogContent className="max-w-xl">
-          <DialogHeader>
-            <DialogTitle>{selectedEmail?.subject || 'Message'}</DialogTitle>
-          </DialogHeader>
-          <DialogDescription className="max-h-[60vh] overflow-auto whitespace-pre-wrap">
-            {selectedEmail?.body}
-          </DialogDescription>
-        </DialogContent>
-      </Dialog>
-      
-      {/* Status Update Dialog */}
-      <Dialog open={statusUpdateDialogOpen} onOpenChange={setStatusUpdateDialogOpen}>
-        <DialogContent className="max-w-sm">
-          <DialogHeader>
-            <DialogTitle>Mettre à jour le statut</DialogTitle>
-            <DialogDescription>
-              Choisissez un nouveau statut pour {currentLead?.full_name || 'ce lead'}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="py-4">
-            <Select 
-              defaultValue={currentLead?.status || undefined} 
-              onValueChange={saveLeadStatus}
-              disabled={updatingStatus}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Sélectionner un statut" />
-              </SelectTrigger>
-              <SelectContent>
-                {LEAD_STATUS_OPTIONS.map(status => (
-                  <SelectItem key={status} value={status}>
-                    {status}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </DialogContent>
-      </Dialog>
-    </>
+                      )}
+                      {lead.phone_number && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => window.open(`tel:${lead.phone_number}`)}
+                        >
+                          <Phone className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
+                  </td>
+                  <td className="p-3">
+                    {lead.linkedin_url && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => window.open(lead.linkedin_url, '_blank')}
+                      >
+                        <ExternalLink className="h-4 w-4 mr-2" />
+                        LinkedIn
+                      </Button>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
   );
 };
 

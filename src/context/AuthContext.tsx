@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
@@ -76,7 +77,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           console.log('[AuthContext] Redirecting to login from protected route:', currentPath);
           navigate('/login', { replace: true, state: { from: currentPath } });
         }
-        // Don't redirect if on public route or login page
+        // IMPORTANT: Don't redirect from public routes like homepage
       }
     } catch (error) {
       console.error('[AuthContext] Error handling session:', error);
@@ -180,8 +181,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     signOut
   };
 
-  // Prevent rendering children until auth is initialized
-  if (isLoading) {
+  // Show loading state while checking auth - but only for a brief moment
+  if (isLoading && !sessionChecked) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="text-center">
@@ -206,4 +207,3 @@ export const useAuth = () => {
   }
   return context;
 };
-
