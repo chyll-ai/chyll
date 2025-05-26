@@ -3,12 +3,12 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Navigate } from 'react-router-dom';
 import Assistant from '@/pages/Assistant';
 import LeadsTable from '@/components/dashboard/LeadsTable';
-import { Loader2, GripVertical } from 'lucide-react';
+import { Loader2, GripVertical, MessageSquare, Users } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { AssistantService } from '@/services/assistant/index';
 import { Lead } from '@/types/assistant';
 
-const MIN_PANEL_WIDTH = 300;
+const MIN_PANEL_WIDTH = 320;
 
 const Dashboard = () => {
   const { session, isLoading: authLoading } = useAuth();
@@ -20,7 +20,7 @@ const Dashboard = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const dividerRef = useRef<HTMLDivElement>(null);
   const isDraggingRef = useRef(false);
-  const [leftPanelWidth, setLeftPanelWidth] = useState('30%');
+  const [leftPanelWidth, setLeftPanelWidth] = useState('35%');
 
   useEffect(() => {
     if (session?.user && !isInitializedRef.current) {
@@ -85,10 +85,13 @@ const Dashboard = () => {
   // Show loading state while checking auth
   if (authLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto" />
-          <p className="mt-4 text-sm text-muted-foreground">Loading dashboard...</p>
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-background to-muted/30">
+        <div className="text-center space-y-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto" />
+          <div className="space-y-2">
+            <h3 className="text-lg font-semibold">Loading Dashboard</h3>
+            <p className="text-sm text-muted-foreground">Setting up your workspace...</p>
+          </div>
         </div>
       </div>
     );
@@ -100,36 +103,82 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="h-screen flex flex-col bg-background">
+    <div className="h-screen flex flex-col bg-gradient-to-br from-background via-background to-muted/10">
+      {/* Header */}
+      <div className="border-b border-border/60 bg-background/95 backdrop-blur-sm">
+        <div className="px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+                Dashboard
+              </h1>
+              <p className="text-sm text-muted-foreground mt-1">
+                Manage your leads and AI assistant
+              </p>
+            </div>
+            <div className="flex items-center gap-4 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2">
+                <div className="h-2 w-2 bg-green-500 rounded-full animate-pulse" />
+                AI Assistant Active
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div 
         ref={containerRef}
         className="flex-1 flex overflow-hidden"
       >
+        {/* Assistant Panel */}
         <div 
           style={{ width: leftPanelWidth }}
-          className="h-full flex flex-col min-w-[300px] border-r border-border"
+          className="h-full flex flex-col bg-background border-r border-border/60 shadow-sm"
+          style={{ minWidth: MIN_PANEL_WIDTH }}
         >
-          <div className="p-4 border-b border-border">
-            <h2 className="text-2xl font-bold">AI Assistant</h2>
+          <div className="px-6 py-4 border-b border-border/40 bg-muted/20">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center justify-center w-8 h-8 bg-primary/10 rounded-lg">
+                <MessageSquare className="h-4 w-4 text-primary" />
+              </div>
+              <div>
+                <h2 className="text-lg font-semibold">AI Assistant</h2>
+                <p className="text-xs text-muted-foreground">Ask me to find leads or help with prospects</p>
+              </div>
+            </div>
           </div>
           <div className="flex-1 overflow-hidden">
             <Assistant embedded={true} assistantService={assistantServiceRef.current} />
           </div>
         </div>
 
+        {/* Resizable Divider */}
         <div
           ref={dividerRef}
-          className="w-2 bg-border hover:bg-primary/10 cursor-col-resize flex items-center justify-center transition-colors"
+          className="w-1 bg-border/40 hover:bg-primary/20 cursor-col-resize flex items-center justify-center transition-all duration-200 group relative"
         >
-          <GripVertical className="h-6 w-6 text-muted-foreground" />
+          <div className="absolute inset-y-0 -inset-x-2 flex items-center justify-center">
+            <GripVertical className="h-4 w-4 text-muted-foreground/50 group-hover:text-primary/70 transition-colors" />
+          </div>
         </div>
 
-        <div className="flex-1 flex flex-col min-w-[300px] overflow-hidden">
-          <div className="p-4 border-b border-border">
-            <h2 className="text-2xl font-bold">Recent Leads</h2>
+        {/* Leads Panel */}
+        <div className="flex-1 flex flex-col bg-background overflow-hidden" style={{ minWidth: MIN_PANEL_WIDTH }}>
+          <div className="px-6 py-4 border-b border-border/40 bg-muted/20">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center justify-center w-8 h-8 bg-blue-500/10 rounded-lg">
+                <Users className="h-4 w-4 text-blue-600" />
+              </div>
+              <div>
+                <h2 className="text-lg font-semibold">Recent Leads</h2>
+                <p className="text-xs text-muted-foreground">Track and manage your prospects</p>
+              </div>
+            </div>
           </div>
-          <div className="flex-1 overflow-auto p-4">
-            <LeadsTable userId={session.user.id} />
+          <div className="flex-1 overflow-hidden">
+            <div className="h-full overflow-auto p-6">
+              <LeadsTable userId={session.user.id} />
+            </div>
           </div>
         </div>
       </div>
