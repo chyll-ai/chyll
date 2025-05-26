@@ -8,10 +8,26 @@ import { HelmetProvider } from 'react-helmet-async';
 import { AuthProvider } from '@/context/AuthContext';
 import { LanguageProvider } from '@/context/LanguageContext';
 import ProtectedRoute from '@/components/ProtectedRoute';
-import NotFoundRedirect from '@/components/NotFoundRedirect';
+import { NotFoundRedirect } from '@/components/NotFoundRedirect';
 import './App.css';
 
 console.log('App: Component loading...');
+
+// Log environment variables for debugging
+console.log('Environment check:', {
+  NODE_ENV: import.meta.env.NODE_ENV,
+  VITE_SUPABASE_URL: import.meta.env.VITE_SUPABASE_URL ? 'present' : 'missing',
+  VITE_SUPABASE_ANON_KEY: import.meta.env.VITE_SUPABASE_ANON_KEY ? 'present' : 'missing',
+  origin: window.location.origin
+});
+
+// Check if environment variables are available
+if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
+  console.error('Missing Supabase environment variables:', {
+    VITE_SUPABASE_URL: import.meta.env.VITE_SUPABASE_URL,
+    VITE_SUPABASE_ANON_KEY: import.meta.env.VITE_SUPABASE_ANON_KEY
+  });
+}
 
 // Lazy load components for better performance
 const Index = lazy(() => import('@/pages/Index'));
@@ -106,7 +122,7 @@ function App() {
                     } />
                     
                     {/* Catch all route for 404 handling */}
-                    <Route path="*" element={<NotFoundRedirect />} />
+                    <Route path="*" element={<NotFoundRedirect message="Page non trouvée, redirection en cours..." redirectTo="/" />} />
                   </Routes>
                 </Suspense>
               </BrowserRouter>
