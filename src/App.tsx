@@ -1,4 +1,3 @@
-
 import { Suspense, lazy } from 'react';
 import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
@@ -73,10 +72,10 @@ function App() {
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>
         <LanguageProvider>
-          <AuthProvider>
-            <TooltipProvider>
-              <Toaster />
-              <BrowserRouter>
+          <TooltipProvider>
+            <Toaster />
+            <BrowserRouter>
+              <AuthProvider>
                 <Suspense fallback={<LoadingSpinner />}>
                   <Routes>
                     {/* Public Routes */}
@@ -125,9 +124,9 @@ function App() {
                     <Route path="*" element={<NotFoundRedirect message="Page non trouvée, redirection en cours..." redirectTo="/" />} />
                   </Routes>
                 </Suspense>
-              </BrowserRouter>
-            </TooltipProvider>
-          </AuthProvider>
+              </AuthProvider>
+            </BrowserRouter>
+          </TooltipProvider>
         </LanguageProvider>
       </QueryClientProvider>
     </HelmetProvider>
