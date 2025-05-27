@@ -53,13 +53,13 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="w-full h-screen flex flex-col bg-gradient-to-br from-background via-background to-muted/10 overflow-hidden">
-      {/* Header - Full viewport width */}
-      <div className="flex-shrink-0 border-b border-border/60 bg-background/95 backdrop-blur-sm w-full">
-        <div className="w-full px-4 py-3">
+    <div className="w-full h-screen flex flex-col bg-gradient-to-br from-background via-background to-muted/10 overflow-hidden m-0 p-0">
+      {/* Header - Absolute full viewport width */}
+      <div className="flex-shrink-0 border-b border-border/60 bg-background/95 backdrop-blur-sm w-full m-0 p-0">
+        <div className="w-full px-2 py-2">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+              <h1 className="text-lg font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
                 Dashboard
               </h1>
               <p className="text-xs text-muted-foreground mt-1">
@@ -76,12 +76,12 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className="flex-1 flex overflow-hidden min-h-0 w-full">
-        {/* Assistant Panel - Fixed 30% width, full height, no padding */}
-        <div className="w-[30%] h-full flex flex-col bg-background border-r border-border/60 shadow-sm overflow-hidden">
-          <div className="flex-shrink-0 px-4 py-3 border-b border-border/40 bg-muted/20">
-            <div className="flex items-center gap-3">
-              <div className="flex items-center justify-center w-6 h-6 bg-primary/10 rounded-lg">
+      <div className="flex-1 flex overflow-hidden min-h-0 w-full m-0 p-0">
+        {/* Assistant Panel - Fixed 30% width, full height, zero padding */}
+        <div className="w-[30%] h-full flex flex-col bg-background border-r border-border/60 shadow-sm overflow-hidden m-0 p-0">
+          <div className="flex-shrink-0 px-2 py-2 border-b border-border/40 bg-muted/20">
+            <div className="flex items-center gap-2">
+              <div className="flex items-center justify-center w-5 h-5 bg-primary/10 rounded-lg">
                 <MessageSquare className="h-3 w-3 text-primary" />
               </div>
               <div>
@@ -90,16 +90,16 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
-          <div className="flex-1 overflow-hidden">
+          <div className="flex-1 overflow-hidden m-0 p-0">
             <Assistant embedded={true} assistantService={assistantServiceRef.current} />
           </div>
         </div>
 
-        {/* Leads Panel - Fixed 70% width, full height, no padding */}
-        <div className="w-[70%] flex flex-col bg-background overflow-hidden">
-          <div className="flex-shrink-0 px-4 py-3 border-b border-border/40 bg-muted/20">
-            <div className="flex items-center gap-3">
-              <div className="flex items-center justify-center w-6 h-6 bg-blue-500/10 rounded-lg">
+        {/* Leads Panel - Fixed 70% width, full height, zero padding */}
+        <div className="w-[70%] flex flex-col bg-background overflow-hidden m-0 p-0">
+          <div className="flex-shrink-0 px-2 py-2 border-b border-border/40 bg-muted/20">
+            <div className="flex items-center gap-2">
+              <div className="flex items-center justify-center w-5 h-5 bg-blue-500/10 rounded-lg">
                 <Users className="h-3 w-3 text-blue-600" />
               </div>
               <div>
@@ -108,8 +108,8 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
-          <div className="flex-1 overflow-hidden">
-            <div className="h-full overflow-auto px-4 py-4">
+          <div className="flex-1 overflow-hidden m-0 p-0">
+            <div className="h-full overflow-auto px-2 py-2">
               <LeadsTable userId={session.user.id} />
             </div>
           </div>

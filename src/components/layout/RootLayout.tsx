@@ -22,7 +22,7 @@ const RootLayout = () => {
   return (
     <div className="min-h-screen bg-background">
       {!isDashboard && <Header />}
-      <main className={isDashboard ? "w-full h-screen" : "container mx-auto flex-1 py-6"}>
+      <main className={isDashboard ? "w-full h-screen m-0 p-0" : "container mx-auto flex-1 py-6"}>
         <Outlet />
       </main>
       <Toaster position="bottom-right" />
