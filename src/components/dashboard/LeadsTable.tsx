@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Lead } from '@/types/assistant';
@@ -44,6 +45,82 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
     if (userId) {
       fetchLeads();
     }
+  }, [userId]);
+
+  // Set up real-time subscription for leads
+  useEffect(() => {
+    if (!userId) return;
+
+    console.log('LeadsTable: Setting up real-time subscription for user:', userId);
+
+    const channel = supabase
+      .channel('leads_realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'leads',
+          filter: `client_id=eq.${userId}`
+        },
+        (payload) => {
+          console.log('LeadsTable: Real-time INSERT:', payload.new);
+          const newLead = payload.new as Lead;
+          setLeads(currentLeads => {
+            // Check if lead already exists to avoid duplicates
+            const exists = currentLeads.some(lead => lead.id === newLead.id);
+            if (exists) {
+              console.log('LeadsTable: Lead already exists, skipping duplicate');
+              return currentLeads;
+            }
+            console.log('LeadsTable: Adding new lead to state');
+            toast.success(`Nouveau lead ajouté: ${newLead.full_name}`);
+            return [newLead, ...currentLeads];
+          });
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'leads',
+          filter: `client_id=eq.${userId}`
+        },
+        (payload) => {
+          console.log('LeadsTable: Real-time UPDATE:', payload.new);
+          const updatedLead = payload.new as Lead;
+          setLeads(currentLeads =>
+            currentLeads.map(lead =>
+              lead.id === updatedLead.id ? updatedLead : lead
+            )
+          );
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'DELETE',
+          schema: 'public',
+          table: 'leads',
+          filter: `client_id=eq.${userId}`
+        },
+        (payload) => {
+          console.log('LeadsTable: Real-time DELETE:', payload.old);
+          const deletedLead = payload.old as Lead;
+          setLeads(currentLeads =>
+            currentLeads.filter(lead => lead.id !== deletedLead.id)
+          );
+        }
+      )
+      .subscribe((status) => {
+        console.log('LeadsTable: Real-time subscription status:', status);
+      });
+
+    return () => {
+      console.log('LeadsTable: Cleaning up real-time subscription');
+      supabase.removeChannel(channel);
+    };
   }, [userId]);
 
   const handleStatusUpdate = (leadId: string, newStatus: string) => {
