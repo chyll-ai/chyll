@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { Toaster } from '@/components/ui/sonner';
@@ -10,16 +11,17 @@ const RootLayout = () => {
   const location = useLocation();
   const isDashboard = location.pathname === '/dashboard';
 
+  // Show loading state while checking auth
   if (authLoading) {
     return (
-      <div className="flex h-screen w-screen items-center justify-center">
+      <div className="flex h-screen w-screen items-center justify-center bg-background">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
 
   return (
-    <div className="relative min-h-screen w-screen max-w-[100vw] overflow-x-hidden bg-background">
+    <div className="relative min-h-screen w-full max-w-full overflow-x-hidden bg-background">
       {!isDashboard && <Header />}
       <main 
         className={`mx-auto w-full ${
@@ -33,6 +35,8 @@ const RootLayout = () => {
       <Toaster 
         position="bottom-right" 
         className="sm:max-w-[420px]"
+        richColors
+        closeButton
       />
     </div>
   );

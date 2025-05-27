@@ -1,3 +1,4 @@
+
 import { Suspense, lazy } from 'react';
 import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
@@ -8,6 +9,7 @@ import { AuthProvider } from '@/context/AuthContext';
 import { LanguageProvider } from '@/context/LanguageContext';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { NotFoundRedirect } from '@/components/NotFoundRedirect';
+import RootLayout from '@/components/layout/RootLayout';
 import './App.css';
 
 console.log('App: Component loading...');
@@ -60,7 +62,7 @@ const queryClient = new QueryClient({
 });
 
 const LoadingSpinner = () => (
-  <div className="flex items-center justify-center min-h-screen">
+  <div className="flex items-center justify-center min-h-screen bg-background">
     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
   </div>
 );
@@ -73,55 +75,56 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <LanguageProvider>
           <TooltipProvider>
-            <Toaster />
             <BrowserRouter>
               <AuthProvider>
                 <Suspense fallback={<LoadingSpinner />}>
                   <Routes>
-                    {/* Public Routes */}
-                    <Route path="/" element={<Index />} />
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/faq" element={<FAQ />} />
-                    <Route path="/about-us" element={<AboutUs />} />
-                    <Route path="/contact" element={<Contact />} />
-                    <Route path="/privacy" element={<Privacy />} />
-                    <Route path="/terms" element={<Terms />} />
-                    <Route path="/cookies" element={<Cookies />} />
-                    <Route path="/blog" element={<Blog />} />
-                    <Route path="/blog/:slug" element={<BlogPostPage />} />
-                    <Route path="/team" element={<Team />} />
-                    <Route path="/careers" element={<Careers />} />
-                    <Route path="/company" element={<Company />} />
-                    <Route path="/support" element={<Support />} />
-                    
-                    {/* Auth Routes */}
-                    <Route path="/auth/callback" element={<AuthCallback />} />
-                    <Route path="/auth/confirm" element={<AuthConfirm />} />
-                    
-                    {/* Protected Routes */}
-                    <Route path="/dashboard" element={
-                      <ProtectedRoute>
-                        <Dashboard />
-                      </ProtectedRoute>
-                    } />
-                    <Route path="/assistant" element={
-                      <ProtectedRoute>
-                        <Assistant />
-                      </ProtectedRoute>
-                    } />
-                    <Route path="/leads" element={
-                      <ProtectedRoute>
-                        <Leads />
-                      </ProtectedRoute>
-                    } />
-                    <Route path="/onboarding" element={
-                      <ProtectedRoute>
-                        <Onboarding />
-                      </ProtectedRoute>
-                    } />
-                    
-                    {/* Catch all route for 404 handling */}
-                    <Route path="*" element={<NotFoundRedirect message="Page non trouvée, redirection en cours..." redirectTo="/" />} />
+                    <Route element={<RootLayout />}>
+                      {/* Public Routes */}
+                      <Route path="/" element={<Index />} />
+                      <Route path="/login" element={<Login />} />
+                      <Route path="/faq" element={<FAQ />} />
+                      <Route path="/about-us" element={<AboutUs />} />
+                      <Route path="/contact" element={<Contact />} />
+                      <Route path="/privacy" element={<Privacy />} />
+                      <Route path="/terms" element={<Terms />} />
+                      <Route path="/cookies" element={<Cookies />} />
+                      <Route path="/blog" element={<Blog />} />
+                      <Route path="/blog/:slug" element={<BlogPostPage />} />
+                      <Route path="/team" element={<Team />} />
+                      <Route path="/careers" element={<Careers />} />
+                      <Route path="/company" element={<Company />} />
+                      <Route path="/support" element={<Support />} />
+                      
+                      {/* Auth Routes */}
+                      <Route path="/auth/callback" element={<AuthCallback />} />
+                      <Route path="/auth/confirm" element={<AuthConfirm />} />
+                      
+                      {/* Protected Routes */}
+                      <Route path="/dashboard" element={
+                        <ProtectedRoute>
+                          <Dashboard />
+                        </ProtectedRoute>
+                      } />
+                      <Route path="/assistant" element={
+                        <ProtectedRoute>
+                          <Assistant />
+                        </ProtectedRoute>
+                      } />
+                      <Route path="/leads" element={
+                        <ProtectedRoute>
+                          <Leads />
+                        </ProtectedRoute>
+                      } />
+                      <Route path="/onboarding" element={
+                        <ProtectedRoute>
+                          <Onboarding />
+                        </ProtectedRoute>
+                      } />
+                      
+                      {/* Catch all route for 404 handling */}
+                      <Route path="*" element={<NotFoundRedirect message="Page non trouvée, redirection en cours..." redirectTo="/" />} />
+                    </Route>
                   </Routes>
                 </Suspense>
               </AuthProvider>
