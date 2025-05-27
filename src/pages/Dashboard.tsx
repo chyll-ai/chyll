@@ -3,10 +3,11 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Navigate } from 'react-router-dom';
 import Assistant from '@/pages/Assistant';
 import LeadsTable from '@/components/dashboard/LeadsTable';
-import { Loader2, MessageSquare, Users } from 'lucide-react';
+import { Loader2, MessageSquare, Users, Info } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { AssistantService } from '@/services/assistant/index';
 import { Lead } from '@/types/assistant';
+import { Card, CardContent } from '@/components/ui/card';
 
 const Dashboard = () => {
   const { session, isLoading: authLoading } = useAuth();
@@ -54,6 +55,24 @@ const Dashboard = () => {
 
   return (
     <div className="w-full h-screen flex flex-col bg-gradient-to-br from-background via-background to-muted/10 overflow-hidden m-0 p-0">
+      {/* Demo Notice */}
+      <div className="flex-shrink-0 w-full m-0 p-0">
+        <Card className="border-orange-200 bg-orange-50 m-2 mb-0">
+          <CardContent className="p-3">
+            <div className="flex items-center gap-2">
+              <div className="flex items-center justify-center w-5 h-5 bg-orange-500/10 rounded">
+                <Info className="h-3 w-3 text-orange-600" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-orange-800">
+                  Ceci est une démo - Le produit final sera lancé mi-juin et nous vous contacterons
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
       {/* Header - Absolute full viewport width */}
       <div className="flex-shrink-0 border-b border-border/60 bg-background/95 backdrop-blur-sm w-full m-0 p-0">
         <div className="w-full px-2 py-2">
