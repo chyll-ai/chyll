@@ -160,18 +160,18 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
         ) : (
           <Card className="border-border/40 h-full flex flex-col">
             <div className="flex-1 overflow-auto">
-              <table className="w-full table-fixed">
+              <table className="w-full">
                 <thead className="sticky top-0 bg-muted/30 z-10">
                   <tr className="border-b border-border/40">
-                    <th className="text-left p-2 font-medium text-xs w-32">Nom</th>
-                    <th className="text-left p-2 font-medium text-xs w-48">Email</th>
-                    <th className="text-left p-2 font-medium text-xs w-32">Téléphone</th>
-                    <th className="text-left p-2 font-medium text-xs w-40">Poste</th>
-                    <th className="text-left p-2 font-medium text-xs w-40">Entreprise</th>
-                    <th className="text-left p-2 font-medium text-xs w-32">Localisation</th>
-                    <th className="text-left p-2 font-medium text-xs w-28">Date</th>
-                    <th className="text-left p-2 font-medium text-xs w-40">Statut</th>
-                    <th className="text-left p-2 font-medium text-xs w-60">Actions</th>
+                    <th className="text-left p-2 font-medium text-xs w-[12%]">Nom</th>
+                    <th className="text-left p-2 font-medium text-xs w-[18%]">Email</th>
+                    <th className="text-left p-2 font-medium text-xs w-[12%]">Téléphone</th>
+                    <th className="text-left p-2 font-medium text-xs w-[15%]">Poste</th>
+                    <th className="text-left p-2 font-medium text-xs w-[12%]">Entreprise</th>
+                    <th className="text-left p-2 font-medium text-xs w-[10%]">Lieu</th>
+                    <th className="text-left p-2 font-medium text-xs w-[8%]">Date</th>
+                    <th className="text-left p-2 font-medium text-xs w-[8%]">Statut</th>
+                    <th className="text-left p-2 font-medium text-xs w-[5%]">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -214,7 +214,10 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
                       </td>
                       <td className="p-2">
                         <div className="text-xs text-muted-foreground">
-                          {new Date(lead.created_at).toLocaleDateString()}
+                          {new Date(lead.created_at).toLocaleDateString('fr-FR', { 
+                            day: '2-digit', 
+                            month: '2-digit' 
+                          })}
                         </div>
                       </td>
                       <td className="p-2">
