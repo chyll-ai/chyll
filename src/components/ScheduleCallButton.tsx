@@ -6,7 +6,7 @@ import { supabase } from "@/lib/supabase";
 import { toast } from "@/components/ui/sonner";
 
 interface ScheduleCallButtonProps {
-  leadId?: string;
+  leadId: string;
   email?: string;
   className?: string;
   variant?: "default" | "destructive" | "outline" | "secondary" | 
@@ -18,7 +18,7 @@ const ScheduleCallButton = ({
   leadId, 
   email, 
   className, 
-  variant = "default", 
+  variant = "outline", 
   size = "sm" 
 }: ScheduleCallButtonProps) => {
   const [scheduling, setScheduling] = useState(false);
@@ -26,13 +26,6 @@ const ScheduleCallButton = ({
   const handleScheduleCall = async () => {
     try {
       setScheduling(true);
-      
-      // If no leadId provided (homepage usage), open default Calendly
-      if (!leadId) {
-        window.open('https://cal.com/chyll.ai/30min', '_blank');
-        toast.success("Calendly scheduling page opened");
-        return;
-      }
       
       // Get current user session
       const { data: sessionData } = await supabase.auth.getSession();
@@ -100,7 +93,7 @@ const ScheduleCallButton = ({
       ) : (
         <span className="flex items-center gap-2">
           <Calendar className="h-4 w-4" />
-          {leadId ? "Schedule Call" : "Réserver une démo"}
+          Schedule Call
         </span>
       )}
     </Button>
