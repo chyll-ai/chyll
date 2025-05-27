@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Lead } from '@/types/assistant';
@@ -123,43 +122,43 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
   }
 
   return (
-    <div className="space-y-3 h-full flex flex-col w-full">
+    <div className="space-y-3 h-full flex flex-col w-full min-w-0">
       {/* Compact Stats Cards */}
       {leads.length > 0 && (
-        <div className="grid grid-cols-3 gap-2 w-full">
-          <Card className="border-border/40">
+        <div className="grid grid-cols-3 gap-2 w-full min-w-0">
+          <Card className="border-border/40 min-w-0">
             <CardContent className="p-2">
               <div className="flex items-center gap-2">
                 <div className="flex items-center justify-center w-5 h-5 bg-blue-500/10 rounded">
                   <TrendingUp className="h-3 w-3 text-blue-600" />
                 </div>
-                <div>
+                <div className="min-w-0">
                   <p className="text-xs text-muted-foreground">Total</p>
                   <p className="text-sm font-bold">{leads.length}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
-          <Card className="border-border/40">
+          <Card className="border-border/40 min-w-0">
             <CardContent className="p-2">
               <div className="flex items-center gap-2">
                 <div className="flex items-center justify-center w-5 h-5 bg-green-500/10 rounded">
                   <Mail className="h-3 w-3 text-green-600" />
                 </div>
-                <div>
+                <div className="min-w-0">
                   <p className="text-xs text-muted-foreground">Email</p>
                   <p className="text-sm font-bold">{leads.filter(l => l.email).length}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
-          <Card className="border-border/40">
+          <Card className="border-border/40 min-w-0">
             <CardContent className="p-2">
               <div className="flex items-center gap-2">
                 <div className="flex items-center justify-center w-5 h-5 bg-purple-500/10 rounded">
                   <Calendar className="h-3 w-3 text-purple-600" />
                 </div>
-                <div>
+                <div className="min-w-0">
                   <p className="text-xs text-muted-foreground">Semaine</p>
                   <p className="text-sm font-bold">
                     {leads.filter(l => {
@@ -175,7 +174,7 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
         </div>
       )}
 
-      <div className="w-full">
+      <div className="w-full min-w-0">
         <LeadFilterBar
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
@@ -187,7 +186,7 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
 
       {/* Bulk Actions */}
       {selectedLeads.size > 0 && (
-        <Card className="border-border/40 w-full">
+        <Card className="border-border/40 w-full min-w-0">
           <CardContent className="p-3">
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">
@@ -221,9 +220,9 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
         </Card>
       )}
       
-      <div className="flex-1 overflow-hidden w-full">
+      <div className="flex-1 overflow-hidden w-full min-w-0">
         {filteredLeads.length === 0 ? (
-          <Card className="border-border/40 h-full w-full">
+          <Card className="border-border/40 h-full w-full min-w-0">
             <CardContent className="text-center p-6 flex flex-col items-center justify-center h-full">
               <div className="flex items-center justify-center w-10 h-10 bg-muted rounded-full mx-auto mb-3">
                 <TrendingUp className="h-5 w-5 text-muted-foreground" />
@@ -240,10 +239,10 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
             </CardContent>
           </Card>
         ) : (
-          <Card className="border-border/40 h-full flex flex-col w-full">
-            <div className="flex-1 overflow-auto w-full">
-              <div className="w-full min-w-full">
-                <table className="w-full table-fixed">
+          <Card className="border-border/40 h-full flex flex-col w-full min-w-0">
+            <div className="flex-1 overflow-auto w-full min-w-0">
+              <div className="w-full">
+                <table className="w-full table-auto border-collapse">
                   <thead className="sticky top-0 bg-muted/30 z-10">
                     <tr className="border-b border-border/40">
                       <th className="text-left p-2 font-medium text-xs w-12">
@@ -258,15 +257,15 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
                           )}
                         </button>
                       </th>
-                      <th className="text-left p-2 font-medium text-xs w-32">Nom</th>
-                      <th className="text-left p-2 font-medium text-xs w-48">Email</th>
-                      <th className="text-left p-2 font-medium text-xs w-32">Téléphone</th>
-                      <th className="text-left p-2 font-medium text-xs w-40">Poste</th>
-                      <th className="text-left p-2 font-medium text-xs w-40">Entreprise</th>
-                      <th className="text-left p-2 font-medium text-xs w-32">Lieu</th>
-                      <th className="text-left p-2 font-medium text-xs w-24">Date</th>
-                      <th className="text-left p-2 font-medium text-xs w-32">Statut</th>
-                      <th className="text-left p-2 font-medium text-xs w-48">Actions</th>
+                      <th className="text-left p-2 font-medium text-xs">Nom</th>
+                      <th className="text-left p-2 font-medium text-xs">Email</th>
+                      <th className="text-left p-2 font-medium text-xs">Téléphone</th>
+                      <th className="text-left p-2 font-medium text-xs">Poste</th>
+                      <th className="text-left p-2 font-medium text-xs">Entreprise</th>
+                      <th className="text-left p-2 font-medium text-xs">Lieu</th>
+                      <th className="text-left p-2 font-medium text-xs">Date</th>
+                      <th className="text-left p-2 font-medium text-xs">Statut</th>
+                      <th className="text-left p-2 font-medium text-xs">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -289,33 +288,33 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
                             )}
                           </button>
                         </td>
-                        <td className="p-2 truncate">
-                          <div className="text-xs font-medium truncate" title={lead.full_name}>
+                        <td className="p-2">
+                          <div className="text-xs font-medium truncate max-w-32" title={lead.full_name}>
                             {lead.full_name || 'N/A'}
                           </div>
                         </td>
-                        <td className="p-2 truncate">
-                          <div className="text-xs text-blue-600 truncate" title={lead.email}>
+                        <td className="p-2">
+                          <div className="text-xs text-blue-600 truncate max-w-48" title={lead.email}>
                             {lead.email || 'N/A'}
                           </div>
                         </td>
-                        <td className="p-2 truncate">
-                          <div className="text-xs text-muted-foreground truncate" title={lead.phone_number}>
+                        <td className="p-2">
+                          <div className="text-xs text-muted-foreground truncate max-w-32" title={lead.phone_number}>
                             {lead.phone_number ? lead.phone_number.replace(/(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/, '$1.$2.$3.$4.$5') : 'N/A'}
                           </div>
                         </td>
-                        <td className="p-2 truncate">
-                          <div className="text-xs truncate" title={lead.job_title}>
+                        <td className="p-2">
+                          <div className="text-xs truncate max-w-40" title={lead.job_title}>
                             {lead.job_title || 'N/A'}
                           </div>
                         </td>
-                        <td className="p-2 truncate">
-                          <div className="text-xs font-medium truncate" title={lead.company}>
+                        <td className="p-2">
+                          <div className="text-xs font-medium truncate max-w-40" title={lead.company}>
                             {lead.company || 'N/A'}
                           </div>
                         </td>
-                        <td className="p-2 truncate">
-                          <div className="text-xs text-muted-foreground truncate" title={lead.location}>
+                        <td className="p-2">
+                          <div className="text-xs text-muted-foreground truncate max-w-32" title={lead.location}>
                             {lead.location || 'N/A'}
                           </div>
                         </td>
