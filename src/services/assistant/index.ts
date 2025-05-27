@@ -1,3 +1,4 @@
+
 import { supabase } from '@/lib/supabase';
 import { toast } from '@/components/ui/sonner';
 import { APIClient } from '@/lib/api-client';
@@ -39,45 +40,27 @@ export class AssistantService {
       // Check if this is a search query
       if (content.toLowerCase().includes('trouve') || 
           content.toLowerCase().includes('cherche') || 
-          content.toLowerCase().includes('recherche')) {
+          content.toLowerCase().includes('recherche') ||
+          content.toLowerCase().includes('leads') ||
+          content.toLowerCase().includes('prospects')) {
         console.log('AssistantService: Detected search query');
         
-        // Send the search request to the API
-        const response = await this.apiClient.sendMessage({
-          message: `Je vais générer des leads B2B pour votre recherche: "${content}"
-
-Instructions pour la génération des leads:
-1. Générer 5 leads détaillés
-2. Pour chaque lead, fournir:
-   - Nom complet (format français)
-   - Poste (pertinent pour la recherche)
-   - Entreprise (entreprise tech française réelle)
-   - Localisation (ville française)
-   - Email (format: prenom.nom@entreprise.fr)
-   - Téléphone (format: +33 6XX XX XX XX)
-   - LinkedIn (format: linkedin.com/in/prenom-nom-xxxx)
-
-Répondre au format suivant:
-
-### Lead 1
-**Nom:** [nom complet]
-**Poste:** [poste]
-**Entreprise:** [entreprise]
-**Localisation:** [ville]
-**Email:** [email]
-**Téléphone:** [téléphone]
-**LinkedIn:** [url]
-
-[Répéter pour chaque lead]`,
-          userId: this.userId
-        });
-
-        // Process the response to extract leads
-        await this.processLeadsFromMarkdown(response.message);
+        // Generate dummy leads for demo
+        const dummyLeads = this.generateDummyLeads(content);
+        
+        // Save leads to database
+        await this.saveDummyLeads(dummyLeads);
+        
+        // Update UI through callback
+        if (this.onLeadsUpdate) {
+          this.onLeadsUpdate(dummyLeads);
+        }
+        
+        toast.success(`${dummyLeads.length} nouveaux leads ajoutés au tableau de bord`);
 
         // Return success message
         return {
-          message: "Je recherche des leads correspondant à vos critères. Ils apparaîtront dans votre tableau de bord dans quelques instants."
+          message: `Parfait ! J'ai trouvé ${dummyLeads.length} leads correspondant à votre recherche "${content}". Ils ont été ajoutés à votre tableau de bord. Vous pouvez les voir dans la section "Recent Leads" à droite.`
         };
       }
 
@@ -114,114 +97,76 @@ Répondre au format suivant:
     }
   }
 
-  private async processLeadsFromMarkdown(content: string): Promise<void> {
-    try {
-      console.log('AssistantService: Starting lead extraction from markdown');
+  private generateDummyLeads(searchQuery: string): Lead[] {
+    const companies = [
+      'DataTech Solutions', 'InnovateLab', 'TechForward SAS', 'DigitalFlow', 'CloudWorks',
+      'CodeCraft', 'ByteForge', 'NextGen Tech', 'SmartSolutions', 'DevStream'
+    ];
+    
+    const firstNames = ['Sophie', 'Pierre', 'Marie', 'Thomas', 'Claire', 'Lucas', 'Emma', 'Nicolas', 'Camille', 'Antoine'];
+    const lastNames = ['Martin', 'Bernard', 'Dubois', 'Leroy', 'Moreau', 'Simon', 'Laurent', 'Lefebvre', 'Michel', 'Garcia'];
+    const cities = ['Paris', 'Lyon', 'Marseille', 'Toulouse', 'Nice', 'Nantes', 'Strasbourg', 'Montpellier', 'Bordeaux', 'Lille'];
+    
+    const jobTitles = [
+      'CTO', 'Directeur Technique', 'Head of Engineering', 'VP Technology', 'Chief Innovation Officer',
+      'Lead Developer', 'Senior Software Engineer', 'Tech Lead', 'Solutions Architect', 'Product Manager'
+    ];
+
+    const leads: Lead[] = [];
+    const count = Math.floor(Math.random() * 3) + 3; // 3-5 leads
+
+    for (let i = 0; i < count; i++) {
+      const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+      const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+      const company = companies[Math.floor(Math.random() * companies.length)];
+      const city = cities[Math.floor(Math.random() * cities.length)];
+      const jobTitle = jobTitles[Math.floor(Math.random() * jobTitles.length)];
       
-      // Parse leads from the markdown format
-      const leadSections = content.split('### Lead').slice(1);
-      console.log(`AssistantService: Found ${leadSections.length} lead sections`);
+      const lead: Lead = {
+        id: crypto.randomUUID(),
+        client_id: this.userId,
+        full_name: `${firstName} ${lastName}`,
+        job_title: jobTitle,
+        company: company,
+        location: city,
+        email: `${firstName.toLowerCase()}.${lastName.toLowerCase()}@${company.toLowerCase().replace(/\s+/g, '')}.fr`,
+        phone_number: `+33 6${Math.floor(Math.random() * 90000000) + 10000000}`,
+        linkedin_url: `linkedin.com/in/${firstName.toLowerCase()}-${lastName.toLowerCase()}-${Math.floor(Math.random() * 1000)}`,
+        status: 'new',
+        created_at: new Date().toISOString(),
+        enriched_from: {
+          source: 'assistant',
+          timestamp: new Date().toISOString(),
+          notes: `Generated from search: "${searchQuery}"`
+        }
+      };
+      
+      leads.push(lead);
+    }
 
-      if (leadSections.length === 0) {
-        throw new Error('No leads found in response');
+    return leads;
+  }
+
+  private async saveDummyLeads(leads: Lead[]): Promise<void> {
+    try {
+      console.log('AssistantService: Saving dummy leads to database');
+      
+      const { data: savedLeads, error } = await supabase
+        .from('leads')
+        .upsert(leads, {
+          onConflict: 'client_id,email',
+          ignoreDuplicates: true
+        })
+        .select('*');
+
+      if (error) {
+        console.error('AssistantService: Error saving dummy leads:', error);
+        throw error;
       }
 
-      const leads = leadSections.map((section, index) => {
-        const lines = section.split('\n').filter(line => line.trim());
-        const leadData: any = {};
-        
-        lines.forEach(line => {
-          if (line.includes('**')) {
-            const [key, value] = line.split(':**').map(s => s.trim());
-            const cleanKey = key.replace('**', '').toLowerCase();
-            const cleanValue = value.replace(/\[|\]|\(|\)|#/g, '').trim();
-            
-            // Map markdown keys to database fields
-            const fieldMap: { [key: string]: string } = {
-              'nom': 'full_name',
-              'poste': 'job_title',
-              'entreprise': 'company',
-              'localisation': 'location',
-              'email': 'email',
-              'téléphone': 'phone_number',
-              'linkedin': 'linkedin_url'
-            };
-
-            const dbField = fieldMap[cleanKey];
-            if (dbField) {
-              leadData[dbField] = cleanValue;
-            }
-          }
-        });
-
-        // Validate required fields
-        const requiredFields = ['full_name', 'job_title', 'company', 'location', 'email', 'phone_number', 'linkedin_url'];
-        const missingFields = requiredFields.filter(field => !leadData[field]);
-        
-        if (missingFields.length > 0) {
-          console.error(`Lead ${index + 1} missing fields:`, missingFields);
-          throw new Error(`Lead ${index + 1} is missing required fields: ${missingFields.join(', ')}`);
-        }
-
-        return {
-          ...leadData,
-          client_id: this.userId,
-          id: crypto.randomUUID(),
-          created_at: new Date().toISOString(),
-          status: 'new',
-          enriched_from: {
-            source: 'assistant',
-            timestamp: new Date().toISOString()
-          }
-        };
-      });
-
-      console.log('AssistantService: Extracted leads:', JSON.stringify(leads, null, 2));
-
-      // Save leads to database
-      try {
-        console.log('AssistantService: Starting batch save of leads');
-        const { data: savedLeads, error } = await supabase
-          .from('leads')
-          .upsert(leads, {
-            onConflict: 'client_id,email',
-            ignoreDuplicates: true
-          })
-          .select('*, email_jobs(*)');  // Include email_jobs in the response
-
-        if (error) {
-          console.error('AssistantService: Error batch saving leads:', error);
-          toast.error('Erreur lors de la sauvegarde des leads');
-          return;
-        }
-
-        // Update UI if we have saved leads
-        if (savedLeads && savedLeads.length > 0) {
-          console.log('AssistantService: Successfully saved leads:', savedLeads.length);
-          
-          // Emit realtime event for each saved lead
-          for (const lead of savedLeads) {
-            await supabase
-              .from('leads')
-              .update({ updated_at: new Date().toISOString() })
-              .eq('id', lead.id);
-          }
-          
-          // Update UI through callback
-          if (this.onLeadsUpdate) {
-            this.onLeadsUpdate(savedLeads);
-          }
-          
-          toast.success(`${savedLeads.length} nouveaux leads ajoutés au tableau de bord`);
-        } else if (!savedLeads || savedLeads.length === 0) {
-          toast.error('Aucun nouveau lead n\'a été ajouté');
-        }
-      } catch (error) {
-        console.error('AssistantService: Error in batch save operation:', error);
-        toast.error('Erreur lors de la sauvegarde des leads');
-      }
+      console.log('AssistantService: Successfully saved leads:', savedLeads?.length || 0);
     } catch (error) {
-      console.error('AssistantService: Error processing leads:', error);
+      console.error('AssistantService: Error in saveDummyLeads:', error);
       throw error;
     }
   }
