@@ -1,5 +1,6 @@
+
 import React from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import { Toaster } from '@/components/ui/sonner';
 import Header from './Header';
 import { useAuth } from '@/context/AuthContext';
@@ -7,6 +8,8 @@ import { Loader2 } from 'lucide-react';
 
 const RootLayout = () => {
   const { isLoading: authLoading } = useAuth();
+  const location = useLocation();
+  const isDashboard = location.pathname === '/dashboard';
 
   if (authLoading) {
     return (
@@ -18,8 +21,8 @@ const RootLayout = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
-      <main className="container mx-auto flex-1 py-6">
+      {!isDashboard && <Header />}
+      <main className={isDashboard ? "flex-1" : "container mx-auto flex-1 py-6"}>
         <Outlet />
       </main>
       <Toaster position="bottom-right" />
@@ -27,4 +30,4 @@ const RootLayout = () => {
   );
 };
 
-export default RootLayout; 
+export default RootLayout;
