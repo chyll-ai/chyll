@@ -6,9 +6,10 @@ import LeadStatusBadge from './LeadStatusBadge';
 import LeadStatusSelector from './LeadStatusSelector';
 import LeadActionsMenu from './LeadActionsMenu';
 import LeadFilterBar from './LeadFilterBar';
-import { TrendingUp, Mail, Calendar } from 'lucide-react';
+import { TrendingUp, Mail, Calendar, CheckSquare, Square } from 'lucide-react';
 import { toast } from '@/components/ui/sonner';
 import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 
 interface LeadsTableProps {
   userId: string;
@@ -19,6 +20,7 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
+  const [selectedLeads, setSelectedLeads] = useState<Set<string>>(new Set());
 
   const fetchLeads = async () => {
     try {
@@ -51,6 +53,48 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
         lead.id === leadId ? { ...lead, status: newStatus } : lead
       )
     );
+  };
+
+  const toggleLeadSelection = (leadId: string) => {
+    const newSelection = new Set(selectedLeads);
+    if (newSelection.has(leadId)) {
+      newSelection.delete(leadId);
+    } else {
+      newSelection.add(leadId);
+    }
+    setSelectedLeads(newSelection);
+  };
+
+  const selectAllLeads = () => {
+    if (selectedLeads.size === filteredLeads.length) {
+      setSelectedLeads(new Set());
+    } else {
+      setSelectedLeads(new Set(filteredLeads.map(lead => lead.id)));
+    }
+  };
+
+  const bulkStatusUpdate = async (newStatus: string) => {
+    try {
+      const leadIds = Array.from(selectedLeads);
+      const { error } = await supabase
+        .from('leads')
+        .update({ status: newStatus })
+        .in('id', leadIds);
+
+      if (error) throw error;
+
+      setLeads(prevLeads =>
+        prevLeads.map(lead =>
+          selectedLeads.has(lead.id) ? { ...lead, status: newStatus } : lead
+        )
+      );
+      
+      setSelectedLeads(new Set());
+      toast.success(`${leadIds.length} leads updated`);
+    } catch (error: any) {
+      console.error('Error updating leads:', error);
+      toast.error('Failed to update leads');
+    }
   };
 
   const filteredLeads = leads.filter(lead => {
@@ -138,6 +182,42 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
         setSelectedStatuses={setSelectedStatuses}
         statusOptions={statusOptions}
       />
+
+      {/* Bulk Actions */}
+      {selectedLeads.size > 0 && (
+        <Card className="border-border/40">
+          <CardContent className="p-3">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">
+                {selectedLeads.size} leads sélectionnés
+              </span>
+              <div className="flex gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => bulkStatusUpdate('email envoyé')}
+                >
+                  Marquer comme contactés
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => bulkStatusUpdate('à relancer')}
+                >
+                  À relancer
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setSelectedLeads(new Set())}
+                >
+                  Désélectionner
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
       
       <div className="flex-1 overflow-hidden">
         {filteredLeads.length === 0 ? (
@@ -160,18 +240,30 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
         ) : (
           <Card className="border-border/40 h-full flex flex-col">
             <div className="flex-1 overflow-auto">
-              <table className="w-full table-fixed">
+              <table className="w-full">
                 <thead className="sticky top-0 bg-muted/30 z-10">
                   <tr className="border-b border-border/40">
-                    <th className="text-left p-1 font-medium text-xs w-[14%]">Nom</th>
-                    <th className="text-left p-1 font-medium text-xs w-[18%]">Email</th>
-                    <th className="text-left p-1 font-medium text-xs w-[10%]">Téléphone</th>
-                    <th className="text-left p-1 font-medium text-xs w-[13%]">Poste</th>
-                    <th className="text-left p-1 font-medium text-xs w-[12%]">Entreprise</th>
-                    <th className="text-left p-1 font-medium text-xs w-[8%]">Lieu</th>
-                    <th className="text-left p-1 font-medium text-xs w-[6%]">Date</th>
-                    <th className="text-left p-1 font-medium text-xs w-[10%]">Statut</th>
-                    <th className="text-left p-1 font-medium text-xs w-[9%]">Actions</th>
+                    <th className="text-left p-2 font-medium text-xs w-8">
+                      <button
+                        onClick={selectAllLeads}
+                        className="flex items-center justify-center w-4 h-4"
+                      >
+                        {selectedLeads.size === filteredLeads.length ? (
+                          <CheckSquare className="h-4 w-4" />
+                        ) : (
+                          <Square className="h-4 w-4" />
+                        )}
+                      </button>
+                    </th>
+                    <th className="text-left p-2 font-medium text-xs">Nom</th>
+                    <th className="text-left p-2 font-medium text-xs">Email</th>
+                    <th className="text-left p-2 font-medium text-xs">Téléphone</th>
+                    <th className="text-left p-2 font-medium text-xs">Poste</th>
+                    <th className="text-left p-2 font-medium text-xs">Entreprise</th>
+                    <th className="text-left p-2 font-medium text-xs">Lieu</th>
+                    <th className="text-left p-2 font-medium text-xs">Date</th>
+                    <th className="text-left p-2 font-medium text-xs">Statut</th>
+                    <th className="text-left p-2 font-medium text-xs">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -180,39 +272,51 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
                       key={lead.id} 
                       className={`border-b border-border/20 hover:bg-muted/30 transition-colors ${
                         index % 2 === 0 ? 'bg-background' : 'bg-muted/10'
-                      }`}
+                      } ${selectedLeads.has(lead.id) ? 'bg-blue-50' : ''}`}
                     >
-                      <td className="p-1">
-                        <div className="text-xs font-medium truncate" title={lead.full_name}>
+                      <td className="p-2">
+                        <button
+                          onClick={() => toggleLeadSelection(lead.id)}
+                          className="flex items-center justify-center w-4 h-4"
+                        >
+                          {selectedLeads.has(lead.id) ? (
+                            <CheckSquare className="h-4 w-4 text-blue-600" />
+                          ) : (
+                            <Square className="h-4 w-4" />
+                          )}
+                        </button>
+                      </td>
+                      <td className="p-2">
+                        <div className="text-xs font-medium" title={lead.full_name}>
                           {lead.full_name || 'N/A'}
                         </div>
                       </td>
-                      <td className="p-1">
-                        <div className="text-xs text-blue-600 truncate" title={lead.email}>
+                      <td className="p-2">
+                        <div className="text-xs text-blue-600" title={lead.email}>
                           {lead.email || 'N/A'}
                         </div>
                       </td>
-                      <td className="p-1">
-                        <div className="text-xs text-muted-foreground truncate" title={lead.phone_number}>
+                      <td className="p-2">
+                        <div className="text-xs text-muted-foreground" title={lead.phone_number}>
                           {lead.phone_number ? lead.phone_number.replace(/(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/, '$1.$2.$3.$4.$5') : 'N/A'}
                         </div>
                       </td>
-                      <td className="p-1">
-                        <div className="text-xs truncate" title={lead.job_title}>
+                      <td className="p-2">
+                        <div className="text-xs" title={lead.job_title}>
                           {lead.job_title || 'N/A'}
                         </div>
                       </td>
-                      <td className="p-1">
-                        <div className="text-xs font-medium truncate" title={lead.company}>
+                      <td className="p-2">
+                        <div className="text-xs font-medium" title={lead.company}>
                           {lead.company || 'N/A'}
                         </div>
                       </td>
-                      <td className="p-1">
-                        <div className="text-xs text-muted-foreground truncate" title={lead.location}>
+                      <td className="p-2">
+                        <div className="text-xs text-muted-foreground" title={lead.location}>
                           {lead.location || 'N/A'}
                         </div>
                       </td>
-                      <td className="p-1">
+                      <td className="p-2">
                         <div className="text-xs text-muted-foreground">
                           {new Date(lead.created_at).toLocaleDateString('fr-FR', { 
                             day: '2-digit', 
@@ -220,32 +324,17 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
                           })}
                         </div>
                       </td>
-                      <td className="p-1">
-                        <div className="text-xs">
-                          <LeadStatusBadge status={lead.status} />
-                        </div>
+                      <td className="p-2">
+                        <LeadStatusSelector 
+                          lead={lead} 
+                          onStatusUpdate={handleStatusUpdate}
+                        />
                       </td>
-                      <td className="p-1">
-                        <div className="flex gap-1">
-                          {lead.email && (
-                            <button
-                              onClick={() => window.open(`mailto:${lead.email}`)}
-                              className="text-xs bg-blue-500/10 text-blue-600 px-1 py-0.5 rounded hover:bg-blue-500/20"
-                              title="Envoyer email"
-                            >
-                              @
-                            </button>
-                          )}
-                          {lead.linkedin_url && (
-                            <button
-                              onClick={() => window.open(lead.linkedin_url, '_blank')}
-                              className="text-xs bg-blue-600/10 text-blue-700 px-1 py-0.5 rounded hover:bg-blue-600/20"
-                              title="Voir LinkedIn"
-                            >
-                              Li
-                            </button>
-                          )}
-                        </div>
+                      <td className="p-2">
+                        <LeadActionsMenu 
+                          lead={lead} 
+                          onStatusUpdate={handleStatusUpdate}
+                        />
                       </td>
                     </tr>
                   ))}
