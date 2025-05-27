@@ -77,8 +77,8 @@ const Dashboard = () => {
       </div>
 
       <div className="flex-1 flex overflow-hidden min-h-0 w-full m-0 p-0">
-        {/* Assistant Panel - Fixed 30% width, full height, zero padding */}
-        <div className="w-[30%] h-full flex flex-col bg-background border-r border-border/60 shadow-sm overflow-hidden m-0 p-0">
+        {/* Assistant Panel - Reduced to 25% width for more space for leads */}
+        <div className="w-[25%] h-full flex flex-col bg-background border-r border-border/60 shadow-sm overflow-hidden m-0 p-0">
           <div className="flex-shrink-0 px-2 py-2 border-b border-border/40 bg-muted/20">
             <div className="flex items-center gap-2">
               <div className="flex items-center justify-center w-5 h-5 bg-primary/10 rounded-lg">
@@ -95,8 +95,8 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Leads Panel - Fixed 70% width, full height, zero padding */}
-        <div className="w-[70%] flex flex-col bg-background overflow-hidden m-0 p-0">
+        {/* Leads Panel - Expanded to 75% width for better table visibility */}
+        <div className="w-[75%] flex flex-col bg-background overflow-hidden m-0 p-0">
           <div className="flex-shrink-0 px-2 py-2 border-b border-border/40 bg-muted/20">
             <div className="flex items-center gap-2">
               <div className="flex items-center justify-center w-5 h-5 bg-blue-500/10 rounded-lg">
