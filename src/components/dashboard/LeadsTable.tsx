@@ -123,10 +123,10 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
   }
 
   return (
-    <div className="space-y-3 h-full flex flex-col">
+    <div className="space-y-3 h-full flex flex-col w-full">
       {/* Compact Stats Cards */}
       {leads.length > 0 && (
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-3 gap-2 w-full">
           <Card className="border-border/40">
             <CardContent className="p-2">
               <div className="flex items-center gap-2">
@@ -175,17 +175,19 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
         </div>
       )}
 
-      <LeadFilterBar
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        selectedStatuses={selectedStatuses}
-        setSelectedStatuses={setSelectedStatuses}
-        statusOptions={statusOptions}
-      />
+      <div className="w-full">
+        <LeadFilterBar
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          selectedStatuses={selectedStatuses}
+          setSelectedStatuses={setSelectedStatuses}
+          statusOptions={statusOptions}
+        />
+      </div>
 
       {/* Bulk Actions */}
       {selectedLeads.size > 0 && (
-        <Card className="border-border/40">
+        <Card className="border-border/40 w-full">
           <CardContent className="p-3">
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">
@@ -219,9 +221,9 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
         </Card>
       )}
       
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 overflow-hidden w-full">
         {filteredLeads.length === 0 ? (
-          <Card className="border-border/40 h-full">
+          <Card className="border-border/40 h-full w-full">
             <CardContent className="text-center p-6 flex flex-col items-center justify-center h-full">
               <div className="flex items-center justify-center w-10 h-10 bg-muted rounded-full mx-auto mb-3">
                 <TrendingUp className="h-5 w-5 text-muted-foreground" />
@@ -238,108 +240,110 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
             </CardContent>
           </Card>
         ) : (
-          <Card className="border-border/40 h-full flex flex-col">
-            <div className="flex-1 overflow-auto">
-              <table className="w-full">
-                <thead className="sticky top-0 bg-muted/30 z-10">
-                  <tr className="border-b border-border/40">
-                    <th className="text-left p-2 font-medium text-xs w-8">
-                      <button
-                        onClick={selectAllLeads}
-                        className="flex items-center justify-center w-4 h-4"
-                      >
-                        {selectedLeads.size === filteredLeads.length ? (
-                          <CheckSquare className="h-4 w-4" />
-                        ) : (
-                          <Square className="h-4 w-4" />
-                        )}
-                      </button>
-                    </th>
-                    <th className="text-left p-2 font-medium text-xs">Nom</th>
-                    <th className="text-left p-2 font-medium text-xs">Email</th>
-                    <th className="text-left p-2 font-medium text-xs">Téléphone</th>
-                    <th className="text-left p-2 font-medium text-xs">Poste</th>
-                    <th className="text-left p-2 font-medium text-xs">Entreprise</th>
-                    <th className="text-left p-2 font-medium text-xs">Lieu</th>
-                    <th className="text-left p-2 font-medium text-xs">Date</th>
-                    <th className="text-left p-2 font-medium text-xs">Statut</th>
-                    <th className="text-left p-2 font-medium text-xs">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredLeads.map((lead, index) => (
-                    <tr 
-                      key={lead.id} 
-                      className={`border-b border-border/20 hover:bg-muted/30 transition-colors ${
-                        index % 2 === 0 ? 'bg-background' : 'bg-muted/10'
-                      } ${selectedLeads.has(lead.id) ? 'bg-blue-50' : ''}`}
-                    >
-                      <td className="p-2">
+          <Card className="border-border/40 h-full flex flex-col w-full">
+            <div className="flex-1 overflow-auto w-full">
+              <div className="w-full min-w-full">
+                <table className="w-full table-fixed">
+                  <thead className="sticky top-0 bg-muted/30 z-10">
+                    <tr className="border-b border-border/40">
+                      <th className="text-left p-2 font-medium text-xs w-12">
                         <button
-                          onClick={() => toggleLeadSelection(lead.id)}
+                          onClick={selectAllLeads}
                           className="flex items-center justify-center w-4 h-4"
                         >
-                          {selectedLeads.has(lead.id) ? (
-                            <CheckSquare className="h-4 w-4 text-blue-600" />
+                          {selectedLeads.size === filteredLeads.length ? (
+                            <CheckSquare className="h-4 w-4" />
                           ) : (
                             <Square className="h-4 w-4" />
                           )}
                         </button>
-                      </td>
-                      <td className="p-2">
-                        <div className="text-xs font-medium" title={lead.full_name}>
-                          {lead.full_name || 'N/A'}
-                        </div>
-                      </td>
-                      <td className="p-2">
-                        <div className="text-xs text-blue-600" title={lead.email}>
-                          {lead.email || 'N/A'}
-                        </div>
-                      </td>
-                      <td className="p-2">
-                        <div className="text-xs text-muted-foreground" title={lead.phone_number}>
-                          {lead.phone_number ? lead.phone_number.replace(/(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/, '$1.$2.$3.$4.$5') : 'N/A'}
-                        </div>
-                      </td>
-                      <td className="p-2">
-                        <div className="text-xs" title={lead.job_title}>
-                          {lead.job_title || 'N/A'}
-                        </div>
-                      </td>
-                      <td className="p-2">
-                        <div className="text-xs font-medium" title={lead.company}>
-                          {lead.company || 'N/A'}
-                        </div>
-                      </td>
-                      <td className="p-2">
-                        <div className="text-xs text-muted-foreground" title={lead.location}>
-                          {lead.location || 'N/A'}
-                        </div>
-                      </td>
-                      <td className="p-2">
-                        <div className="text-xs text-muted-foreground">
-                          {new Date(lead.created_at).toLocaleDateString('fr-FR', { 
-                            day: '2-digit', 
-                            month: '2-digit' 
-                          })}
-                        </div>
-                      </td>
-                      <td className="p-2">
-                        <LeadStatusSelector 
-                          lead={lead} 
-                          onStatusUpdate={handleStatusUpdate}
-                        />
-                      </td>
-                      <td className="p-2">
-                        <LeadActionsMenu 
-                          lead={lead} 
-                          onStatusUpdate={handleStatusUpdate}
-                        />
-                      </td>
+                      </th>
+                      <th className="text-left p-2 font-medium text-xs w-32">Nom</th>
+                      <th className="text-left p-2 font-medium text-xs w-48">Email</th>
+                      <th className="text-left p-2 font-medium text-xs w-32">Téléphone</th>
+                      <th className="text-left p-2 font-medium text-xs w-40">Poste</th>
+                      <th className="text-left p-2 font-medium text-xs w-40">Entreprise</th>
+                      <th className="text-left p-2 font-medium text-xs w-32">Lieu</th>
+                      <th className="text-left p-2 font-medium text-xs w-24">Date</th>
+                      <th className="text-left p-2 font-medium text-xs w-32">Statut</th>
+                      <th className="text-left p-2 font-medium text-xs w-48">Actions</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {filteredLeads.map((lead, index) => (
+                      <tr 
+                        key={lead.id} 
+                        className={`border-b border-border/20 hover:bg-muted/30 transition-colors ${
+                          index % 2 === 0 ? 'bg-background' : 'bg-muted/10'
+                        } ${selectedLeads.has(lead.id) ? 'bg-blue-50' : ''}`}
+                      >
+                        <td className="p-2">
+                          <button
+                            onClick={() => toggleLeadSelection(lead.id)}
+                            className="flex items-center justify-center w-4 h-4"
+                          >
+                            {selectedLeads.has(lead.id) ? (
+                              <CheckSquare className="h-4 w-4 text-blue-600" />
+                            ) : (
+                              <Square className="h-4 w-4" />
+                            )}
+                          </button>
+                        </td>
+                        <td className="p-2 truncate">
+                          <div className="text-xs font-medium truncate" title={lead.full_name}>
+                            {lead.full_name || 'N/A'}
+                          </div>
+                        </td>
+                        <td className="p-2 truncate">
+                          <div className="text-xs text-blue-600 truncate" title={lead.email}>
+                            {lead.email || 'N/A'}
+                          </div>
+                        </td>
+                        <td className="p-2 truncate">
+                          <div className="text-xs text-muted-foreground truncate" title={lead.phone_number}>
+                            {lead.phone_number ? lead.phone_number.replace(/(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/, '$1.$2.$3.$4.$5') : 'N/A'}
+                          </div>
+                        </td>
+                        <td className="p-2 truncate">
+                          <div className="text-xs truncate" title={lead.job_title}>
+                            {lead.job_title || 'N/A'}
+                          </div>
+                        </td>
+                        <td className="p-2 truncate">
+                          <div className="text-xs font-medium truncate" title={lead.company}>
+                            {lead.company || 'N/A'}
+                          </div>
+                        </td>
+                        <td className="p-2 truncate">
+                          <div className="text-xs text-muted-foreground truncate" title={lead.location}>
+                            {lead.location || 'N/A'}
+                          </div>
+                        </td>
+                        <td className="p-2">
+                          <div className="text-xs text-muted-foreground">
+                            {new Date(lead.created_at).toLocaleDateString('fr-FR', { 
+                              day: '2-digit', 
+                              month: '2-digit' 
+                            })}
+                          </div>
+                        </td>
+                        <td className="p-2">
+                          <LeadStatusSelector 
+                            lead={lead} 
+                            onStatusUpdate={handleStatusUpdate}
+                          />
+                        </td>
+                        <td className="p-2">
+                          <LeadActionsMenu 
+                            lead={lead} 
+                            onStatusUpdate={handleStatusUpdate}
+                          />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </Card>
         )}
