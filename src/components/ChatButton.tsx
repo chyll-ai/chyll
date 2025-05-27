@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from "@/components/ui/sonner";
 
 interface ChatButtonProps {
-  leadId: string;
+  leadId?: string;
   className?: string;
   variant?: "default" | "destructive" | "outline" | "secondary" | 
             "ghost" | "link" | null | undefined;
@@ -25,6 +25,12 @@ const ChatButton = ({
   const handleNavigateToChat = async () => {
     try {
       setNavigating(true);
+      
+      // If no leadId provided (homepage usage), navigate to login
+      if (!leadId) {
+        navigate('/login');
+        return;
+      }
       
       // Navigate to the assistant page with the lead ID
       navigate(`/assistant?leadId=${leadId}`);
@@ -56,7 +62,7 @@ const ChatButton = ({
       ) : (
         <span className="flex items-center gap-2">
           <MessageSquare className="h-4 w-4" />
-          Chat
+          {leadId ? "Chat" : "Essayer maintenant"}
         </span>
       )}
     </Button>
