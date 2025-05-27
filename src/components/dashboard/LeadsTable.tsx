@@ -160,18 +160,18 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
         ) : (
           <Card className="border-border/40 h-full flex flex-col">
             <div className="flex-1 overflow-auto">
-              <table className="w-full">
+              <table className="w-full table-fixed">
                 <thead className="sticky top-0 bg-muted/30 z-10">
                   <tr className="border-b border-border/40">
-                    <th className="text-left p-2 font-medium text-xs w-[12%]">Nom</th>
-                    <th className="text-left p-2 font-medium text-xs w-[18%]">Email</th>
-                    <th className="text-left p-2 font-medium text-xs w-[12%]">Téléphone</th>
-                    <th className="text-left p-2 font-medium text-xs w-[15%]">Poste</th>
-                    <th className="text-left p-2 font-medium text-xs w-[12%]">Entreprise</th>
-                    <th className="text-left p-2 font-medium text-xs w-[10%]">Lieu</th>
-                    <th className="text-left p-2 font-medium text-xs w-[8%]">Date</th>
-                    <th className="text-left p-2 font-medium text-xs w-[8%]">Statut</th>
-                    <th className="text-left p-2 font-medium text-xs w-[5%]">Actions</th>
+                    <th className="text-left p-1 font-medium text-xs w-[14%]">Nom</th>
+                    <th className="text-left p-1 font-medium text-xs w-[18%]">Email</th>
+                    <th className="text-left p-1 font-medium text-xs w-[10%]">Téléphone</th>
+                    <th className="text-left p-1 font-medium text-xs w-[13%]">Poste</th>
+                    <th className="text-left p-1 font-medium text-xs w-[12%]">Entreprise</th>
+                    <th className="text-left p-1 font-medium text-xs w-[8%]">Lieu</th>
+                    <th className="text-left p-1 font-medium text-xs w-[6%]">Date</th>
+                    <th className="text-left p-1 font-medium text-xs w-[10%]">Statut</th>
+                    <th className="text-left p-1 font-medium text-xs w-[9%]">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -182,37 +182,37 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
                         index % 2 === 0 ? 'bg-background' : 'bg-muted/10'
                       }`}
                     >
-                      <td className="p-2">
+                      <td className="p-1">
                         <div className="text-xs font-medium truncate" title={lead.full_name}>
                           {lead.full_name || 'N/A'}
                         </div>
                       </td>
-                      <td className="p-2">
+                      <td className="p-1">
                         <div className="text-xs text-blue-600 truncate" title={lead.email}>
                           {lead.email || 'N/A'}
                         </div>
                       </td>
-                      <td className="p-2">
+                      <td className="p-1">
                         <div className="text-xs text-muted-foreground truncate" title={lead.phone_number}>
-                          {lead.phone_number || 'N/A'}
+                          {lead.phone_number ? lead.phone_number.replace(/(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/, '$1.$2.$3.$4.$5') : 'N/A'}
                         </div>
                       </td>
-                      <td className="p-2">
+                      <td className="p-1">
                         <div className="text-xs truncate" title={lead.job_title}>
                           {lead.job_title || 'N/A'}
                         </div>
                       </td>
-                      <td className="p-2">
+                      <td className="p-1">
                         <div className="text-xs font-medium truncate" title={lead.company}>
                           {lead.company || 'N/A'}
                         </div>
                       </td>
-                      <td className="p-2">
+                      <td className="p-1">
                         <div className="text-xs text-muted-foreground truncate" title={lead.location}>
                           {lead.location || 'N/A'}
                         </div>
                       </td>
-                      <td className="p-2">
+                      <td className="p-1">
                         <div className="text-xs text-muted-foreground">
                           {new Date(lead.created_at).toLocaleDateString('fr-FR', { 
                             day: '2-digit', 
@@ -220,17 +220,32 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
                           })}
                         </div>
                       </td>
-                      <td className="p-2">
-                        <LeadStatusSelector 
-                          lead={lead} 
-                          onStatusUpdate={handleStatusUpdate}
-                        />
+                      <td className="p-1">
+                        <div className="text-xs">
+                          <LeadStatusBadge status={lead.status} />
+                        </div>
                       </td>
-                      <td className="p-2">
-                        <LeadActionsMenu 
-                          lead={lead} 
-                          onStatusUpdate={handleStatusUpdate}
-                        />
+                      <td className="p-1">
+                        <div className="flex gap-1">
+                          {lead.email && (
+                            <button
+                              onClick={() => window.open(`mailto:${lead.email}`)}
+                              className="text-xs bg-blue-500/10 text-blue-600 px-1 py-0.5 rounded hover:bg-blue-500/20"
+                              title="Envoyer email"
+                            >
+                              @
+                            </button>
+                          )}
+                          {lead.linkedin_url && (
+                            <button
+                              onClick={() => window.open(lead.linkedin_url, '_blank')}
+                              className="text-xs bg-blue-600/10 text-blue-700 px-1 py-0.5 rounded hover:bg-blue-600/20"
+                              title="Voir LinkedIn"
+                            >
+                              Li
+                            </button>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   ))}
