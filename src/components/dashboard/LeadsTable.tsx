@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Lead } from '@/types/assistant';
@@ -341,7 +340,7 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
                       <th className="text-left p-2 font-medium text-xs">Entreprise</th>
                       <th className="text-left p-2 font-medium text-xs">Lieu</th>
                       <th className="text-left p-2 font-medium text-xs">Date</th>
-                      <th className="text-left p-2 font-medium text-xs">Statut</th>
+                      <th className="text-left p-2 font-medium text-xs min-w-[140px]">Statut</th>
                       <th className="text-left p-2 font-medium text-xs">Actions</th>
                     </tr>
                   </thead>
@@ -403,7 +402,7 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
                             })}
                           </div>
                         </td>
-                        <td className="p-2">
+                        <td className="p-2 min-w-[140px]">
                           <LeadStatusSelector 
                             lead={lead} 
                             onStatusUpdate={handleStatusUpdate}
