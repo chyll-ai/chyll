@@ -2,10 +2,11 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Lead } from '@/types/assistant';
-import { Button } from '@/components/ui/button';
 import LeadStatusBadge from './LeadStatusBadge';
+import LeadStatusSelector from './LeadStatusSelector';
+import LeadActionsMenu from './LeadActionsMenu';
 import LeadFilterBar from './LeadFilterBar';
-import { ExternalLink, Mail, Phone, Calendar, TrendingUp } from 'lucide-react';
+import { TrendingUp, Mail, Calendar } from 'lucide-react';
 import { toast } from '@/components/ui/sonner';
 import { Card, CardContent } from '@/components/ui/card';
 
@@ -44,6 +45,14 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
     }
   }, [userId]);
 
+  const handleStatusUpdate = (leadId: string, newStatus: string) => {
+    setLeads(prevLeads =>
+      prevLeads.map(lead =>
+        lead.id === leadId ? { ...lead, status: newStatus } : lead
+      )
+    );
+  };
+
   const filteredLeads = leads.filter(lead => {
     const matchesSearch = !searchQuery || 
       lead.full_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -70,45 +79,45 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
   }
 
   return (
-    <div className="space-y-4 h-full flex flex-col">
+    <div className="space-y-3 h-full flex flex-col">
       {/* Compact Stats Cards */}
       {leads.length > 0 && (
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-3 gap-2">
           <Card className="border-border/40">
-            <CardContent className="p-3">
+            <CardContent className="p-2">
               <div className="flex items-center gap-2">
-                <div className="flex items-center justify-center w-6 h-6 bg-blue-500/10 rounded">
+                <div className="flex items-center justify-center w-5 h-5 bg-blue-500/10 rounded">
                   <TrendingUp className="h-3 w-3 text-blue-600" />
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground">Total</p>
-                  <p className="text-lg font-bold">{leads.length}</p>
+                  <p className="text-sm font-bold">{leads.length}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
           <Card className="border-border/40">
-            <CardContent className="p-3">
+            <CardContent className="p-2">
               <div className="flex items-center gap-2">
-                <div className="flex items-center justify-center w-6 h-6 bg-green-500/10 rounded">
+                <div className="flex items-center justify-center w-5 h-5 bg-green-500/10 rounded">
                   <Mail className="h-3 w-3 text-green-600" />
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground">Email</p>
-                  <p className="text-lg font-bold">{leads.filter(l => l.email).length}</p>
+                  <p className="text-sm font-bold">{leads.filter(l => l.email).length}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
           <Card className="border-border/40">
-            <CardContent className="p-3">
+            <CardContent className="p-2">
               <div className="flex items-center gap-2">
-                <div className="flex items-center justify-center w-6 h-6 bg-purple-500/10 rounded">
+                <div className="flex items-center justify-center w-5 h-5 bg-purple-500/10 rounded">
                   <Calendar className="h-3 w-3 text-purple-600" />
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground">Week</p>
-                  <p className="text-lg font-bold">
+                  <p className="text-xs text-muted-foreground">Semaine</p>
+                  <p className="text-sm font-bold">
                     {leads.filter(l => {
                       const weekAgo = new Date();
                       weekAgo.setDate(weekAgo.getDate() - 7);
@@ -133,17 +142,17 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
       <div className="flex-1 overflow-hidden">
         {filteredLeads.length === 0 ? (
           <Card className="border-border/40 h-full">
-            <CardContent className="text-center p-8 flex flex-col items-center justify-center h-full">
-              <div className="flex items-center justify-center w-12 h-12 bg-muted rounded-full mx-auto mb-3">
-                <TrendingUp className="h-6 w-6 text-muted-foreground" />
+            <CardContent className="text-center p-6 flex flex-col items-center justify-center h-full">
+              <div className="flex items-center justify-center w-10 h-10 bg-muted rounded-full mx-auto mb-3">
+                <TrendingUp className="h-5 w-5 text-muted-foreground" />
               </div>
               <h3 className="text-sm font-semibold mb-2">
-                {leads.length === 0 ? 'No leads found' : 'No leads match your filters'}
+                {leads.length === 0 ? 'Aucun lead trouvé' : 'Aucun lead ne correspond aux filtres'}
               </h3>
               <p className="text-xs text-muted-foreground">
                 {leads.length === 0 
-                  ? 'Start by asking the AI assistant to find leads for you' 
-                  : 'Try adjusting your search criteria or filters'
+                  ? 'Commencez par demander à l\'assistant IA de trouver des leads' 
+                  : 'Essayez d\'ajuster vos critères de recherche'
                 }
               </p>
             </CardContent>
@@ -154,12 +163,10 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
               <table className="w-full">
                 <thead className="sticky top-0 bg-muted/30 z-10">
                   <tr className="border-b border-border/40">
-                    <th className="text-left p-3 font-medium text-xs">Name</th>
-                    <th className="text-left p-3 font-medium text-xs">Company</th>
-                    <th className="text-left p-3 font-medium text-xs">Title</th>
-                    <th className="text-left p-3 font-medium text-xs">Status</th>
-                    <th className="text-left p-3 font-medium text-xs">Contact</th>
-                    <th className="text-left p-3 font-medium text-xs">Actions</th>
+                    <th className="text-left p-2 font-medium text-xs">Contact</th>
+                    <th className="text-left p-2 font-medium text-xs">Entreprise</th>
+                    <th className="text-left p-2 font-medium text-xs">Statut</th>
+                    <th className="text-left p-2 font-medium text-xs">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -170,53 +177,35 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
                         index % 2 === 0 ? 'bg-background' : 'bg-muted/10'
                       }`}
                     >
-                      <td className="p-3">
-                        <div className="text-sm font-medium">{lead.full_name}</div>
-                        <div className="text-xs text-muted-foreground">
-                          {new Date(lead.created_at).toLocaleDateString()}
-                        </div>
-                      </td>
-                      <td className="p-3 text-xs">{lead.company}</td>
-                      <td className="p-3 text-xs">{lead.job_title}</td>
-                      <td className="p-3">
-                        <LeadStatusBadge status={lead.status} />
-                      </td>
-                      <td className="p-3">
-                        <div className="flex gap-1">
+                      <td className="p-2">
+                        <div className="space-y-1">
+                          <div className="text-xs font-medium">{lead.full_name}</div>
+                          <div className="text-xs text-muted-foreground">{lead.job_title}</div>
                           {lead.email && (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => window.open(`mailto:${lead.email}`)}
-                              className="h-6 w-6 p-0 hover:bg-blue-100 hover:text-blue-600"
-                            >
-                              <Mail className="h-3 w-3" />
-                            </Button>
+                            <div className="text-xs text-blue-600">{lead.email}</div>
                           )}
-                          {lead.phone_number && (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => window.open(`tel:${lead.phone_number}`)}
-                              className="h-6 w-6 p-0 hover:bg-green-100 hover:text-green-600"
-                            >
-                              <Phone className="h-3 w-3" />
-                            </Button>
-                          )}
+                          <div className="text-xs text-muted-foreground">
+                            {new Date(lead.created_at).toLocaleDateString()}
+                          </div>
                         </div>
                       </td>
-                      <td className="p-3">
-                        {lead.linkedin_url && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => window.open(lead.linkedin_url, '_blank')}
-                            className="h-6 text-xs px-2"
-                          >
-                            <ExternalLink className="h-3 w-3 mr-1" />
-                            LinkedIn
-                          </Button>
-                        )}
+                      <td className="p-2">
+                        <div className="space-y-1">
+                          <div className="text-xs font-medium">{lead.company}</div>
+                          <div className="text-xs text-muted-foreground">{lead.location}</div>
+                        </div>
+                      </td>
+                      <td className="p-2">
+                        <LeadStatusSelector 
+                          lead={lead} 
+                          onStatusUpdate={handleStatusUpdate}
+                        />
+                      </td>
+                      <td className="p-2">
+                        <LeadActionsMenu 
+                          lead={lead} 
+                          onStatusUpdate={handleStatusUpdate}
+                        />
                       </td>
                     </tr>
                   ))}
