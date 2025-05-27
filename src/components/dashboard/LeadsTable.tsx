@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { Lead } from '@/types/assistant';
 import LeadStatusBadge from './LeadStatusBadge';
 import LeadStatusSelector from './LeadStatusSelector';
 import LeadActionsMenu from './LeadActionsMenu';
 import LeadFilterBar from './LeadFilterBar';
-import { TrendingUp, Mail, Calendar, CheckSquare, Square } from 'lucide-react';
+import { TrendingUp, Mail, Calendar, CheckSquare, Square, Eye } from 'lucide-react';
 import { toast } from '@/components/ui/sonner';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -15,6 +16,7 @@ interface LeadsTableProps {
 }
 
 const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
+  const navigate = useNavigate();
   const [leads, setLeads] = useState<Lead[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -170,6 +172,10 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
       console.error('Error updating leads:', error);
       toast.error('Failed to update leads');
     }
+  };
+
+  const handleViewLead = (leadId: string) => {
+    navigate(`/lead-history/${leadId}`);
   };
 
   const filteredLeads = leads.filter(lead => {
@@ -341,6 +347,7 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
                       <th className="text-left p-2 font-medium text-xs">Lieu</th>
                       <th className="text-left p-2 font-medium text-xs">Date</th>
                       <th className="text-left p-2 font-medium text-xs min-w-[140px]">Statut</th>
+                      <th className="text-left p-2 font-medium text-xs">Voir le lead</th>
                       <th className="text-left p-2 font-medium text-xs">Actions</th>
                     </tr>
                   </thead>
@@ -407,6 +414,16 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
                             lead={lead} 
                             onStatusUpdate={handleStatusUpdate}
                           />
+                        </td>
+                        <td className="p-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleViewLead(lead.id)}
+                            className="h-8 w-8 p-0"
+                          >
+                            <Eye className="h-4 w-4" />
+                          </Button>
                         </td>
                         <td className="p-2">
                           <LeadActionsMenu 

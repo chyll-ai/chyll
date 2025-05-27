@@ -115,6 +115,11 @@ function App() {
                         <Leads />
                       </ProtectedRoute>
                     } />
+                    <Route path="/lead-history/:leadId" element={
+                      <ProtectedRoute>
+                        <LeadHistory />
+                      </ProtectedRoute>
+                    } />
                     <Route path="/onboarding" element={
                       <ProtectedRoute>
                         <Onboarding />
@@ -123,7 +128,6 @@ function App() {
                     
                     {/* Catch all route for 404 handling */}
                     <Route path="*" element={<NotFoundRedirect message="Page non trouvée, redirection en cours..." redirectTo="/" />} />
-                    <Route path="/lead-history/:leadId" element={<LeadHistory />} />
                   </Routes>
                 </Suspense>
               </AuthProvider>

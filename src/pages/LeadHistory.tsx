@@ -1,11 +1,10 @@
-
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { Lead } from '@/types/assistant';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Mail, Calendar, User, Building2, MapPin, Phone, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Mail, Calendar, User, Building2, MapPin, Phone, ExternalLink, RefreshCw, CheckCircle, XCircle } from 'lucide-react';
 import { toast } from '@/components/ui/sonner';
 import LeadStatusBadge from '@/components/dashboard/LeadStatusBadge';
 
@@ -67,6 +66,85 @@ const LeadHistory = () => {
     }
   };
 
+  const updateLeadStatus = async (newStatus: string) => {
+    if (!lead) return;
+
+    try {
+      const { error } = await supabase
+        .from('leads')
+        .update({ status: newStatus })
+        .eq('id', lead.id);
+
+      if (error) throw error;
+
+      setLead({ ...lead, status: newStatus });
+      toast.success('Statut mis à jour');
+    } catch (error: any) {
+      console.error('Error updating status:', error);
+      toast.error('Erreur lors de la mise à jour du statut');
+    }
+  };
+
+  const handleSendEmail = async () => {
+    try {
+      // TODO: Implement send email functionality
+      toast.info('Fonctionnalité d\'envoi d\'email à implémenter');
+      await updateLeadStatus('email envoyé');
+    } catch (error: any) {
+      console.error('Error sending email:', error);
+      toast.error('Erreur lors de l\'envoi de l\'email');
+    }
+  };
+
+  const handleSendFollowup = async () => {
+    try {
+      // TODO: Implement send followup functionality
+      toast.info('Fonctionnalité de relance à implémenter');
+      await updateLeadStatus('à relancer');
+    } catch (error: any) {
+      console.error('Error sending followup:', error);
+      toast.error('Erreur lors de l\'envoi de la relance');
+    }
+  };
+
+  const handleScheduleCall = async () => {
+    try {
+      // TODO: Implement schedule call functionality
+      toast.info('Fonctionnalité de planification d\'appel à implémenter');
+      await updateLeadStatus('appel prévu');
+    } catch (error: any) {
+      console.error('Error scheduling call:', error);
+      toast.error('Erreur lors de la planification de l\'appel');
+    }
+  };
+
+  const handleMarkAsResponded = async () => {
+    try {
+      await updateLeadStatus('répondu');
+    } catch (error: any) {
+      console.error('Error marking as responded:', error);
+      toast.error('Erreur lors de la mise à jour du statut');
+    }
+  };
+
+  const handleMarkAsMeeting = async () => {
+    try {
+      await updateLeadStatus('rdv');
+    } catch (error: any) {
+      console.error('Error marking as meeting:', error);
+      toast.error('Erreur lors de la mise à jour du statut');
+    }
+  };
+
+  const handleMarkAsMissedMeeting = async () => {
+    try {
+      await updateLeadStatus('rdv manqué');
+    } catch (error: any) {
+      console.error('Error marking as missed meeting:', error);
+      toast.error('Erreur lors de la mise à jour du statut');
+    }
+  };
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleString('fr-FR', {
       day: '2-digit',
@@ -99,6 +177,71 @@ const LeadHistory = () => {
       default:
         return 'text-gray-600 bg-gray-50';
     }
+  };
+
+  const getAvailableActions = () => {
+    if (!lead) return [];
+
+    const status = lead.status?.toLowerCase();
+    const actions = [];
+
+    // Status-specific actions
+    if (status === 'à contacter' || status === 'à relancer') {
+      actions.push(
+        <Button key="email" onClick={handleSendEmail} className="flex-1">
+          <Mail className="h-4 w-4 mr-2" />
+          Envoyer un email
+        </Button>
+      );
+    }
+
+    if (status === 'email envoyé' || status === 'à relancer') {
+      actions.push(
+        <Button key="followup" onClick={handleSendFollowup} variant="outline" className="flex-1">
+          <RefreshCw className="h-4 w-4 mr-2" />
+          Envoyer une relance
+        </Button>
+      );
+    }
+
+    if (status === 'email envoyé' || status === 'répondu') {
+      actions.push(
+        <Button key="schedule" onClick={handleScheduleCall} variant="outline" className="flex-1">
+          <Calendar className="h-4 w-4 mr-2" />
+          Planifier un appel
+        </Button>
+      );
+    }
+
+    // Status update actions
+    if (status !== 'répondu') {
+      actions.push(
+        <Button key="responded" onClick={handleMarkAsResponded} variant="outline" className="flex-1">
+          <CheckCircle className="h-4 w-4 mr-2" />
+          Marquer comme répondu
+        </Button>
+      );
+    }
+
+    if (status === 'appel prévu' || status === 'répondu') {
+      actions.push(
+        <Button key="meeting" onClick={handleMarkAsMeeting} variant="outline" className="flex-1">
+          <Calendar className="h-4 w-4 mr-2" />
+          Marquer comme RDV
+        </Button>
+      );
+    }
+
+    if (status === 'rdv') {
+      actions.push(
+        <Button key="missed" onClick={handleMarkAsMissedMeeting} variant="outline" className="flex-1">
+          <XCircle className="h-4 w-4 mr-2" />
+          Marquer RDV manqué
+        </Button>
+      );
+    }
+
+    return actions;
   };
 
   if (isLoading) {
@@ -230,6 +373,20 @@ const LeadHistory = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Actions Card */}
+      {getAvailableActions().length > 0 && (
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle>Actions disponibles</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-wrap gap-2">
+              {getAvailableActions()}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Email History */}
       <Card>
