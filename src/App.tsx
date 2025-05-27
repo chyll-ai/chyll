@@ -49,6 +49,7 @@ const Support = lazy(() => import('@/pages/Support'));
 const Onboarding = lazy(() => import('@/pages/Onboarding'));
 const AuthCallback = lazy(() => import('@/routes/auth/callback'));
 const AuthConfirm = lazy(() => import('@/routes/auth/confirm'));
+const LeadHistory = lazy(() => import('@/pages/LeadHistory'));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -122,6 +123,7 @@ function App() {
                     
                     {/* Catch all route for 404 handling */}
                     <Route path="*" element={<NotFoundRedirect message="Page non trouvée, redirection en cours..." redirectTo="/" />} />
+                    <Route path="/lead-history/:leadId" element={<LeadHistory />} />
                   </Routes>
                 </Suspense>
               </AuthProvider>
