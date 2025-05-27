@@ -160,13 +160,18 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
         ) : (
           <Card className="border-border/40 h-full flex flex-col">
             <div className="flex-1 overflow-auto">
-              <table className="w-full">
+              <table className="w-full table-fixed">
                 <thead className="sticky top-0 bg-muted/30 z-10">
                   <tr className="border-b border-border/40">
-                    <th className="text-left p-2 font-medium text-xs">Contact</th>
-                    <th className="text-left p-2 font-medium text-xs">Entreprise</th>
-                    <th className="text-left p-2 font-medium text-xs">Statut</th>
-                    <th className="text-left p-2 font-medium text-xs">Actions</th>
+                    <th className="text-left p-2 font-medium text-xs w-32">Nom</th>
+                    <th className="text-left p-2 font-medium text-xs w-48">Email</th>
+                    <th className="text-left p-2 font-medium text-xs w-32">Téléphone</th>
+                    <th className="text-left p-2 font-medium text-xs w-40">Poste</th>
+                    <th className="text-left p-2 font-medium text-xs w-40">Entreprise</th>
+                    <th className="text-left p-2 font-medium text-xs w-32">Localisation</th>
+                    <th className="text-left p-2 font-medium text-xs w-28">Date</th>
+                    <th className="text-left p-2 font-medium text-xs w-40">Statut</th>
+                    <th className="text-left p-2 font-medium text-xs w-60">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -178,21 +183,38 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
                       }`}
                     >
                       <td className="p-2">
-                        <div className="space-y-1">
-                          <div className="text-xs font-medium">{lead.full_name}</div>
-                          <div className="text-xs text-muted-foreground">{lead.job_title}</div>
-                          {lead.email && (
-                            <div className="text-xs text-blue-600">{lead.email}</div>
-                          )}
-                          <div className="text-xs text-muted-foreground">
-                            {new Date(lead.created_at).toLocaleDateString()}
-                          </div>
+                        <div className="text-xs font-medium truncate" title={lead.full_name}>
+                          {lead.full_name || 'N/A'}
                         </div>
                       </td>
                       <td className="p-2">
-                        <div className="space-y-1">
-                          <div className="text-xs font-medium">{lead.company}</div>
-                          <div className="text-xs text-muted-foreground">{lead.location}</div>
+                        <div className="text-xs text-blue-600 truncate" title={lead.email}>
+                          {lead.email || 'N/A'}
+                        </div>
+                      </td>
+                      <td className="p-2">
+                        <div className="text-xs text-muted-foreground truncate" title={lead.phone_number}>
+                          {lead.phone_number || 'N/A'}
+                        </div>
+                      </td>
+                      <td className="p-2">
+                        <div className="text-xs truncate" title={lead.job_title}>
+                          {lead.job_title || 'N/A'}
+                        </div>
+                      </td>
+                      <td className="p-2">
+                        <div className="text-xs font-medium truncate" title={lead.company}>
+                          {lead.company || 'N/A'}
+                        </div>
+                      </td>
+                      <td className="p-2">
+                        <div className="text-xs text-muted-foreground truncate" title={lead.location}>
+                          {lead.location || 'N/A'}
+                        </div>
+                      </td>
+                      <td className="p-2">
+                        <div className="text-xs text-muted-foreground">
+                          {new Date(lead.created_at).toLocaleDateString()}
                         </div>
                       </td>
                       <td className="p-2">
