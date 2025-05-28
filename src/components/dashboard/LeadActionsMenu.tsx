@@ -1,9 +1,8 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { MoreHorizontal, Mail, RefreshCw, History, Calendar, Phone, CheckCircle, XCircle, Eye } from 'lucide-react';
+import { Mail, RefreshCw, History, Calendar, Phone, CheckCircle, XCircle, Eye } from 'lucide-react';
 import { Lead } from '@/types/assistant';
 import { supabase } from '@/lib/supabase';
 import { toast } from '@/components/ui/sonner';
@@ -100,85 +99,77 @@ const LeadActionsMenu: React.FC<LeadActionsMenuProps> = ({ lead, onStatusUpdate 
     const status = lead.status?.toLowerCase();
     const actions = [];
 
-    // Always available actions
-    actions.push(
-      <DropdownMenuItem key="history" onClick={handleViewHistory}>
-        <History className="h-4 w-4 mr-2" />
-        Voir l'historique
-      </DropdownMenuItem>
-    );
-
     // Status-specific actions
     if (status === 'à contacter' || status === 'à relancer') {
       actions.push(
-        <DropdownMenuItem key="email" onClick={handleSendEmail}>
-          <Mail className="h-4 w-4 mr-2" />
-          Envoyer un email
-        </DropdownMenuItem>
+        <Button key="email" variant="outline" size="sm" onClick={handleSendEmail}>
+          <Mail className="h-3 w-3 mr-1" />
+          Email
+        </Button>
       );
     }
 
     if (status === 'email envoyé' || status === 'à relancer') {
       actions.push(
-        <DropdownMenuItem key="followup" onClick={handleSendFollowup}>
-          <RefreshCw className="h-4 w-4 mr-2" />
-          Envoyer une relance
-        </DropdownMenuItem>
+        <Button key="followup" variant="outline" size="sm" onClick={handleSendFollowup}>
+          <RefreshCw className="h-3 w-3 mr-1" />
+          Relance
+        </Button>
       );
     }
 
     if (status === 'email envoyé' || status === 'répondu') {
       actions.push(
-        <DropdownMenuItem key="schedule" onClick={handleScheduleCall}>
-          <Calendar className="h-4 w-4 mr-2" />
-          Planifier un appel
-        </DropdownMenuItem>
+        <Button key="schedule" variant="outline" size="sm" onClick={handleScheduleCall}>
+          <Calendar className="h-3 w-3 mr-1" />
+          Appel
+        </Button>
       );
     }
 
     // Status update actions
     if (status !== 'répondu') {
-      actions.push(<DropdownMenuSeparator key="sep1" />);
       actions.push(
-        <DropdownMenuItem key="responded" onClick={handleMarkAsResponded}>
-          <CheckCircle className="h-4 w-4 mr-2 text-green-600" />
-          Marquer comme répondu
-        </DropdownMenuItem>
+        <Button key="responded" variant="outline" size="sm" onClick={handleMarkAsResponded}>
+          <CheckCircle className="h-3 w-3 mr-1 text-green-600" />
+          Répondu
+        </Button>
       );
     }
 
     if (status === 'appel prévu' || status === 'répondu') {
       actions.push(
-        <DropdownMenuItem key="meeting" onClick={handleMarkAsMeeting}>
-          <Calendar className="h-4 w-4 mr-2 text-blue-600" />
-          Marquer comme RDV
-        </DropdownMenuItem>
+        <Button key="meeting" variant="outline" size="sm" onClick={handleMarkAsMeeting}>
+          <Calendar className="h-3 w-3 mr-1 text-blue-600" />
+          RDV
+        </Button>
       );
     }
 
     if (status === 'rdv') {
       actions.push(
-        <DropdownMenuItem key="missed" onClick={handleMarkAsMissedMeeting}>
-          <XCircle className="h-4 w-4 mr-2 text-red-600" />
-          Marquer RDV manqué
-        </DropdownMenuItem>
+        <Button key="missed" variant="outline" size="sm" onClick={handleMarkAsMissedMeeting}>
+          <XCircle className="h-3 w-3 mr-1 text-red-600" />
+          RDV manqué
+        </Button>
       );
     }
+
+    // Always available actions
+    actions.push(
+      <Button key="history" variant="outline" size="sm" onClick={handleViewHistory}>
+        <History className="h-3 w-3 mr-1" />
+        Historique
+      </Button>
+    );
 
     return actions;
   };
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-          <MoreHorizontal className="h-4 w-4" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56">
-        {getAvailableActions()}
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <div className="flex flex-wrap gap-1 min-w-max">
+      {getAvailableActions()}
+    </div>
   );
 };
 

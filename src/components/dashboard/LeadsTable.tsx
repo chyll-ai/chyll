@@ -323,8 +323,8 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
         ) : (
           <Card className="border-border/40 h-full flex flex-col w-full min-w-0">
             <div className="flex-1 overflow-auto w-full min-w-0">
-              <div className="w-full">
-                <table className="w-full table-auto border-collapse">
+              <div className="w-full min-w-max">
+                <table className="w-full table-auto border-collapse min-w-max">
                   <thead className="sticky top-0 bg-muted/30 z-10">
                     <tr className="border-b border-border/40">
                       <th className="text-left p-2 font-medium text-xs w-12">
@@ -339,16 +339,16 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
                           )}
                         </button>
                       </th>
-                      <th className="text-left p-2 font-medium text-xs">Nom</th>
-                      <th className="text-left p-2 font-medium text-xs">Email</th>
-                      <th className="text-left p-2 font-medium text-xs">Téléphone</th>
-                      <th className="text-left p-2 font-medium text-xs">Poste</th>
-                      <th className="text-left p-2 font-medium text-xs">Entreprise</th>
-                      <th className="text-left p-2 font-medium text-xs">Lieu</th>
-                      <th className="text-left p-2 font-medium text-xs">Date</th>
+                      <th className="text-left p-2 font-medium text-xs min-w-[120px]">Nom</th>
+                      <th className="text-left p-2 font-medium text-xs min-w-[180px]">Email</th>
+                      <th className="text-left p-2 font-medium text-xs min-w-[120px]">Téléphone</th>
+                      <th className="text-left p-2 font-medium text-xs min-w-[140px]">Poste</th>
+                      <th className="text-left p-2 font-medium text-xs min-w-[140px]">Entreprise</th>
+                      <th className="text-left p-2 font-medium text-xs min-w-[120px]">Lieu</th>
+                      <th className="text-left p-2 font-medium text-xs min-w-[80px]">Date</th>
                       <th className="text-left p-2 font-medium text-xs min-w-[140px]">Statut</th>
-                      <th className="text-left p-2 font-medium text-xs">Voir le lead</th>
-                      <th className="text-left p-2 font-medium text-xs">Actions</th>
+                      <th className="text-left p-2 font-medium text-xs min-w-[80px]">Voir le lead</th>
+                      <th className="text-left p-2 font-medium text-xs min-w-[400px]">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -425,7 +425,7 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
                             <Eye className="h-4 w-4" />
                           </Button>
                         </td>
-                        <td className="p-2">
+                        <td className="p-2 min-w-[400px]">
                           <LeadActionsMenu 
                             lead={lead} 
                             onStatusUpdate={handleStatusUpdate}
