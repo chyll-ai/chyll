@@ -85,7 +85,10 @@ ${dummyClientProfile.company_name}`;
           sent_at: new Date().toISOString()
         });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
 
       // Update lead status
       await updateLeadStatus('email envoyé');
@@ -123,7 +126,10 @@ ${dummyClientProfile.company_name}`;
           sent_at: new Date().toISOString()
         });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
 
       // Update lead status
       await updateLeadStatus('à relancer');

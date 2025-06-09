@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
@@ -157,7 +158,10 @@ ${dummyClientProfile.company_name}`;
           sent_at: new Date().toISOString()
         });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
 
       await updateLeadStatus('email envoyé');
       await fetchEmailHistory(); // Refresh email history
@@ -197,7 +201,10 @@ ${dummyClientProfile.company_name}`;
           sent_at: new Date().toISOString()
         });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
 
       await updateLeadStatus('à relancer');
       await fetchEmailHistory(); // Refresh email history
