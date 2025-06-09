@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
@@ -143,25 +142,32 @@ ${dummyClientProfile.company_name}`;
     if (!lead) return;
 
     try {
+      console.log('Starting fake email generation for lead:', lead.id);
       const emailContent = generateColdEmailContent(lead);
       
+      const emailData = {
+        lead_id: lead.id,
+        client_id: lead.client_id,
+        type: 'cold_email',
+        status: 'sent',
+        subject: 'Optimisez votre prospection commerciale avec l\'IA',
+        body: emailContent
+      };
+
+      console.log('Email data to insert:', emailData);
+      
       // Save the fake email to email_jobs table
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('email_jobs')
-        .insert({
-          lead_id: lead.id,
-          client_id: lead.client_id,
-          type: 'cold_email',
-          status: 'sent',
-          subject: 'Optimisez votre prospection commerciale avec l\'IA',
-          body: emailContent,
-          sent_at: new Date().toISOString()
-        });
+        .insert(emailData)
+        .select();
 
       if (error) {
-        console.error('Supabase error:', error);
+        console.error('Supabase error details:', error);
         throw error;
       }
+
+      console.log('Email job created successfully:', data);
 
       await updateLeadStatus('email envoyé');
       await fetchEmailHistory(); // Refresh email history
@@ -169,7 +175,7 @@ ${dummyClientProfile.company_name}`;
       toast.success('Email de prospection généré et envoyé (demo)');
     } catch (error: any) {
       console.error('Error generating fake email:', error);
-      toast.error('Erreur lors de la génération de l\'email');
+      toast.error(`Erreur lors de la génération de l'email: ${error.message || 'Unknown error'}`);
     }
   };
 
@@ -177,6 +183,7 @@ ${dummyClientProfile.company_name}`;
     if (!lead) return;
 
     try {
+      console.log('Starting fake followup generation for lead:', lead.id);
       const emailContent = generateFollowupContent(lead);
       
       // Get the last email for this lead to create a thread
@@ -186,25 +193,31 @@ ${dummyClientProfile.company_name}`;
         .eq('lead_id', lead.id)
         .order('sent_at', { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
+
+      const emailData = {
+        lead_id: lead.id,
+        client_id: lead.client_id,
+        type: 'followup',
+        status: 'sent',
+        subject: lastEmail ? `Re: ${lastEmail.subject}` : 'Re: Optimisez votre prospection commerciale avec l\'IA',
+        body: emailContent
+      };
+
+      console.log('Followup email data to insert:', emailData);
 
       // Save the fake followup email
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('email_jobs')
-        .insert({
-          lead_id: lead.id,
-          client_id: lead.client_id,
-          type: 'followup',
-          status: 'sent',
-          subject: lastEmail ? `Re: ${lastEmail.subject}` : 'Re: Optimisez votre prospection commerciale avec l\'IA',
-          body: emailContent,
-          sent_at: new Date().toISOString()
-        });
+        .insert(emailData)
+        .select();
 
       if (error) {
-        console.error('Supabase error:', error);
+        console.error('Supabase error details:', error);
         throw error;
       }
+
+      console.log('Followup email job created successfully:', data);
 
       await updateLeadStatus('à relancer');
       await fetchEmailHistory(); // Refresh email history
@@ -212,7 +225,7 @@ ${dummyClientProfile.company_name}`;
       toast.success('Email de relance généré et envoyé (demo)');
     } catch (error: any) {
       console.error('Error generating fake followup:', error);
-      toast.error('Erreur lors de la génération de la relance');
+      toast.error(`Erreur lors de la génération de la relance: ${error.message || 'Unknown error'}`);
     }
   };
 
