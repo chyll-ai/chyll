@@ -15,35 +15,129 @@ interface LeadActionsMenuProps {
 const LeadActionsMenu: React.FC<LeadActionsMenuProps> = ({ lead, onStatusUpdate }) => {
   const navigate = useNavigate();
 
+  // Dummy client profile data for Chyll.ai
+  const dummyClientProfile = {
+    full_name: 'Alexandre Martin',
+    job_title: 'CEO & Founder',
+    company_name: 'Chyll.ai',
+    industry: 'Intelligence Artificielle',
+    value_proposition: 'Solution d\'IA pour automatiser la prospection commerciale et générer des leads qualifiés',
+    expertise_areas: ['Intelligence Artificielle', 'Prospection commerciale', 'Automation marketing'],
+    achievements: ['Lancé Chyll.ai avec 500+ clients', 'Expert en automatisation IA', '10 ans d\'expérience en tech'],
+    company_description: 'Chyll.ai est une plateforme innovante qui utilise l\'IA pour révolutionner la prospection commerciale',
+    unique_selling_points: ['IA avancée pour la prospection', 'Automatisation complète du processus', 'ROI mesurable'],
+    preferred_meeting_duration: '30 minutes'
+  };
+
+  const generateColdEmailContent = (lead: Lead) => {
+    return `Bonjour ${lead.full_name},
+
+Je suis ${dummyClientProfile.full_name}, ${dummyClientProfile.job_title} chez ${dummyClientProfile.company_name}.
+
+J'ai découvert votre profil et votre rôle de ${lead.job_title} chez ${lead.company}, et je pense que notre solution pourrait vous intéresser.
+
+${dummyClientProfile.company_description}. Notre plateforme utilise une IA avancée pour automatiser la prospection commerciale, permettant aux entreprises comme ${lead.company} de générer plus de leads qualifiés tout en économisant du temps.
+
+Nos clients dans le secteur ont vu une augmentation moyenne de 40% de leurs leads qualifiés grâce à notre automatisation intelligente.
+
+Seriez-vous disponible pour un échange de ${dummyClientProfile.preferred_meeting_duration} la semaine prochaine ? J'aimerais vous montrer comment nous pourrions optimiser votre processus de prospection.
+
+Cordialement,
+${dummyClientProfile.full_name}
+${dummyClientProfile.job_title}
+${dummyClientProfile.company_name}`;
+  };
+
+  const generateFollowupContent = (lead: Lead) => {
+    return `Bonjour ${lead.full_name},
+
+J'espère que vous allez bien. Je reviens vers vous concernant mon message précédent sur notre solution d'automatisation de prospection chez ${dummyClientProfile.company_name}.
+
+Je comprends que vous êtes certainement très occupé(e) dans votre rôle de ${lead.job_title}. C'est justement pourquoi notre solution pourrait vous faire gagner un temps précieux.
+
+En résumé, nous aidons des entreprises comme ${lead.company} à :
+• Automatiser leur prospection commerciale
+• Générer 40% de leads qualifiés en plus
+• Économiser 15h par semaine sur les tâches répétitives
+
+Je serais ravi de vous présenter notre approche lors d'un bref échange de ${dummyClientProfile.preferred_meeting_duration}. Auriez-vous un créneau cette semaine ou la suivante ?
+
+Cordialement,
+${dummyClientProfile.full_name}
+${dummyClientProfile.job_title}
+${dummyClientProfile.company_name}`;
+  };
+
   const handleSendEmail = async () => {
     try {
-      // TODO: Implement send email functionality
-      toast.info('Fonctionnalité d\'envoi d\'email à implémenter');
-      // Update status to "email envoyé" after sending
+      const emailContent = generateColdEmailContent(lead);
+      
+      // Save the fake email to email_jobs table
+      const { error } = await supabase
+        .from('email_jobs')
+        .insert({
+          lead_id: lead.id,
+          client_id: lead.client_id,
+          type: 'cold_email',
+          status: 'sent',
+          subject: 'Optimisez votre prospection commerciale avec l\'IA',
+          body: emailContent,
+          sent_at: new Date().toISOString()
+        });
+
+      if (error) throw error;
+
+      // Update lead status
       await updateLeadStatus('email envoyé');
+      
+      toast.success('Email de prospection généré et envoyé (demo)');
     } catch (error: any) {
-      console.error('Error sending email:', error);
-      toast.error('Erreur lors de l\'envoi de l\'email');
+      console.error('Error generating fake email:', error);
+      toast.error('Erreur lors de la génération de l\'email');
     }
   };
 
   const handleSendFollowup = async () => {
     try {
-      // TODO: Implement send followup functionality
-      toast.info('Fonctionnalité de relance à implémenter');
-      // Update status to "à relancer" after sending followup
+      const emailContent = generateFollowupContent(lead);
+      
+      // Get the last email for this lead to create a thread
+      const { data: lastEmail } = await supabase
+        .from('email_jobs')
+        .select('subject')
+        .eq('lead_id', lead.id)
+        .order('sent_at', { ascending: false })
+        .limit(1)
+        .single();
+
+      // Save the fake followup email
+      const { error } = await supabase
+        .from('email_jobs')
+        .insert({
+          lead_id: lead.id,
+          client_id: lead.client_id,
+          type: 'followup',
+          status: 'sent',
+          subject: lastEmail ? `Re: ${lastEmail.subject}` : 'Re: Optimisez votre prospection commerciale avec l\'IA',
+          body: emailContent,
+          sent_at: new Date().toISOString()
+        });
+
+      if (error) throw error;
+
+      // Update lead status
       await updateLeadStatus('à relancer');
+      
+      toast.success('Email de relance généré et envoyé (demo)');
     } catch (error: any) {
-      console.error('Error sending followup:', error);
-      toast.error('Erreur lors de l\'envoi de la relance');
+      console.error('Error generating fake followup:', error);
+      toast.error('Erreur lors de la génération de la relance');
     }
   };
 
   const handleScheduleCall = async () => {
     try {
-      // TODO: Implement schedule call functionality
       toast.info('Fonctionnalité de planification d\'appel à implémenter');
-      // Update status to "appel prévu"
       await updateLeadStatus('appel prévu');
     } catch (error: any) {
       console.error('Error scheduling call:', error);
@@ -100,11 +194,11 @@ const LeadActionsMenu: React.FC<LeadActionsMenuProps> = ({ lead, onStatusUpdate 
     const actions = [];
 
     // Status-specific actions
-    if (status === 'à contacter' || status === 'à relancer') {
+    if (status === 'à contacter' || status === 'new') {
       actions.push(
         <Button key="email" variant="outline" size="sm" onClick={handleSendEmail}>
           <Mail className="h-3 w-3 mr-1" />
-          Email
+          Email (demo)
         </Button>
       );
     }
@@ -113,7 +207,7 @@ const LeadActionsMenu: React.FC<LeadActionsMenuProps> = ({ lead, onStatusUpdate 
       actions.push(
         <Button key="followup" variant="outline" size="sm" onClick={handleSendFollowup}>
           <RefreshCw className="h-3 w-3 mr-1" />
-          Relance
+          Relance (demo)
         </Button>
       );
     }
