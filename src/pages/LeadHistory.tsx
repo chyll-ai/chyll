@@ -151,7 +151,8 @@ ${dummyClientProfile.company_name}`;
         type: 'cold_email',
         status: 'sent',
         subject: 'Optimisez votre prospection commerciale avec l\'IA',
-        body: emailContent
+        body: emailContent,
+        sent_at: new Date().toISOString()
       };
 
       console.log('Email data to insert:', emailData);
@@ -159,12 +160,18 @@ ${dummyClientProfile.company_name}`;
       // Save the fake email to email_jobs table
       const { data, error } = await supabase
         .from('email_jobs')
-        .insert(emailData)
-        .select();
+        .insert([emailData])
+        .select('*');
 
       if (error) {
-        console.error('Supabase error details:', error);
-        throw error;
+        console.error('Supabase insert error:', error);
+        console.error('Error details:', {
+          message: error.message,
+          code: error.code,
+          details: error.details,
+          hint: error.hint
+        });
+        throw new Error(`Database error: ${error.message}`);
       }
 
       console.log('Email job created successfully:', data);
@@ -187,7 +194,7 @@ ${dummyClientProfile.company_name}`;
       const emailContent = generateFollowupContent(lead);
       
       // Get the last email for this lead to create a thread
-      const { data: lastEmail } = await supabase
+      const { data: lastEmail, error: fetchError } = await supabase
         .from('email_jobs')
         .select('subject')
         .eq('lead_id', lead.id)
@@ -195,13 +202,18 @@ ${dummyClientProfile.company_name}`;
         .limit(1)
         .maybeSingle();
 
+      if (fetchError && fetchError.code !== 'PGRST116') {
+        console.error('Error fetching last email:', fetchError);
+      }
+
       const emailData = {
         lead_id: lead.id,
         client_id: lead.client_id,
         type: 'followup',
         status: 'sent',
-        subject: lastEmail ? `Re: ${lastEmail.subject}` : 'Re: Optimisez votre prospection commerciale avec l\'IA',
-        body: emailContent
+        subject: lastEmail?.subject ? `Re: ${lastEmail.subject}` : 'Re: Optimisez votre prospection commerciale avec l\'IA',
+        body: emailContent,
+        sent_at: new Date().toISOString()
       };
 
       console.log('Followup email data to insert:', emailData);
@@ -209,12 +221,18 @@ ${dummyClientProfile.company_name}`;
       // Save the fake followup email
       const { data, error } = await supabase
         .from('email_jobs')
-        .insert(emailData)
-        .select();
+        .insert([emailData])
+        .select('*');
 
       if (error) {
-        console.error('Supabase error details:', error);
-        throw error;
+        console.error('Supabase insert error:', error);
+        console.error('Error details:', {
+          message: error.message,
+          code: error.code,
+          details: error.details,
+          hint: error.hint
+        });
+        throw new Error(`Database error: ${error.message}`);
       }
 
       console.log('Followup email job created successfully:', data);
