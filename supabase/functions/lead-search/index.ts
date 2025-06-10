@@ -57,32 +57,30 @@ const EXAMPLE_RESPONSE = {
   ]
 };
 
-const SYSTEM_PROMPT = `You are a precise lead generation specialist with deep knowledge of French business professionals. Your task is to generate realistic French professionals that EXACTLY match the user's search criteria.
+const SYSTEM_PROMPT = `You are an expert lead generation specialist with deep knowledge of French business professionals and companies. Generate realistic French tech leads that match specific search criteria.
 
 Your response must be a JSON object with EXACTLY this structure:
 ${JSON.stringify(EXAMPLE_RESPONSE, null, 2)}
 
-CRITICAL MATCHING REQUIREMENTS:
-1. JOB TITLE PRECISION: If the user specifies a job title (VP Sales, CTO, etc.), generate ONLY people with that EXACT title or very close equivalent
-2. LOCATION PRECISION: If the user specifies a location, generate leads ONLY in that location
-3. INDUSTRY PRECISION: If the user mentions an industry, ensure companies match that sector
-4. QUANTITY PRECISION: Generate exactly the number requested
+CRITICAL REQUIREMENTS:
+1. Generate UNIQUE professionals - no duplicate names or emails
+2. Match job titles PRECISELY to the search query (if searching for "CTO", generate CTOs, not generic "developers")
+3. Use realistic French names (avoid generic combinations like "Martin Martin")
+4. Create believable company names that match the industry
+5. Ensure job titles align with company size and industry
+6. Use realistic French locations (major tech hubs: Paris, Lyon, Toulouse, Nice, Bordeaux, Nantes)
+7. Generate professional email formats: firstname.lastname@company.fr
+8. Phone numbers: +33 6XXXXXXXX format
+9. LinkedIn URLs: linkedin.com/in/firstname-lastname-suffix
 
 QUALITY STANDARDS:
-- Use realistic French names (avoid repetitive patterns)
-- Create believable French company names that match the requested industry
-- Professional email formats: firstname.lastname@company.fr
-- Phone numbers: +33 6XXXXXXXX format
-- LinkedIn URLs: linkedin.com/in/firstname-lastname-suffix
-- Locations should be major French cities: Paris, Lyon, Toulouse, Nice, Bordeaux, Nantes, Marseille, Lille, Strasbourg, Montpellier
+- Senior roles (CTO, VP, Director) should be at established companies
+- Junior roles should be at appropriate companies for their level
+- Company names should reflect real French business naming conventions
+- Avoid repetitive patterns in names, companies, or locations
+- Each lead should feel like a real person with a believable career path
 
-COMPANY EXAMPLES by sector:
-- Tech: Criteo, BlaBlaCar, Dassault Systèmes, Atos, Capgemini
-- Fintech: Lydia, Qonto, PayFit, Leetchi
-- E-commerce: Veepee, ManoMano, Leboncoin
-- SaaS: Notion (Paris), Algolia, ContentSquare
-
-Be flexible but precise - match the user's intent exactly while maintaining realism.`;
+Focus on generating leads that would realistically hold the requested position and work at companies that would hire for that role.`;
 
 serve(async (req: Request) => {
   if (req.method === 'OPTIONS') {
@@ -110,36 +108,48 @@ serve(async (req: Request) => {
       apiKey: OPENAI_API_KEY
     });
 
-    // More focused and precise prompt
-    const userPrompt = `Search Query: "${searchQuery}"
+    // Enhanced prompt with better context and instructions
+    const userPrompt = `Generate ${count} unique French tech professionals matching: "${searchQuery}"
 
-Parse this search and generate ${count} unique French professionals that EXACTLY match the criteria.
+SEARCH CONTEXT: ${searchQuery}
 
-ANALYSIS INSTRUCTIONS:
-1. Extract the specific job title mentioned (if any) - use ONLY this title
-2. Extract the specific location mentioned (if any) - use ONLY this location  
-3. Extract any industry hints - ensure companies align
-4. If no specific criteria given, use reasonable defaults
+SPECIFIC INSTRUCTIONS:
+1. If the search mentions a specific job title (e.g., "CTO", "Lead Developer", "Product Manager"), generate ONLY people with that exact title
+2. If the search mentions an industry (e.g., "fintech", "e-commerce", "AI"), ensure companies and roles align with that sector
+3. If the search mentions a location, prioritize that location but add variety
+4. Generate completely unique individuals - check that no two people have:
+   - The same first + last name combination
+   - The same email address
+   - The same company name
+   - The same LinkedIn URL
 
-STRICT MATCHING RULES:
-- Job titles must be EXACT matches or professional equivalents
-- Locations must be EXACT matches to what's requested
-- Each person must be completely unique (different names, emails, companies)
-- Companies should be realistic for the industry and role level
+REALISM REQUIREMENTS:
+- Senior executives (C-level) should be at companies with 50+ employees
+- Mid-level roles should match company size appropriately
+- Startup roles should be at smaller, innovative companies
+- Enterprise roles should be at established French tech companies
 
-Return exactly ${count} leads in the specified JSON format. Focus on accuracy over creativity.`;
+COMPANY EXAMPLES for inspiration (create similar but different):
+- Tech: Criteo, BlaBlaCar, Dassault Systèmes, Atos, Capgemini
+- Fintech: Lydia, Qonto, PayFit, Leetchi
+- E-commerce: Veepee, ManoMano, Leboncoin
+- AI/Data: Dataiku, Shift Technology, Owkin
+
+Return EXACTLY ${count} unique leads in the specified JSON format. Each lead must be completely different from the others.`;
 
     const completion = await openai.chat.completions.create({
-      model: 'gpt-4.1-2025-04-14',
+      model: 'gpt-4-turbo-preview',
       messages: [
         { role: 'system', content: SYSTEM_PROMPT },
         { role: 'user', content: userPrompt }
       ],
-      temperature: 0.3, // Lower temperature for more consistent results
+      temperature: 0.8, // Increased for more variety
       response_format: { type: "json_object" },
-      max_tokens: 3000,
-      presence_penalty: 0.6,
-      frequency_penalty: 0.8
+      max_tokens: 3000, // Increased for more detailed responses
+      presence_penalty: 0.6, // Higher to avoid repetition
+      frequency_penalty: 0.8, // Higher to ensure uniqueness
+      timeout: 45,
+      stream: false
     });
 
     const responseContent = completion.choices[0]?.message?.content;
