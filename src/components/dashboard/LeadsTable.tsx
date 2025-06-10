@@ -27,35 +27,37 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
   const fetchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const hasInitializedRef = useRef(false);
 
-  // Debug logging function
-  const log = useCallback((message: string, data?: any) => {
+  // Debug logging function - only use in effects and event handlers, not during render
+  const logDebug = useCallback((message: string, data?: any) => {
     const timestamp = new Date().toLocaleTimeString();
     const logMessage = `[${timestamp}] ${message}`;
     console.log(logMessage, data || '');
+    
+    // Only update debug info in effects, not during render
     setDebugInfo(prev => prev + '\n' + logMessage + (data ? ` ${JSON.stringify(data)}` : ''));
   }, []);
 
   // Test database connection
   const testConnection = useCallback(async () => {
     try {
-      log('Testing Supabase connection...');
+      console.log('Testing Supabase connection...');
       const { data, error } = await supabase.from('leads').select('count', { count: 'exact', head: true });
       if (error) {
-        log('Connection test failed', error);
+        console.log('Connection test failed', error);
         return false;
       }
-      log('Connection test successful', { count: data });
+      console.log('Connection test successful', { count: data });
       return true;
     } catch (error) {
-      log('Connection test error', error);
+      console.log('Connection test error', error);
       return false;
     }
-  }, [log]);
+  }, []);
 
   // Fetch leads with timeout and comprehensive error handling
   const fetchLeads = useCallback(async (timeoutMs = 10000) => {
     if (!userId) {
-      log('No userId provided, skipping fetch');
+      console.log('No userId provided, skipping fetch');
       setIsLoading(false);
       return;
     }
@@ -63,7 +65,7 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
     try {
       setIsLoading(true);
       setError(null);
-      log('Starting leads fetch', { userId, timeout: timeoutMs });
+      console.log('Starting leads fetch', { userId, timeout: timeoutMs });
 
       // Clear any existing timeout
       if (fetchTimeoutRef.current) {
@@ -90,7 +92,7 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
         .eq('client_id', userId)
         .order('created_at', { ascending: false });
 
-      log('Executing query with timeout...');
+      console.log('Executing query with timeout...');
       
       // Race between query and timeout
       const { data, error } = await Promise.race([queryPromise, timeoutPromise]) as any;
@@ -101,15 +103,15 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
         fetchTimeoutRef.current = null;
       }
 
-      log('Query completed', { hasData: !!data, hasError: !!error, dataLength: data?.length });
+      console.log('Query completed', { hasData: !!data, hasError: !!error, dataLength: data?.length });
 
       if (error) {
-        log('Query error', error);
+        console.log('Query error', error);
         throw new Error(`Database query failed: ${error.message}`);
       }
 
       const leadsData = data || [];
-      log('Successfully fetched leads', { count: leadsData.length });
+      console.log('Successfully fetched leads', { count: leadsData.length });
       
       setLeads(leadsData);
       setError(null);
@@ -117,11 +119,11 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
       if (leadsData.length > 0) {
         toast.success(`Loaded ${leadsData.length} leads`);
       } else {
-        log('No leads found for user');
+        console.log('No leads found for user');
       }
 
     } catch (error: any) {
-      log('Fetch leads error', error);
+      console.log('Fetch leads error', error);
       
       // Clear timeout on error
       if (fetchTimeoutRef.current) {
@@ -134,45 +136,45 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
       setLeads([]);
       toast.error(`Failed to fetch leads: ${errorMessage}`);
     } finally {
-      log('Setting loading to false');
+      console.log('Setting loading to false');
       setIsLoading(false);
     }
-  }, [userId, log, testConnection]);
+  }, [userId, testConnection]);
 
   // Force stop loading
   const forceStopLoading = useCallback(() => {
-    log('Force stopping loading state');
+    console.log('Force stopping loading state');
     setIsLoading(false);
     if (fetchTimeoutRef.current) {
       clearTimeout(fetchTimeoutRef.current);
       fetchTimeoutRef.current = null;
     }
     toast.info('Loading stopped manually');
-  }, [log]);
+  }, []);
 
   // Manual refresh with loading state
   const manualRefresh = useCallback(() => {
-    log('Manual refresh triggered');
+    console.log('Manual refresh triggered');
     fetchLeads(15000); // 15 second timeout for manual refresh
-  }, [fetchLeads, log]);
+  }, [fetchLeads]);
 
   // Initial fetch
   useEffect(() => {
     if (userId && !hasInitializedRef.current) {
-      log('Initial fetch starting', { userId });
+      console.log('Initial fetch starting', { userId });
       hasInitializedRef.current = true;
       fetchLeads();
     } else if (!userId) {
-      log('No userId, setting loading to false');
+      console.log('No userId, setting loading to false');
       setIsLoading(false);
     }
-  }, [userId, fetchLeads, log]);
+  }, [userId, fetchLeads]);
 
   // Set up real-time subscription
   useEffect(() => {
     if (!userId) return;
 
-    log('Setting up real-time subscription', { userId });
+    console.log('Setting up real-time subscription', { userId });
 
     const channel = supabase
       .channel('leads_realtime')
@@ -185,15 +187,15 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
           filter: `client_id=eq.${userId}`
         },
         (payload) => {
-          log('Real-time INSERT received', payload.new);
+          console.log('Real-time INSERT received', payload.new);
           const newLead = payload.new as Lead;
           setLeads(currentLeads => {
             const exists = currentLeads.some(lead => lead.id === newLead.id);
             if (exists) {
-              log('Lead already exists, skipping duplicate');
+              console.log('Lead already exists, skipping duplicate');
               return currentLeads;
             }
-            log('Adding new lead to state');
+            console.log('Adding new lead to state');
             toast.success(`Nouveau lead ajouté: ${newLead.full_name}`);
             return [newLead, ...currentLeads];
           });
@@ -208,7 +210,7 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
           filter: `client_id=eq.${userId}`
         },
         (payload) => {
-          log('Real-time UPDATE received', payload.new);
+          console.log('Real-time UPDATE received', payload.new);
           const updatedLead = payload.new as Lead;
           setLeads(currentLeads =>
             currentLeads.map(lead =>
@@ -226,7 +228,7 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
           filter: `client_id=eq.${userId}`
         },
         (payload) => {
-          log('Real-time DELETE received', payload.old);
+          console.log('Real-time DELETE received', payload.old);
           const deletedLead = payload.old as Lead;
           setLeads(currentLeads =>
             currentLeads.filter(lead => lead.id !== deletedLead.id)
@@ -234,14 +236,14 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
         }
       )
       .subscribe((status) => {
-        log('Real-time subscription status', status);
+        console.log('Real-time subscription status', status);
       });
 
     return () => {
-      log('Cleaning up real-time subscription');
+      console.log('Cleaning up real-time subscription');
       supabase.removeChannel(channel);
     };
-  }, [userId, log]);
+  }, [userId]);
 
   // Cleanup timeout on unmount
   useEffect(() => {
@@ -251,6 +253,16 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
       }
     };
   }, []);
+
+  // Log render state only in effect, not during render
+  useEffect(() => {
+    logDebug('Render state updated', { 
+      isLoading, 
+      leadsCount: leads.length, 
+      hasError: !!error,
+      userId 
+    });
+  }, [isLoading, leads.length, error, userId, logDebug]);
 
   const handleStatusUpdate = (leadId: string, newStatus: string) => {
     setLeads(prevLeads =>
@@ -319,14 +331,6 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
   });
 
   const statusOptions = Array.from(new Set(leads.map(lead => lead.status).filter(Boolean)));
-
-  log('Render state', { 
-    isLoading, 
-    leadsCount: leads.length, 
-    filteredCount: filteredLeads.length,
-    hasError: !!error,
-    userId 
-  });
 
   if (isLoading) {
     return (
