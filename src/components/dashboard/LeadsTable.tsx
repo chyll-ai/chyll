@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
@@ -25,8 +24,8 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
   const [selectedLeads, setSelectedLeads] = useState<Set<string>>(new Set());
   const [clientId, setClientId] = useState<string | null>(null);
 
-  // Get client_id from clients table using auth user ID
-  const getClientId = async () => {
+  // Get or create client_id from clients table using auth user ID
+  const getOrCreateClientId = async () => {
     if (!userId) {
       console.log('LeadsTable: No userId provided');
       setIsLoading(false);
@@ -35,21 +34,54 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
     
     try {
       console.log('LeadsTable: Fetching client_id for auth user:', userId);
-      const { data: client, error } = await supabase
+      
+      // First try to find existing client
+      const { data: existingClient, error: selectError } = await supabase
         .from('clients')
         .select('id')
         .eq('id', userId)
         .maybeSingle();
 
-      if (error) {
-        console.error('LeadsTable: Error fetching client:', error);
-        throw error;
+      if (selectError) {
+        console.error('LeadsTable: Error fetching client:', selectError);
+        throw selectError;
       }
 
-      console.log('LeadsTable: Client data:', client);
-      setClientId(client?.id || null);
+      if (existingClient) {
+        console.log('LeadsTable: Found existing client:', existingClient);
+        setClientId(existingClient.id);
+        return;
+      }
+
+      // If no client exists, we need to get the user's email to create one
+      console.log('LeadsTable: No client found, checking auth user...');
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      
+      if (userError || !user?.email) {
+        console.error('LeadsTable: Error getting user data:', userError);
+        throw new Error('Could not get user email');
+      }
+
+      // Create new client record
+      console.log('LeadsTable: Creating new client record...');
+      const { data: newClient, error: insertError } = await supabase
+        .from('clients')
+        .insert({
+          id: userId,
+          email: user.email
+        })
+        .select('id')
+        .single();
+
+      if (insertError) {
+        console.error('LeadsTable: Error creating client:', insertError);
+        throw insertError;
+      }
+
+      console.log('LeadsTable: Created new client:', newClient);
+      setClientId(newClient.id);
     } catch (error: any) {
-      console.error('LeadsTable: Error getting client_id:', error);
+      console.error('LeadsTable: Error getting/creating client_id:', error);
       toast.error('Failed to load client data');
       setIsLoading(false);
     }
@@ -88,7 +120,7 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
 
   // Get client_id when userId changes
   useEffect(() => {
-    getClientId();
+    getOrCreateClientId();
   }, [userId]);
 
   // Fetch leads when clientId changes
