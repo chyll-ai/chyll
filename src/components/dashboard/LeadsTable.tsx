@@ -1,4 +1,5 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { Lead } from '@/types/assistant';
@@ -6,7 +7,7 @@ import LeadStatusBadge from './LeadStatusBadge';
 import LeadStatusSelector from './LeadStatusSelector';
 import LeadActionsMenu from './LeadActionsMenu';
 import LeadFilterBar from './LeadFilterBar';
-import { TrendingUp, Mail, Calendar, CheckSquare, Square, Eye, RefreshCw, AlertCircle, Database } from 'lucide-react';
+import { TrendingUp, Mail, Calendar, CheckSquare, Square, Eye } from 'lucide-react';
 import { toast } from '@/components/ui/sonner';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -19,139 +20,40 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
   const navigate = useNavigate();
   const [leads, setLeads] = useState<Lead[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
   const [selectedLeads, setSelectedLeads] = useState<Set<string>>(new Set());
-  const fetchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const hasInitializedRef = useRef(false);
 
-  // Optimized fetch with shorter timeout and better error handling
-  const fetchLeads = useCallback(async (timeoutMs = 5000) => {
-    if (!userId) {
-      console.log('No userId provided, skipping fetch');
-      setIsLoading(false);
-      return;
-    }
-
+  // Simple fetch function
+  const fetchLeads = async () => {
+    if (!userId) return;
+    
     try {
       setIsLoading(true);
-      setError(null);
-      console.log('Starting optimized leads fetch', { userId, timeout: timeoutMs });
-
-      // Clear any existing timeout
-      if (fetchTimeoutRef.current) {
-        clearTimeout(fetchTimeoutRef.current);
-      }
-
-      // Create an AbortController for better timeout handling
-      const abortController = new AbortController();
-      
-      // Set up timeout
-      const timeoutId = setTimeout(() => {
-        abortController.abort();
-      }, timeoutMs);
-
-      // Select all required fields for the Lead type
       const { data, error } = await supabase
         .from('leads')
-        .select('id, full_name, email, company, job_title, status, created_at, client_id, location, phone_number, linkedin_url, enriched_from')
+        .select('*')
         .eq('client_id', userId)
-        .order('created_at', { ascending: false })
-        .limit(100); // Limit initial load to 100 records
+        .order('created_at', { ascending: false });
 
-      clearTimeout(timeoutId);
-
-      if (error) {
-        console.error('Database query error:', error);
-        throw new Error(`Database error: ${error.message}`);
-      }
-
-      const leadsData = data || [];
-      console.log('Successfully fetched leads', { count: leadsData.length });
-      
-      setLeads(leadsData);
-      setError(null);
-      
-      if (leadsData.length > 0) {
-        toast.success(`Loaded ${leadsData.length} leads`);
-      }
-
+      if (error) throw error;
+      setLeads(data || []);
     } catch (error: any) {
-      console.error('Fetch leads error:', error);
-      
-      // Clear timeout on error
-      if (fetchTimeoutRef.current) {
-        clearTimeout(fetchTimeoutRef.current);
-        fetchTimeoutRef.current = null;
-      }
-
-      let errorMessage = 'Failed to load leads';
-      
-      if (error.name === 'AbortError') {
-        errorMessage = 'Database query timed out - please try again';
-      } else if (error.message) {
-        errorMessage = error.message;
-      }
-      
-      setError(errorMessage);
-      setLeads([]);
-      toast.error(errorMessage);
+      console.error('Error fetching leads:', error);
+      toast.error('Failed to load leads');
     } finally {
       setIsLoading(false);
     }
-  }, [userId]);
+  };
 
-  // Quick connection test
-  const testConnection = useCallback(async () => {
-    try {
-      console.log('Testing database connection...');
-      toast.info('Testing connection...');
-      
-      const { data, error } = await supabase
-        .from('leads')
-        .select('count', { count: 'exact', head: true })
-        .eq('client_id', userId);
-        
-      if (error) {
-        console.error('Connection test failed:', error);
-        toast.error(`Connection failed: ${error.message}`);
-        return false;
-      }
-      
-      console.log('Connection test successful');
-      toast.success('Database connection OK');
-      return true;
-    } catch (error: any) {
-      console.error('Connection test error:', error);
-      toast.error(`Connection error: ${error.message}`);
-      return false;
-    }
-  }, [userId]);
-
-  // Manual refresh with loading state
-  const manualRefresh = useCallback(() => {
-    console.log('Manual refresh triggered');
-    fetchLeads(8000); // Longer timeout for manual refresh
-  }, [fetchLeads]);
-
-  // Initial fetch with shorter timeout
+  // Initial fetch
   useEffect(() => {
-    if (userId && !hasInitializedRef.current) {
-      console.log('Initial fetch starting', { userId });
-      hasInitializedRef.current = true;
-      fetchLeads(5000); // Shorter timeout for initial load
-    } else if (!userId) {
-      console.log('No userId, setting loading to false');
-      setIsLoading(false);
-    }
-  }, [userId, fetchLeads]);
+    fetchLeads();
+  }, [userId]);
 
-  // Set up real-time subscription
+  // Real-time subscription
   useEffect(() => {
     if (!userId) return;
-
-    console.log('Setting up real-time subscription', { userId });
 
     const channel = supabase
       .channel('leads_realtime')
@@ -164,18 +66,9 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
           filter: `client_id=eq.${userId}`
         },
         (payload) => {
-          console.log('Real-time INSERT received', payload.new);
           const newLead = payload.new as Lead;
-          setLeads(currentLeads => {
-            const exists = currentLeads.some(lead => lead.id === newLead.id);
-            if (exists) {
-              console.log('Lead already exists, skipping duplicate');
-              return currentLeads;
-            }
-            console.log('Adding new lead to state');
-            toast.success(`Nouveau lead ajouté: ${newLead.full_name}`);
-            return [newLead, ...currentLeads];
-          });
+          setLeads(current => [newLead, ...current]);
+          toast.success(`New lead: ${newLead.full_name}`);
         }
       )
       .on(
@@ -187,33 +80,20 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
           filter: `client_id=eq.${userId}`
         },
         (payload) => {
-          console.log('Real-time UPDATE received', payload.new);
           const updatedLead = payload.new as Lead;
-          setLeads(currentLeads =>
-            currentLeads.map(lead =>
+          setLeads(current =>
+            current.map(lead =>
               lead.id === updatedLead.id ? updatedLead : lead
             )
           );
         }
       )
-      .subscribe((status) => {
-        console.log('Real-time subscription status', status);
-      });
+      .subscribe();
 
     return () => {
-      console.log('Cleaning up real-time subscription');
       supabase.removeChannel(channel);
     };
   }, [userId]);
-
-  // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (fetchTimeoutRef.current) {
-        clearTimeout(fetchTimeoutRef.current);
-      }
-    };
-  }, []);
 
   const handleStatusUpdate = (leadId: string, newStatus: string) => {
     setLeads(prevLeads =>
@@ -286,104 +166,50 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center p-8">
-        <div className="text-center space-y-4">
-          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto" />
-          <p className="text-xs text-muted-foreground">Loading leads...</p>
-          <div className="flex gap-2 justify-center">
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={() => setIsLoading(false)}
-              className="text-xs"
-            >
-              Stop Loading
-            </Button>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={testConnection}
-              className="text-xs"
-            >
-              <Database className="h-3 w-3 mr-1" />
-              Test DB
-            </Button>
-          </div>
-        </div>
+        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary" />
       </div>
     );
   }
 
-  if (error) {
-    return (
-      <Card className="border-red-200 bg-red-50 w-full min-w-0">
-        <CardContent className="p-6 text-center">
-          <div className="flex items-center justify-center w-10 h-10 bg-red-100 rounded-full mx-auto mb-3">
-            <AlertCircle className="h-5 w-5 text-red-600" />
-          </div>
-          <h3 className="text-sm font-semibold mb-2 text-red-800">Database Error</h3>
-          <p className="text-xs text-red-600 mb-4">{error}</p>
-          <div className="flex gap-2 justify-center">
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={manualRefresh}
-            >
-              <RefreshCw className="h-4 w-4 mr-1" />
-              Retry
-            </Button>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={testConnection}
-            >
-              <Database className="h-4 w-4 mr-1" />
-              Test Connection
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
   return (
-    <div className="space-y-3 h-full flex flex-col w-full min-w-0">
-      {/* Stats Cards - only show if we have leads */}
+    <div className="space-y-3 h-full flex flex-col w-full">
+      {/* Stats Cards */}
       {leads.length > 0 && (
-        <div className="grid grid-cols-3 gap-2 w-full min-w-0">
-          <Card className="border-border/40 min-w-0">
+        <div className="grid grid-cols-3 gap-2 w-full">
+          <Card className="border-border/40">
             <CardContent className="p-2">
               <div className="flex items-center gap-2">
                 <div className="flex items-center justify-center w-5 h-5 bg-blue-500/10 rounded">
                   <TrendingUp className="h-3 w-3 text-blue-600" />
                 </div>
-                <div className="min-w-0">
+                <div>
                   <p className="text-xs text-muted-foreground">Total</p>
                   <p className="text-sm font-bold">{leads.length}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
-          <Card className="border-border/40 min-w-0">
+          <Card className="border-border/40">
             <CardContent className="p-2">
               <div className="flex items-center gap-2">
                 <div className="flex items-center justify-center w-5 h-5 bg-green-500/10 rounded">
                   <Mail className="h-3 w-3 text-green-600" />
                 </div>
-                <div className="min-w-0">
+                <div>
                   <p className="text-xs text-muted-foreground">Email</p>
                   <p className="text-sm font-bold">{leads.filter(l => l.email).length}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
-          <Card className="border-border/40 min-w-0">
+          <Card className="border-border/40">
             <CardContent className="p-2">
               <div className="flex items-center gap-2">
                 <div className="flex items-center justify-center w-5 h-5 bg-purple-500/10 rounded">
                   <Calendar className="h-3 w-3 text-purple-600" />
                 </div>
-                <div className="min-w-0">
-                  <p className="text-xs text-muted-foreground">Semaine</p>
+                <div>
+                  <p className="text-xs text-muted-foreground">This Week</p>
                   <p className="text-sm font-bold">
                     {leads.filter(l => {
                       const weekAgo = new Date();
@@ -398,7 +224,7 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
         </div>
       )}
 
-      <div className="w-full min-w-0">
+      <div className="w-full">
         <LeadFilterBar
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
@@ -408,33 +234,12 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
         />
       </div>
 
-      {/* Control Buttons */}
-      <div className="flex gap-2 justify-end">
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={manualRefresh}
-          disabled={isLoading}
-        >
-          <RefreshCw className="h-3 w-3 mr-1" />
-          Refresh
-        </Button>
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={testConnection}
-        >
-          <Database className="h-3 w-3 mr-1" />
-          Test DB
-        </Button>
-      </div>
-
       {selectedLeads.size > 0 && (
-        <Card className="border-border/40 w-full min-w-0">
+        <Card className="border-border/40 w-full">
           <CardContent className="p-3">
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">
-                {selectedLeads.size} leads sélectionnés
+                {selectedLeads.size} leads selected
               </span>
               <div className="flex gap-2">
                 <Button
@@ -442,21 +247,21 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
                   variant="outline"
                   onClick={() => bulkStatusUpdate('email envoyé')}
                 >
-                  Marquer comme contactés
+                  Mark as Contacted
                 </Button>
                 <Button
                   size="sm"
                   variant="outline"
                   onClick={() => bulkStatusUpdate('à relancer')}
                 >
-                  À relancer
+                  Follow Up
                 </Button>
                 <Button
                   size="sm"
                   variant="outline"
                   onClick={() => setSelectedLeads(new Set())}
                 >
-                  Désélectionner
+                  Clear Selection
                 </Button>
               </div>
             </div>
@@ -464,148 +269,138 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
         </Card>
       )}
       
-      <div className="flex-1 overflow-hidden w-full min-w-0">
+      <div className="flex-1 overflow-hidden w-full">
         {filteredLeads.length === 0 ? (
-          <Card className="border-border/40 h-full w-full min-w-0">
+          <Card className="border-border/40 h-full w-full">
             <CardContent className="text-center p-6 flex flex-col items-center justify-center h-full">
               <div className="flex items-center justify-center w-10 h-10 bg-muted rounded-full mx-auto mb-3">
                 <TrendingUp className="h-5 w-5 text-muted-foreground" />
               </div>
               <h3 className="text-sm font-semibold mb-2">
-                {leads.length === 0 ? 'Aucun lead trouvé' : 'Aucun lead ne correspond aux filtres'}
+                {leads.length === 0 ? 'No leads found' : 'No leads match filters'}
               </h3>
-              <p className="text-xs text-muted-foreground mb-4">
+              <p className="text-xs text-muted-foreground">
                 {leads.length === 0 
-                  ? 'Commencez par demander à l\'assistant IA de trouver des leads' 
-                  : 'Essayez d\'ajuster vos critères de recherche'
+                  ? 'Ask the AI assistant to find leads' 
+                  : 'Try adjusting your search criteria'
                 }
               </p>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={manualRefresh}
-              >
-                <RefreshCw className="h-4 w-4 mr-1" />
-                Actualiser
-              </Button>
             </CardContent>
           </Card>
         ) : (
-          <Card className="border-border/40 h-full flex flex-col w-full min-w-0">
-            <div className="flex-1 overflow-auto w-full min-w-0">
-              <div className="w-full min-w-max">
-                <table className="w-full table-auto border-collapse min-w-max">
-                  <thead className="sticky top-0 bg-muted/30 z-10">
-                    <tr className="border-b border-border/40">
-                      <th className="text-left p-2 font-medium text-xs w-12">
+          <Card className="border-border/40 h-full flex flex-col w-full">
+            <div className="flex-1 overflow-auto w-full">
+              <table className="w-full table-auto border-collapse">
+                <thead className="sticky top-0 bg-muted/30 z-10">
+                  <tr className="border-b border-border/40">
+                    <th className="text-left p-2 font-medium text-xs w-12">
+                      <button
+                        onClick={selectAllLeads}
+                        className="flex items-center justify-center w-4 h-4"
+                      >
+                        {selectedLeads.size === filteredLeads.length ? (
+                          <CheckSquare className="h-4 w-4" />
+                        ) : (
+                          <Square className="h-4 w-4" />
+                        )}
+                      </button>
+                    </th>
+                    <th className="text-left p-2 font-medium text-xs">Name</th>
+                    <th className="text-left p-2 font-medium text-xs">Email</th>
+                    <th className="text-left p-2 font-medium text-xs">Phone</th>
+                    <th className="text-left p-2 font-medium text-xs">Job Title</th>
+                    <th className="text-left p-2 font-medium text-xs">Company</th>
+                    <th className="text-left p-2 font-medium text-xs">Location</th>
+                    <th className="text-left p-2 font-medium text-xs">Date</th>
+                    <th className="text-left p-2 font-medium text-xs">Status</th>
+                    <th className="text-left p-2 font-medium text-xs">View</th>
+                    <th className="text-left p-2 font-medium text-xs">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredLeads.map((lead, index) => (
+                    <tr 
+                      key={lead.id} 
+                      className={`border-b border-border/20 hover:bg-muted/30 transition-colors ${
+                        index % 2 === 0 ? 'bg-background' : 'bg-muted/10'
+                      } ${selectedLeads.has(lead.id) ? 'bg-blue-50' : ''}`}
+                    >
+                      <td className="p-2">
                         <button
-                          onClick={selectAllLeads}
+                          onClick={() => toggleLeadSelection(lead.id)}
                           className="flex items-center justify-center w-4 h-4"
                         >
-                          {selectedLeads.size === filteredLeads.length ? (
-                            <CheckSquare className="h-4 w-4" />
+                          {selectedLeads.has(lead.id) ? (
+                            <CheckSquare className="h-4 w-4 text-blue-600" />
                           ) : (
                             <Square className="h-4 w-4" />
                           )}
                         </button>
-                      </th>
-                      <th className="text-left p-2 font-medium text-xs min-w-[120px]">Nom</th>
-                      <th className="text-left p-2 font-medium text-xs min-w-[180px]">Email</th>
-                      <th className="text-left p-2 font-medium text-xs min-w-[120px]">Téléphone</th>
-                      <th className="text-left p-2 font-medium text-xs min-w-[140px]">Poste</th>
-                      <th className="text-left p-2 font-medium text-xs min-w-[140px]">Entreprise</th>
-                      <th className="text-left p-2 font-medium text-xs min-w-[120px]">Lieu</th>
-                      <th className="text-left p-2 font-medium text-xs min-w-[80px]">Date</th>
-                      <th className="text-left p-2 font-medium text-xs min-w-[140px]">Statut</th>
-                      <th className="text-left p-2 font-medium text-xs min-w-[80px]">Voir le lead</th>
-                      <th className="text-left p-2 font-medium text-xs min-w-[400px]">Actions</th>
+                      </td>
+                      <td className="p-2">
+                        <div className="text-xs font-medium truncate max-w-32" title={lead.full_name}>
+                          {lead.full_name || 'N/A'}
+                        </div>
+                      </td>
+                      <td className="p-2">
+                        <div className="text-xs text-blue-600 truncate max-w-48" title={lead.email}>
+                          {lead.email || 'N/A'}
+                        </div>
+                      </td>
+                      <td className="p-2">
+                        <div className="text-xs text-muted-foreground truncate max-w-32" title={lead.phone_number}>
+                          {lead.phone_number || 'N/A'}
+                        </div>
+                      </td>
+                      <td className="p-2">
+                        <div className="text-xs truncate max-w-40" title={lead.job_title}>
+                          {lead.job_title || 'N/A'}
+                        </div>
+                      </td>
+                      <td className="p-2">
+                        <div className="text-xs font-medium truncate max-w-40" title={lead.company}>
+                          {lead.company || 'N/A'}
+                        </div>
+                      </td>
+                      <td className="p-2">
+                        <div className="text-xs text-muted-foreground truncate max-w-32" title={lead.location}>
+                          {lead.location || 'N/A'}
+                        </div>
+                      </td>
+                      <td className="p-2">
+                        <div className="text-xs text-muted-foreground">
+                          {new Date(lead.created_at).toLocaleDateString('fr-FR', { 
+                            day: '2-digit', 
+                            month: '2-digit' 
+                          })}
+                        </div>
+                      </td>
+                      <td className="p-2">
+                        <LeadStatusSelector 
+                          lead={lead} 
+                          onStatusUpdate={handleStatusUpdate}
+                        />
+                      </td>
+                      <td className="p-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleViewLead(lead.id)}
+                          className="h-8 w-8 p-0"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                      </td>
+                      <td className="p-2">
+                        <LeadActionsMenu 
+                          lead={lead} 
+                          onStatusUpdate={handleStatusUpdate}
+                        />
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {filteredLeads.map((lead, index) => (
-                      <tr 
-                        key={lead.id} 
-                        className={`border-b border-border/20 hover:bg-muted/30 transition-colors ${
-                          index % 2 === 0 ? 'bg-background' : 'bg-muted/10'
-                        } ${selectedLeads.has(lead.id) ? 'bg-blue-50' : ''}`}
-                      >
-                        <td className="p-2">
-                          <button
-                            onClick={() => toggleLeadSelection(lead.id)}
-                            className="flex items-center justify-center w-4 h-4"
-                          >
-                            {selectedLeads.has(lead.id) ? (
-                              <CheckSquare className="h-4 w-4 text-blue-600" />
-                            ) : (
-                              <Square className="h-4 w-4" />
-                            )}
-                          </button>
-                        </td>
-                        <td className="p-2">
-                          <div className="text-xs font-medium truncate max-w-32" title={lead.full_name}>
-                            {lead.full_name || 'N/A'}
-                          </div>
-                        </td>
-                        <td className="p-2">
-                          <div className="text-xs text-blue-600 truncate max-w-48" title={lead.email}>
-                            {lead.email || 'N/A'}
-                          </div>
-                        </td>
-                        <td className="p-2">
-                          <div className="text-xs text-muted-foreground truncate max-w-32" title={lead.phone_number}>
-                            {lead.phone_number ? lead.phone_number.replace(/(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/, '$1.$2.$3.$4.$5') : 'N/A'}
-                          </div>
-                        </td>
-                        <td className="p-2">
-                          <div className="text-xs truncate max-w-40" title={lead.job_title}>
-                            {lead.job_title || 'N/A'}
-                          </div>
-                        </td>
-                        <td className="p-2">
-                          <div className="text-xs font-medium truncate max-w-40" title={lead.company}>
-                            {lead.company || 'N/A'}
-                          </div>
-                        </td>
-                        <td className="p-2">
-                          <div className="text-xs text-muted-foreground truncate max-w-32" title={lead.location}>
-                            {lead.location || 'N/A'}
-                          </div>
-                        </td>
-                        <td className="p-2">
-                          <div className="text-xs text-muted-foreground">
-                            {new Date(lead.created_at).toLocaleDateString('fr-FR', { 
-                              day: '2-digit', 
-                              month: '2-digit' 
-                            })}
-                          </div>
-                        </td>
-                        <td className="p-2 min-w-[140px]">
-                          <LeadStatusSelector 
-                            lead={lead} 
-                            onStatusUpdate={handleStatusUpdate}
-                          />
-                        </td>
-                        <td className="p-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleViewLead(lead.id)}
-                            className="h-8 w-8 p-0"
-                          >
-                            <Eye className="h-4 w-4" />
-                          </Button>
-                        </td>
-                        <td className="p-2 min-w-[400px]">
-                          <LeadActionsMenu 
-                            lead={lead} 
-                            onStatusUpdate={handleStatusUpdate}
-                          />
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </Card>
         )}
