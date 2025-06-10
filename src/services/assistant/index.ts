@@ -46,9 +46,13 @@ export class AssistantService {
           content.toLowerCase().includes('prospects')) {
         console.log('AssistantService: Detected search query');
         
+        // Extract number from query (default to 5 if not specified)
+        const numberMatch = content.match(/(\d+)/);
+        const requestedCount = numberMatch ? parseInt(numberMatch[1]) : 5;
+        
         // Try to use the smarter OpenAI generation first
         try {
-          const smartLeads = await this.generateSmartLeads(content);
+          const smartLeads = await this.generateSmartLeads(content, requestedCount);
           
           // Save leads to database
           await this.saveDummyLeads(smartLeads);
@@ -67,7 +71,7 @@ export class AssistantService {
           console.error('Smart lead generation failed, falling back to dummy generation:', error);
           
           // Fallback to dummy leads if OpenAI fails
-          const dummyLeads = this.generateDummyLeads(content);
+          const dummyLeads = this.generateDummyLeads(content, requestedCount);
           await this.saveDummyLeads(dummyLeads);
           
           if (this.onLeadsUpdate) {
@@ -115,9 +119,9 @@ export class AssistantService {
     }
   }
 
-  private async generateSmartLeads(searchQuery: string): Promise<Lead[]> {
+  private async generateSmartLeads(searchQuery: string, count: number = 5): Promise<Lead[]> {
     try {
-      console.log('Calling smart lead generation for:', searchQuery);
+      console.log('Calling smart lead generation for:', searchQuery, 'count:', count);
       
       // Call the OpenAI-powered lead search function
       const response = await fetch(`https://atsfuqwxfrezkxtnctmk.supabase.co/functions/v1/lead-search`, {
@@ -128,7 +132,7 @@ export class AssistantService {
         },
         body: JSON.stringify({
           searchQuery: searchQuery,
-          count: 5,
+          count: count,
           userId: this.userId
         })
       });
@@ -152,34 +156,34 @@ export class AssistantService {
     }
   }
 
-  private generateDummyLeads(searchQuery: string): Lead[] {
-    // Enhanced dummy generation with better variety
+  private generateDummyLeads(searchQuery: string, requestedCount: number = 5): Lead[] {
+    console.log('Generating dummy leads for:', searchQuery, 'count:', requestedCount);
+    
+    // Parse the search query to extract job title and location
+    const jobTitleMatch = this.extractJobTitle(searchQuery);
+    const locationMatch = this.extractLocation(searchQuery);
+    
     const techCompanies = [
-      'InnovTech Solutions', 'DataFlow Systems', 'CodeCraft Studio', 'NextGen Analytics', 'CloudFirst Technologies',
-      'ByteForge Labs', 'SmartCode Solutions', 'DevStream Technologies', 'TechPulse SAS', 'DigitalMind Studio'
+      'DataFlow Systems', 'NextGen Analytics', 'CloudFirst Technologies', 'ByteForge Labs', 
+      'SmartCode Solutions', 'DevStream Technologies', 'TechPulse SAS', 'DigitalMind Studio',
+      'InnovTech Paris', 'CodeCraft Studio', 'SalesForce France', 'TechSales Pro',
+      'SalesBoost SAS', 'RevenueTech', 'CommercialTech', 'SalesOptim'
     ];
     
-    const frenchFirstNames = ['Amélie', 'Baptiste', 'Céline', 'Damien', 'Élise', 'Fabien', 'Gabrielle', 'Hugo', 'Inès', 'Julien'];
-    const frenchLastNames = ['Dubois', 'Lefevre', 'Moreau', 'Rousseau', 'Vincent', 'Fournier', 'Girard', 'Andre', 'Mercier', 'Dupont'];
-    const techCities = ['Paris', 'Lyon', 'Toulouse', 'Nice', 'Bordeaux', 'Nantes', 'Montpellier', 'Rennes', 'Grenoble', 'Strasbourg'];
+    const frenchFirstNames = ['Alexandre', 'Sophie', 'Julien', 'Marine', 'Thomas', 'Camille', 'Nicolas', 'Amélie', 'Pierre', 'Claire'];
+    const frenchLastNames = ['Martin', 'Dubois', 'Moreau', 'Lefebvre', 'Garcia', 'Roux', 'Fournier', 'Girard', 'Bernard', 'Durand'];
     
-    // More specific job titles based on search query
-    let jobTitles = ['Développeur Senior', 'Chef de Projet Technique', 'Architecte Solution', 'Lead Developer', 'Product Manager'];
+    // Default to Paris if no location specified
+    const targetLocation = locationMatch || 'Paris';
+    const targetJobTitle = jobTitleMatch || 'Responsable Commercial';
     
-    // Customize job titles based on search query
-    if (searchQuery.toLowerCase().includes('cto') || searchQuery.toLowerCase().includes('directeur technique')) {
-      jobTitles = ['CTO', 'Directeur Technique', 'VP Engineering', 'Chief Technology Officer'];
-    } else if (searchQuery.toLowerCase().includes('lead') || searchQuery.toLowerCase().includes('senior')) {
-      jobTitles = ['Lead Developer', 'Senior Software Engineer', 'Tech Lead', 'Senior Product Manager'];
-    } else if (searchQuery.toLowerCase().includes('product')) {
-      jobTitles = ['Product Manager', 'Head of Product', 'Senior Product Owner', 'VP Product'];
-    }
+    console.log('Extracted job title:', targetJobTitle, 'location:', targetLocation);
 
     const leads: Lead[] = [];
-    const count = Math.floor(Math.random() * 3) + 3; // 3-5 leads
 
-    for (let i = 0; i < count; i++) {
-      let firstName, lastName, fullName, email;
+    // Generate exactly the requested number of leads
+    for (let i = 0; i < requestedCount; i++) {
+      let firstName, lastName, fullName, email, company;
       let attempts = 0;
       
       // Ensure uniqueness
@@ -187,24 +191,27 @@ export class AssistantService {
         firstName = frenchFirstNames[Math.floor(Math.random() * frenchFirstNames.length)];
         lastName = frenchLastNames[Math.floor(Math.random() * frenchLastNames.length)];
         fullName = `${firstName} ${lastName}`;
-        email = `${firstName.toLowerCase()}.${lastName.toLowerCase()}@${techCompanies[i % techCompanies.length].toLowerCase().replace(/\s+/g, '').replace(/'/g, '')}.fr`;
+        company = techCompanies[Math.floor(Math.random() * techCompanies.length)];
+        email = `${firstName.toLowerCase()}.${lastName.toLowerCase()}@${company.toLowerCase().replace(/\s+/g, '').replace(/'/g, '')}.fr`;
         attempts++;
-      } while ((this.generatedNames.has(fullName) || this.generatedEmails.has(email)) && attempts < 20);
+      } while ((this.generatedNames.has(fullName) || this.generatedEmails.has(email)) && attempts < 50);
+      
+      // If we couldn't find unique names after 50 attempts, add a number suffix
+      if (attempts >= 50) {
+        fullName = `${firstName} ${lastName}${i + 1}`;
+        email = `${firstName.toLowerCase()}.${lastName.toLowerCase()}${i + 1}@${company.toLowerCase().replace(/\s+/g, '').replace(/'/g, '')}.fr`;
+      }
       
       this.generatedNames.add(fullName);
       this.generatedEmails.add(email);
-      
-      const company = techCompanies[Math.floor(Math.random() * techCompanies.length)];
-      const city = techCities[Math.floor(Math.random() * techCities.length)];
-      const jobTitle = jobTitles[Math.floor(Math.random() * jobTitles.length)];
       
       const lead: Lead = {
         id: crypto.randomUUID(),
         client_id: this.userId,
         full_name: fullName,
-        job_title: jobTitle,
+        job_title: targetJobTitle,
         company: company,
-        location: city,
+        location: targetLocation,
         email: email,
         phone_number: `+33 6${Math.floor(Math.random() * 90000000) + 10000000}`,
         linkedin_url: `linkedin.com/in/${firstName.toLowerCase()}-${lastName.toLowerCase()}-${Math.floor(Math.random() * 1000)}`,
@@ -220,7 +227,49 @@ export class AssistantService {
       leads.push(lead);
     }
 
+    console.log('Generated dummy leads:', leads.length);
     return leads;
+  }
+
+  private extractJobTitle(searchQuery: string): string {
+    const query = searchQuery.toLowerCase();
+    
+    // Map of keywords to job titles
+    const jobTitleMappings = [
+      { keywords: ['vp sales', 'vice president sales', 'vice-président commercial'], title: 'VP Sales' },
+      { keywords: ['directeur commercial', 'director sales'], title: 'Directeur Commercial' },
+      { keywords: ['responsable commercial', 'sales manager'], title: 'Responsable Commercial' },
+      { keywords: ['head of sales', 'chef des ventes'], title: 'Head of Sales' },
+      { keywords: ['commercial senior', 'senior sales'], title: 'Commercial Senior' },
+      { keywords: ['business developer', 'développeur commercial'], title: 'Business Developer' },
+      { keywords: ['cto', 'directeur technique'], title: 'CTO' },
+      { keywords: ['lead developer', 'développeur principal'], title: 'Lead Developer' },
+      { keywords: ['product manager', 'chef de produit'], title: 'Product Manager' },
+      { keywords: ['marketing manager', 'responsable marketing'], title: 'Marketing Manager' }
+    ];
+
+    for (const mapping of jobTitleMappings) {
+      for (const keyword of mapping.keywords) {
+        if (query.includes(keyword)) {
+          return mapping.title;
+        }
+      }
+    }
+
+    return 'Responsable Commercial'; // Default
+  }
+
+  private extractLocation(searchQuery: string): string {
+    const query = searchQuery.toLowerCase();
+    const locations = ['paris', 'lyon', 'marseille', 'toulouse', 'nice', 'nantes', 'montpellier', 'strasbourg', 'bordeaux', 'lille'];
+    
+    for (const location of locations) {
+      if (query.includes(location)) {
+        return location.charAt(0).toUpperCase() + location.slice(1);
+      }
+    }
+    
+    return 'Paris'; // Default location
   }
 
   private async saveDummyLeads(leads: Lead[]): Promise<void> {
