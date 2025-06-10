@@ -1,14 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { LogOut, LogIn, UserPlus, Home } from 'lucide-react';
+import { LogOut, LogIn, UserPlus, Home, Loader2 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
+import { toast } from '@/components/ui/sonner';
 
 // Separate the auth-dependent part
 const AuthButtons = () => {
   const { isAuthenticated, signOut, isLoading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const [isSigningOut, setIsSigningOut] = useState(false);
 
   const handleSignIn = () => {
     // Store the current location for redirect after login
@@ -19,9 +21,28 @@ const AuthButtons = () => {
     navigate('/dashboard');
   };
 
+  const handleSignOut = async () => {
+    if (isSigningOut) return; // Prevent multiple clicks
+    
+    try {
+      setIsSigningOut(true);
+      await signOut();
+      toast.success('Successfully signed out');
+    } catch (error) {
+      console.error('Error signing out:', error);
+      toast.error('Failed to sign out. Please try again.');
+    } finally {
+      setIsSigningOut(false);
+    }
+  };
+
   // Don't show buttons while auth is loading
   if (isLoading) {
-    return null;
+    return (
+      <div className="flex items-center gap-2">
+        <div className="h-8 w-8 animate-pulse rounded-full bg-gray-200" />
+      </div>
+    );
   }
 
   if (isAuthenticated) {
@@ -32,17 +53,23 @@ const AuthButtons = () => {
           size="sm"
           onClick={handleDashboard}
           className="flex items-center gap-2"
+          disabled={isSigningOut}
         >
           Dashboard
         </Button>
         <Button
           variant="ghost"
           size="icon"
-          onClick={signOut}
-          className="h-8 w-8"
+          onClick={handleSignOut}
+          className="h-8 w-8 relative"
           title="Sign out"
+          disabled={isSigningOut}
         >
-          <LogOut className="h-4 w-4" />
+          {isSigningOut ? (
+            <Loader2 className="h-4 w-4 animate-spin absolute" />
+          ) : (
+            <LogOut className="h-4 w-4" />
+          )}
         </Button>
       </div>
     );

@@ -131,9 +131,6 @@ export class AssistantService {
     try {
       console.log('AssistantService: Calling smart lead generation API');
       
-      const timeoutController = new AbortController();
-      const timeoutId = setTimeout(() => timeoutController.abort(), 12000); // Reduced to 12 seconds
-      
       const response = await fetch(`https://atsfuqwxfrezkxtnctmk.supabase.co/functions/v1/lead-search`, {
         method: 'POST',
         headers: {
@@ -144,11 +141,8 @@ export class AssistantService {
           searchQuery: searchQuery,
           count: count,
           userId: this.userId
-        }),
-        signal: timeoutController.signal
+        })
       });
-
-      clearTimeout(timeoutId);
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -166,10 +160,6 @@ export class AssistantService {
       console.log('AssistantService: Smart lead generation successful:', data.leads?.length || 0);
       return data.leads || [];
     } catch (error) {
-      if (error.name === 'AbortError') {
-        console.error('AssistantService: Lead generation timed out');
-        throw new Error('La génération de leads a expiré');
-      }
       console.error('AssistantService: Smart lead generation error:', error);
       throw error;
     }

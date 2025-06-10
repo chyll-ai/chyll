@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
@@ -174,12 +173,57 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signOut = async () => {
     try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
+      console.log('[AuthContext] Starting sign out process...');
+      
+      // Set a timeout for the signout process
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Sign out timeout')), 5000);
+      });
+
+      // Clear any stored auth data first
+      Object.keys(localStorage)
+        .filter(key => key.startsWith('supabase'))
+        .forEach(key => localStorage.removeItem(key));
+      
+      // Sign out from Supabase with timeout
+      const signOutPromise = supabase.auth.signOut();
+      const result = await Promise.race([signOutPromise, timeoutPromise]) as { error: Error | null };
+      
+      if (result.error) {
+        console.error('[AuthContext] Supabase signOut error:', result.error);
+        throw result.error;
+      }
+
+      console.log('[AuthContext] Successfully signed out from Supabase');
+      
+      // Clear local state
+      setUser(null);
+      setSession(null);
+      
+      // Force clear the Supabase internal auth state
+      await supabase.auth.initialize();
+      
+      // Handle session update and navigation
       await handleSession(null);
+      
+      // Navigate to home page
       navigate('/', { replace: true });
+      
+      console.log('[AuthContext] Sign out process completed');
     } catch (error) {
-      console.error('[AuthContext] Error signing out:', error);
+      console.error('[AuthContext] Error during sign out:', error);
+      // Still try to clear local state and redirect even if there's an error
+      setUser(null);
+      setSession(null);
+      
+      // Force clear auth state even on error
+      try {
+        await supabase.auth.initialize();
+      } catch (e) {
+        console.error('[AuthContext] Error reinitializing auth:', e);
+      }
+      
+      navigate('/', { replace: true });
     }
   };
 

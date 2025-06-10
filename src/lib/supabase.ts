@@ -1,4 +1,3 @@
-
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from '@/types/supabase';
 
@@ -12,7 +11,7 @@ console.log('Supabase config:', {
   origin: window.location.origin
 });
 
-// Create the Supabase client with development-friendly configuration
+// Create the Supabase client with improved configuration
 export const supabase = createClient<Database>(
   supabaseUrl,
   supabaseAnonKey,
@@ -23,7 +22,8 @@ export const supabase = createClient<Database>(
       detectSessionInUrl: true,
       storage: localStorage,
       storageKey: 'supabase.auth.token',
-      flowType: 'implicit'
+      // Remove flowType to use default PKCE
+      debug: true // Enable debug mode temporarily to help diagnose issues
     },
     global: {
       headers: {
@@ -32,6 +32,21 @@ export const supabase = createClient<Database>(
     }
   }
 );
+
+// Clear any stale auth data on init
+Object.keys(localStorage)
+  .filter(key => key.startsWith('supabase.auth.token'))
+  .forEach(key => {
+    try {
+      const data = JSON.parse(localStorage.getItem(key) || '{}');
+      if (data.expires_at && new Date(data.expires_at) < new Date()) {
+        localStorage.removeItem(key);
+      }
+    } catch (e) {
+      console.error('Error parsing auth data:', e);
+      localStorage.removeItem(key);
+    }
+  });
 
 // Set up auth state change handler with improved session management
 supabase.auth.onAuthStateChange((event, session) => {
@@ -42,11 +57,19 @@ supabase.auth.onAuthStateChange((event, session) => {
     accessToken: session?.access_token ? 'present' : 'missing',
     currentUrl: window.location.href,
     origin: window.location.origin,
+    timestamp: new Date().toISOString(),
     localStorage: {
       hasToken: !!localStorage.getItem('supabase.auth.token'),
-      allKeys: Object.keys(localStorage)
+      allKeys: Object.keys(localStorage).filter(key => key.startsWith('supabase'))
     }
   });
+
+  // Clear local storage on sign out
+  if (event === 'SIGNED_OUT') {
+    Object.keys(localStorage)
+      .filter(key => key.startsWith('supabase'))
+      .forEach(key => localStorage.removeItem(key));
+  }
 });
 
 // Export a singleton instance

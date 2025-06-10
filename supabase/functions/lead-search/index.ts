@@ -1,4 +1,3 @@
-
 // @ts-ignore: Deno imports
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 // @ts-ignore: Deno imports
@@ -109,15 +108,14 @@ Return exactly ${safeCount} leads in the JSON format specified. Be concise.`;
 
     // Reduced timeout and token limits
     const completion = await openai.chat.completions.create({
-      model: 'gpt-4o-mini', // Use faster model
+      model: 'gpt-4-1106-preview', // Use the latest model
       messages: [
         { role: 'system', content: SYSTEM_PROMPT },
         { role: 'user', content: userPrompt }
       ],
       temperature: 0.3,
       response_format: { type: "json_object" },
-      max_tokens: 800, // Reduced from 1500
-      timeout: 10000 // 10 second timeout
+      max_tokens: 800 // Reduced from 1500
     });
 
     const responseContent = completion.choices[0]?.message?.content;
