@@ -23,7 +23,7 @@ export class AssistantService {
     this.userId = userId;
     this.messages = [];
     this.apiClient = APIClient.getInstance();
-    console.log('AssistantService: Initialized');
+    console.log('AssistantService: Initialized for user:', userId);
   }
 
   setMessages(messages: Message[]) {
@@ -36,7 +36,7 @@ export class AssistantService {
 
   async sendMessage(content: string): Promise<{ message: string }> {
     try {
-      console.log('AssistantService: Sending message:', { content });
+      console.log('AssistantService: Sending message:', { content, userId: this.userId });
 
       // Check if this is a search query
       if (content.toLowerCase().includes('trouve') || 
@@ -44,33 +44,41 @@ export class AssistantService {
           content.toLowerCase().includes('recherche') ||
           content.toLowerCase().includes('leads') ||
           content.toLowerCase().includes('prospects')) {
-        console.log('AssistantService: Detected search query');
+        console.log('AssistantService: Detected search query, attempting smart lead generation');
         
         // Extract number from query (default to 5 if not specified)
         const numberMatch = content.match(/(\d+)/);
-        const requestedCount = numberMatch ? parseInt(numberMatch[1]) : 5;
+        const requestedCount = Math.min(numberMatch ? parseInt(numberMatch[1]) : 5, 10); // Cap at 10
         
-        // Try to use the smarter OpenAI generation first
+        console.log(`AssistantService: Requesting ${requestedCount} leads`);
+        
         try {
           const smartLeads = await this.generateSmartLeads(content, requestedCount);
           
-          // Save leads to database
-          await this.saveDummyLeads(smartLeads);
-          
-          // Update UI through callback
-          if (this.onLeadsUpdate) {
-            this.onLeadsUpdate(smartLeads);
-          }
-          
-          toast.success(`${smartLeads.length} nouveaux leads ajoutés au tableau de bord`);
+          if (smartLeads && smartLeads.length > 0) {
+            console.log(`AssistantService: Successfully generated ${smartLeads.length} smart leads`);
+            
+            // Save leads to database
+            await this.saveDummyLeads(smartLeads);
+            
+            // Update UI through callback
+            if (this.onLeadsUpdate) {
+              this.onLeadsUpdate(smartLeads);
+            }
+            
+            toast.success(`${smartLeads.length} nouveaux leads ajoutés au tableau de bord`);
 
-          return {
-            message: `Parfait ! J'ai trouvé ${smartLeads.length} leads spécialisés correspondant à votre recherche "${content}". Ces contacts ont été soigneusement sélectionnés pour correspondre exactement à vos critères. Vous pouvez les voir dans la section "Recent Leads" à droite.`
-          };
+            return {
+              message: `Parfait ! J'ai trouvé ${smartLeads.length} leads spécialisés correspondant à votre recherche "${content}". Ces contacts ont été soigneusement sélectionnés pour correspondre exactement à vos critères. Vous pouvez les voir dans la section "Recent Leads" à droite.`
+            };
+          } else {
+            throw new Error('No leads returned from smart generation');
+          }
         } catch (error) {
-          console.error('Smart lead generation failed, falling back to dummy generation:', error);
+          console.error('AssistantService: Smart lead generation failed:', error);
           
-          // Fallback to dummy leads if OpenAI fails
+          // Fallback to dummy leads
+          console.log('AssistantService: Falling back to dummy lead generation');
           const dummyLeads = this.generateDummyLeads(content, requestedCount);
           await this.saveDummyLeads(dummyLeads);
           
@@ -81,7 +89,7 @@ export class AssistantService {
           toast.success(`${dummyLeads.length} nouveaux leads ajoutés au tableau de bord`);
 
           return {
-            message: `J'ai trouvé ${dummyLeads.length} leads correspondant à votre recherche "${content}". Ils ont été ajoutés à votre tableau de bord. (Note: génération de démo)`
+            message: `J'ai trouvé ${dummyLeads.length} leads correspondant à votre recherche "${content}". Ils ont été ajoutés à votre tableau de bord. (Note: utilisation de données de démonstration en raison d'une erreur technique)`
           };
         }
       }
@@ -113,45 +121,56 @@ export class AssistantService {
         message: response.message
       };
     } catch (error) {
-      console.error('Error in sendMessage:', error);
-      toast.error('Failed to send message. Please try again.');
+      console.error('AssistantService: Error in sendMessage:', error);
+      toast.error('Échec de l\'envoi du message. Veuillez réessayer.');
       throw error;
     }
   }
 
   private async generateSmartLeads(searchQuery: string, count: number = 5): Promise<Lead[]> {
     try {
-      console.log('Calling smart lead generation for:', searchQuery, 'count:', count);
+      console.log('AssistantService: Calling smart lead generation API');
       
-      // Call the OpenAI-powered lead search function
+      const timeoutController = new AbortController();
+      const timeoutId = setTimeout(() => timeoutController.abort(), 15000); // 15 second timeout
+      
       const response = await fetch(`https://atsfuqwxfrezkxtnctmk.supabase.co/functions/v1/lead-search`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF0c2Z1cXd4ZnJlemt4dG5jdG1rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc2NjE3MjEsImV4cCI6MjA2MzIzNzcyMX0.FO6bvv2rFL0jhzN5aZ3m1QvNaM_ZNt7Ycmo859PSnJE'}`,
+          'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF0c2Z1cXd4ZnJlemt4dG5jdG1rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc2NjE3MjEsImV4cCI6MjA2MzIzNzcyMX0.FO6bvv2rFL0jhzN5aZ3m1QvNaM_ZNt7Ycmo859PSnJE`,
         },
         body: JSON.stringify({
           searchQuery: searchQuery,
           count: count,
           userId: this.userId
-        })
+        }),
+        signal: timeoutController.signal
       });
+
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(`Lead generation failed: ${errorText}`);
+        console.error('AssistantService: Lead generation API failed:', response.status, errorText);
+        throw new Error(`API error: ${response.status}`);
       }
 
       const data = await response.json();
       
       if (data.error) {
+        console.error('AssistantService: Lead generation returned error:', data.error);
         throw new Error(data.error);
       }
 
-      console.log('Smart lead generation successful:', data.leads?.length || 0);
+      console.log('AssistantService: Smart lead generation successful:', data.leads?.length || 0);
       return data.leads || [];
     } catch (error) {
-      console.error('Smart lead generation error:', error);
+      if (error.name === 'AbortError') {
+        console.error('AssistantService: Lead generation timed out');
+        throw new Error('La génération de leads a expiré');
+      }
+      console.error('AssistantService: Smart lead generation error:', error);
       throw error;
     }
   }

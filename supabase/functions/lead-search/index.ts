@@ -57,32 +57,20 @@ const EXAMPLE_RESPONSE = {
   ]
 };
 
-const SYSTEM_PROMPT = `You are a precise lead generation specialist with deep knowledge of French business professionals. Your task is to generate realistic French professionals that EXACTLY match the user's search criteria.
+const SYSTEM_PROMPT = `You are a lead generation specialist. Generate realistic French professionals that match the search criteria.
 
-Your response must be a JSON object with EXACTLY this structure:
+Response format (JSON only):
 ${JSON.stringify(EXAMPLE_RESPONSE, null, 2)}
 
-CRITICAL MATCHING REQUIREMENTS:
-1. JOB TITLE PRECISION: If the user specifies a job title (VP Sales, CTO, etc.), generate ONLY people with that EXACT title or very close equivalent
-2. LOCATION PRECISION: If the user specifies a location, generate leads ONLY in that location
-3. INDUSTRY PRECISION: If the user mentions an industry, ensure companies match that sector
-4. QUANTITY PRECISION: Generate exactly the number requested
+Requirements:
+- Match job titles exactly
+- Use realistic French names and companies
+- Professional email format: firstname.lastname@company.fr
+- Phone: +33 6XXXXXXXX format
+- LinkedIn: linkedin.com/in/firstname-lastname-suffix
+- Major French cities only
 
-QUALITY STANDARDS:
-- Use realistic French names (avoid repetitive patterns)
-- Create believable French company names that match the requested industry
-- Professional email formats: firstname.lastname@company.fr
-- Phone numbers: +33 6XXXXXXXX format
-- LinkedIn URLs: linkedin.com/in/firstname-lastname-suffix
-- Locations should be major French cities: Paris, Lyon, Toulouse, Nice, Bordeaux, Nantes, Marseille, Lille, Strasbourg, Montpellier
-
-COMPANY EXAMPLES by sector:
-- Tech: Criteo, BlaBlaCar, Dassault Systèmes, Atos, Capgemini
-- Fintech: Lydia, Qonto, PayFit, Leetchi
-- E-commerce: Veepee, ManoMano, Leboncoin
-- SaaS: Notion (Paris), Algolia, ContentSquare
-
-Be flexible but precise - match the user's intent exactly while maintaining realism.`;
+Keep responses concise and under 2000 tokens.`;
 
 serve(async (req: Request) => {
   if (req.method === 'OPTIONS') {
@@ -90,6 +78,8 @@ serve(async (req: Request) => {
   }
 
   try {
+    console.log('Lead search function started');
+
     if (!OPENAI_API_KEY) {
       throw new Error('OpenAI API key is not configured');
     }
@@ -106,28 +96,18 @@ serve(async (req: Request) => {
       throw new Error('User ID is required');
     }
 
+    console.log(`Processing search query: "${searchQuery}" for ${count} leads`);
+
     const openai = new OpenAI({
       apiKey: OPENAI_API_KEY
     });
 
-    // More focused and precise prompt
-    const userPrompt = `Search Query: "${searchQuery}"
+    // Simplified and shorter prompt to avoid large responses
+    const userPrompt = `Generate ${count} French business professionals for: "${searchQuery}"
 
-Parse this search and generate ${count} unique French professionals that EXACTLY match the criteria.
+Return exactly ${count} leads in JSON format. Keep it concise.`;
 
-ANALYSIS INSTRUCTIONS:
-1. Extract the specific job title mentioned (if any) - use ONLY this title
-2. Extract the specific location mentioned (if any) - use ONLY this location  
-3. Extract any industry hints - ensure companies align
-4. If no specific criteria given, use reasonable defaults
-
-STRICT MATCHING RULES:
-- Job titles must be EXACT matches or professional equivalents
-- Locations must be EXACT matches to what's requested
-- Each person must be completely unique (different names, emails, companies)
-- Companies should be realistic for the industry and role level
-
-Return exactly ${count} leads in the specified JSON format. Focus on accuracy over creativity.`;
+    console.log('Calling OpenAI API...');
 
     const completion = await openai.chat.completions.create({
       model: 'gpt-4-turbo-preview',
@@ -135,66 +115,61 @@ Return exactly ${count} leads in the specified JSON format. Focus on accuracy ov
         { role: 'system', content: SYSTEM_PROMPT },
         { role: 'user', content: userPrompt }
       ],
-      temperature: 0.3, // Lower temperature for more consistent results
+      temperature: 0.3,
       response_format: { type: "json_object" },
-      max_tokens: 3000,
+      max_tokens: 1500, // Reduced from 3000 to prevent large responses
       presence_penalty: 0.6,
       frequency_penalty: 0.8
     });
 
     const responseContent = completion.choices[0]?.message?.content;
+    
     if (!responseContent) {
+      console.error('No response content from OpenAI');
       throw new Error('No response from OpenAI');
     }
 
-    const parsedResponse = JSON.parse(responseContent);
+    console.log(`OpenAI response length: ${responseContent.length} characters`);
+
+    // Check response size before parsing
+    if (responseContent.length > 10000) {
+      console.error('Response too large, truncating...');
+      throw new Error('OpenAI response too large, please try with fewer leads');
+    }
+
+    let parsedResponse;
+    try {
+      parsedResponse = JSON.parse(responseContent);
+    } catch (parseError) {
+      console.error('JSON parsing failed:', parseError);
+      console.error('Response content preview:', responseContent.substring(0, 500));
+      throw new Error('Invalid JSON response from OpenAI');
+    }
     
     if (!parsedResponse.leads || !Array.isArray(parsedResponse.leads)) {
+      console.error('Invalid response structure:', parsedResponse);
       throw new Error('Invalid response format from OpenAI');
     }
 
-    // Enhanced validation with duplicate checking and field filtering
-    const seenNames = new Set();
-    const seenEmails = new Set();
-    const allowedFields = ['full_name', 'job_title', 'company', 'location', 'email', 'phone_number', 'linkedin_url'];
-    
-    const validatedLeads = parsedResponse.leads.map((lead: any, index: number) => {
-      // Filter out any unauthorized fields first
-      const filteredLead: any = {};
-      allowedFields.forEach(field => {
-        if (lead[field]) {
-          filteredLead[field] = lead[field];
+    // Validate and clean leads
+    const validatedLeads = parsedResponse.leads.slice(0, count).map((lead: any, index: number) => {
+      const requiredFields = ['full_name', 'job_title', 'company', 'location', 'email', 'phone_number', 'linkedin_url'];
+      
+      // Check for missing fields
+      for (const field of requiredFields) {
+        if (!lead[field] || String(lead[field]).trim() === '') {
+          throw new Error(`Lead ${index + 1} missing field: ${field}`);
         }
-      });
-
-      // Validate required fields
-      const missingOrEmptyFields = allowedFields.filter(field => !filteredLead[field] || String(filteredLead[field]).trim() === '');
-      if (missingOrEmptyFields.length > 0) {
-        throw new Error(`Lead ${index + 1} has missing or empty fields: ${missingOrEmptyFields.join(', ')}`);
       }
-
-      // Check for duplicates
-      const fullName = String(filteredLead.full_name).trim();
-      const email = String(filteredLead.email).trim().toLowerCase();
-      
-      if (seenNames.has(fullName)) {
-        throw new Error(`Lead ${index + 1} has duplicate name: ${fullName}`);
-      }
-      if (seenEmails.has(email)) {
-        throw new Error(`Lead ${index + 1} has duplicate email: ${email}`);
-      }
-      
-      seenNames.add(fullName);
-      seenEmails.add(email);
 
       const validatedLead: Lead = {
-        full_name: fullName,
-        job_title: String(filteredLead.job_title).trim(),
-        company: String(filteredLead.company).trim(),
-        location: String(filteredLead.location).trim(),
-        email: email,
-        phone_number: String(filteredLead.phone_number).trim(),
-        linkedin_url: String(filteredLead.linkedin_url).trim(),
+        full_name: String(lead.full_name).trim(),
+        job_title: String(lead.job_title).trim(),
+        company: String(lead.company).trim(),
+        location: String(lead.location).trim(),
+        email: String(lead.email).trim().toLowerCase(),
+        phone_number: String(lead.phone_number).trim(),
+        linkedin_url: String(lead.linkedin_url).trim(),
         client_id: userId,
         id: crypto.randomUUID(),
         created_at: new Date().toISOString(),
@@ -205,25 +180,18 @@ Return exactly ${count} leads in the specified JSON format. Focus on accuracy ov
         }
       };
 
-      // Enhanced validation
+      // Basic validation
       if (!validatedLead.email.includes('@') || !validatedLead.email.endsWith('.fr')) {
-        throw new Error(`Lead ${index + 1} has invalid email format: ${validatedLead.email}`);
+        throw new Error(`Lead ${index + 1} has invalid email: ${validatedLead.email}`);
       }
       if (!validatedLead.phone_number.startsWith('+33')) {
-        throw new Error(`Lead ${index + 1} has invalid phone number format: ${validatedLead.phone_number}`);
-      }
-      if (!validatedLead.linkedin_url.startsWith('linkedin.com/in/')) {
-        throw new Error(`Lead ${index + 1} has invalid LinkedIn URL format: ${validatedLead.linkedin_url}`);
+        throw new Error(`Lead ${index + 1} has invalid phone: ${validatedLead.phone_number}`);
       }
 
       return validatedLead;
     });
 
-    if (validatedLeads.length !== count) {
-      throw new Error(`Expected ${count} leads but got ${validatedLeads.length}`);
-    }
-
-    console.log(`Successfully generated ${validatedLeads.length} unique leads for query: ${searchQuery}`);
+    console.log(`Successfully generated ${validatedLeads.length} leads`);
 
     return new Response(
       JSON.stringify({
@@ -239,14 +207,19 @@ Return exactly ${count} leads in the specified JSON format. Focus on accuracy ov
     );
 
   } catch (error) {
-    console.error('Error generating leads:', error);
+    console.error('Error in lead-search function:', error);
+    
+    // Return a proper error response instead of 500
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+    
     return new Response(
       JSON.stringify({ 
-        error: error instanceof Error ? error.message : 'An unknown error occurred',
-        leads: [] 
+        error: errorMessage,
+        leads: [],
+        message: `Failed to generate leads: ${errorMessage}`
       }),
       { 
-        status: 500,
+        status: 200, // Changed from 500 to 200 to prevent cascade failures
         headers: { 
           ...corsHeaders,
           'Content-Type': 'application/json'

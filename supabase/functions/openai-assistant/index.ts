@@ -54,6 +54,8 @@ async function searchAndGenerateLeads(query: string, userId: string) {
     throw new Error('Supabase configuration is missing');
   }
 
+  console.log('Calling lead-search function for query:', query);
+
   const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
   // Get user's client profile for context
@@ -65,7 +67,7 @@ async function searchAndGenerateLeads(query: string, userId: string) {
 
   // Call lead-search function with timeout
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+  const timeoutId = setTimeout(() => controller.abort(), 20000); // 20 second timeout
 
   try {
     const response = await fetch(`${SUPABASE_URL}/functions/v1/lead-search`, {
@@ -87,16 +89,25 @@ async function searchAndGenerateLeads(query: string, userId: string) {
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Lead search failed:', errorText);
-      throw new Error(`Failed to search leads: ${response.status} ${errorText}`);
+      console.error('Lead search API failed:', response.status, errorText);
+      throw new Error(`Failed to search leads: ${response.status}`);
     }
 
-    return await response.json();
+    const data = await response.json();
+    
+    // Check if there was an error in the response
+    if (data.error) {
+      console.error('Lead search returned error:', data.error);
+      throw new Error(data.error);
+    }
+
+    return data;
   } catch (error) {
     clearTimeout(timeoutId);
     if (error.name === 'AbortError') {
       throw new Error('Lead search timed out');
     }
+    console.error('Lead search error:', error);
     throw error;
   }
 }
@@ -107,6 +118,8 @@ serve(async (req: Request) => {
   }
 
   try {
+    console.log('OpenAI assistant function called');
+
     const { message, userId } = await req.json();
 
     if (!message || !userId) {
@@ -117,13 +130,15 @@ serve(async (req: Request) => {
       throw new Error('OPENAI_API_KEY is not configured');
     }
 
+    console.log('Processing message for user:', userId);
+
     const openai = new OpenAI({
       apiKey: OPENAI_API_KEY
     });
 
     // First, let OpenAI analyze the user's request with timeout
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 25000); // 25 second timeout
+    const timeoutId = setTimeout(() => controller.abort(), 20000); // 20 second timeout
 
     let completion;
     try {
@@ -134,7 +149,7 @@ serve(async (req: Request) => {
           { role: 'user', content: message }
         ],
         temperature: 0.7,
-        max_tokens: 1000
+        max_tokens: 800 // Reduced from 1000
       });
       clearTimeout(timeoutId);
     } catch (error) {
@@ -142,6 +157,7 @@ serve(async (req: Request) => {
       if (error.name === 'AbortError') {
         throw new Error('OpenAI request timed out');
       }
+      console.error('OpenAI API error:', error);
       throw error;
     }
 
@@ -166,10 +182,10 @@ serve(async (req: Request) => {
           { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       } catch (error) {
-        console.error('Lead search error:', error);
+        console.error('Lead search error in assistant:', error);
         return new Response(
           JSON.stringify({
-            message: `${aiResponse}\n\nDésolé, j'ai rencontré une erreur lors de la recherche des leads: ${error.message}. Veuillez réessayer.`
+            message: `${aiResponse}\n\nDésolé, j'ai rencontré une erreur lors de la recherche des leads: ${error.message}. Les données de démonstration seront utilisées à la place.`
           }),
           { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
@@ -184,12 +200,14 @@ serve(async (req: Request) => {
 
   } catch (error) {
     console.error('Error in openai-assistant:', error);
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+    
     return new Response(
       JSON.stringify({ 
-        error: error instanceof Error ? error.message : 'An unknown error occurred',
+        error: errorMessage,
         message: 'Désolé, j\'ai rencontré une erreur technique. Veuillez réessayer.'
       }),
-      { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
 });
