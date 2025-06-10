@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
@@ -294,7 +295,7 @@ export default function Index() {
                   </div>
                   <div>
                     <p className="text-sm font-medium text-orange-800">
-                      Ceci est une démo - chyll est actuellement en bêta fermée, nous vous tiendrons au courant cet été pour le lancement public
+                      chyll est actuellement en bêta fermée, nous vous tiendrons au courant cet été pour le lancement public
                     </p>
                   </div>
                 </div>
