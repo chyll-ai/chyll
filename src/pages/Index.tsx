@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { toast } from '@/components/ui/sonner';
@@ -16,6 +16,9 @@ import { Suspense } from 'react';
 import { useLanguage } from '@/context/LanguageContext';
 import { TestimonialsCarousel } from '@/components/ui/testimonials-carousel';
 import { FAQSection } from '@/components/ui/faq-section';
+import { Card, CardContent } from '@/components/ui/card';
+import { Info, X } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 // Sample FAQ data for structured data - this is the ONLY FAQPage schema we'll keep
 const faqData = [
@@ -108,6 +111,7 @@ export default function Index() {
   const { t } = useLanguage();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const [showDisclaimer, setShowDisclaimer] = useState(true);
   
   // Generate structured data
   const organizationSchema = getOrganizationSchema();
@@ -134,6 +138,15 @@ export default function Index() {
     'PME',
     'équipes commerciales'
   ];
+
+  // Auto-hide disclaimer after 10 seconds
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowDisclaimer(false);
+    }, 10000);
+
+    return () => clearTimeout(timer);
+  }, []);
   
   useEffect(() => {
     const handleOAuthCallback = async () => {
@@ -206,6 +219,36 @@ export default function Index() {
           software: chyllAiSchema
         }}
       />
+      
+      {/* Demo Disclaimer */}
+      {showDisclaimer && (
+        <div className="fixed top-0 left-0 right-0 z-50 animate-fade-in">
+          <Card className="border-orange-200 bg-orange-50 m-2 rounded-lg shadow-sm">
+            <CardContent className="p-3">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center justify-center w-5 h-5 bg-orange-500/10 rounded">
+                    <Info className="h-3 w-3 text-orange-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-orange-800">
+                      Ceci est une démo - chyll est actuellement en bêta fermée, nous vous tiendrons au courant cet été pour le lancement public
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowDisclaimer(false)}
+                  className="h-6 w-6 p-0 text-orange-600 hover:text-orange-800 hover:bg-orange-100"
+                >
+                  <X className="h-3 w-3" />
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
       
       {/* Contenu pour les navigateurs sans JavaScript */}
       <noscript>
