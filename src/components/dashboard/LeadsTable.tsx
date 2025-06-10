@@ -24,7 +24,7 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
   const [selectedLeads, setSelectedLeads] = useState<Set<string>>(new Set());
 
-  // Fetch leads
+  // Fetch leads using client_id
   const fetchLeads = async () => {
     if (!userId) {
       setIsLoading(false);
@@ -53,7 +53,7 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
     fetchLeads();
   }, [userId]);
 
-  // Real-time subscription
+  // Real-time subscription using client_id
   useEffect(() => {
     if (!userId) return;
 
