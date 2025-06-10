@@ -131,6 +131,10 @@ export class AssistantService {
     try {
       console.log('AssistantService: Calling smart lead generation API');
       
+      // Create AbortController for timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+
       const response = await fetch(`https://atsfuqwxfrezkxtnctmk.supabase.co/functions/v1/lead-search`, {
         method: 'POST',
         headers: {
@@ -138,16 +142,19 @@ export class AssistantService {
           'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF0c2Z1cXd4ZnJlemt4dG5jdG1rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc2NjE3MjEsImV4cCI6MjA2MzIzNzcyMX0.FO6bvv2rFL0jhzN5aZ3m1QvNaM_ZNt7Ycmo859PSnJE`,
         },
         body: JSON.stringify({
-          searchQuery: searchQuery,
-          count: count,
+          searchQuery,
+          count,
           userId: this.userId
-        })
+        }),
+        signal: controller.signal
       });
+
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         const errorText = await response.text();
         console.error('AssistantService: Lead generation API failed:', response.status, errorText);
-        throw new Error(`API error: ${response.status}`);
+        throw new Error(`${response.status} ${errorText}`);
       }
 
       const data = await response.json();
@@ -160,6 +167,10 @@ export class AssistantService {
       console.log('AssistantService: Smart lead generation successful:', data.leads?.length || 0);
       return data.leads || [];
     } catch (error) {
+      if (error.name === 'AbortError') {
+        console.error('AssistantService: Lead generation request timed out');
+        throw new Error('Lead generation request timed out after 30 seconds');
+      }
       console.error('AssistantService: Smart lead generation error:', error);
       throw error;
     }

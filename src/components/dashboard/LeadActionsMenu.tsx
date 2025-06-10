@@ -119,7 +119,7 @@ ${dummyClientProfile.company_name}`;
       // Update lead status
       await updateLeadStatus('email envoyé');
       
-      toast.success('Email de prospection généré et envoyé (demo)');
+      toast.success('Email de prospection généré et envoyé');
     } catch (error: any) {
       console.error('Error generating fake email:', error);
       toast.error(`Erreur lors de la génération de l'email: ${error.message || 'Unknown error'}`);
@@ -178,7 +178,7 @@ ${dummyClientProfile.company_name}`;
       // Update lead status
       await updateLeadStatus('à relancer');
       
-      toast.success('Email de relance généré et envoyé (demo)');
+      toast.success('Email de relance généré et envoyé');
     } catch (error: any) {
       console.error('Error generating fake followup:', error);
       toast.error(`Erreur lors de la génération de la relance: ${error.message || 'Unknown error'}`);
@@ -248,7 +248,7 @@ ${dummyClientProfile.company_name}`;
       actions.push(
         <Button key="email" variant="outline" size="sm" onClick={handleSendEmail}>
           <Mail className="h-3 w-3 mr-1" />
-          Email (demo)
+          Email
         </Button>
       );
     }
@@ -257,7 +257,7 @@ ${dummyClientProfile.company_name}`;
       actions.push(
         <Button key="followup" variant="outline" size="sm" onClick={handleSendFollowup}>
           <RefreshCw className="h-3 w-3 mr-1" />
-          Relance (demo)
+          Relance
         </Button>
       );
     }

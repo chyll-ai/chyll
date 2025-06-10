@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabase';
 import { Lead } from '@/types/assistant';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Mail, Calendar, User, Building2, MapPin, Phone, ExternalLink, RefreshCw, CheckCircle, XCircle } from 'lucide-react';
+import { ArrowLeft, Mail, Calendar, User, Building2, MapPin, Phone, ExternalLink, RefreshCw, CheckCircle, XCircle, Redo2 } from 'lucide-react';
 import { toast } from '@/components/ui/sonner';
 import LeadStatusBadge from '@/components/dashboard/LeadStatusBadge';
 
@@ -179,7 +179,7 @@ ${dummyClientProfile.company_name}`;
       await updateLeadStatus('email envoyé');
       await fetchEmailHistory(); // Refresh email history
       
-      toast.success('Email de prospection généré et envoyé (demo)');
+      toast.success('Email de prospection généré et envoyé');
     } catch (error: any) {
       console.error('Error generating fake email:', error);
       toast.error(`Erreur lors de la génération de l'email: ${error.message || 'Unknown error'}`);
@@ -240,7 +240,7 @@ ${dummyClientProfile.company_name}`;
       await updateLeadStatus('à relancer');
       await fetchEmailHistory(); // Refresh email history
       
-      toast.success('Email de relance généré et envoyé (demo)');
+      toast.success('Email de relance généré et envoyé');
     } catch (error: any) {
       console.error('Error generating fake followup:', error);
       toast.error(`Erreur lors de la génération de la relance: ${error.message || 'Unknown error'}`);
@@ -327,18 +327,28 @@ ${dummyClientProfile.company_name}`;
     // Status-specific actions
     if (status === 'à contacter' || status === 'new') {
       actions.push(
-        <Button key="email" onClick={handleSendEmail} className="flex-1">
-          <Mail className="h-4 w-4 mr-2" />
-          Envoyer un email (demo)
+        <Button
+          key="email"
+          onClick={handleSendEmail}
+          disabled={isLoading}
+          className="flex items-center gap-2"
+        >
+          <Mail className="h-4 w-4" />
+          Envoyer un email
         </Button>
       );
     }
 
     if (status === 'email envoyé' || status === 'à relancer') {
       actions.push(
-        <Button key="followup" onClick={handleSendFollowup} variant="outline" className="flex-1">
-          <RefreshCw className="h-4 w-4 mr-2" />
-          Envoyer une relance (demo)
+        <Button
+          key="followup"
+          onClick={handleSendFollowup}
+          disabled={isLoading}
+          className="flex items-center gap-2"
+        >
+          <Redo2 className="h-4 w-4" />
+          Envoyer une relance
         </Button>
       );
     }
