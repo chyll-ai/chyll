@@ -180,6 +180,7 @@ export type Database = {
           sent_at: string | null
           status: string | null
           subject: string | null
+          type: string | null
         }
         Insert: {
           body?: string | null
@@ -190,6 +191,7 @@ export type Database = {
           sent_at?: string | null
           status?: string | null
           subject?: string | null
+          type?: string | null
         }
         Update: {
           body?: string | null
@@ -200,6 +202,7 @@ export type Database = {
           sent_at?: string | null
           status?: string | null
           subject?: string | null
+          type?: string | null
         }
         Relationships: [
           {

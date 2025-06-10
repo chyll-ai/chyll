@@ -57,27 +57,30 @@ const EXAMPLE_RESPONSE = {
   ]
 };
 
-const SYSTEM_PROMPT = `You are a lead generation expert. Generate French tech leads matching the search criteria.
+const SYSTEM_PROMPT = `You are an expert lead generation specialist with deep knowledge of French business professionals and companies. Generate realistic French tech leads that match specific search criteria.
 
 Your response must be a JSON object with EXACTLY this structure:
 ${JSON.stringify(EXAMPLE_RESPONSE, null, 2)}
 
-Requirements:
-1. Return EXACTLY the requested number of leads
-2. Each lead must have ONLY these fields:
-   - full_name: French full name
-   - job_title: Tech job title
-   - company: French tech company
-   - location: French city
-   - email: firstname.lastname@company.fr
-   - phone_number: +33 6XXXXXXXX
-   - linkedin_url: linkedin.com/in/firstname-lastname-xxxx
-3. NO additional fields
-4. NO empty values
-5. Focus on French tech companies
-6. Use real company names when possible
+CRITICAL REQUIREMENTS:
+1. Generate UNIQUE professionals - no duplicate names or emails
+2. Match job titles PRECISELY to the search query (if searching for "CTO", generate CTOs, not generic "developers")
+3. Use realistic French names (avoid generic combinations like "Martin Martin")
+4. Create believable company names that match the industry
+5. Ensure job titles align with company size and industry
+6. Use realistic French locations (major tech hubs: Paris, Lyon, Toulouse, Nice, Bordeaux, Nantes)
+7. Generate professional email formats: firstname.lastname@company.fr
+8. Phone numbers: +33 6XXXXXXXX format
+9. LinkedIn URLs: linkedin.com/in/firstname-lastname-suffix
 
-The response must be valid JSON and follow the exact format shown above.`;
+QUALITY STANDARDS:
+- Senior roles (CTO, VP, Director) should be at established companies
+- Junior roles should be at appropriate companies for their level
+- Company names should reflect real French business naming conventions
+- Avoid repetitive patterns in names, companies, or locations
+- Each lead should feel like a real person with a believable career path
+
+Focus on generating leads that would realistically hold the requested position and work at companies that would hire for that role.`;
 
 serve(async (req: Request) => {
   if (req.method === 'OPTIONS') {
@@ -105,17 +108,34 @@ serve(async (req: Request) => {
       apiKey: OPENAI_API_KEY
     });
 
-    const userPrompt = `Generate ${count} French tech leads matching: "${searchQuery}"
+    // Enhanced prompt with better context and instructions
+    const userPrompt = `Generate ${count} unique French tech professionals matching: "${searchQuery}"
 
-Requirements:
-1. Return EXACTLY ${count} leads
-2. Follow the exact JSON format shown in the system message
-3. Include ONLY the specified fields
-4. ALL fields must be filled with realistic values
-5. Focus on tech companies in France
-6. Make sure positions match: ${searchQuery}
+SEARCH CONTEXT: ${searchQuery}
 
-Return ONLY a JSON object matching the example format.`;
+SPECIFIC INSTRUCTIONS:
+1. If the search mentions a specific job title (e.g., "CTO", "Lead Developer", "Product Manager"), generate ONLY people with that exact title
+2. If the search mentions an industry (e.g., "fintech", "e-commerce", "AI"), ensure companies and roles align with that sector
+3. If the search mentions a location, prioritize that location but add variety
+4. Generate completely unique individuals - check that no two people have:
+   - The same first + last name combination
+   - The same email address
+   - The same company name
+   - The same LinkedIn URL
+
+REALISM REQUIREMENTS:
+- Senior executives (C-level) should be at companies with 50+ employees
+- Mid-level roles should match company size appropriately
+- Startup roles should be at smaller, innovative companies
+- Enterprise roles should be at established French tech companies
+
+COMPANY EXAMPLES for inspiration (create similar but different):
+- Tech: Criteo, BlaBlaCar, Dassault Systèmes, Atos, Capgemini
+- Fintech: Lydia, Qonto, PayFit, Leetchi
+- E-commerce: Veepee, ManoMano, Leboncoin
+- AI/Data: Dataiku, Shift Technology, Owkin
+
+Return EXACTLY ${count} unique leads in the specified JSON format. Each lead must be completely different from the others.`;
 
     const completion = await openai.chat.completions.create({
       model: 'gpt-4-turbo-preview',
@@ -123,12 +143,12 @@ Return ONLY a JSON object matching the example format.`;
         { role: 'system', content: SYSTEM_PROMPT },
         { role: 'user', content: userPrompt }
       ],
-      temperature: 0.7,
+      temperature: 0.8, // Increased for more variety
       response_format: { type: "json_object" },
-      max_tokens: 2000,
-      presence_penalty: 0.3,
-      frequency_penalty: 0.3,
-      timeout: 30,
+      max_tokens: 3000, // Increased for more detailed responses
+      presence_penalty: 0.6, // Higher to avoid repetition
+      frequency_penalty: 0.8, // Higher to ensure uniqueness
+      timeout: 45,
       stream: false
     });
 
@@ -143,6 +163,11 @@ Return ONLY a JSON object matching the example format.`;
       throw new Error('Invalid response format from OpenAI');
     }
 
+    // Enhanced validation with duplicate checking
+    const seenNames = new Set();
+    const seenEmails = new Set();
+    const seenCompanies = new Set();
+    
     const validatedLeads = parsedResponse.leads.map((lead: any, index: number) => {
       const allowedFields = ['full_name', 'job_title', 'company', 'location', 'email', 'phone_number', 'linkedin_url'];
       const extraFields = Object.keys(lead).filter(key => !allowedFields.includes(key));
@@ -155,12 +180,31 @@ Return ONLY a JSON object matching the example format.`;
         throw new Error(`Lead ${index + 1} has missing or empty fields: ${missingOrEmptyFields.join(', ')}`);
       }
 
+      // Check for duplicates
+      const fullName = String(lead.full_name).trim();
+      const email = String(lead.email).trim().toLowerCase();
+      const company = String(lead.company).trim();
+      
+      if (seenNames.has(fullName)) {
+        throw new Error(`Lead ${index + 1} has duplicate name: ${fullName}`);
+      }
+      if (seenEmails.has(email)) {
+        throw new Error(`Lead ${index + 1} has duplicate email: ${email}`);
+      }
+      if (seenCompanies.has(company)) {
+        throw new Error(`Lead ${index + 1} has duplicate company: ${company}`);
+      }
+      
+      seenNames.add(fullName);
+      seenEmails.add(email);
+      seenCompanies.add(company);
+
       const validatedLead: Lead = {
-        full_name: String(lead.full_name).trim(),
+        full_name: fullName,
         job_title: String(lead.job_title).trim(),
-        company: String(lead.company).trim(),
+        company: company,
         location: String(lead.location).trim(),
-        email: String(lead.email).trim().toLowerCase(),
+        email: email,
         phone_number: String(lead.phone_number).trim(),
         linkedin_url: String(lead.linkedin_url).trim(),
         client_id: userId,
@@ -168,11 +212,12 @@ Return ONLY a JSON object matching the example format.`;
         created_at: new Date().toISOString(),
         status: 'new',
         enriched_from: {
-          source: 'assistant',
+          source: 'openai_assistant',
           timestamp: new Date().toISOString()
         }
       };
 
+      // Enhanced validation
       if (!validatedLead.email.includes('@') || !validatedLead.email.endsWith('.fr')) {
         throw new Error(`Lead ${index + 1} has invalid email format: ${validatedLead.email}`);
       }
@@ -189,6 +234,8 @@ Return ONLY a JSON object matching the example format.`;
     if (validatedLeads.length !== count) {
       throw new Error(`Expected ${count} leads but got ${validatedLeads.length}`);
     }
+
+    console.log(`Successfully generated ${validatedLeads.length} unique leads for query: ${searchQuery}`);
 
     return new Response(
       JSON.stringify({

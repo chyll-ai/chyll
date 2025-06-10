@@ -1,4 +1,3 @@
-
 import { supabase } from '@/lib/supabase';
 import { toast } from '@/components/ui/sonner';
 import { APIClient } from '@/lib/api-client';
@@ -17,6 +16,8 @@ export class AssistantService {
   private userId: string;
   private apiClient: APIClient;
   private onLeadsUpdate?: (leads: Lead[]) => void;
+  private generatedNames: Set<string> = new Set();
+  private generatedEmails: Set<string> = new Set();
 
   constructor(userId: string) {
     this.userId = userId;
@@ -45,23 +46,40 @@ export class AssistantService {
           content.toLowerCase().includes('prospects')) {
         console.log('AssistantService: Detected search query');
         
-        // Generate dummy leads for demo
-        const dummyLeads = this.generateDummyLeads(content);
-        
-        // Save leads to database
-        await this.saveDummyLeads(dummyLeads);
-        
-        // Update UI through callback
-        if (this.onLeadsUpdate) {
-          this.onLeadsUpdate(dummyLeads);
-        }
-        
-        toast.success(`${dummyLeads.length} nouveaux leads ajoutés au tableau de bord`);
+        // Try to use the smarter OpenAI generation first
+        try {
+          const smartLeads = await this.generateSmartLeads(content);
+          
+          // Save leads to database
+          await this.saveDummyLeads(smartLeads);
+          
+          // Update UI through callback
+          if (this.onLeadsUpdate) {
+            this.onLeadsUpdate(smartLeads);
+          }
+          
+          toast.success(`${smartLeads.length} nouveaux leads ajoutés au tableau de bord`);
 
-        // Return success message
-        return {
-          message: `Parfait ! J'ai trouvé ${dummyLeads.length} leads correspondant à votre recherche "${content}". Ils ont été ajoutés à votre tableau de bord. Vous pouvez les voir dans la section "Recent Leads" à droite.`
-        };
+          return {
+            message: `Parfait ! J'ai trouvé ${smartLeads.length} leads spécialisés correspondant à votre recherche "${content}". Ces contacts ont été soigneusement sélectionnés pour correspondre exactement à vos critères. Vous pouvez les voir dans la section "Recent Leads" à droite.`
+          };
+        } catch (error) {
+          console.error('Smart lead generation failed, falling back to dummy generation:', error);
+          
+          // Fallback to dummy leads if OpenAI fails
+          const dummyLeads = this.generateDummyLeads(content);
+          await this.saveDummyLeads(dummyLeads);
+          
+          if (this.onLeadsUpdate) {
+            this.onLeadsUpdate(dummyLeads);
+          }
+          
+          toast.success(`${dummyLeads.length} nouveaux leads ajoutés au tableau de bord`);
+
+          return {
+            message: `J'ai trouvé ${dummyLeads.length} leads correspondant à votre recherche "${content}". Ils ont été ajoutés à votre tableau de bord. (Note: génération de démo)`
+          };
+        }
       }
 
       // For non-search messages, proceed with normal message handling
@@ -97,45 +115,103 @@ export class AssistantService {
     }
   }
 
+  private async generateSmartLeads(searchQuery: string): Promise<Lead[]> {
+    try {
+      console.log('Calling smart lead generation for:', searchQuery);
+      
+      // Call the OpenAI-powered lead search function
+      const response = await fetch(`https://atsfuqwxfrezkxtnctmk.supabase.co/functions/v1/lead-search`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF0c2Z1cXd4ZnJlemt4dG5jdG1rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc2NjE3MjEsImV4cCI6MjA2MzIzNzcyMX0.FO6bvv2rFL0jhzN5aZ3m1QvNaM_ZNt7Ycmo859PSnJE'}`,
+        },
+        body: JSON.stringify({
+          searchQuery: searchQuery,
+          count: 5,
+          userId: this.userId
+        })
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Lead generation failed: ${errorText}`);
+      }
+
+      const data = await response.json();
+      
+      if (data.error) {
+        throw new Error(data.error);
+      }
+
+      console.log('Smart lead generation successful:', data.leads?.length || 0);
+      return data.leads || [];
+    } catch (error) {
+      console.error('Smart lead generation error:', error);
+      throw error;
+    }
+  }
+
   private generateDummyLeads(searchQuery: string): Lead[] {
-    const companies = [
-      'DataTech Solutions', 'InnovateLab', 'TechForward SAS', 'DigitalFlow', 'CloudWorks',
-      'CodeCraft', 'ByteForge', 'NextGen Tech', 'SmartSolutions', 'DevStream'
+    // Enhanced dummy generation with better variety
+    const techCompanies = [
+      'InnovTech Solutions', 'DataFlow Systems', 'CodeCraft Studio', 'NextGen Analytics', 'CloudFirst Technologies',
+      'ByteForge Labs', 'SmartCode Solutions', 'DevStream Technologies', 'TechPulse SAS', 'DigitalMind Studio'
     ];
     
-    const firstNames = ['Sophie', 'Pierre', 'Marie', 'Thomas', 'Claire', 'Lucas', 'Emma', 'Nicolas', 'Camille', 'Antoine'];
-    const lastNames = ['Martin', 'Bernard', 'Dubois', 'Leroy', 'Moreau', 'Simon', 'Laurent', 'Lefebvre', 'Michel', 'Garcia'];
-    const cities = ['Paris', 'Lyon', 'Marseille', 'Toulouse', 'Nice', 'Nantes', 'Strasbourg', 'Montpellier', 'Bordeaux', 'Lille'];
+    const frenchFirstNames = ['Amélie', 'Baptiste', 'Céline', 'Damien', 'Élise', 'Fabien', 'Gabrielle', 'Hugo', 'Inès', 'Julien'];
+    const frenchLastNames = ['Dubois', 'Lefevre', 'Moreau', 'Rousseau', 'Vincent', 'Fournier', 'Girard', 'Andre', 'Mercier', 'Dupont'];
+    const techCities = ['Paris', 'Lyon', 'Toulouse', 'Nice', 'Bordeaux', 'Nantes', 'Montpellier', 'Rennes', 'Grenoble', 'Strasbourg'];
     
-    const jobTitles = [
-      'CTO', 'Directeur Technique', 'Head of Engineering', 'VP Technology', 'Chief Innovation Officer',
-      'Lead Developer', 'Senior Software Engineer', 'Tech Lead', 'Solutions Architect', 'Product Manager'
-    ];
+    // More specific job titles based on search query
+    let jobTitles = ['Développeur Senior', 'Chef de Projet Technique', 'Architecte Solution', 'Lead Developer', 'Product Manager'];
+    
+    // Customize job titles based on search query
+    if (searchQuery.toLowerCase().includes('cto') || searchQuery.toLowerCase().includes('directeur technique')) {
+      jobTitles = ['CTO', 'Directeur Technique', 'VP Engineering', 'Chief Technology Officer'];
+    } else if (searchQuery.toLowerCase().includes('lead') || searchQuery.toLowerCase().includes('senior')) {
+      jobTitles = ['Lead Developer', 'Senior Software Engineer', 'Tech Lead', 'Senior Product Manager'];
+    } else if (searchQuery.toLowerCase().includes('product')) {
+      jobTitles = ['Product Manager', 'Head of Product', 'Senior Product Owner', 'VP Product'];
+    }
 
     const leads: Lead[] = [];
     const count = Math.floor(Math.random() * 3) + 3; // 3-5 leads
 
     for (let i = 0; i < count; i++) {
-      const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
-      const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
-      const company = companies[Math.floor(Math.random() * companies.length)];
-      const city = cities[Math.floor(Math.random() * cities.length)];
+      let firstName, lastName, fullName, email;
+      let attempts = 0;
+      
+      // Ensure uniqueness
+      do {
+        firstName = frenchFirstNames[Math.floor(Math.random() * frenchFirstNames.length)];
+        lastName = frenchLastNames[Math.floor(Math.random() * frenchLastNames.length)];
+        fullName = `${firstName} ${lastName}`;
+        email = `${firstName.toLowerCase()}.${lastName.toLowerCase()}@${techCompanies[i % techCompanies.length].toLowerCase().replace(/\s+/g, '').replace(/'/g, '')}.fr`;
+        attempts++;
+      } while ((this.generatedNames.has(fullName) || this.generatedEmails.has(email)) && attempts < 20);
+      
+      this.generatedNames.add(fullName);
+      this.generatedEmails.add(email);
+      
+      const company = techCompanies[Math.floor(Math.random() * techCompanies.length)];
+      const city = techCities[Math.floor(Math.random() * techCities.length)];
       const jobTitle = jobTitles[Math.floor(Math.random() * jobTitles.length)];
       
       const lead: Lead = {
         id: crypto.randomUUID(),
         client_id: this.userId,
-        full_name: `${firstName} ${lastName}`,
+        full_name: fullName,
         job_title: jobTitle,
         company: company,
         location: city,
-        email: `${firstName.toLowerCase()}.${lastName.toLowerCase()}@${company.toLowerCase().replace(/\s+/g, '')}.fr`,
+        email: email,
         phone_number: `+33 6${Math.floor(Math.random() * 90000000) + 10000000}`,
         linkedin_url: `linkedin.com/in/${firstName.toLowerCase()}-${lastName.toLowerCase()}-${Math.floor(Math.random() * 1000)}`,
         status: 'new',
         created_at: new Date().toISOString(),
         enriched_from: {
-          source: 'assistant',
+          source: 'assistant_fallback',
           timestamp: new Date().toISOString(),
           notes: `Generated from search: "${searchQuery}"`
         }
@@ -149,7 +225,7 @@ export class AssistantService {
 
   private async saveDummyLeads(leads: Lead[]): Promise<void> {
     try {
-      console.log('AssistantService: Saving dummy leads to database');
+      console.log('AssistantService: Saving leads to database');
       
       const { data: savedLeads, error } = await supabase
         .from('leads')
@@ -160,7 +236,7 @@ export class AssistantService {
         .select('*');
 
       if (error) {
-        console.error('AssistantService: Error saving dummy leads:', error);
+        console.error('AssistantService: Error saving leads:', error);
         throw error;
       }
 
