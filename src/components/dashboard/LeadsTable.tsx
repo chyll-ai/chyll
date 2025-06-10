@@ -18,21 +18,33 @@ interface LeadsTableProps {
 const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
   const navigate = useNavigate();
   const [leads, setLeads] = useState<Lead[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
   const [selectedLeads, setSelectedLeads] = useState<Set<string>>(new Set());
 
   const fetchLeads = async () => {
+    if (!userId) {
+      console.log('LeadsTable: No userId provided, skipping fetch');
+      return;
+    }
+
     try {
       setIsLoading(true);
+      console.log('LeadsTable: Fetching leads for user:', userId);
+      
       const { data, error } = await supabase
         .from('leads')
         .select('*')
         .eq('client_id', userId)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('LeadsTable: Error fetching leads:', error);
+        throw error;
+      }
+      
+      console.log('LeadsTable: Fetched leads:', data?.length || 0);
       setLeads(data || []);
     } catch (error: any) {
       console.error('Error fetching leads:', error);
@@ -44,7 +56,11 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
 
   useEffect(() => {
     if (userId) {
+      console.log('LeadsTable: Initial fetch for user:', userId);
       fetchLeads();
+    } else {
+      console.log('LeadsTable: No userId, setting loading to false');
+      setIsLoading(false);
     }
   }, [userId]);
 
@@ -445,3 +461,5 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
 };
 
 export default LeadsTable;
+
+}
