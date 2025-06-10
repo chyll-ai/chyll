@@ -23,40 +23,86 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
   const [selectedLeads, setSelectedLeads] = useState<Set<string>>(new Set());
+  const [clientId, setClientId] = useState<string | null>(null);
 
-  // Fetch leads using client_id
-  const fetchLeads = async () => {
+  // Get client_id from clients table using auth user ID
+  const getClientId = async () => {
     if (!userId) {
+      console.log('LeadsTable: No userId provided');
       setIsLoading(false);
       return;
     }
     
     try {
+      console.log('LeadsTable: Fetching client_id for auth user:', userId);
+      const { data: client, error } = await supabase
+        .from('clients')
+        .select('id')
+        .eq('id', userId)
+        .maybeSingle();
+
+      if (error) {
+        console.error('LeadsTable: Error fetching client:', error);
+        throw error;
+      }
+
+      console.log('LeadsTable: Client data:', client);
+      setClientId(client?.id || null);
+    } catch (error: any) {
+      console.error('LeadsTable: Error getting client_id:', error);
+      toast.error('Failed to load client data');
+      setIsLoading(false);
+    }
+  };
+
+  // Fetch leads using client_id
+  const fetchLeads = async () => {
+    if (!clientId) {
+      console.log('LeadsTable: No clientId available for fetching leads');
+      setIsLoading(false);
+      return;
+    }
+    
+    try {
+      console.log('LeadsTable: Fetching leads for client_id:', clientId);
       const { data, error } = await supabase
         .from('leads')
         .select('*')
-        .eq('client_id', userId)
+        .eq('client_id', clientId)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('LeadsTable: Error fetching leads:', error);
+        throw error;
+      }
+      
+      console.log('LeadsTable: Fetched leads:', data);
       setLeads(data || []);
     } catch (error: any) {
-      console.error('Error fetching leads:', error);
+      console.error('LeadsTable: Error fetching leads:', error);
       toast.error('Failed to load leads');
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Initial fetch
+  // Get client_id when userId changes
   useEffect(() => {
-    fetchLeads();
+    getClientId();
   }, [userId]);
+
+  // Fetch leads when clientId changes
+  useEffect(() => {
+    if (clientId) {
+      fetchLeads();
+    }
+  }, [clientId]);
 
   // Real-time subscription using client_id
   useEffect(() => {
-    if (!userId) return;
+    if (!clientId) return;
 
+    console.log('LeadsTable: Setting up realtime for client_id:', clientId);
     const channel = supabase
       .channel('leads_realtime')
       .on(
@@ -65,9 +111,10 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
           event: 'INSERT',
           schema: 'public',
           table: 'leads',
-          filter: `client_id=eq.${userId}`
+          filter: `client_id=eq.${clientId}`
         },
         (payload) => {
+          console.log('LeadsTable: New lead received:', payload);
           const newLead = payload.new as Lead;
           setLeads(current => [newLead, ...current]);
           toast.success(`New lead: ${newLead.full_name}`);
@@ -79,9 +126,10 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
           event: 'UPDATE',
           schema: 'public',
           table: 'leads',
-          filter: `client_id=eq.${userId}`
+          filter: `client_id=eq.${clientId}`
         },
         (payload) => {
+          console.log('LeadsTable: Lead updated:', payload);
           const updatedLead = payload.new as Lead;
           setLeads(current =>
             current.map(lead =>
@@ -95,7 +143,7 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [userId]);
+  }, [clientId]);
 
   // If no userId, show auth message
   if (!userId) {
