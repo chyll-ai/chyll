@@ -35,13 +35,23 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
     try {
       console.log('LeadsTable: Fetching client_id for auth user:', userId);
       
-      // First try to find existing client
+      // Add timeout to the query to prevent hanging
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Query timeout after 10 seconds')), 10000);
+      });
+
+      // First try to find existing client with timeout
       console.log('LeadsTable: Checking for existing client...');
-      const { data: existingClient, error: selectError } = await supabase
+      const queryPromise = supabase
         .from('clients')
         .select('id')
         .eq('id', userId)
         .maybeSingle();
+
+      const { data: existingClient, error: selectError } = await Promise.race([
+        queryPromise,
+        timeoutPromise
+      ]) as any;
 
       console.log('LeadsTable: Existing client query result:', { existingClient, selectError });
 
@@ -69,7 +79,7 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
 
       // Create new client record
       console.log('LeadsTable: Creating new client record with:', { id: userId, email: user.email });
-      const { data: newClient, error: insertError } = await supabase
+      const createPromise = supabase
         .from('clients')
         .insert({
           id: userId,
@@ -77,6 +87,11 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
         })
         .select('id')
         .single();
+
+      const { data: newClient, error: insertError } = await Promise.race([
+        createPromise,
+        timeoutPromise
+      ]) as any;
 
       console.log('LeadsTable: Client creation result:', { newClient, insertError });
 
