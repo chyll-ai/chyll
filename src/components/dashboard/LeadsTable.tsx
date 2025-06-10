@@ -461,5 +461,3 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
 };
 
 export default LeadsTable;
-
-}
