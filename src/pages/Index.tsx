@@ -220,36 +220,6 @@ export default function Index() {
         }}
       />
       
-      {/* Demo Disclaimer */}
-      {showDisclaimer && (
-        <div className="fixed top-0 left-0 right-0 z-50 animate-fade-in">
-          <Card className="border-orange-200 bg-orange-50 m-2 rounded-lg shadow-sm">
-            <CardContent className="p-3">
-              <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center justify-center w-5 h-5 bg-orange-500/10 rounded">
-                    <Info className="h-3 w-3 text-orange-600" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-orange-800">
-                      Ceci est une démo - chyll est actuellement en bêta fermée, nous vous tiendrons au courant cet été pour le lancement public
-                    </p>
-                  </div>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setShowDisclaimer(false)}
-                  className="h-6 w-6 p-0 text-orange-600 hover:text-orange-800 hover:bg-orange-100"
-                >
-                  <X className="h-3 w-3" />
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
-      
       {/* Contenu pour les navigateurs sans JavaScript */}
       <noscript>
         <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto', fontFamily: 'Arial, sans-serif' }}>
@@ -311,6 +281,36 @@ export default function Index() {
       </noscript>
       
       <Header />
+      
+      {/* Demo Disclaimer - Now positioned under header */}
+      {showDisclaimer && (
+        <div className="w-full">
+          <Card className="border-orange-200 bg-orange-50 m-2 rounded-lg shadow-sm">
+            <CardContent className="p-3">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center justify-center w-5 h-5 bg-orange-500/10 rounded">
+                    <Info className="h-3 w-3 text-orange-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-orange-800">
+                      Ceci est une démo - chyll est actuellement en bêta fermée, nous vous tiendrons au courant cet été pour le lancement public
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowDisclaimer(false)}
+                  className="h-6 w-6 p-0 text-orange-600 hover:text-orange-800 hover:bg-orange-100"
+                >
+                  <X className="h-3 w-3" />
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
       
       {/* Hero Section with Canvas */}
       <section id="home" aria-label="Accueil" className="relative">
