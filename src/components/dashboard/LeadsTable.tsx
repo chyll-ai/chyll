@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
@@ -26,6 +27,7 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
   const fetchLeads = async () => {
     if (!userId) {
       console.log('LeadsTable: No userId provided, skipping fetch');
+      setIsLoading(false);
       return;
     }
 
@@ -33,23 +35,36 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
       setIsLoading(true);
       console.log('LeadsTable: Fetching leads for user:', userId);
       
+      // Test connection first
+      const { data: testData, error: testError } = await supabase
+        .from('leads')
+        .select('count')
+        .eq('client_id', userId);
+      
+      console.log('LeadsTable: Connection test result:', { testData, testError });
+      
       const { data, error } = await supabase
         .from('leads')
         .select('*')
         .eq('client_id', userId)
         .order('created_at', { ascending: false });
 
+      console.log('LeadsTable: Query result:', { data, error, dataLength: data?.length });
+
       if (error) {
         console.error('LeadsTable: Error fetching leads:', error);
-        throw error;
+        toast.error(`Failed to fetch leads: ${error.message}`);
+        setLeads([]);
+      } else {
+        console.log('LeadsTable: Successfully fetched leads:', data?.length || 0);
+        setLeads(data || []);
       }
-      
-      console.log('LeadsTable: Fetched leads:', data?.length || 0);
-      setLeads(data || []);
     } catch (error: any) {
-      console.error('Error fetching leads:', error);
-      toast.error('Failed to fetch leads');
+      console.error('LeadsTable: Unexpected error:', error);
+      toast.error('Failed to fetch leads: Unexpected error');
+      setLeads([]);
     } finally {
+      console.log('LeadsTable: Setting loading to false');
       setIsLoading(false);
     }
   };
@@ -208,12 +223,19 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
 
   const statusOptions = Array.from(new Set(leads.map(lead => lead.status).filter(Boolean)));
 
+  console.log('LeadsTable: Render state:', { 
+    isLoading, 
+    leadsCount: leads.length, 
+    filteredCount: filteredLeads.length,
+    userId 
+  });
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center p-8">
         <div className="text-center space-y-4">
           <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto" />
-          <p className="text-xs text-muted-foreground">Loading leads...</p>
+          <p className="text-xs text-muted-foreground">Loading leads for user {userId}...</p>
         </div>
       </div>
     );
