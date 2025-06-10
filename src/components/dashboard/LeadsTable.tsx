@@ -36,11 +36,14 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
       console.log('LeadsTable: Fetching client_id for auth user:', userId);
       
       // First try to find existing client
+      console.log('LeadsTable: Checking for existing client...');
       const { data: existingClient, error: selectError } = await supabase
         .from('clients')
         .select('id')
         .eq('id', userId)
         .maybeSingle();
+
+      console.log('LeadsTable: Existing client query result:', { existingClient, selectError });
 
       if (selectError) {
         console.error('LeadsTable: Error fetching client:', selectError);
@@ -54,8 +57,10 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
       }
 
       // If no client exists, we need to get the user's email to create one
-      console.log('LeadsTable: No client found, checking auth user...');
+      console.log('LeadsTable: No client found, getting auth user data...');
       const { data: { user }, error: userError } = await supabase.auth.getUser();
+      
+      console.log('LeadsTable: Auth user data:', { user: user ? { id: user.id, email: user.email } : null, userError });
       
       if (userError || !user?.email) {
         console.error('LeadsTable: Error getting user data:', userError);
@@ -63,7 +68,7 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
       }
 
       // Create new client record
-      console.log('LeadsTable: Creating new client record...');
+      console.log('LeadsTable: Creating new client record with:', { id: userId, email: user.email });
       const { data: newClient, error: insertError } = await supabase
         .from('clients')
         .insert({
@@ -73,8 +78,27 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
         .select('id')
         .single();
 
+      console.log('LeadsTable: Client creation result:', { newClient, insertError });
+
       if (insertError) {
         console.error('LeadsTable: Error creating client:', insertError);
+        // If the error is because the client already exists, try to fetch it again
+        if (insertError.code === '23505') { // Unique constraint violation
+          console.log('LeadsTable: Client already exists, fetching again...');
+          const { data: retryClient, error: retryError } = await supabase
+            .from('clients')
+            .select('id')
+            .eq('id', userId)
+            .single();
+          
+          if (retryError) {
+            throw retryError;
+          }
+          
+          console.log('LeadsTable: Found client on retry:', retryClient);
+          setClientId(retryClient.id);
+          return;
+        }
         throw insertError;
       }
 
@@ -82,7 +106,7 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
       setClientId(newClient.id);
     } catch (error: any) {
       console.error('LeadsTable: Error getting/creating client_id:', error);
-      toast.error('Failed to load client data');
+      toast.error('Failed to load client data: ' + error.message);
       setIsLoading(false);
     }
   };
@@ -103,6 +127,8 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
         .eq('client_id', clientId)
         .order('created_at', { ascending: false });
 
+      console.log('LeadsTable: Leads query result:', { data, error });
+
       if (error) {
         console.error('LeadsTable: Error fetching leads:', error);
         throw error;
@@ -112,7 +138,7 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
       setLeads(data || []);
     } catch (error: any) {
       console.error('LeadsTable: Error fetching leads:', error);
-      toast.error('Failed to load leads');
+      toast.error('Failed to load leads: ' + error.message);
     } finally {
       setIsLoading(false);
     }
@@ -120,11 +146,13 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
 
   // Get client_id when userId changes
   useEffect(() => {
+    console.log('LeadsTable: useEffect for getOrCreateClientId, userId:', userId);
     getOrCreateClientId();
   }, [userId]);
 
   // Fetch leads when clientId changes
   useEffect(() => {
+    console.log('LeadsTable: useEffect for fetchLeads, clientId:', clientId);
     if (clientId) {
       fetchLeads();
     }
@@ -264,6 +292,7 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
     return (
       <div className="flex items-center justify-center p-8">
         <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary" />
+        <span className="ml-2 text-sm text-muted-foreground">Loading leads...</span>
       </div>
     );
   }
