@@ -52,10 +52,10 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
         abortController.abort();
       }, timeoutMs);
 
-      // Use a more optimized query - select only essential fields initially
+      // Select all required fields for the Lead type
       const { data, error } = await supabase
         .from('leads')
-        .select('id, full_name, email, company, job_title, status, created_at, client_id')
+        .select('id, full_name, email, company, job_title, status, created_at, client_id, location, phone_number, linkedin_url, enriched_from')
         .eq('client_id', userId)
         .order('created_at', { ascending: false })
         .limit(100); // Limit initial load to 100 records
