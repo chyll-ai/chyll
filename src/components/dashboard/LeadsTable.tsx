@@ -24,12 +24,14 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
   const [selectedLeads, setSelectedLeads] = useState<Set<string>>(new Set());
 
-  // Simple fetch function
+  // Fetch leads
   const fetchLeads = async () => {
-    if (!userId) return;
+    if (!userId) {
+      setIsLoading(false);
+      return;
+    }
     
     try {
-      setIsLoading(true);
       const { data, error } = await supabase
         .from('leads')
         .select('*')
@@ -94,6 +96,21 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
       supabase.removeChannel(channel);
     };
   }, [userId]);
+
+  // If no userId, show auth message
+  if (!userId) {
+    return (
+      <Card className="border-border/40 h-full w-full">
+        <CardContent className="text-center p-6 flex flex-col items-center justify-center h-full">
+          <div className="flex items-center justify-center w-10 h-10 bg-muted rounded-full mx-auto mb-3">
+            <TrendingUp className="h-5 w-5 text-muted-foreground" />
+          </div>
+          <h3 className="text-sm font-semibold mb-2">Authentication Required</h3>
+          <p className="text-xs text-muted-foreground">Please log in to view your leads</p>
+        </CardContent>
+      </Card>
+    );
+  }
 
   const handleStatusUpdate = (leadId: string, newStatus: string) => {
     setLeads(prevLeads =>
