@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
@@ -41,21 +42,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Function to handle session updates
   const handleSession = async (newSession: Session | null) => {
+    console.log('[AuthContext] Handling session update:', {
+      hasSession: !!newSession,
+      userId: newSession?.user?.id,
+      currentPath: location.pathname
+    });
+
     try {
       const newUser = newSession?.user || null;
-      const currentPath = location.pathname;
       
-      console.log('[AuthContext] Handling session:', {
-        hasUser: !!newUser,
-        userId: newUser?.id,
-        path: currentPath,
-        origin: window.location.origin,
-        isCallback: currentPath === '/auth/callback',
-        isProtected: isProtectedRoute(currentPath),
-        isPublic: isPublicRoute(currentPath)
-      });
-
-      // Update state
+      // Update state immediately
       setSession(newSession);
       setUser(newUser);
       setSessionChecked(true);
@@ -72,6 +68,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       // Handle routing based on auth state and current path
+      const currentPath = location.pathname;
+      
       if (newUser) {
         // User is authenticated
         if (currentPath === '/login') {
@@ -79,15 +77,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           const from = location.state?.from || '/dashboard';
           navigate(from, { replace: true });
         }
-        // Don't redirect if already on a valid route
       } else {
         // User is not authenticated
         if (isProtectedRoute(currentPath)) {
-          // Only redirect to login from protected routes
           console.log('[AuthContext] Redirecting to login from protected route:', currentPath);
           navigate('/login', { replace: true, state: { from: currentPath } });
         }
-        // IMPORTANT: Don't redirect from public routes like homepage
       }
     } catch (error) {
       console.error('[AuthContext] Error handling session:', error);
@@ -98,14 +93,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     let mounted = true;
+    let initializationTimeout: NodeJS.Timeout;
+
+    // Set a timeout to ensure loading doesn't get stuck
+    initializationTimeout = setTimeout(() => {
+      console.log('[AuthContext] Initialization timeout reached, forcing loading to false');
+      if (mounted) {
+        setIsLoading(false);
+        setSessionChecked(true);
+      }
+    }, 5000); // 5 second timeout
 
     // Initialize auth state
     const initializeAuth = async () => {
       try {
-        console.log('[AuthContext] Initializing auth state...');
+        console.log('[AuthContext] Starting initialization...');
         
-        // Get initial session
-        const { data: { session: initialSession }, error } = await supabase.auth.getSession();
+        // Get initial session with a reasonable timeout
+        const sessionPromise = supabase.auth.getSession();
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Session fetch timeout')), 3000)
+        );
+
+        const { data: { session: initialSession }, error } = await Promise.race([
+          sessionPromise,
+          timeoutPromise
+        ]) as any;
         
         if (error) {
           console.error('[AuthContext] Error getting initial session:', error);
@@ -116,12 +129,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           return;
         }
 
+        console.log('[AuthContext] Initial session retrieved:', {
+          hasSession: !!initialSession,
+          userId: initialSession?.user?.id
+        });
+
         if (mounted) {
+          clearTimeout(initializationTimeout);
           await handleSession(initialSession);
         }
       } catch (error) {
         console.error('[AuthContext] Error during initialization:', error);
         if (mounted) {
+          clearTimeout(initializationTimeout);
           setIsLoading(false);
           setSessionChecked(true);
         }
@@ -136,13 +156,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.log('[AuthContext] Auth state change:', { 
         event, 
         userId: currentSession?.user?.id, 
-        path: location.pathname,
-        isProtectedRoute: isProtectedRoute(location.pathname),
-        isPublicRoute: isPublicRoute(location.pathname),
-        origin: window.location.origin
+        path: location.pathname
       });
 
       if (mounted) {
+        clearTimeout(initializationTimeout);
+        
         switch (event) {
           case 'SIGNED_IN':
             await handleSession(currentSession);
@@ -167,6 +186,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     return () => {
       mounted = false;
+      clearTimeout(initializationTimeout);
       subscription.unsubscribe();
     };
   }, [navigate, location]);
@@ -175,54 +195,33 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       console.log('[AuthContext] Starting sign out process...');
       
-      // Set a timeout for the signout process
-      const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('Sign out timeout')), 5000);
-      });
-
-      // Clear any stored auth data first
+      // Clear local state immediately
+      setUser(null);
+      setSession(null);
+      
+      // Clear any stored auth data
       Object.keys(localStorage)
         .filter(key => key.startsWith('supabase'))
         .forEach(key => localStorage.removeItem(key));
       
-      // Sign out from Supabase with timeout
-      const signOutPromise = supabase.auth.signOut();
-      const result = await Promise.race([signOutPromise, timeoutPromise]) as { error: Error | null };
+      // Sign out from Supabase
+      const { error } = await supabase.auth.signOut();
       
-      if (result.error) {
-        console.error('[AuthContext] Supabase signOut error:', result.error);
-        throw result.error;
+      if (error) {
+        console.error('[AuthContext] Supabase signOut error:', error);
+        // Don't throw - still try to navigate away
       }
 
-      console.log('[AuthContext] Successfully signed out from Supabase');
-      
-      // Clear local state
-      setUser(null);
-      setSession(null);
-      
-      // Force clear the Supabase internal auth state
-      await supabase.auth.initialize();
-      
-      // Handle session update and navigation
-      await handleSession(null);
+      console.log('[AuthContext] Sign out completed, navigating to home');
       
       // Navigate to home page
       navigate('/', { replace: true });
       
-      console.log('[AuthContext] Sign out process completed');
     } catch (error) {
       console.error('[AuthContext] Error during sign out:', error);
-      // Still try to clear local state and redirect even if there's an error
+      // Still clear state and navigate on error
       setUser(null);
       setSession(null);
-      
-      // Force clear auth state even on error
-      try {
-        await supabase.auth.initialize();
-      } catch (e) {
-        console.error('[AuthContext] Error reinitializing auth:', e);
-      }
-      
       navigate('/', { replace: true });
     }
   };
@@ -236,7 +235,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     signOut
   };
 
-  // Show loading state while checking auth - but only for a brief moment
+  console.log('[AuthContext] Current state:', {
+    isLoading,
+    sessionChecked,
+    isAuthenticated: !!session?.user?.id,
+    userId: user?.id
+  });
+
+  // Show loading state while checking auth - but with timeout protection
   if (isLoading && !sessionChecked) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
