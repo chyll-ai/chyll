@@ -3,17 +3,21 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Navigate } from 'react-router-dom';
 import Assistant from '@/pages/Assistant';
 import LeadsTable from '@/components/dashboard/LeadsTable';
-import { Loader2, MessageSquare, Users, Info } from 'lucide-react';
+import ConnectionDebugger from '@/components/dashboard/ConnectionDebugger';
+import { Loader2, MessageSquare, Users, Info, Settings } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { AssistantService } from '@/services/assistant/index';
 import { Lead } from '@/types/assistant';
 import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 const Dashboard = () => {
   const { session, isLoading: authLoading } = useAuth();
   const assistantServiceRef = useRef<AssistantService | null>(null);
   const isInitializedRef = useRef(false);
   const [leads, setLeads] = useState<Lead[]>([]);
+  const [showDebugger, setShowDebugger] = useState(false);
 
   useEffect(() => {
     if (session?.user && !isInitializedRef.current) {
@@ -73,7 +77,7 @@ const Dashboard = () => {
         </Card>
       </div>
 
-      {/* Header - Absolute full viewport width */}
+      {/* Header */}
       <div className="flex-shrink-0 border-b border-border/60 bg-background/95 backdrop-blur-sm w-full m-0 p-0">
         <div className="w-full px-2 py-2">
           <div className="flex items-center justify-between">
@@ -90,13 +94,28 @@ const Dashboard = () => {
                 <div className="h-2 w-2 bg-green-500 rounded-full animate-pulse" />
                 AI Assistant Active
               </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowDebugger(!showDebugger)}
+                className="h-6 px-2"
+              >
+                <Settings className="h-3 w-3" />
+              </Button>
             </div>
           </div>
         </div>
       </div>
 
+      {/* Debug Panel */}
+      {showDebugger && (
+        <div className="flex-shrink-0 border-b border-border/40 bg-muted/20 px-2 py-2">
+          <ConnectionDebugger userId={session.user.id} />
+        </div>
+      )}
+
       <div className="flex-1 flex overflow-hidden min-h-0 w-full m-0 p-0">
-        {/* Assistant Panel - Reduced to 25% width for more space for leads */}
+        {/* Assistant Panel */}
         <div className="w-[25%] h-full flex flex-col bg-background border-r border-border/60 shadow-sm overflow-hidden m-0 p-0">
           <div className="flex-shrink-0 px-2 py-2 border-b border-border/40 bg-muted/20">
             <div className="flex items-center gap-2">
@@ -114,7 +133,7 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Leads Panel - Expanded to 75% width for better table visibility */}
+        {/* Leads Panel */}
         <div className="w-[75%] flex flex-col bg-background overflow-hidden m-0 p-0">
           <div className="flex-shrink-0 px-2 py-2 border-b border-border/40 bg-muted/20">
             <div className="flex items-center gap-2">
