@@ -19,7 +19,7 @@ interface LeadsTableProps {
 const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
   const navigate = useNavigate();
   const [leads, setLeads] = useState<Lead[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
   const [selectedLeads, setSelectedLeads] = useState<Set<string>>(new Set());
@@ -35,31 +35,11 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
       setIsLoading(true);
       console.log('LeadsTable: Fetching leads for user:', userId);
       
-      // Add timeout to prevent hanging
-      const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('Query timeout after 10 seconds')), 10000);
-      });
-
-      // Test connection first with timeout
-      const connectionTest = supabase
-        .from('leads')
-        .select('count')
-        .eq('client_id', userId)
-        .limit(1);
-
-      console.log('LeadsTable: Starting connection test...');
-      const testResult = await Promise.race([connectionTest, timeoutPromise]);
-      console.log('LeadsTable: Connection test completed:', testResult);
-
-      // Main query with timeout
-      const mainQuery = supabase
+      const { data, error } = await supabase
         .from('leads')
         .select('*')
         .eq('client_id', userId)
         .order('created_at', { ascending: false });
-
-      console.log('LeadsTable: Starting main query...');
-      const { data, error } = await Promise.race([mainQuery, timeoutPromise]);
 
       console.log('LeadsTable: Query result:', { data, error, dataLength: data?.length });
 
@@ -76,11 +56,7 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
       }
     } catch (error: any) {
       console.error('LeadsTable: Unexpected error:', error);
-      if (error.message?.includes('timeout')) {
-        toast.error('Database connection timeout - please try again');
-      } else {
-        toast.error('Failed to fetch leads: Unexpected error');
-      }
+      toast.error('Failed to fetch leads: Unexpected error');
       setLeads([]);
     } finally {
       console.log('LeadsTable: Setting loading to false');
@@ -254,17 +230,7 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
       <div className="flex items-center justify-center p-8">
         <div className="text-center space-y-4">
           <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto" />
-          <p className="text-xs text-muted-foreground">Loading leads for user {userId}...</p>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={() => {
-              console.log('LeadsTable: Force stopping loading state');
-              setIsLoading(false);
-            }}
-          >
-            Stop Loading
-          </Button>
+          <p className="text-xs text-muted-foreground">Loading leads...</p>
         </div>
       </div>
     );
