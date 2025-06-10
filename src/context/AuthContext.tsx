@@ -3,6 +3,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { User, Session, AuthChangeEvent } from '@supabase/supabase-js';
+import { getOrCreateClientRecord } from '@/utils/auth';
 
 interface AuthContextType {
   user: User | null;
@@ -60,6 +61,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(newUser);
       setSessionChecked(true);
       setIsLoading(false);
+
+      // Create client record if user exists
+      if (newUser && newUser.email) {
+        try {
+          await getOrCreateClientRecord(newUser.id, newUser.email);
+          console.log('[AuthContext] Client record ensured for user:', newUser.id);
+        } catch (error) {
+          console.error('[AuthContext] Error creating client record:', error);
+        }
+      }
 
       // Handle routing based on auth state and current path
       if (newUser) {
