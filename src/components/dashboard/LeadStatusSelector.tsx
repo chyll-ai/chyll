@@ -11,10 +11,14 @@ interface LeadStatusSelectorProps {
 }
 
 const statusOptions = [
+  { value: 'new', label: 'Nouveau', color: 'text-slate-700' },
   { value: 'à contacter', label: 'À contacter', color: 'text-slate-700' },
+  { value: 'contacted', label: 'Contacté', color: 'text-blue-700' },
   { value: 'email envoyé', label: 'Email envoyé', color: 'text-blue-700' },
   { value: 'répondu', label: 'Répondu', color: 'text-green-700' },
+  { value: 'interested', label: 'Intéressé', color: 'text-green-700' },
   { value: 'à relancer', label: 'À relancer', color: 'text-orange-700' },
+  { value: 'follow_up', label: 'Suivi', color: 'text-orange-700' },
   { value: 'appel prévu', label: 'Appel prévu', color: 'text-purple-700' },
   { value: 'rdv', label: 'RDV', color: 'text-emerald-700' },
   { value: 'rdv manqué', label: 'RDV manqué', color: 'text-red-700' }
@@ -39,12 +43,14 @@ const LeadStatusSelector: React.FC<LeadStatusSelectorProps> = ({ lead, onStatusU
   };
 
   const currentOption = statusOptions.find(option => option.value === lead.status);
+  const displayLabel = currentOption?.label || lead.status || 'À contacter';
+  const displayColor = currentOption?.color || 'text-slate-700';
 
   return (
-    <Select value={lead.status} onValueChange={handleStatusChange}>
+    <Select value={lead.status || 'new'} onValueChange={handleStatusChange}>
       <SelectTrigger className="w-full min-w-[140px]">
-        <SelectValue className={currentOption?.color}>
-          <span className={currentOption?.color}>{currentOption?.label || 'À contacter'}</span>
+        <SelectValue className={displayColor}>
+          <span className={displayColor}>{displayLabel}</span>
         </SelectValue>
       </SelectTrigger>
       <SelectContent>

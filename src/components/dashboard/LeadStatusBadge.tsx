@@ -10,8 +10,16 @@ const LeadStatusBadge: React.FC<LeadStatusBadgeProps> = ({ status }) => {
   let className = '';
   
   switch (status?.toLowerCase()) {
+    case 'new':
+    case 'nouveau':
+      className = 'bg-gray-100 text-gray-800 border-gray-200';
+      break;
     case 'à contacter':
       className = 'bg-slate-100 text-slate-800 border-slate-200';
+      break;
+    case 'contacted':
+    case 'contacté':
+      className = 'bg-blue-100 text-blue-800 border-blue-200';
       break;
     case 'email envoyé':
       className = 'bg-blue-100 text-blue-800 border-blue-200';
@@ -19,7 +27,15 @@ const LeadStatusBadge: React.FC<LeadStatusBadgeProps> = ({ status }) => {
     case 'répondu':
       className = 'bg-green-100 text-green-800 border-green-200';
       break;
+    case 'interested':
+    case 'intéressé':
+      className = 'bg-green-100 text-green-800 border-green-200';
+      break;
     case 'à relancer':
+      className = 'bg-orange-100 text-orange-800 border-orange-200';
+      break;
+    case 'follow_up':
+    case 'suivi':
       className = 'bg-orange-100 text-orange-800 border-orange-200';
       break;
     case 'appel prévu':
