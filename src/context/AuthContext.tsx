@@ -45,13 +45,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     console.log('[AuthContext] Handling session update:', {
       hasSession: !!newSession,
       userId: newSession?.user?.id,
-      currentPath: location.pathname
+      currentPath: location.pathname,
+      accessToken: newSession?.access_token ? 'present' : 'missing'
     });
 
     try {
       const newUser = newSession?.user || null;
       
-      // Update state immediately
+      // Update state immediately and synchronously
       setSession(newSession);
       setUser(newUser);
       setSessionChecked(true);
@@ -72,6 +73,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       if (newUser) {
         // User is authenticated
+        console.log('[AuthContext] User authenticated:', newUser.id);
         if (currentPath === '/login') {
           // If on login page, redirect to intended destination or dashboard
           const from = location.state?.from || '/dashboard';
@@ -79,6 +81,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
       } else {
         // User is not authenticated
+        console.log('[AuthContext] User not authenticated');
         if (isProtectedRoute(currentPath)) {
           console.log('[AuthContext] Redirecting to login from protected route:', currentPath);
           navigate('/login', { replace: true, state: { from: currentPath } });
@@ -94,12 +97,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     let mounted = true;
 
-    // Initialize auth state - simplified approach
+    // Initialize auth state
     const initializeAuth = async () => {
       try {
         console.log('[AuthContext] Starting initialization...');
         
-        // Get initial session without timeout
+        // Get initial session
         const { data: { session: initialSession }, error } = await supabase.auth.getSession();
         
         if (error) {
@@ -113,7 +116,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         console.log('[AuthContext] Initial session retrieved:', {
           hasSession: !!initialSession,
-          userId: initialSession?.user?.id
+          userId: initialSession?.user?.id,
+          hasAccessToken: !!initialSession?.access_token
         });
 
         if (mounted) {
@@ -136,16 +140,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.log('[AuthContext] Auth state change:', { 
         event, 
         userId: currentSession?.user?.id, 
-        path: location.pathname
+        path: location.pathname,
+        hasAccessToken: !!currentSession?.access_token
       });
 
       if (mounted) {
         switch (event) {
           case 'SIGNED_IN':
+            console.log('[AuthContext] Processing SIGNED_IN event');
             await handleSession(currentSession);
             break;
           
           case 'SIGNED_OUT':
+            console.log('[AuthContext] Processing SIGNED_OUT event');
             await handleSession(null);
             // Only redirect to home if not already on a public route
             if (!isPublicRoute(location.pathname)) {
@@ -156,6 +163,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           case 'TOKEN_REFRESHED':
           case 'USER_UPDATED':
           case 'INITIAL_SESSION':
+            console.log('[AuthContext] Processing session update event:', event);
             await handleSession(currentSession);
             break;
         }
@@ -203,10 +211,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  // Compute authentication state based on session and user
+  const isAuthenticated = !!(session?.user?.id && session?.access_token);
+
   const value = {
     user,
     session,
-    isAuthenticated: !!session?.user?.id,
+    isAuthenticated,
     isLoading,
     sessionChecked,
     signOut
@@ -215,8 +226,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   console.log('[AuthContext] Current state:', {
     isLoading,
     sessionChecked,
-    isAuthenticated: !!session?.user?.id,
-    userId: user?.id
+    isAuthenticated,
+    userId: user?.id,
+    hasSession: !!session,
+    hasAccessToken: !!session?.access_token
   });
 
   // Show loading state while checking auth - simplified
