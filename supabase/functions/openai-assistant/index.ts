@@ -63,26 +63,42 @@ async function searchAndGenerateLeads(query: string, userId: string) {
     .eq('client_id', userId)
     .single();
 
-  // Call lead-search function
-  const response = await fetch(`${SUPABASE_URL}/functions/v1/lead-search`, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      searchQuery: query,
-      clientProfile,
-      clientId: userId,
-      isDemoData: !clientProfile?.is_complete
-    })
-  });
+  // Call lead-search function with timeout
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
 
-  if (!response.ok) {
-    throw new Error('Failed to search leads');
+  try {
+    const response = await fetch(`${SUPABASE_URL}/functions/v1/lead-search`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        searchQuery: query,
+        clientProfile,
+        clientId: userId,
+        isDemoData: !clientProfile?.is_complete
+      }),
+      signal: controller.signal
+    });
+
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Lead search failed:', errorText);
+      throw new Error(`Failed to search leads: ${response.status} ${errorText}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    clearTimeout(timeoutId);
+    if (error.name === 'AbortError') {
+      throw new Error('Lead search timed out');
+    }
+    throw error;
   }
-
-  return await response.json();
 }
 
 serve(async (req: Request) => {
@@ -105,16 +121,29 @@ serve(async (req: Request) => {
       apiKey: OPENAI_API_KEY
     });
 
-    // First, let OpenAI analyze the user's request
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-4-turbo-preview',
-      messages: [
-        { role: 'system', content: SYSTEM_PROMPT },
-        { role: 'user', content: message }
-      ],
-      temperature: 0.7,
-      max_tokens: 1000
-    });
+    // First, let OpenAI analyze the user's request with timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 25000); // 25 second timeout
+
+    let completion;
+    try {
+      completion = await openai.chat.completions.create({
+        model: 'gpt-4-turbo-preview',
+        messages: [
+          { role: 'system', content: SYSTEM_PROMPT },
+          { role: 'user', content: message }
+        ],
+        temperature: 0.7,
+        max_tokens: 1000
+      });
+      clearTimeout(timeoutId);
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (error.name === 'AbortError') {
+        throw new Error('OpenAI request timed out');
+      }
+      throw error;
+    }
 
     const aiResponse = completion.choices[0]?.message?.content || '';
 
@@ -125,11 +154,14 @@ serve(async (req: Request) => {
         message.toLowerCase().includes('leads') ||
         message.toLowerCase().includes('prospects')) {
       try {
+        console.log('Attempting lead search for query:', message);
         const leadResults = await searchAndGenerateLeads(message, userId);
+        console.log('Lead search successful, found:', leadResults.leads?.length || 0, 'leads');
+        
         return new Response(
           JSON.stringify({
-            message: `${aiResponse}\n\nJ'ai trouvé ${leadResults.leads.length} leads correspondant à votre recherche. Vous pouvez les voir dans le tableau des leads.`,
-            leads: leadResults.leads
+            message: `${aiResponse}\n\nJ'ai trouvé ${leadResults.leads?.length || 0} leads correspondant à votre recherche. Vous pouvez les voir dans le tableau des leads.`,
+            leads: leadResults.leads || []
           }),
           { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
@@ -137,7 +169,7 @@ serve(async (req: Request) => {
         console.error('Lead search error:', error);
         return new Response(
           JSON.stringify({
-            message: `${aiResponse}\n\nDésolé, j'ai rencontré une erreur lors de la recherche des leads. Veuillez réessayer.`
+            message: `${aiResponse}\n\nDésolé, j'ai rencontré une erreur lors de la recherche des leads: ${error.message}. Veuillez réessayer.`
           }),
           { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
@@ -151,9 +183,12 @@ serve(async (req: Request) => {
     );
 
   } catch (error) {
-    console.error('Error:', error);
+    console.error('Error in openai-assistant:', error);
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : 'An unknown error occurred' }),
+      JSON.stringify({ 
+        error: error instanceof Error ? error.message : 'An unknown error occurred',
+        message: 'Désolé, j\'ai rencontré une erreur technique. Veuillez réessayer.'
+      }),
       { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }

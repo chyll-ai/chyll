@@ -130,7 +130,7 @@ STRICT MATCHING RULES:
 Return exactly ${count} leads in the specified JSON format. Focus on accuracy over creativity.`;
 
     const completion = await openai.chat.completions.create({
-      model: 'gpt-4.1-2025-04-14',
+      model: 'gpt-4-turbo-preview',
       messages: [
         { role: 'system', content: SYSTEM_PROMPT },
         { role: 'user', content: userPrompt }
@@ -153,27 +153,29 @@ Return exactly ${count} leads in the specified JSON format. Focus on accuracy ov
       throw new Error('Invalid response format from OpenAI');
     }
 
-    // Enhanced validation with duplicate checking
+    // Enhanced validation with duplicate checking and field filtering
     const seenNames = new Set();
     const seenEmails = new Set();
-    const seenCompanies = new Set();
+    const allowedFields = ['full_name', 'job_title', 'company', 'location', 'email', 'phone_number', 'linkedin_url'];
     
     const validatedLeads = parsedResponse.leads.map((lead: any, index: number) => {
-      const allowedFields = ['full_name', 'job_title', 'company', 'location', 'email', 'phone_number', 'linkedin_url'];
-      const extraFields = Object.keys(lead).filter(key => !allowedFields.includes(key));
-      if (extraFields.length > 0) {
-        throw new Error(`Lead ${index + 1} contains unauthorized fields: ${extraFields.join(', ')}`);
-      }
+      // Filter out any unauthorized fields first
+      const filteredLead: any = {};
+      allowedFields.forEach(field => {
+        if (lead[field]) {
+          filteredLead[field] = lead[field];
+        }
+      });
 
-      const missingOrEmptyFields = allowedFields.filter(field => !lead[field] || String(lead[field]).trim() === '');
+      // Validate required fields
+      const missingOrEmptyFields = allowedFields.filter(field => !filteredLead[field] || String(filteredLead[field]).trim() === '');
       if (missingOrEmptyFields.length > 0) {
         throw new Error(`Lead ${index + 1} has missing or empty fields: ${missingOrEmptyFields.join(', ')}`);
       }
 
       // Check for duplicates
-      const fullName = String(lead.full_name).trim();
-      const email = String(lead.email).trim().toLowerCase();
-      const company = String(lead.company).trim();
+      const fullName = String(filteredLead.full_name).trim();
+      const email = String(filteredLead.email).trim().toLowerCase();
       
       if (seenNames.has(fullName)) {
         throw new Error(`Lead ${index + 1} has duplicate name: ${fullName}`);
@@ -181,22 +183,18 @@ Return exactly ${count} leads in the specified JSON format. Focus on accuracy ov
       if (seenEmails.has(email)) {
         throw new Error(`Lead ${index + 1} has duplicate email: ${email}`);
       }
-      if (seenCompanies.has(company)) {
-        throw new Error(`Lead ${index + 1} has duplicate company: ${company}`);
-      }
       
       seenNames.add(fullName);
       seenEmails.add(email);
-      seenCompanies.add(company);
 
       const validatedLead: Lead = {
         full_name: fullName,
-        job_title: String(lead.job_title).trim(),
-        company: company,
-        location: String(lead.location).trim(),
+        job_title: String(filteredLead.job_title).trim(),
+        company: String(filteredLead.company).trim(),
+        location: String(filteredLead.location).trim(),
         email: email,
-        phone_number: String(lead.phone_number).trim(),
-        linkedin_url: String(lead.linkedin_url).trim(),
+        phone_number: String(filteredLead.phone_number).trim(),
+        linkedin_url: String(filteredLead.linkedin_url).trim(),
         client_id: userId,
         id: crypto.randomUUID(),
         created_at: new Date().toISOString(),
