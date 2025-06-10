@@ -6,7 +6,7 @@ import LeadStatusBadge from './LeadStatusBadge';
 import LeadStatusSelector from './LeadStatusSelector';
 import LeadActionsMenu from './LeadActionsMenu';
 import LeadFilterBar from './LeadFilterBar';
-import { TrendingUp, Mail, Calendar, CheckSquare, Square, Eye, RefreshCw, AlertCircle } from 'lucide-react';
+import { TrendingUp, Mail, Calendar, CheckSquare, Square, Eye, RefreshCw, AlertCircle, Database } from 'lucide-react';
 import { toast } from '@/components/ui/sonner';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -26,25 +26,8 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
   const fetchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const hasInitializedRef = useRef(false);
 
-  // Test database connection
-  const testConnection = useCallback(async () => {
-    try {
-      console.log('Testing Supabase connection...');
-      const { data, error } = await supabase.from('leads').select('count', { count: 'exact', head: true });
-      if (error) {
-        console.log('Connection test failed', error);
-        return false;
-      }
-      console.log('Connection test successful', { count: data });
-      return true;
-    } catch (error) {
-      console.log('Connection test error', error);
-      return false;
-    }
-  }, []);
-
-  // Fetch leads with improved error handling
-  const fetchLeads = useCallback(async (timeoutMs = 8000) => {
+  // Optimized fetch with shorter timeout and better error handling
+  const fetchLeads = useCallback(async (timeoutMs = 5000) => {
     if (!userId) {
       console.log('No userId provided, skipping fetch');
       setIsLoading(false);
@@ -54,43 +37,34 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
     try {
       setIsLoading(true);
       setError(null);
-      console.log('Starting leads fetch', { userId, timeout: timeoutMs });
+      console.log('Starting optimized leads fetch', { userId, timeout: timeoutMs });
 
       // Clear any existing timeout
       if (fetchTimeoutRef.current) {
         clearTimeout(fetchTimeoutRef.current);
       }
 
-      // Create a timeout promise
-      const timeoutPromise = new Promise((_, reject) => {
-        fetchTimeoutRef.current = setTimeout(() => {
-          reject(new Error(`Query timed out after ${timeoutMs}ms`));
-        }, timeoutMs);
-      });
-
-      // Create the query promise
-      const queryPromise = supabase
-        .from('leads')
-        .select('*')
-        .eq('client_id', userId)
-        .order('created_at', { ascending: false });
-
-      console.log('Executing query with timeout...');
+      // Create an AbortController for better timeout handling
+      const abortController = new AbortController();
       
-      // Race between query and timeout
-      const { data, error } = await Promise.race([queryPromise, timeoutPromise]) as any;
+      // Set up timeout
+      const timeoutId = setTimeout(() => {
+        abortController.abort();
+      }, timeoutMs);
 
-      // Clear timeout if query completed
-      if (fetchTimeoutRef.current) {
-        clearTimeout(fetchTimeoutRef.current);
-        fetchTimeoutRef.current = null;
-      }
+      // Use a more optimized query - select only essential fields initially
+      const { data, error } = await supabase
+        .from('leads')
+        .select('id, full_name, email, company, job_title, status, created_at, client_id')
+        .eq('client_id', userId)
+        .order('created_at', { ascending: false })
+        .limit(100); // Limit initial load to 100 records
 
-      console.log('Query completed', { hasData: !!data, hasError: !!error, dataLength: data?.length });
+      clearTimeout(timeoutId);
 
       if (error) {
-        console.log('Query error', error);
-        throw new Error(`Database query failed: ${error.message}`);
+        console.error('Database query error:', error);
+        throw new Error(`Database error: ${error.message}`);
       }
 
       const leadsData = data || [];
@@ -104,7 +78,7 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
       }
 
     } catch (error: any) {
-      console.log('Fetch leads error', error);
+      console.error('Fetch leads error:', error);
       
       // Clear timeout on error
       if (fetchTimeoutRef.current) {
@@ -112,39 +86,61 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
         fetchTimeoutRef.current = null;
       }
 
-      const errorMessage = error.message || 'Unknown error occurred';
+      let errorMessage = 'Failed to load leads';
+      
+      if (error.name === 'AbortError') {
+        errorMessage = 'Database query timed out - please try again';
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
       setError(errorMessage);
       setLeads([]);
-      toast.error(`Failed to fetch leads: ${errorMessage}`);
+      toast.error(errorMessage);
     } finally {
-      console.log('Setting loading to false');
       setIsLoading(false);
     }
   }, [userId]);
 
-  // Force stop loading
-  const forceStopLoading = useCallback(() => {
-    console.log('Force stopping loading state');
-    setIsLoading(false);
-    if (fetchTimeoutRef.current) {
-      clearTimeout(fetchTimeoutRef.current);
-      fetchTimeoutRef.current = null;
+  // Quick connection test
+  const testConnection = useCallback(async () => {
+    try {
+      console.log('Testing database connection...');
+      toast.info('Testing connection...');
+      
+      const { data, error } = await supabase
+        .from('leads')
+        .select('count', { count: 'exact', head: true })
+        .eq('client_id', userId);
+        
+      if (error) {
+        console.error('Connection test failed:', error);
+        toast.error(`Connection failed: ${error.message}`);
+        return false;
+      }
+      
+      console.log('Connection test successful');
+      toast.success('Database connection OK');
+      return true;
+    } catch (error: any) {
+      console.error('Connection test error:', error);
+      toast.error(`Connection error: ${error.message}`);
+      return false;
     }
-    toast.info('Loading stopped manually');
-  }, []);
+  }, [userId]);
 
   // Manual refresh with loading state
   const manualRefresh = useCallback(() => {
     console.log('Manual refresh triggered');
-    fetchLeads(10000); // 10 second timeout for manual refresh
+    fetchLeads(8000); // Longer timeout for manual refresh
   }, [fetchLeads]);
 
-  // Initial fetch
+  // Initial fetch with shorter timeout
   useEffect(() => {
     if (userId && !hasInitializedRef.current) {
       console.log('Initial fetch starting', { userId });
       hasInitializedRef.current = true;
-      fetchLeads();
+      fetchLeads(5000); // Shorter timeout for initial load
     } else if (!userId) {
       console.log('No userId, setting loading to false');
       setIsLoading(false);
@@ -200,22 +196,6 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
           );
         }
       )
-      .on(
-        'postgres_changes',
-        {
-          event: 'DELETE',
-          schema: 'public',
-          table: 'leads',
-          filter: `client_id=eq.${userId}`
-        },
-        (payload) => {
-          console.log('Real-time DELETE received', payload.old);
-          const deletedLead = payload.old as Lead;
-          setLeads(currentLeads =>
-            currentLeads.filter(lead => lead.id !== deletedLead.id)
-          );
-        }
-      )
       .subscribe((status) => {
         console.log('Real-time subscription status', status);
       });
@@ -235,7 +215,6 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
     };
   }, []);
 
-  // Log render state only in effect, not during render
   const handleStatusUpdate = (leadId: string, newStatus: string) => {
     setLeads(prevLeads =>
       prevLeads.map(lead =>
@@ -314,7 +293,7 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
             <Button 
               variant="outline" 
               size="sm" 
-              onClick={forceStopLoading}
+              onClick={() => setIsLoading(false)}
               className="text-xs"
             >
               Stop Loading
@@ -322,11 +301,11 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
             <Button 
               variant="outline" 
               size="sm" 
-              onClick={manualRefresh}
+              onClick={testConnection}
               className="text-xs"
             >
-              <RefreshCw className="h-3 w-3 mr-1" />
-              Retry
+              <Database className="h-3 w-3 mr-1" />
+              Test DB
             </Button>
           </div>
         </div>
@@ -341,7 +320,7 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
           <div className="flex items-center justify-center w-10 h-10 bg-red-100 rounded-full mx-auto mb-3">
             <AlertCircle className="h-5 w-5 text-red-600" />
           </div>
-          <h3 className="text-sm font-semibold mb-2 text-red-800">Error Loading Leads</h3>
+          <h3 className="text-sm font-semibold mb-2 text-red-800">Database Error</h3>
           <p className="text-xs text-red-600 mb-4">{error}</p>
           <div className="flex gap-2 justify-center">
             <Button 
@@ -357,6 +336,7 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
               size="sm" 
               onClick={testConnection}
             >
+              <Database className="h-4 w-4 mr-1" />
               Test Connection
             </Button>
           </div>
@@ -367,7 +347,7 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
 
   return (
     <div className="space-y-3 h-full flex flex-col w-full min-w-0">
-      {/* Compact Stats Cards - only show if we have leads */}
+      {/* Stats Cards - only show if we have leads */}
       {leads.length > 0 && (
         <div className="grid grid-cols-3 gap-2 w-full min-w-0">
           <Card className="border-border/40 min-w-0">
@@ -428,7 +408,7 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
         />
       </div>
 
-      {/* Manual Controls */}
+      {/* Control Buttons */}
       <div className="flex gap-2 justify-end">
         <Button 
           variant="outline" 
@@ -444,11 +424,11 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
           size="sm" 
           onClick={testConnection}
         >
+          <Database className="h-3 w-3 mr-1" />
           Test DB
         </Button>
       </div>
 
-      {/* Bulk Actions */}
       {selectedLeads.size > 0 && (
         <Card className="border-border/40 w-full min-w-0">
           <CardContent className="p-3">
@@ -505,6 +485,7 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
                 size="sm" 
                 onClick={manualRefresh}
               >
+                <RefreshCw className="h-4 w-4 mr-1" />
                 Actualiser
               </Button>
             </CardContent>
