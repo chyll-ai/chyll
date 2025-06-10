@@ -69,7 +69,7 @@ const Dashboard = () => {
               </div>
               <div>
                 <p className="text-sm font-medium text-orange-800">
-                  Ceci est une démo - Le produit final sera lancé mi-juin et nous vous contacterons
+                  Ceci est une démo - chyll est actuellement en bêta fermée, nous vous tiendrons au courant cet été pour le lancement public
                 </p>
               </div>
             </div>
