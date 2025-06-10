@@ -1,3 +1,4 @@
+
 // @ts-ignore: Deno imports
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 // @ts-ignore: Deno imports
@@ -80,7 +81,7 @@ serve(async (req: Request) => {
     }
 
     const requestData: RequestData = await req.json();
-    const { searchQuery, count = 3 } = requestData; // Reduced default count
+    const { searchQuery, count = 3 } = requestData;
     const userId = requestData.userId || '';
 
     if (!searchQuery) {
@@ -106,16 +107,16 @@ Return exactly ${safeCount} leads in the JSON format specified. Be concise.`;
 
     console.log('Calling OpenAI API...');
 
-    // Reduced timeout and token limits
+    // Reduced token limits and removed timeout parameter
     const completion = await openai.chat.completions.create({
-      model: 'gpt-4-1106-preview', // Use the latest model
+      model: 'gpt-4o-mini',
       messages: [
         { role: 'system', content: SYSTEM_PROMPT },
         { role: 'user', content: userPrompt }
       ],
       temperature: 0.3,
       response_format: { type: "json_object" },
-      max_tokens: 800 // Reduced from 1500
+      max_tokens: 800
     });
 
     const responseContent = completion.choices[0]?.message?.content;
