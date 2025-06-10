@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
@@ -18,33 +19,82 @@ interface LeadsTableProps {
 const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
   const navigate = useNavigate();
   const [leads, setLeads] = useState<Lead[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
   const [selectedLeads, setSelectedLeads] = useState<Set<string>>(new Set());
 
   const fetchLeads = async () => {
+    if (!userId) {
+      console.log('LeadsTable: No userId provided, skipping fetch');
+      setIsLoading(false);
+      return;
+    }
+
     try {
       setIsLoading(true);
-      const { data, error } = await supabase
+      console.log('LeadsTable: Fetching leads for user:', userId);
+      
+      // Add timeout to prevent hanging
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Query timeout after 10 seconds')), 10000);
+      });
+
+      // Test connection first with timeout
+      const connectionTest = supabase
+        .from('leads')
+        .select('count')
+        .eq('client_id', userId)
+        .limit(1);
+
+      console.log('LeadsTable: Starting connection test...');
+      const testResult = await Promise.race([connectionTest, timeoutPromise]);
+      console.log('LeadsTable: Connection test completed:', testResult);
+
+      // Main query with timeout
+      const mainQuery = supabase
         .from('leads')
         .select('*')
         .eq('client_id', userId)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
-      setLeads(data || []);
+      console.log('LeadsTable: Starting main query...');
+      const { data, error } = await Promise.race([mainQuery, timeoutPromise]);
+
+      console.log('LeadsTable: Query result:', { data, error, dataLength: data?.length });
+
+      if (error) {
+        console.error('LeadsTable: Error fetching leads:', error);
+        toast.error(`Failed to fetch leads: ${error.message}`);
+        setLeads([]);
+      } else {
+        console.log('LeadsTable: Successfully fetched leads:', data?.length || 0);
+        setLeads(data || []);
+        if (data && data.length > 0) {
+          toast.success(`Loaded ${data.length} leads`);
+        }
+      }
     } catch (error: any) {
-      console.error('Error fetching leads:', error);
-      toast.error('Failed to fetch leads');
+      console.error('LeadsTable: Unexpected error:', error);
+      if (error.message?.includes('timeout')) {
+        toast.error('Database connection timeout - please try again');
+      } else {
+        toast.error('Failed to fetch leads: Unexpected error');
+      }
+      setLeads([]);
     } finally {
+      console.log('LeadsTable: Setting loading to false');
       setIsLoading(false);
     }
   };
 
   useEffect(() => {
     if (userId) {
+      console.log('LeadsTable: Initial fetch for user:', userId);
       fetchLeads();
+    } else {
+      console.log('LeadsTable: No userId, setting loading to false');
+      setIsLoading(false);
     }
   }, [userId]);
 
@@ -192,12 +242,29 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
 
   const statusOptions = Array.from(new Set(leads.map(lead => lead.status).filter(Boolean)));
 
+  console.log('LeadsTable: Render state:', { 
+    isLoading, 
+    leadsCount: leads.length, 
+    filteredCount: filteredLeads.length,
+    userId 
+  });
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center p-8">
         <div className="text-center space-y-4">
           <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto" />
-          <p className="text-xs text-muted-foreground">Loading leads...</p>
+          <p className="text-xs text-muted-foreground">Loading leads for user {userId}...</p>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => {
+              console.log('LeadsTable: Force stopping loading state');
+              setIsLoading(false);
+            }}
+          >
+            Stop Loading
+          </Button>
         </div>
       </div>
     );
@@ -312,12 +379,19 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
               <h3 className="text-sm font-semibold mb-2">
                 {leads.length === 0 ? 'Aucun lead trouvé' : 'Aucun lead ne correspond aux filtres'}
               </h3>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-muted-foreground mb-4">
                 {leads.length === 0 
                   ? 'Commencez par demander à l\'assistant IA de trouver des leads' 
                   : 'Essayez d\'ajuster vos critères de recherche'
                 }
               </p>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={fetchLeads}
+              >
+                Actualiser
+              </Button>
             </CardContent>
           </Card>
         ) : (

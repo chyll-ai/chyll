@@ -295,15 +295,7 @@ export type Database = {
           role?: string
           updated_at?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "messages_client_id_fkey"
-            columns: ["client_id"]
-            isOneToOne: false
-            referencedRelation: "clients"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       queue_search: {
         Row: {
