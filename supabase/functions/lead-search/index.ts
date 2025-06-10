@@ -43,7 +43,10 @@ const corsHeaders = {
   'Access-Control-Max-Age': '86400',
 };
 
-const EXAMPLE_RESPONSE = {
+const SYSTEM_PROMPT = `You are a lead generation specialist. Generate realistic French professionals that match the search criteria.
+
+CRITICAL: You must respond with EXACTLY this JSON structure:
+{
   "leads": [
     {
       "full_name": "Sophie Martin",
@@ -51,26 +54,19 @@ const EXAMPLE_RESPONSE = {
       "company": "DataTech SAS",
       "location": "Paris",
       "email": "sophie.martin@datatech.fr",
-      "phone_number": "+33 612345678",
+      "phone_number": "+33612345678",
       "linkedin_url": "linkedin.com/in/sophie-martin-tech"
     }
   ]
-};
-
-const SYSTEM_PROMPT = `You are a lead generation specialist. Generate realistic French professionals that match the search criteria.
-
-Response format (JSON only):
-${JSON.stringify(EXAMPLE_RESPONSE, null, 2)}
+}
 
 Requirements:
-- Match job titles exactly
 - Use realistic French names and companies
 - Professional email format: firstname.lastname@company.fr
 - Phone: +33 6XXXXXXXX format
 - LinkedIn: linkedin.com/in/firstname-lastname-suffix
 - Major French cities only
-
-Keep responses concise and under 2000 tokens.`;
+- Keep response under 1000 tokens`;
 
 serve(async (req: Request) => {
   if (req.method === 'OPTIONS') {
@@ -85,7 +81,7 @@ serve(async (req: Request) => {
     }
 
     const requestData: RequestData = await req.json();
-    const { searchQuery, count = 5 } = requestData;
+    const { searchQuery, count = 3 } = requestData; // Reduced default count
     const userId = requestData.userId || '';
 
     if (!searchQuery) {
@@ -96,30 +92,32 @@ serve(async (req: Request) => {
       throw new Error('User ID is required');
     }
 
-    console.log(`Processing search query: "${searchQuery}" for ${count} leads`);
+    // Cap count at 5 to prevent large responses
+    const safeCount = Math.min(count, 5);
+    console.log(`Processing search query: "${searchQuery}" for ${safeCount} leads`);
 
     const openai = new OpenAI({
       apiKey: OPENAI_API_KEY
     });
 
-    // Simplified and shorter prompt to avoid large responses
-    const userPrompt = `Generate ${count} French business professionals for: "${searchQuery}"
+    // Simplified and shorter prompt
+    const userPrompt = `Generate ${safeCount} French business professionals for: "${searchQuery}"
 
-Return exactly ${count} leads in JSON format. Keep it concise.`;
+Return exactly ${safeCount} leads in the JSON format specified. Be concise.`;
 
     console.log('Calling OpenAI API...');
 
+    // Reduced timeout and token limits
     const completion = await openai.chat.completions.create({
-      model: 'gpt-4-turbo-preview',
+      model: 'gpt-4o-mini', // Use faster model
       messages: [
         { role: 'system', content: SYSTEM_PROMPT },
         { role: 'user', content: userPrompt }
       ],
       temperature: 0.3,
       response_format: { type: "json_object" },
-      max_tokens: 1500, // Reduced from 3000 to prevent large responses
-      presence_penalty: 0.6,
-      frequency_penalty: 0.8
+      max_tokens: 800, // Reduced from 1500
+      timeout: 10000 // 10 second timeout
     });
 
     const responseContent = completion.choices[0]?.message?.content;
@@ -131,10 +129,10 @@ Return exactly ${count} leads in JSON format. Keep it concise.`;
 
     console.log(`OpenAI response length: ${responseContent.length} characters`);
 
-    // Check response size before parsing
-    if (responseContent.length > 10000) {
+    // Check response size
+    if (responseContent.length > 5000) {
       console.error('Response too large, truncating...');
-      throw new Error('OpenAI response too large, please try with fewer leads');
+      throw new Error('Response too large, please try with fewer leads');
     }
 
     let parsedResponse;
@@ -152,7 +150,7 @@ Return exactly ${count} leads in JSON format. Keep it concise.`;
     }
 
     // Validate and clean leads
-    const validatedLeads = parsedResponse.leads.slice(0, count).map((lead: any, index: number) => {
+    const validatedLeads = parsedResponse.leads.slice(0, safeCount).map((lead: any, index: number) => {
       const requiredFields = ['full_name', 'job_title', 'company', 'location', 'email', 'phone_number', 'linkedin_url'];
       
       // Check for missing fields
@@ -181,11 +179,11 @@ Return exactly ${count} leads in JSON format. Keep it concise.`;
       };
 
       // Basic validation
-      if (!validatedLead.email.includes('@') || !validatedLead.email.endsWith('.fr')) {
+      if (!validatedLead.email.includes('@')) {
         throw new Error(`Lead ${index + 1} has invalid email: ${validatedLead.email}`);
       }
       if (!validatedLead.phone_number.startsWith('+33')) {
-        throw new Error(`Lead ${index + 1} has invalid phone: ${validatedLead.phone_number}`);
+        validatedLead.phone_number = '+33' + validatedLead.phone_number.replace(/^\+?33?/, '');
       }
 
       return validatedLead;
@@ -209,7 +207,6 @@ Return exactly ${count} leads in JSON format. Keep it concise.`;
   } catch (error) {
     console.error('Error in lead-search function:', error);
     
-    // Return a proper error response instead of 500
     const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
     
     return new Response(
@@ -219,7 +216,7 @@ Return exactly ${count} leads in JSON format. Keep it concise.`;
         message: `Failed to generate leads: ${errorMessage}`
       }),
       { 
-        status: 200, // Changed from 500 to 200 to prevent cascade failures
+        status: 200, // Keep 200 to prevent cascade failures
         headers: { 
           ...corsHeaders,
           'Content-Type': 'application/json'

@@ -20,22 +20,11 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [debugInfo, setDebugInfo] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
   const [selectedLeads, setSelectedLeads] = useState<Set<string>>(new Set());
   const fetchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const hasInitializedRef = useRef(false);
-
-  // Debug logging function - only use in effects and event handlers, not during render
-  const logDebug = useCallback((message: string, data?: any) => {
-    const timestamp = new Date().toLocaleTimeString();
-    const logMessage = `[${timestamp}] ${message}`;
-    console.log(logMessage, data || '');
-    
-    // Only update debug info in effects, not during render
-    setDebugInfo(prev => prev + '\n' + logMessage + (data ? ` ${JSON.stringify(data)}` : ''));
-  }, []);
 
   // Test database connection
   const testConnection = useCallback(async () => {
@@ -54,8 +43,8 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
     }
   }, []);
 
-  // Fetch leads with timeout and comprehensive error handling
-  const fetchLeads = useCallback(async (timeoutMs = 10000) => {
+  // Fetch leads with improved error handling
+  const fetchLeads = useCallback(async (timeoutMs = 8000) => {
     if (!userId) {
       console.log('No userId provided, skipping fetch');
       setIsLoading(false);
@@ -70,12 +59,6 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
       // Clear any existing timeout
       if (fetchTimeoutRef.current) {
         clearTimeout(fetchTimeoutRef.current);
-      }
-
-      // Test connection first
-      const connectionOk = await testConnection();
-      if (!connectionOk) {
-        throw new Error('Database connection failed');
       }
 
       // Create a timeout promise
@@ -118,8 +101,6 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
       
       if (leadsData.length > 0) {
         toast.success(`Loaded ${leadsData.length} leads`);
-      } else {
-        console.log('No leads found for user');
       }
 
     } catch (error: any) {
@@ -139,7 +120,7 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
       console.log('Setting loading to false');
       setIsLoading(false);
     }
-  }, [userId, testConnection]);
+  }, [userId]);
 
   // Force stop loading
   const forceStopLoading = useCallback(() => {
@@ -155,7 +136,7 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
   // Manual refresh with loading state
   const manualRefresh = useCallback(() => {
     console.log('Manual refresh triggered');
-    fetchLeads(15000); // 15 second timeout for manual refresh
+    fetchLeads(10000); // 10 second timeout for manual refresh
   }, [fetchLeads]);
 
   // Initial fetch
@@ -255,15 +236,6 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
   }, []);
 
   // Log render state only in effect, not during render
-  useEffect(() => {
-    logDebug('Render state updated', { 
-      isLoading, 
-      leadsCount: leads.length, 
-      hasError: !!error,
-      userId 
-    });
-  }, [isLoading, leads.length, error, userId, logDebug]);
-
   const handleStatusUpdate = (leadId: string, newStatus: string) => {
     setLeads(prevLeads =>
       prevLeads.map(lead =>
@@ -357,12 +329,6 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
               Retry
             </Button>
           </div>
-          {debugInfo && (
-            <details className="text-xs text-left bg-muted p-2 rounded max-h-32 overflow-auto">
-              <summary>Debug Info</summary>
-              <pre className="whitespace-pre-wrap">{debugInfo}</pre>
-            </details>
-          )}
         </div>
       </div>
     );
@@ -394,12 +360,6 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
               Test Connection
             </Button>
           </div>
-          {debugInfo && (
-            <details className="text-xs text-left bg-white p-2 rounded mt-4 max-h-32 overflow-auto">
-              <summary>Debug Info</summary>
-              <pre className="whitespace-pre-wrap">{debugInfo}</pre>
-            </details>
-          )}
         </CardContent>
       </Card>
     );
@@ -407,23 +367,7 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
 
   return (
     <div className="space-y-3 h-full flex flex-col w-full min-w-0">
-      {/* Debug Panel */}
-      {debugInfo && (
-        <Card className="border-blue-200 bg-blue-50 w-full min-w-0">
-          <CardContent className="p-2">
-            <details className="text-xs">
-              <summary className="cursor-pointer text-blue-700 font-medium">
-                Debug Info ({leads.length} leads loaded)
-              </summary>
-              <pre className="whitespace-pre-wrap mt-2 max-h-24 overflow-auto text-blue-600">
-                {debugInfo}
-              </pre>
-            </details>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Compact Stats Cards */}
+      {/* Compact Stats Cards - only show if we have leads */}
       {leads.length > 0 && (
         <div className="grid grid-cols-3 gap-2 w-full min-w-0">
           <Card className="border-border/40 min-w-0">

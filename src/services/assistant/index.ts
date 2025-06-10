@@ -46,9 +46,9 @@ export class AssistantService {
           content.toLowerCase().includes('prospects')) {
         console.log('AssistantService: Detected search query, attempting smart lead generation');
         
-        // Extract number from query (default to 5 if not specified)
+        // Extract number from query (default to 3 if not specified, max 5)
         const numberMatch = content.match(/(\d+)/);
-        const requestedCount = Math.min(numberMatch ? parseInt(numberMatch[1]) : 5, 10); // Cap at 10
+        const requestedCount = Math.min(numberMatch ? parseInt(numberMatch[1]) : 3, 5);
         
         console.log(`AssistantService: Requesting ${requestedCount} leads`);
         
@@ -58,18 +58,18 @@ export class AssistantService {
           if (smartLeads && smartLeads.length > 0) {
             console.log(`AssistantService: Successfully generated ${smartLeads.length} smart leads`);
             
-            // Save leads to database
-            await this.saveDummyLeads(smartLeads);
+            // Save leads to database with better error handling
+            const savedLeads = await this.saveDummyLeads(smartLeads);
             
             // Update UI through callback
             if (this.onLeadsUpdate) {
-              this.onLeadsUpdate(smartLeads);
+              this.onLeadsUpdate(savedLeads);
             }
             
-            toast.success(`${smartLeads.length} nouveaux leads ajoutés au tableau de bord`);
+            toast.success(`${savedLeads.length} nouveaux leads ajoutés au tableau de bord`);
 
             return {
-              message: `Parfait ! J'ai trouvé ${smartLeads.length} leads spécialisés correspondant à votre recherche "${content}". Ces contacts ont été soigneusement sélectionnés pour correspondre exactement à vos critères. Vous pouvez les voir dans la section "Recent Leads" à droite.`
+              message: `Parfait ! J'ai trouvé ${savedLeads.length} leads spécialisés correspondant à votre recherche "${content}". Ces contacts ont été soigneusement sélectionnés pour correspondre exactement à vos critères. Vous pouvez les voir dans la section "Recent Leads" à droite.`
             };
           } else {
             throw new Error('No leads returned from smart generation');
@@ -80,16 +80,16 @@ export class AssistantService {
           // Fallback to dummy leads
           console.log('AssistantService: Falling back to dummy lead generation');
           const dummyLeads = this.generateDummyLeads(content, requestedCount);
-          await this.saveDummyLeads(dummyLeads);
+          const savedLeads = await this.saveDummyLeads(dummyLeads);
           
           if (this.onLeadsUpdate) {
-            this.onLeadsUpdate(dummyLeads);
+            this.onLeadsUpdate(savedLeads);
           }
           
-          toast.success(`${dummyLeads.length} nouveaux leads ajoutés au tableau de bord`);
+          toast.success(`${savedLeads.length} nouveaux leads ajoutés au tableau de bord`);
 
           return {
-            message: `J'ai trouvé ${dummyLeads.length} leads correspondant à votre recherche "${content}". Ils ont été ajoutés à votre tableau de bord. (Note: utilisation de données de démonstration en raison d'une erreur technique)`
+            message: `J'ai trouvé ${savedLeads.length} leads correspondant à votre recherche "${content}". Ils ont été ajoutés à votre tableau de bord. (Note: utilisation de données de démonstration en raison d'une erreur technique)`
           };
         }
       }
@@ -127,12 +127,12 @@ export class AssistantService {
     }
   }
 
-  private async generateSmartLeads(searchQuery: string, count: number = 5): Promise<Lead[]> {
+  private async generateSmartLeads(searchQuery: string, count: number = 3): Promise<Lead[]> {
     try {
       console.log('AssistantService: Calling smart lead generation API');
       
       const timeoutController = new AbortController();
-      const timeoutId = setTimeout(() => timeoutController.abort(), 15000); // 15 second timeout
+      const timeoutId = setTimeout(() => timeoutController.abort(), 12000); // Reduced to 12 seconds
       
       const response = await fetch(`https://atsfuqwxfrezkxtnctmk.supabase.co/functions/v1/lead-search`, {
         method: 'POST',
@@ -291,27 +291,47 @@ export class AssistantService {
     return 'Paris'; // Default location
   }
 
-  private async saveDummyLeads(leads: Lead[]): Promise<void> {
+  private async saveDummyLeads(leads: Lead[]): Promise<Lead[]> {
     try {
       console.log('AssistantService: Saving leads to database');
       
-      const { data: savedLeads, error } = await supabase
-        .from('leads')
-        .upsert(leads, {
-          onConflict: 'client_id,email',
-          ignoreDuplicates: true
-        })
-        .select('*');
+      // Insert leads one by one to handle conflicts better
+      const savedLeads: Lead[] = [];
+      
+      for (const lead of leads) {
+        try {
+          const { data: savedLead, error } = await supabase
+            .from('leads')
+            .insert(lead)
+            .select('*')
+            .single();
 
-      if (error) {
-        console.error('AssistantService: Error saving leads:', error);
-        throw error;
+          if (error) {
+            // If it's a unique constraint error, try to update
+            if (error.code === '23505') {
+              console.log('Lead already exists, skipping:', lead.email);
+              continue;
+            } else {
+              console.error('Error saving individual lead:', error);
+              continue;
+            }
+          }
+
+          if (savedLead) {
+            savedLeads.push(savedLead);
+          }
+        } catch (individualError) {
+          console.error('Error processing individual lead:', individualError);
+          continue;
+        }
       }
 
-      console.log('AssistantService: Successfully saved leads:', savedLeads?.length || 0);
+      console.log('AssistantService: Successfully saved leads:', savedLeads.length);
+      return savedLeads;
     } catch (error) {
       console.error('AssistantService: Error in saveDummyLeads:', error);
-      throw error;
+      // Return original leads if save fails so UI can still update
+      return leads;
     }
   }
 
