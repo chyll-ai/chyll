@@ -93,32 +93,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     let mounted = true;
-    let initializationTimeout: NodeJS.Timeout;
 
-    // Set a timeout to ensure loading doesn't get stuck
-    initializationTimeout = setTimeout(() => {
-      console.log('[AuthContext] Initialization timeout reached, forcing loading to false');
-      if (mounted) {
-        setIsLoading(false);
-        setSessionChecked(true);
-      }
-    }, 5000); // 5 second timeout
-
-    // Initialize auth state
+    // Initialize auth state - simplified approach
     const initializeAuth = async () => {
       try {
         console.log('[AuthContext] Starting initialization...');
         
-        // Get initial session with a reasonable timeout
-        const sessionPromise = supabase.auth.getSession();
-        const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Session fetch timeout')), 3000)
-        );
-
-        const { data: { session: initialSession }, error } = await Promise.race([
-          sessionPromise,
-          timeoutPromise
-        ]) as any;
+        // Get initial session without timeout
+        const { data: { session: initialSession }, error } = await supabase.auth.getSession();
         
         if (error) {
           console.error('[AuthContext] Error getting initial session:', error);
@@ -135,13 +117,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         });
 
         if (mounted) {
-          clearTimeout(initializationTimeout);
           await handleSession(initialSession);
         }
       } catch (error) {
         console.error('[AuthContext] Error during initialization:', error);
         if (mounted) {
-          clearTimeout(initializationTimeout);
           setIsLoading(false);
           setSessionChecked(true);
         }
@@ -160,8 +140,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
 
       if (mounted) {
-        clearTimeout(initializationTimeout);
-        
         switch (event) {
           case 'SIGNED_IN':
             await handleSession(currentSession);
@@ -186,7 +164,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     return () => {
       mounted = false;
-      clearTimeout(initializationTimeout);
       subscription.unsubscribe();
     };
   }, [navigate, location]);
@@ -242,7 +219,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     userId: user?.id
   });
 
-  // Show loading state while checking auth - but with timeout protection
+  // Show loading state while checking auth - simplified
   if (isLoading && !sessionChecked) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
