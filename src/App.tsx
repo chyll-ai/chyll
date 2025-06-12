@@ -1,4 +1,5 @@
-import React from 'react';
+
+import React, { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -73,61 +74,65 @@ function App() {
       <LanguageProvider>
         <HelmetProvider>
           <AuthProvider>
-            <QueryClient client={queryClient}>
-              <Routes>
-                {/* Public Routes */}
-                <Route path="/" element={<Index />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/closed-beta-demo" element={<ClosedBetaDemo />} />
-                <Route path="/faq" element={<FAQ />} />
-                <Route path="/about-us" element={<AboutUs />} />
-                <Route path="/contact" element={<Contact />} />
-                <Route path="/privacy" element={<Privacy />} />
-                <Route path="/terms" element={<Terms />} />
-                <Route path="/cookies" element={<Cookies />} />
-                <Route path="/blog" element={<Blog />} />
-                <Route path="/blog/:slug" element={<BlogPostPage />} />
-                <Route path="/team" element={<Team />} />
-                <Route path="/careers" element={<Careers />} />
-                <Route path="/company" element={<Company />} />
-                <Route path="/support" element={<Support />} />
-                
-                {/* Auth Routes */}
-                <Route path="/auth/callback" element={<AuthCallback />} />
-                <Route path="/auth/confirm" element={<AuthConfirm />} />
-                
-                {/* Protected Routes */}
-                <Route path="/dashboard" element={
-                  <ProtectedRoute>
-                    <Dashboard />
-                  </ProtectedRoute>
-                } />
-                <Route path="/assistant" element={
-                  <ProtectedRoute>
-                    <Assistant />
-                  </ProtectedRoute>
-                } />
-                <Route path="/leads" element={
-                  <ProtectedRoute>
-                    <Leads />
-                  </ProtectedRoute>
-                } />
-                <Route path="/lead-history/:leadId" element={
-                  <ProtectedRoute>
-                    <LeadHistory />
-                  </ProtectedRoute>
-                } />
-                <Route path="/onboarding" element={
-                  <ProtectedRoute>
-                    <Onboarding />
-                  </ProtectedRoute>
-                } />
-                
-                {/* Catch all route for 404 handling */}
-                <Route path="*" element={<NotFoundRedirect message="Page non trouvée, redirection en cours..." redirectTo="/" />} />
-              </Routes>
-              <Toaster />
-            </QueryClient>
+            <QueryClientProvider client={queryClient}>
+              <TooltipProvider>
+                <Suspense fallback={<LoadingSpinner />}>
+                  <Routes>
+                    {/* Public Routes */}
+                    <Route path="/" element={<Index />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/closed-beta-demo" element={<ClosedBetaDemo />} />
+                    <Route path="/faq" element={<FAQ />} />
+                    <Route path="/about-us" element={<AboutUs />} />
+                    <Route path="/contact" element={<Contact />} />
+                    <Route path="/privacy" element={<Privacy />} />
+                    <Route path="/terms" element={<Terms />} />
+                    <Route path="/cookies" element={<Cookies />} />
+                    <Route path="/blog" element={<Blog />} />
+                    <Route path="/blog/:slug" element={<BlogPostPage />} />
+                    <Route path="/team" element={<Team />} />
+                    <Route path="/careers" element={<Careers />} />
+                    <Route path="/company" element={<Company />} />
+                    <Route path="/support" element={<Support />} />
+                    
+                    {/* Auth Routes */}
+                    <Route path="/auth/callback" element={<AuthCallback />} />
+                    <Route path="/auth/confirm" element={<AuthConfirm />} />
+                    
+                    {/* Protected Routes */}
+                    <Route path="/dashboard" element={
+                      <ProtectedRoute>
+                        <Dashboard />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/assistant" element={
+                      <ProtectedRoute>
+                        <Assistant />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/leads" element={
+                      <ProtectedRoute>
+                        <Leads />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/lead-history/:leadId" element={
+                      <ProtectedRoute>
+                        <LeadHistory />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/onboarding" element={
+                      <ProtectedRoute>
+                        <Onboarding />
+                      </ProtectedRoute>
+                    } />
+                    
+                    {/* Catch all route for 404 handling */}
+                    <Route path="*" element={<NotFoundRedirect message="Page non trouvée, redirection en cours..." redirectTo="/" />} />
+                  </Routes>
+                </Suspense>
+                <Toaster />
+              </TooltipProvider>
+            </QueryClientProvider>
           </AuthProvider>
         </HelmetProvider>
       </LanguageProvider>
