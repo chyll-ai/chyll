@@ -7,12 +7,12 @@ import { useLanguage } from "@/context/LanguageContext";
 function PricingBasic() {
   const { t } = useLanguage();
   
-  // Pricing plans with both monthly and annual pricing
+  // Pricing plans with demo links instead of Stripe
   const pricingPlans = [
     {
       name: "Starter",
       price: "99€",
-      yearlyPrice: "950€", // Annual price with discount
+      yearlyPrice: "950€",
       period: "/mois",
       features: [
         "50 numéros de téléphone + 50 adresses email par mois",
@@ -23,15 +23,15 @@ function PricingBasic() {
         "Mise à jour quotidienne"
       ],
       description: "Parfait pour les petites équipes",
-      buttonText: "Commencer l'essai",
-      yearlyButtonText: "S'abonner maintenant",
-      href: "https://buy.stripe.com/5kAeWh18h6cOenSeUV",
+      buttonText: "Voir la démo",
+      yearlyButtonText: "Voir la démo",
+      href: "/closed-beta-demo",
       isPopular: false,
     },
     {
       name: "Growth",
       price: "199€",
-      yearlyPrice: "1910€", // Annual price with 20% discount
+      yearlyPrice: "1910€",
       period: "/mois",
       features: [
         "200 numéros de téléphone + 200 adresses email par mois",
@@ -43,15 +43,15 @@ function PricingBasic() {
         "Export et import de data"
       ],
       description: "Pour les équipes en croissance",
-      buttonText: "Réserver une démo",
-      yearlyButtonText: "Réserver une démo",
-      href: "https://cal.com/chyll.ai/30min",
+      buttonText: "Voir la démo",
+      yearlyButtonText: "Voir la démo",
+      href: "/closed-beta-demo",
       isPopular: true,
     },
     {
       name: "Scale",
       price: "399€",
-      yearlyPrice: "3830€", // Annual price with 20% discount
+      yearlyPrice: "3830€",
       period: "/mois",
       features: [
         "400 numéros de téléphone + 400 adresses email par mois",
@@ -65,9 +65,9 @@ function PricingBasic() {
         "Rapports de performance"
       ],
       description: "Pour les équipes commerciales établies",
-      buttonText: "Réserver une démo",
-      yearlyButtonText: "Réserver une démo",
-      href: "https://cal.com/chyll.ai/30min",
+      buttonText: "Voir la démo",
+      yearlyButtonText: "Voir la démo",
+      href: "/closed-beta-demo",
       isPopular: false,
     }
   ];
@@ -77,7 +77,7 @@ function PricingBasic() {
       <Pricing 
         plans={pricingPlans}
         title="Tarifs simples et transparents"
-        description="Essai sans engagement"
+        description="Réservez une démonstration personnalisée"
         language="fr"
       />
     </div>

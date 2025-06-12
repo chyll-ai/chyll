@@ -7,8 +7,8 @@
       "prix": "99€",
       "description": "Parfait pour les petites équipes",
       "url": "https://chyll.ai/offres/starter",
-      "action": "https://buy.stripe.com/5kAeWh18h6cOenSeUV",
-      "texteAction": "Commencer l'essai"
+      "action": "/closed-beta-demo",
+      "texteAction": "Voir la démo"
     },
     {
       "id": "growth",
@@ -16,8 +16,8 @@
       "prix": "199€",
       "description": "Pour les équipes en croissance",
       "url": "https://chyll.ai/offres/growth",
-      "action": "https://cal.com/chyll.ai/30min",
-      "texteAction": "Réserver une démo"
+      "action": "/closed-beta-demo",
+      "texteAction": "Voir la démo"
     },
     {
       "id": "scale",
@@ -25,8 +25,8 @@
       "prix": "399€",
       "description": "Pour les équipes commerciales établies",
       "url": "https://chyll.ai/offres/scale",
-      "action": "https://cal.com/chyll.ai/30min",
-      "texteAction": "Réserver une démo"
+      "action": "/closed-beta-demo",
+      "texteAction": "Voir la démo"
     }
   ]
 }

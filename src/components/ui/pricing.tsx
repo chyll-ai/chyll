@@ -1,4 +1,3 @@
-
 "use client";
 
 import { buttonVariants } from "@/components/ui/button";
@@ -11,6 +10,7 @@ import { Check, Star } from "lucide-react";
 import { useState, useRef } from "react";
 import confetti from "canvas-confetti";
 import NumberFlow from "@number-flow/react";
+import { Link } from "react-router-dom";
 
 interface PricingPlan {
   name: string;
@@ -219,8 +219,8 @@ export function Pricing({
 
                 <hr className="w-full my-4" />
 
-                <a
-                  href={plan.href}
+                <Link
+                  to={plan.href}
                   className={cn(
                     buttonVariants({
                       variant: plan.isPopular ? "rainbow" : "outline",
@@ -231,7 +231,7 @@ export function Pricing({
                   )}
                 >
                   {buttonText}
-                </a>
+                </Link>
                 <p className="mt-6 text-xs leading-5 text-muted-foreground">
                   {plan.description}
                 </p>

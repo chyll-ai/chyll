@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
@@ -65,8 +64,8 @@ const offersData = [
       "Mise à jour quotidienne"
     ],
     url: "https://chyll.ai/offres/starter",
-    action: "https://buy.stripe.com/5kAeWh18h6cOenSeUV",
-    actionText: "Commencer l'essai"
+    action: "/closed-beta-demo",
+    actionText: "Voir la démo"
   },
   {
     name: "Growth",
@@ -83,8 +82,8 @@ const offersData = [
       "Export et import de data"
     ],
     url: "https://chyll.ai/offres/growth",
-    action: "https://cal.com/chyll.ai/30min",
-    actionText: "Réserver une démo"
+    action: "/closed-beta-demo",
+    actionText: "Voir la démo"
   },
   {
     name: "Scale",
@@ -103,8 +102,8 @@ const offersData = [
       "Rapports de performance"
     ],
     url: "https://chyll.ai/offres/scale",
-    action: "https://cal.com/chyll.ai/30min",
-    actionText: "Réserver une démo"
+    action: "/closed-beta-demo",
+    actionText: "Voir la démo"
   }
 ];
 
