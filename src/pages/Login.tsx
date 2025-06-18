@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import { supabase } from "@/lib/supabase";
 import { Button } from '@/components/ui/button';
@@ -9,84 +10,50 @@ import { useAuth } from '@/context/AuthContext';
 const Login = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { session, isLoading: authLoading } = useAuth();
+  const { session, isLoading } = useAuth();
 
+  // Simple redirect if already authenticated
   useEffect(() => {
-    // If we have a session and auth is done loading, redirect to the intended destination
-    if (!authLoading && session?.user) {
-      console.log('Login: User already authenticated, redirecting...');
+    if (session?.user && !isLoading) {
       const from = location.state?.from || '/dashboard';
       navigate(from, { replace: true });
     }
-  }, [session, authLoading, navigate, location.state]);
+  }, [session, isLoading, navigate, location.state]);
 
   const handleGoogleSignIn = async () => {
     try {
-      console.log('Login: Starting Google OAuth sign in...');
+      console.log('Starting Google OAuth...');
       
-      // Get the base URL for the current environment
-      const baseUrl = window.location.origin;
-      const redirectTo = `${baseUrl}/auth/callback`;
-      
-      console.log('Login: OAuth configuration:', {
-        baseUrl,
-        redirectTo,
-        currentUrl: window.location.href,
-        hostname: window.location.hostname,
-        port: window.location.port,
-        environment: import.meta.env.MODE
-      });
-
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo,
-          queryParams: {
-            access_type: 'offline',
-            prompt: 'consent'
-          }
+          redirectTo: `${window.location.origin}/auth/callback`
         }
       });
 
       if (error) {
-        console.error('Login: Google OAuth error:', error);
-        throw error;
-      }
-
-      if (!data?.url) {
-        console.error('Login: No OAuth URL returned');
-        toast.error('Failed to initialize authentication');
+        console.error('Google OAuth error:', error);
+        toast.error(error.message || "Failed to sign in with Google");
         return;
       }
 
-      // Proceed with redirect
-      console.log('Login: Redirecting to OAuth URL:', data.url);
-      window.location.href = data.url;
+      if (data?.url) {
+        window.location.href = data.url;
+      }
       
     } catch (error: any) {
-      console.error("Login: Google authentication error:", error);
+      console.error("Google authentication error:", error);
       toast.error(error.message || "Failed to sign in with Google");
     }
   };
 
-  // Show loading state while checking auth
-  if (authLoading) {
+  // Don't show anything if loading or already authenticated
+  if (isLoading || session?.user) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background px-4">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto" />
-          <p className="mt-4 text-sm text-muted-foreground">Checking authentication...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // If we're already authenticated, show a message
-  if (session?.user) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-background px-4">
-        <div className="text-center">
-          <p className="text-sm text-muted-foreground">Already signed in. Redirecting...</p>
+          <p className="mt-4 text-sm text-muted-foreground">Loading...</p>
         </div>
       </div>
     );

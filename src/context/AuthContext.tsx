@@ -3,7 +3,6 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { User, Session, AuthChangeEvent } from '@supabase/supabase-js';
-import { getOrCreateClientRecord } from '@/utils/auth';
 
 interface AuthContextType {
   user: User | null;
@@ -19,17 +18,9 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 // Define protected routes that require authentication
 const PROTECTED_ROUTES = ['/dashboard', '/onboarding', '/assistant', '/leads'];
 
-// Define public routes that should never redirect to login
-const PUBLIC_ROUTES = ['/', '/about', '/contact', '/terms', '/privacy', '/cookies', '/faq', '/blog'];
-
 // Check if a route is protected
 const isProtectedRoute = (pathname: string): boolean => {
   return PROTECTED_ROUTES.some(route => pathname.startsWith(route));
-};
-
-// Check if a route is public
-const isPublicRoute = (pathname: string): boolean => {
-  return PUBLIC_ROUTES.some(route => pathname === route);
 };
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -40,203 +31,72 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isLoading, setIsLoading] = useState(true);
   const [sessionChecked, setSessionChecked] = useState(false);
 
-  // Function to handle session updates with timeout protection
-  const handleSession = async (newSession: Session | null) => {
-    console.log('[AuthContext] Handling session update:', {
-      hasSession: !!newSession,
-      userId: newSession?.user?.id,
-      currentPath: location.pathname,
-      accessToken: newSession?.access_token ? 'present' : 'missing'
-    });
-
-    try {
-      const newUser = newSession?.user || null;
-      
-      // Update state immediately and synchronously
-      setSession(newSession);
-      setUser(newUser);
-      setSessionChecked(true);
-      setIsLoading(false);
-
-      // Create client record if user exists (with timeout)
-      if (newUser && newUser.email) {
-        const clientRecordPromise = getOrCreateClientRecord(newUser.id, newUser.email);
-        const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Client record timeout')), 3000)
-        );
-
-        try {
-          await Promise.race([clientRecordPromise, timeoutPromise]);
-          console.log('[AuthContext] Client record ensured for user:', newUser.id);
-        } catch (error) {
-          console.error('[AuthContext] Error creating client record (non-blocking):', error);
-          // Don't block authentication flow for client record issues
-        }
-      }
-
-      // Handle routing based on auth state and current path
-      const currentPath = location.pathname;
-      
-      if (newUser) {
-        // User is authenticated
-        console.log('[AuthContext] User authenticated:', newUser.id);
-        if (currentPath === '/login') {
-          // If on login page, redirect to intended destination or dashboard
-          const from = location.state?.from || '/dashboard';
-          navigate(from, { replace: true });
-        }
-      } else {
-        // User is not authenticated
-        console.log('[AuthContext] User not authenticated');
-        if (isProtectedRoute(currentPath)) {
-          console.log('[AuthContext] Redirecting to login from protected route:', currentPath);
-          navigate('/login', { replace: true, state: { from: currentPath } });
-        }
-      }
-    } catch (error) {
-      console.error('[AuthContext] Error handling session:', error);
-      setIsLoading(false);
-      setSessionChecked(true);
-    }
-  };
-
   useEffect(() => {
-    let mounted = true;
-    let sessionTimeout: NodeJS.Timeout;
-
-    // Initialize auth state with timeout protection
-    const initializeAuth = async () => {
+    // Get initial session
+    const getInitialSession = async () => {
       try {
-        console.log('[AuthContext] Starting initialization...');
+        const { data: { session: initialSession } } = await supabase.auth.getSession();
+        console.log('[AuthContext] Initial session:', !!initialSession);
         
-        // Set timeout for session check to prevent infinite loading
-        sessionTimeout = setTimeout(() => {
-          if (mounted) {
-            console.log('[AuthContext] Session check timeout, setting defaults');
-            setIsLoading(false);
-            setSessionChecked(true);
-          }
-        }, 8000); // 8 second timeout
-
-        // Get initial session
-        const { data: { session: initialSession }, error } = await supabase.auth.getSession();
-        
-        if (error) {
-          console.error('[AuthContext] Error getting initial session:', error);
-          if (mounted) {
-            setIsLoading(false);
-            setSessionChecked(true);
-          }
-          return;
-        }
-
-        console.log('[AuthContext] Initial session retrieved:', {
-          hasSession: !!initialSession,
-          userId: initialSession?.user?.id,
-          hasAccessToken: !!initialSession?.access_token
-        });
-
-        // Clear timeout since we got a response
-        clearTimeout(sessionTimeout);
-
-        if (mounted) {
-          await handleSession(initialSession);
-        }
+        setSession(initialSession);
+        setUser(initialSession?.user || null);
+        setSessionChecked(true);
+        setIsLoading(false);
       } catch (error) {
-        console.error('[AuthContext] Error during initialization:', error);
-        if (mounted) {
-          setIsLoading(false);
-          setSessionChecked(true);
-        }
+        console.error('[AuthContext] Error getting initial session:', error);
+        setIsLoading(false);
+        setSessionChecked(true);
       }
     };
 
-    // Start auth initialization
-    initializeAuth();
+    getInitialSession();
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event: AuthChangeEvent, currentSession) => {
-      console.log('[AuthContext] Auth state change:', { 
-        event, 
-        userId: currentSession?.user?.id, 
-        path: location.pathname,
-        hasAccessToken: !!currentSession?.access_token
-      });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, currentSession) => {
+      console.log('[AuthContext] Auth state change:', event, !!currentSession);
+      
+      setSession(currentSession);
+      setUser(currentSession?.user || null);
+      setSessionChecked(true);
+      setIsLoading(false);
 
-      if (mounted) {
-        switch (event) {
-          case 'SIGNED_IN':
-            console.log('[AuthContext] Processing SIGNED_IN event');
-            await handleSession(currentSession);
-            break;
-          
-          case 'SIGNED_OUT':
-            console.log('[AuthContext] Processing SIGNED_OUT event');
-            await handleSession(null);
-            // Only redirect to home if not already on a public route
-            if (!isPublicRoute(location.pathname)) {
-              navigate('/', { replace: true });
-            }
-            break;
-          
-          case 'TOKEN_REFRESHED':
-          case 'USER_UPDATED':
-          case 'INITIAL_SESSION':
-            console.log('[AuthContext] Processing session update event:', event);
-            await handleSession(currentSession);
-            break;
+      // Handle routing
+      const currentPath = location.pathname;
+      
+      if (currentSession?.user) {
+        // User is authenticated
+        if (currentPath === '/login') {
+          navigate('/dashboard', { replace: true });
+        }
+      } else {
+        // User is not authenticated
+        if (isProtectedRoute(currentPath)) {
+          navigate('/login', { replace: true, state: { from: currentPath } });
         }
       }
     });
 
     return () => {
-      mounted = false;
-      clearTimeout(sessionTimeout);
       subscription.unsubscribe();
     };
   }, [navigate, location]);
 
   const signOut = async () => {
     try {
-      console.log('[AuthContext] Starting sign out process...');
-      
-      // Clear local state immediately
+      console.log('[AuthContext] Starting sign out...');
       setUser(null);
       setSession(null);
       
-      // Clear any stored auth data
-      Object.keys(localStorage)
-        .filter(key => key.startsWith('supabase'))
-        .forEach(key => localStorage.removeItem(key));
-      
-      // Sign out from Supabase with timeout
-      const signOutPromise = supabase.auth.signOut();
-      const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Sign out timeout')), 5000)
-      );
-
-      try {
-        await Promise.race([signOutPromise, timeoutPromise]);
-      } catch (error) {
-        console.error('[AuthContext] Supabase signOut error (non-blocking):', error);
-        // Don't throw - still try to navigate away
-      }
-
-      console.log('[AuthContext] Sign out completed, navigating to home');
-      
-      // Navigate to home page
+      await supabase.auth.signOut();
       navigate('/', { replace: true });
-      
     } catch (error) {
       console.error('[AuthContext] Error during sign out:', error);
-      // Still clear state and navigate on error
       setUser(null);
       setSession(null);
       navigate('/', { replace: true });
     }
   };
 
-  // Compute authentication state based on session and user
   const isAuthenticated = !!(session?.user?.id && session?.access_token);
 
   const value = {
@@ -252,12 +112,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     isLoading,
     sessionChecked,
     isAuthenticated,
-    userId: user?.id,
-    hasSession: !!session,
-    hasAccessToken: !!session?.access_token
+    userId: user?.id
   });
 
-  // Show loading state with timeout protection - simplified
+  // Simplified loading state - only show briefly
   if (isLoading && !sessionChecked) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
