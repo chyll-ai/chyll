@@ -13,11 +13,11 @@ interface SuperadminGuardProps {
 }
 
 const SuperadminGuard: React.FC<SuperadminGuardProps> = ({ children, fallback }) => {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, sessionChecked } = useAuth();
   const { isSuperadmin, loading } = useUserRoles();
 
-  // Show loading state while checking permissions
-  if (loading) {
+  // Show loading state only briefly while checking permissions
+  if (!sessionChecked || (loading && sessionChecked && isAuthenticated)) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">

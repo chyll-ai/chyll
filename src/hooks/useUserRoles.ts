@@ -14,41 +14,51 @@ interface UserRole {
 }
 
 export const useUserRoles = () => {
-  const { user } = useAuth();
+  const { user, isAuthenticated, sessionChecked } = useAuth();
   const [userRoles, setUserRoles] = useState<UserRole[]>([]);
   const [isSuperadmin, setIsSuperadmin] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const checkSuperadminStatus = async () => {
-    if (!user) {
+    // Don't check if auth is still loading or user not authenticated
+    if (!sessionChecked || !isAuthenticated || !user) {
       setIsSuperadmin(false);
       setLoading(false);
       return;
     }
 
     try {
-      // Check if user is ceo@chyll.ai or has superadmin role
+      // Check if user is ceo@chyll.ai first (immediate check)
       const isCeo = user.email === 'ceo@chyll.ai';
       
       if (isCeo) {
         setIsSuperadmin(true);
-        // Ensure CEO has superadmin role in database
-        await ensureSuperadminRole();
-      } else {
-        // Check if user has superadmin role
-        const { data, error } = await supabase
-          .from('user_roles')
-          .select('*')
-          .eq('user_id', user.id)
-          .eq('role', 'superadmin')
-          .maybeSingle();
-
-        if (error && error.code !== 'PGRST116') {
-          console.error('Error checking superadmin status:', error);
-        }
-
-        setIsSuperadmin(!!data);
+        setLoading(false);
+        // Ensure CEO has superadmin role in database (async, don't wait)
+        ensureSuperadminRole().catch(console.error);
+        return;
       }
+
+      // For non-CEO users, check database role with timeout
+      const checkRolePromise = supabase
+        .from('user_roles')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('role', 'superadmin')
+        .maybeSingle();
+
+      // Add timeout to prevent infinite loading
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Timeout')), 5000)
+      );
+
+      const { data, error } = await Promise.race([checkRolePromise, timeoutPromise]) as any;
+
+      if (error && error.code !== 'PGRST116' && !error.message?.includes('Timeout')) {
+        console.error('Error checking superadmin status:', error);
+      }
+
+      setIsSuperadmin(!!data);
     } catch (error) {
       console.error('Error checking superadmin status:', error);
       setIsSuperadmin(false);
@@ -163,14 +173,17 @@ export const useUserRoles = () => {
   };
 
   useEffect(() => {
-    checkSuperadminStatus();
-  }, [user]);
+    // Only check when session is fully loaded
+    if (sessionChecked) {
+      checkSuperadminStatus();
+    }
+  }, [user, isAuthenticated, sessionChecked]);
 
   useEffect(() => {
-    if (isSuperadmin) {
+    if (isSuperadmin && !loading) {
       loadUserRoles();
     }
-  }, [isSuperadmin]);
+  }, [isSuperadmin, loading]);
 
   return {
     userRoles,

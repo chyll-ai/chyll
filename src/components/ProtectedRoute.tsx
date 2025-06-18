@@ -1,3 +1,4 @@
+
 import { useEffect } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
@@ -14,17 +15,25 @@ const LoadingSpinner = () => (
 );
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  const { isAuthenticated, isLoading: authLoading } = useAuth();
+  const { isAuthenticated, isLoading, sessionChecked } = useAuth();
 
-  if (authLoading) {
+  // Only show loading spinner briefly and only when session hasn't been checked yet
+  if (!sessionChecked && isLoading) {
     return <LoadingSpinner />;
   }
 
-  if (!isAuthenticated) {
+  // If session has been checked and user is not authenticated, redirect to login
+  if (sessionChecked && !isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
 
-  return <>{children}</>;
+  // If authenticated, render children
+  if (isAuthenticated) {
+    return <>{children}</>;
+  }
+
+  // Fallback loading state
+  return <LoadingSpinner />;
 };
 
-export default ProtectedRoute; 
+export default ProtectedRoute;

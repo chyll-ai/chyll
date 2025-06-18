@@ -40,7 +40,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isLoading, setIsLoading] = useState(true);
   const [sessionChecked, setSessionChecked] = useState(false);
 
-  // Function to handle session updates
+  // Function to handle session updates with timeout protection
   const handleSession = async (newSession: Session | null) => {
     console.log('[AuthContext] Handling session update:', {
       hasSession: !!newSession,
@@ -58,13 +58,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setSessionChecked(true);
       setIsLoading(false);
 
-      // Create client record if user exists
+      // Create client record if user exists (with timeout)
       if (newUser && newUser.email) {
+        const clientRecordPromise = getOrCreateClientRecord(newUser.id, newUser.email);
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Client record timeout')), 3000)
+        );
+
         try {
-          await getOrCreateClientRecord(newUser.id, newUser.email);
+          await Promise.race([clientRecordPromise, timeoutPromise]);
           console.log('[AuthContext] Client record ensured for user:', newUser.id);
         } catch (error) {
-          console.error('[AuthContext] Error creating client record:', error);
+          console.error('[AuthContext] Error creating client record (non-blocking):', error);
+          // Don't block authentication flow for client record issues
         }
       }
 
@@ -96,12 +102,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     let mounted = true;
+    let sessionTimeout: NodeJS.Timeout;
 
-    // Initialize auth state
+    // Initialize auth state with timeout protection
     const initializeAuth = async () => {
       try {
         console.log('[AuthContext] Starting initialization...');
         
+        // Set timeout for session check to prevent infinite loading
+        sessionTimeout = setTimeout(() => {
+          if (mounted) {
+            console.log('[AuthContext] Session check timeout, setting defaults');
+            setIsLoading(false);
+            setSessionChecked(true);
+          }
+        }, 8000); // 8 second timeout
+
         // Get initial session
         const { data: { session: initialSession }, error } = await supabase.auth.getSession();
         
@@ -119,6 +135,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           userId: initialSession?.user?.id,
           hasAccessToken: !!initialSession?.access_token
         });
+
+        // Clear timeout since we got a response
+        clearTimeout(sessionTimeout);
 
         if (mounted) {
           await handleSession(initialSession);
@@ -172,6 +191,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     return () => {
       mounted = false;
+      clearTimeout(sessionTimeout);
       subscription.unsubscribe();
     };
   }, [navigate, location]);
@@ -189,11 +209,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .filter(key => key.startsWith('supabase'))
         .forEach(key => localStorage.removeItem(key));
       
-      // Sign out from Supabase
-      const { error } = await supabase.auth.signOut();
-      
-      if (error) {
-        console.error('[AuthContext] Supabase signOut error:', error);
+      // Sign out from Supabase with timeout
+      const signOutPromise = supabase.auth.signOut();
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Sign out timeout')), 5000)
+      );
+
+      try {
+        await Promise.race([signOutPromise, timeoutPromise]);
+      } catch (error) {
+        console.error('[AuthContext] Supabase signOut error (non-blocking):', error);
         // Don't throw - still try to navigate away
       }
 
@@ -232,7 +257,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     hasAccessToken: !!session?.access_token
   });
 
-  // Show loading state while checking auth - simplified
+  // Show loading state with timeout protection - simplified
   if (isLoading && !sessionChecked) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
