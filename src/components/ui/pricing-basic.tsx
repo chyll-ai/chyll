@@ -7,7 +7,7 @@ import { useLanguage } from "@/context/LanguageContext";
 function PricingBasic() {
   const { t } = useLanguage();
   
-  // Pricing plans with demo links instead of Stripe
+  // Pricing plans with waitlist links only
   const pricingPlans = [
     {
       name: "Starter",
@@ -23,8 +23,8 @@ function PricingBasic() {
         "Mise à jour quotidienne"
       ],
       description: "Parfait pour les petites équipes",
-      buttonText: "Voir la démo",
-      yearlyButtonText: "Voir la démo",
+      buttonText: "Rejoindre la liste d'attente",
+      yearlyButtonText: "Rejoindre la liste d'attente",
       href: "/closed-beta-demo",
       isPopular: false,
     },
@@ -43,8 +43,8 @@ function PricingBasic() {
         "Export et import de data"
       ],
       description: "Pour les équipes en croissance",
-      buttonText: "Voir la démo",
-      yearlyButtonText: "Voir la démo",
+      buttonText: "Rejoindre la liste d'attente",
+      yearlyButtonText: "Rejoindre la liste d'attente",
       href: "/closed-beta-demo",
       isPopular: true,
     },
@@ -65,8 +65,8 @@ function PricingBasic() {
         "Rapports de performance"
       ],
       description: "Pour les équipes commerciales établies",
-      buttonText: "Voir la démo",
-      yearlyButtonText: "Voir la démo",
+      buttonText: "Rejoindre la liste d'attente",
+      yearlyButtonText: "Rejoindre la liste d'attente",
       href: "/closed-beta-demo",
       isPopular: false,
     }
@@ -77,7 +77,7 @@ function PricingBasic() {
       <Pricing 
         plans={pricingPlans}
         title="Tarifs simples et transparents"
-        description="Réservez une démonstration personnalisée"
+        description="Rejoignez notre liste d'attente gamifiée"
         language="fr"
       />
     </div>

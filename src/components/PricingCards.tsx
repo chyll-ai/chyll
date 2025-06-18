@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Check } from 'lucide-react';
@@ -23,9 +22,9 @@ const frPricingPlans = [
     ],
     highlight: false,
     color: "blue",
-    trial: "Essai gratuit de 14 jours",
-    buttonText: "Commencer l'essai",
-    href: "https://buy.stripe.com/5kAeWh18h6cOenSeUV"
+    trial: "Bêta fermée - Liste d'attente",
+    buttonText: "Rejoindre la liste d'attente",
+    href: "/closed-beta-demo"
   },
   {
     name: "Growth",
@@ -43,9 +42,9 @@ const frPricingPlans = [
     ],
     highlight: true,
     color: "yellow",
-    trial: "Essai gratuit de 14 jours",
-    buttonText: "Réserver une démo",
-    href: "https://cal.com/chyll.ai/30min"
+    trial: "Bêta fermée - Liste d'attente",
+    buttonText: "Rejoindre la liste d'attente",
+    href: "/closed-beta-demo"
   },
   {
     name: "Scale",
@@ -65,9 +64,9 @@ const frPricingPlans = [
     ],
     highlight: false,
     color: "red",
-    trial: "Essai gratuit de 14 jours",
-    buttonText: "Réserver une démo",
-    href: "https://cal.com/chyll.ai/30min"
+    trial: "Bêta fermée - Liste d'attente",
+    buttonText: "Rejoindre la liste d'attente",
+    href: "/closed-beta-demo"
   }
 ];
 
@@ -86,11 +85,7 @@ const getPlanIcon = (color: string) => {
 
 const PricingCards = () => {
   const { language } = useLanguage();
-  const plans = frPricingPlans.map(plan => ({
-    ...plan,
-    buttonText: "Rejoindre la liste d'attente",
-    href: "/closed-beta-demo"
-  }));
+  const plans = frPricingPlans;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -118,7 +113,7 @@ const PricingCards = () => {
             </div>
             <p className="text-gray-600">{plan.description}</p>
             <div className="mt-2">
-              <p className="text-sm font-medium text-green-600">Bêta fermée - Liste d'attente</p>
+              <p className="text-sm font-medium text-green-600">{plan.trial}</p>
             </div>
           </CardHeader>
           

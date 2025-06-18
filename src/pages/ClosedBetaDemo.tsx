@@ -1,7 +1,8 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { PhoneCall, CheckCircle, Calendar, ArrowLeft } from 'lucide-react';
+import { CheckCircle, ArrowLeft, Star, Trophy } from 'lucide-react';
 import { Link, useSearchParams } from 'react-router-dom';
 import Header from '@/components/layout/Header';
 import { Footer2 } from '@/components/ui/footer2';
@@ -106,78 +107,67 @@ const ClosedBetaDemo = () => {
               />
             </div>
 
-            {/* Demo Information */}
+            {/* Benefits Section */}
             <Card className="border-2 border-primary/20 shadow-lg mb-8">
               <CardHeader className="text-center pb-6">
                 <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
-                  <Calendar className="h-8 w-8 text-primary" />
+                  <Star className="h-8 w-8 text-primary" />
                 </div>
-                <CardTitle className="text-2xl">Démonstration personnalisée</CardTitle>
+                <CardTitle className="text-2xl">Pourquoi rejoindre la liste d'attente ?</CardTitle>
                 <p className="text-muted-foreground mt-2">
-                  Découvrez chyll en action avec une démonstration adaptée à vos besoins
+                  Soyez parmi les premiers à découvrir chyll et ses fonctionnalités révolutionnaires
                 </p>
               </CardHeader>
               
               <CardContent className="space-y-6">
-                {/* What you'll see */}
+                {/* Benefits */}
                 <div>
-                  <h3 className="text-lg font-semibold mb-4">Ce que vous découvrirez :</h3>
+                  <h3 className="text-lg font-semibold mb-4">Avantages exclusifs :</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="flex items-start gap-3">
                       <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                      <span className="text-sm">Génération automatique de leads B2B</span>
+                      <span className="text-sm">Accès prioritaire à la bêta</span>
                     </div>
                     <div className="flex items-start gap-3">
                       <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                      <span className="text-sm">Enrichissement de données prospects</span>
+                      <span className="text-sm">Configuration personnalisée gratuite</span>
                     </div>
                     <div className="flex items-start gap-3">
                       <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                      <span className="text-sm">Interface CRM intégrée</span>
+                      <span className="text-sm">Tarifs préférentiels</span>
                     </div>
                     <div className="flex items-start gap-3">
                       <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                      <span className="text-sm">Assistant IA conversationnel</span>
+                      <span className="text-sm">Support direct de l'équipe</span>
                     </div>
                     <div className="flex items-start gap-3">
                       <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                      <span className="text-sm">Création de personas LinkedIn</span>
+                      <span className="text-sm">Formation gratuite incluse</span>
                     </div>
                     <div className="flex items-start gap-3">
                       <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                      <span className="text-sm">Automatisation des relances</span>
+                      <span className="text-sm">Influence sur le développement produit</span>
                     </div>
                   </div>
                 </div>
 
-                {/* Demo details */}
+                {/* Gamification details */}
                 <div className="bg-muted/50 rounded-lg p-6">
-                  <h4 className="font-semibold mb-3">Détails de la démonstration :</h4>
+                  <h4 className="font-semibold mb-3">Comment gagner des points :</h4>
                   <ul className="space-y-2 text-sm text-muted-foreground">
-                    <li>• Durée : 30 minutes</li>
-                    <li>• Format : Visioconférence personnalisée</li>
-                    <li>• Présentation live de la plateforme</li>
-                    <li>• Questions & réponses</li>
-                    <li>• Discussion sur vos besoins spécifiques</li>
+                    <li className="flex items-center gap-2">
+                      <Trophy className="h-4 w-4 text-yellow-500" />
+                      +10 points par ami parrainé
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <Trophy className="h-4 w-4 text-yellow-500" />
+                      +50 points en rejoignant notre Discord
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <Trophy className="h-4 w-4 text-yellow-500" />
+                      Position mise à jour quotidiennement
+                    </li>
                   </ul>
-                </div>
-
-                {/* CTA Button */}
-                <div className="text-center pt-4">
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    className="inline-flex items-center justify-center gap-2"
-                    asChild
-                  >
-                    <a href="https://cal.com/chyll.ai/30min" target="_blank" rel="noopener noreferrer">
-                      <PhoneCall className="h-5 w-5" />
-                      Réserver une démonstration
-                    </a>
-                  </Button>
-                  <p className="text-sm text-muted-foreground mt-3">
-                    Créneaux disponibles du lundi au vendredi, de 9h à 18h
-                  </p>
                 </div>
               </CardContent>
             </Card>

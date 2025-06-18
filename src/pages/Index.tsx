@@ -65,7 +65,7 @@ const offersData = [
     ],
     url: "https://chyll.ai/offres/starter",
     action: "/closed-beta-demo",
-    actionText: "Voir la démo"
+    actionText: "Rejoindre la liste d'attente"
   },
   {
     name: "Growth",
@@ -83,7 +83,7 @@ const offersData = [
     ],
     url: "https://chyll.ai/offres/growth",
     action: "/closed-beta-demo",
-    actionText: "Voir la démo"
+    actionText: "Rejoindre la liste d'attente"
   },
   {
     name: "Scale",
@@ -103,7 +103,7 @@ const offersData = [
     ],
     url: "https://chyll.ai/offres/scale",
     action: "/closed-beta-demo",
-    actionText: "Voir la démo"
+    actionText: "Rejoindre la liste d'attente"
   }
 ];
 
