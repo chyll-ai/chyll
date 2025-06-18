@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Check } from 'lucide-react';
@@ -85,7 +86,11 @@ const getPlanIcon = (color: string) => {
 
 const PricingCards = () => {
   const { language } = useLanguage();
-  const plans = frPricingPlans;
+  const plans = frPricingPlans.map(plan => ({
+    ...plan,
+    buttonText: "Rejoindre la liste d'attente",
+    href: "/closed-beta-demo"
+  }));
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -113,7 +118,7 @@ const PricingCards = () => {
             </div>
             <p className="text-gray-600">{plan.description}</p>
             <div className="mt-2">
-              <p className="text-sm font-medium text-green-600">{plan.trial}</p>
+              <p className="text-sm font-medium text-green-600">Bêta fermée - Liste d'attente</p>
             </div>
           </CardHeader>
           
@@ -140,13 +145,9 @@ const PricingCards = () => {
               }`}
               asChild
             >
-              <a 
-                href={plan.href} 
-                target="_blank" 
-                rel="noopener noreferrer"
-              >
+              <Link to={plan.href}>
                 {plan.buttonText}
-              </a>
+              </Link>
             </Button>
           </CardFooter>
         </Card>

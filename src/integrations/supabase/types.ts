@@ -363,11 +363,104 @@ export type Database = {
         }
         Relationships: []
       }
+      waitlist: {
+        Row: {
+          created_at: string
+          discord_joined: boolean
+          email: string
+          id: string
+          points: number
+          referral_code: string
+          referred_by: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          discord_joined?: boolean
+          email: string
+          id?: string
+          points?: number
+          referral_code?: string
+          referred_by?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          discord_joined?: boolean
+          email?: string
+          id?: string
+          points?: number
+          referral_code?: string
+          referred_by?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "waitlist_referred_by_fkey"
+            columns: ["referred_by"]
+            isOneToOne: false
+            referencedRelation: "waitlist"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "waitlist_referred_by_fkey"
+            columns: ["referred_by"]
+            isOneToOne: false
+            referencedRelation: "waitlist_with_position"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
-      [_ in never]: never
+      waitlist_with_position: {
+        Row: {
+          created_at: string | null
+          discord_joined: boolean | null
+          email: string | null
+          id: string | null
+          points: number | null
+          referral_code: string | null
+          referral_count: number | null
+          referred_by: string | null
+          updated_at: string | null
+          user_id: string | null
+          waitlist_position: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "waitlist_referred_by_fkey"
+            columns: ["referred_by"]
+            isOneToOne: false
+            referencedRelation: "waitlist"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "waitlist_referred_by_fkey"
+            columns: ["referred_by"]
+            isOneToOne: false
+            referencedRelation: "waitlist_with_position"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
+      get_waitlist_data: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
+      handle_waitlist_signup: {
+        Args: { p_email: string; p_referral_code?: string }
+        Returns: Json
+      }
+      update_discord_status: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
       update_message_toolcalls: {
         Args: { message_id: string; tool_calls: Json }
         Returns: undefined

@@ -113,6 +113,14 @@ export default function Index() {
   const navigate = useNavigate();
   const [showDisclaimer, setShowDisclaimer] = useState(true);
   
+  // Check for referral code and redirect to waitlist
+  useEffect(() => {
+    const referralCode = searchParams.get('ref');
+    if (referralCode) {
+      navigate(`/closed-beta-demo?ref=${referralCode}`, { replace: true });
+    }
+  }, [searchParams, navigate]);
+
   // Generate structured data
   const organizationSchema = getOrganizationSchema();
   const faqSchema = getFAQSchema(faqData);
@@ -294,7 +302,7 @@ export default function Index() {
                   </div>
                   <div>
                     <p className="text-sm font-medium text-orange-800">
-                      chyll est actuellement en bêta fermée, nous vous tiendrons au courant cet été pour le lancement public
+                      chyll est actuellement en bêta fermée - Rejoignez notre liste d'attente gamifiée !
                     </p>
                   </div>
                 </div>
