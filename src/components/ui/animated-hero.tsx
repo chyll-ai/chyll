@@ -1,7 +1,7 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { MoveRight, PhoneCall } from "lucide-react";
+import { Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { renderCanvas } from "@/components/ui/canvas";
 import { useLanguage } from "@/context/LanguageContext";
@@ -76,15 +76,11 @@ function Hero() {
               {t.home.hero.description}
             </p>
           </div>
-          <div className="flex flex-col sm:flex-row gap-3 w-full justify-center items-center">
+          <div className="flex justify-center w-full">
             <Button size={isMobile ? "default" : "lg"} className="gap-2 w-full sm:w-auto" variant="rainbow" asChild>
-              <a href="https://cal.com/chyll.ai/30min" target="_blank" rel="noopener noreferrer">
-                {t.home.hero.buttons.bookDemo} <PhoneCall className="w-4 h-4" />
-              </a>
-            </Button>
-            <Button size={isMobile ? "default" : "lg"} className="gap-2 w-full sm:w-auto mt-2 sm:mt-0" variant="outline" asChild>
-              <a href="#pricing">
-                {t.home.hero.buttons.hireNow} <MoveRight className="w-4 h-4" />
+              <a href="/closed-beta-demo">
+                <Users className="w-4 h-4" />
+                Rejoindre la liste d'attente
               </a>
             </Button>
           </div>

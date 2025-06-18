@@ -3,7 +3,7 @@
 
 import { useEffect, useState } from "react";
 import { renderCanvas } from "@/components/ui/canvas";
-import { ArrowRight, SquareCode, MoveRight, PhoneCall } from "lucide-react";
+import { ArrowRight, SquareCode, MoveRight, Users } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/context/LanguageContext";
@@ -65,26 +65,16 @@ export function Hero() {
           {t.home.hero.description}
         </p>
 
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+        <div className="flex justify-center">
           <Button
             variant="rainbow"
             size="lg"
-            className="inline-flex items-center justify-center whitespace-nowrap gap-1"
+            className="inline-flex items-center justify-center whitespace-nowrap gap-2"
             asChild
           >
-            <a href="https://cal.com/chyll.ai/30min" target="_blank" rel="noopener noreferrer">
-              <PhoneCall className="size-5" />
-              {t.home.hero.buttons.bookDemo}
-            </a>
-          </Button>
-          <Button
-            variant="outline"
-            size="lg"
-            className="inline-flex items-center justify-center whitespace-nowrap gap-1"
-            asChild
-          >
-            <a href="#features">
-              {t.home.hero.buttons.hireNow} <ArrowRight className="size-5" />
+            <a href="/closed-beta-demo">
+              <Users className="size-5" />
+              Rejoindre la liste d'attente
             </a>
           </Button>
         </div>
