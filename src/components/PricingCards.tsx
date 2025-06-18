@@ -23,7 +23,7 @@ const frPricingPlans = [
     highlight: false,
     color: "blue",
     trial: "Bêta fermée - Liste d'attente",
-    buttonText: "Rejoindre la liste d'attente",
+    buttonText: "Liste d'attente",
     href: "/closed-beta-demo"
   },
   {
@@ -43,7 +43,7 @@ const frPricingPlans = [
     highlight: true,
     color: "yellow",
     trial: "Bêta fermée - Liste d'attente",
-    buttonText: "Rejoindre la liste d'attente",
+    buttonText: "Liste d'attente",
     href: "/closed-beta-demo"
   },
   {
@@ -65,7 +65,7 @@ const frPricingPlans = [
     highlight: false,
     color: "red",
     trial: "Bêta fermée - Liste d'attente",
-    buttonText: "Rejoindre la liste d'attente",
+    buttonText: "Liste d'attente",
     href: "/closed-beta-demo"
   }
 ];

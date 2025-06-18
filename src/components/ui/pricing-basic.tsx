@@ -23,8 +23,8 @@ function PricingBasic() {
         "Mise à jour quotidienne"
       ],
       description: "Parfait pour les petites équipes",
-      buttonText: "Rejoindre la liste d'attente",
-      yearlyButtonText: "Rejoindre la liste d'attente",
+      buttonText: "Liste d'attente",
+      yearlyButtonText: "Liste d'attente",
       href: "/closed-beta-demo",
       isPopular: false,
     },
@@ -43,8 +43,8 @@ function PricingBasic() {
         "Export et import de data"
       ],
       description: "Pour les équipes en croissance",
-      buttonText: "Rejoindre la liste d'attente",
-      yearlyButtonText: "Rejoindre la liste d'attente",
+      buttonText: "Liste d'attente",
+      yearlyButtonText: "Liste d'attente",
       href: "/closed-beta-demo",
       isPopular: true,
     },
@@ -65,8 +65,8 @@ function PricingBasic() {
         "Rapports de performance"
       ],
       description: "Pour les équipes commerciales établies",
-      buttonText: "Rejoindre la liste d'attente",
-      yearlyButtonText: "Rejoindre la liste d'attente",
+      buttonText: "Liste d'attente",
+      yearlyButtonText: "Liste d'attente",
       href: "/closed-beta-demo",
       isPopular: false,
     }
