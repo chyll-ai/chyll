@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,14 +7,14 @@ import Header from '@/components/layout/Header';
 import { Footer2 } from '@/components/ui/footer2';
 import WaitlistJoinForm from '@/components/WaitlistJoinForm';
 import WaitlistConfirmation from '@/components/WaitlistConfirmation';
-import { useAuthContext } from '@/context/AuthContext';
+import { useAuth } from '@/context/AuthContext';
 import { useWaitlist } from '@/hooks/useWaitlist';
 
 const ClosedBetaDemo = () => {
   const [searchParams] = useSearchParams();
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const { user } = useAuthContext();
+  const { user } = useAuth();
   const { waitlistData, loadWaitlistData } = useWaitlist();
   const referralCode = searchParams.get('ref');
 
