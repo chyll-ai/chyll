@@ -25,7 +25,21 @@ export const useWaitlist = () => {
         p_referral_code: referralCode || null
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Waitlist signup error:', error);
+        
+        // Handle specific error messages
+        if (error.message?.includes('Access denied')) {
+          toast.error('Accès refusé : Vous n\'avez pas les permissions nécessaires');
+        } else if (error.message?.includes('duplicate key')) {
+          toast.error('Vous êtes déjà sur la liste d\'attente !');
+        } else if (error.message?.includes('User must be authenticated')) {
+          toast.error('Vous devez être connecté pour rejoindre la liste d\'attente');
+        } else {
+          toast.error('Erreur lors de l\'inscription');
+        }
+        throw error;
+      }
       
       if (data) {
         setWaitlistData(data);
@@ -34,11 +48,6 @@ export const useWaitlist = () => {
       }
     } catch (error: any) {
       console.error('Error joining waitlist:', error);
-      if (error.message?.includes('duplicate key')) {
-        toast.error('Vous êtes déjà sur la liste d\'attente !');
-      } else {
-        toast.error('Erreur lors de l\'inscription');
-      }
       throw error;
     } finally {
       setLoading(false);
@@ -48,7 +57,23 @@ export const useWaitlist = () => {
   const loadWaitlistData = async () => {
     try {
       const { data, error } = await supabase.rpc('get_waitlist_data');
-      if (error) throw error;
+      
+      if (error) {
+        console.error('Load waitlist data error:', error);
+        
+        // Handle specific error messages
+        if (error.message?.includes('Access denied')) {
+          console.log('User does not have waitlist access');
+          return;
+        } else if (error.message?.includes('User must be authenticated')) {
+          console.log('User not authenticated');
+          return;
+        } else {
+          console.error('Error loading waitlist data:', error);
+        }
+        return;
+      }
+      
       if (data) {
         setWaitlistData(data);
       }
@@ -60,14 +85,28 @@ export const useWaitlist = () => {
   const updateDiscordStatus = async () => {
     try {
       const { data, error } = await supabase.rpc('update_discord_status');
-      if (error) throw error;
+      
+      if (error) {
+        console.error('Discord status update error:', error);
+        
+        // Handle specific error messages
+        if (error.message?.includes('Access denied')) {
+          toast.error('Accès refusé : Vous n\'avez pas les permissions nécessaires');
+        } else if (error.message?.includes('User must be authenticated')) {
+          toast.error('Vous devez être connecté');
+        } else {
+          toast.error('Erreur lors de la mise à jour');
+        }
+        throw error;
+      }
+      
       if (data) {
         setWaitlistData(data);
         toast.success('🎉 +50 points ajoutés !');
       }
     } catch (error) {
       console.error('Error updating Discord status:', error);
-      toast.error('Erreur lors de la mise à jour');
+      throw error;
     }
   };
 

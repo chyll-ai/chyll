@@ -1,3 +1,4 @@
+
 export type Json =
   | string
   | number
@@ -293,9 +294,78 @@ export interface Database {
           created_at?: string
         }
       }
+      waitlist: {
+        Row: {
+          id: string
+          user_id: string
+          email: string
+          referral_code: string
+          referred_by: string | null
+          points: number
+          discord_joined: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          email: string
+          referral_code?: string
+          referred_by?: string | null
+          points?: number
+          discord_joined?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          email?: string
+          referral_code?: string
+          referred_by?: string | null
+          points?: number
+          discord_joined?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      user_roles: {
+        Row: {
+          id: string
+          user_id: string
+          role: 'superadmin' | 'admin' | 'user'
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          role: 'superadmin' | 'admin' | 'user'
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          role?: 'superadmin' | 'admin' | 'user'
+          created_at?: string
+        }
+      }
     }
     Views: {
-      [_ in never]: never
+      waitlist_with_position: {
+        Row: {
+          id: string | null
+          user_id: string | null
+          email: string | null
+          referral_code: string | null
+          referred_by: string | null
+          points: number | null
+          discord_joined: boolean | null
+          created_at: string | null
+          updated_at: string | null
+          waitlist_position: number | null
+          referral_count: number | null
+        }
+      }
     }
     Functions: {
       update_message_toolcalls: {
@@ -305,9 +375,41 @@ export interface Database {
         }
         Returns: void
       }
+      handle_waitlist_signup: {
+        Args: {
+          p_email: string
+          p_referral_code?: string
+        }
+        Returns: Json
+      }
+      update_discord_status: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
+      get_waitlist_data: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
+      has_role: {
+        Args: {
+          _user_id: string
+          _role: 'superadmin' | 'admin' | 'user'
+        }
+        Returns: boolean
+      }
+      get_user_email: {
+        Args: {
+          _user_id: string
+        }
+        Returns: string
+      }
+      is_superadmin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: 'superadmin' | 'admin' | 'user'
     }
     CompositeTypes: {
       [_ in never]: never

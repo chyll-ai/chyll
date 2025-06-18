@@ -363,6 +363,27 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          created_at: string | null
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
       waitlist: {
         Row: {
           created_at: string
@@ -449,6 +470,10 @@ export type Database = {
       }
     }
     Functions: {
+      get_user_email: {
+        Args: { _user_id: string }
+        Returns: string
+      }
       get_waitlist_data: {
         Args: Record<PropertyKey, never>
         Returns: Json
@@ -456,6 +481,17 @@ export type Database = {
       handle_waitlist_signup: {
         Args: { p_email: string; p_referral_code?: string }
         Returns: Json
+      }
+      has_role: {
+        Args: {
+          _user_id: string
+          _role: Database["public"]["Enums"]["app_role"]
+        }
+        Returns: boolean
+      }
+      is_superadmin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
       }
       update_discord_status: {
         Args: Record<PropertyKey, never>
@@ -467,7 +503,7 @@ export type Database = {
       }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "superadmin" | "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -582,6 +618,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["superadmin", "admin", "user"],
+    },
   },
 } as const
