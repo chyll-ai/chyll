@@ -51,7 +51,8 @@ const Onboarding = lazy(() => import('@/pages/Onboarding'));
 const AuthCallback = lazy(() => import('@/routes/auth/callback'));
 const AuthConfirm = lazy(() => import('@/routes/auth/confirm'));
 const LeadHistory = lazy(() => import('@/pages/LeadHistory'));
-const ClosedBetaDemo = lazy(() => import('@/pages/ClosedBetaDemo'));
+const WaitlistSubscription = lazy(() => import('@/pages/WaitlistSubscription'));
+const WaitlistManagement = lazy(() => import('@/pages/WaitlistManagement'));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -81,7 +82,7 @@ function App() {
                     {/* Public Routes */}
                     <Route path="/" element={<Index />} />
                     <Route path="/login" element={<Login />} />
-                    <Route path="/closed-beta-demo" element={<ClosedBetaDemo />} />
+                    <Route path="/waitlist-subscription" element={<WaitlistSubscription />} />
                     <Route path="/faq" element={<FAQ />} />
                     <Route path="/about-us" element={<AboutUs />} />
                     <Route path="/contact" element={<Contact />} />
@@ -125,6 +126,12 @@ function App() {
                         <Onboarding />
                       </ProtectedRoute>
                     } />
+                    
+                    {/* Superadmin Routes */}
+                    <Route path="/waitlist" element={<WaitlistManagement />} />
+                    
+                    {/* Legacy Route Redirect */}
+                    <Route path="/closed-beta-demo" element={<NotFoundRedirect message="Page déplacée, redirection en cours..." redirectTo="/waitlist-subscription" />} />
                     
                     {/* Catch all route for 404 handling */}
                     <Route path="*" element={<NotFoundRedirect message="Page non trouvée, redirection en cours..." redirectTo="/" />} />
