@@ -64,7 +64,7 @@ const offersData = [
       "Mise à jour quotidienne"
     ],
     url: "https://chyll.ai/offres/starter",
-    action: "/closed-beta-demo",
+    action: "/waitlist-subscription",
     actionText: "Rejoindre la liste d'attente"
   },
   {
@@ -82,7 +82,7 @@ const offersData = [
       "Export et import de data"
     ],
     url: "https://chyll.ai/offres/growth",
-    action: "/closed-beta-demo",
+    action: "/waitlist-subscription",
     actionText: "Rejoindre la liste d'attente"
   },
   {
@@ -102,7 +102,7 @@ const offersData = [
       "Rapports de performance"
     ],
     url: "https://chyll.ai/offres/scale",
-    action: "/closed-beta-demo",
+    action: "/waitlist-subscription",
     actionText: "Rejoindre la liste d'attente"
   }
 ];
@@ -117,7 +117,7 @@ export default function Index() {
   useEffect(() => {
     const referralCode = searchParams.get('ref');
     if (referralCode) {
-      navigate(`/closed-beta-demo?ref=${referralCode}`, { replace: true });
+      navigate(`/waitlist-subscription?ref=${referralCode}`, { replace: true });
     }
   }, [searchParams, navigate]);
 
