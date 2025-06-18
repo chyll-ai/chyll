@@ -470,6 +470,20 @@ export type Database = {
       }
     }
     Functions: {
+      get_all_waitlist_data: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          id: string
+          user_id: string
+          email: string
+          referral_code: string
+          points: number
+          waitlist_position: number
+          referral_count: number
+          discord_joined: boolean
+          created_at: string
+        }[]
+      }
       get_user_email: {
         Args: { _user_id: string }
         Returns: string

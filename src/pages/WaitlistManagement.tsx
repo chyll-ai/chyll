@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -40,10 +39,8 @@ const WaitlistManagement = () => {
   const loadWaitlistEntries = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('waitlist_with_position')
-        .select('*')
-        .order('waitlist_position', { ascending: true });
+      // Use the new superadmin function
+      const { data, error } = await supabase.rpc('get_all_waitlist_data');
 
       if (error) {
         console.error('Error loading waitlist entries:', error);
