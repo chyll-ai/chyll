@@ -16,8 +16,6 @@ export class AssistantService {
   private userId: string;
   private apiClient: APIClient;
   private onLeadsUpdate?: (leads: Lead[]) => void;
-  private generatedNames: Set<string> = new Set();
-  private generatedEmails: Set<string> = new Set();
   private recentSearches: Map<string, { timestamp: number; results: Lead[] }> = new Map();
 
   constructor(userId: string) {
@@ -150,14 +148,10 @@ export class AssistantService {
 
           const leads = searchResult.leads || [];
           const message = searchResult.message || '';
-          const strategiesUsed = searchResult.strategiesUsed || [];
           const existingLeadsExcluded = searchResult.existingLeadsExcluded || 0;
-          const duplicatesAvoided = searchResult.duplicatesAvoided || 0;
           
           console.log('PDL search found:', leads.length, 'leads');
-          console.log('Search strategies used:', strategiesUsed);
           console.log('Existing leads excluded:', existingLeadsExcluded);
-          console.log('Duplicates avoided:', duplicatesAvoided);
 
           if (leads.length > 0) {
             // Save leads to database with enhanced duplicate detection
@@ -172,25 +166,17 @@ export class AssistantService {
             
             toast.success(`${savedLeads.length} nouveaux leads trouvés via People Data Labs`);
 
-            let responseMessage = `Excellent ! J'ai trouvé ${savedLeads.length} leads professionnels uniques pour "${content}" via People Data Labs.`;
-            
-            if (strategiesUsed.includes('alternatives')) {
-              responseMessage += ' J\'ai utilisé plusieurs stratégies de recherche diversifiées pour éviter les doublons et vous offrir plus de variété.';
-            }
+            let responseMessage = `Excellent ! J'ai trouvé ${savedLeads.length} leads professionnels réels pour "${content}" via People Data Labs.`;
             
             if (existingLeadsExcluded > 0) {
               responseMessage += ` J'ai automatiquement exclu ${existingLeadsExcluded} leads existants pour éviter les doublons.`;
-            }
-            
-            if (duplicatesAvoided > 0) {
-              responseMessage += ` J'ai également évité ${duplicatesAvoided} doublons potentiels dans les résultats.`;
             }
             
             responseMessage += ' Ces contacts ont été enrichis avec des données réelles et ajoutés à votre tableau de bord.';
 
             return { message: responseMessage };
           } else {
-            let noResultsMessage = `Je n'ai pas trouvé de nouveaux leads uniques pour "${content}".`;
+            let noResultsMessage = `Je n'ai pas trouvé de nouveaux leads pour "${content}" dans la base de données People Data Labs.`;
             
             if (existingLeadsExcluded > 0) {
               noResultsMessage += ` Cependant, j'ai trouvé ${existingLeadsExcluded} résultats qui correspondent à des leads déjà présents dans votre base de données.`;
@@ -201,20 +187,18 @@ export class AssistantService {
             return { message: noResultsMessage };
           }
         } catch (error) {
-          console.error('PDL search failed, falling back to demo data:', error);
+          console.error('PDL search failed:', error);
           
-          // Fallback to demo leads if PDL fails
-          const demoLeads = this.generateDemoLeads(content, requestedCount);
-          const savedLeads = await this.saveDemoLeads(demoLeads);
+          const errorMessage = error instanceof Error ? error.message : 'Unknown error';
           
-          if (this.onLeadsUpdate) {
-            this.onLeadsUpdate(savedLeads);
+          if (errorMessage.includes('PDL API key') || errorMessage.includes('not configured')) {
+            return {
+              message: `Impossible d'effectuer la recherche : la clé API People Data Labs n'est pas configurée. Veuillez configurer votre clé API PDL pour utiliser la recherche de données réelles.`
+            };
           }
           
-          toast.warning('Données de démonstration utilisées (erreur PDL)');
-
           return {
-            message: `J'ai rencontré une difficulté avec l'API People Data Labs, mais j'ai généré ${savedLeads.length} leads de démonstration pour "${content}". Pour utiliser de vraies données, vérifiez votre configuration PDL.`
+            message: `Désolé, j'ai rencontré une erreur lors de la recherche PDL pour "${content}". Veuillez réessayer ou vérifier votre configuration API.`
           };
         }
       }
@@ -309,113 +293,6 @@ export class AssistantService {
       return savedLeads;
     } catch (error) {
       console.error('AssistantService: Error in savePDLLeadsWithDuplicateCheck:', error);
-      return leads;
-    }
-  }
-
-  private generateDemoLeads(searchQuery: string, requestedCount: number = 5): Lead[] {
-    console.log('Generating demo leads for:', searchQuery, 'count:', requestedCount);
-    
-    const techCompanies = [
-      'DataFlow Systems', 'NextGen Analytics', 'CloudFirst Technologies', 'ByteForge Labs', 
-      'SmartCode Solutions', 'DevStream Technologies', 'TechPulse SAS', 'DigitalMind Studio',
-      'InnovTech Paris', 'CodeCraft Studio', 'SalesForce France', 'TechSales Pro',
-      'SalesBoost SAS', 'RevenueTech', 'CommercialTech', 'SalesOptim'
-    ];
-    
-    const frenchFirstNames = ['Alexandre', 'Sophie', 'Julien', 'Marine', 'Thomas', 'Camille', 'Nicolas', 'Amélie', 'Pierre', 'Claire'];
-    const frenchLastNames = ['Martin', 'Dubois', 'Moreau', 'Lefebvre', 'Garcia', 'Roux', 'Fournier', 'Girard', 'Bernard', 'Durand'];
-    
-    // Use Paris as default location and "Responsable Commercial" as default job title
-    const targetLocation = 'Paris';
-    const targetJobTitle = 'Responsable Commercial';
-
-    const leads: Lead[] = [];
-
-    for (let i = 0; i < requestedCount; i++) {
-      let firstName, lastName, fullName, email, company;
-      let attempts = 0;
-      
-      do {
-        firstName = frenchFirstNames[Math.floor(Math.random() * frenchFirstNames.length)];
-        lastName = frenchLastNames[Math.floor(Math.random() * frenchLastNames.length)];
-        fullName = `${firstName} ${lastName}`;
-        company = techCompanies[Math.floor(Math.random() * techCompanies.length)];
-        email = `${firstName.toLowerCase()}.${lastName.toLowerCase()}@${company.toLowerCase().replace(/\s+/g, '').replace(/'/g, '')}.fr`;
-        attempts++;
-      } while ((this.generatedNames.has(fullName) || this.generatedEmails.has(email)) && attempts < 50);
-      
-      if (attempts >= 50) {
-        fullName = `${firstName} ${lastName}${i + 1}`;
-        email = `${firstName.toLowerCase()}.${lastName.toLowerCase()}${i + 1}@${company.toLowerCase().replace(/\s+/g, '').replace(/'/g, '')}.fr`;
-      }
-      
-      this.generatedNames.add(fullName);
-      this.generatedEmails.add(email);
-      
-      const lead: Lead = {
-        id: crypto.randomUUID(),
-        client_id: this.userId,
-        full_name: fullName,
-        job_title: targetJobTitle,
-        company: company,
-        location: targetLocation,
-        email: email,
-        phone_number: `+33 6${Math.floor(Math.random() * 90000000) + 10000000}`,
-        linkedin_url: `linkedin.com/in/${firstName.toLowerCase()}-${lastName.toLowerCase()}-${Math.floor(Math.random() * 1000)}`,
-        status: 'new',
-        created_at: new Date().toISOString(),
-        enriched_from: {
-          source: 'assistant_demo',
-          timestamp: new Date().toISOString(),
-          notes: `Generated from search: "${searchQuery}"`
-        }
-      };
-      
-      leads.push(lead);
-    }
-
-    console.log('Generated demo leads:', leads.length);
-    return leads;
-  }
-
-  private async saveDemoLeads(leads: Lead[]): Promise<Lead[]> {
-    try {
-      console.log('AssistantService: Saving leads to database');
-      
-      const savedLeads: Lead[] = [];
-      
-      for (const lead of leads) {
-        try {
-          const { data: savedLead, error } = await supabase
-            .from('leads')
-            .insert(lead)
-            .select('*')
-            .single();
-
-          if (error) {
-            if (error.code === '23505') {
-              console.log('Lead already exists, skipping:', lead.email);
-              continue;
-            } else {
-              console.error('Error saving individual lead:', error);
-              continue;
-            }
-          }
-
-          if (savedLead) {
-            savedLeads.push(savedLead);
-          }
-        } catch (individualError) {
-          console.error('Error processing individual lead:', individualError);
-          continue;
-        }
-      }
-
-      console.log('AssistantService: Successfully saved leads:', savedLeads.length);
-      return savedLeads;
-    } catch (error) {
-      console.error('AssistantService: Error in saveDemoLeads:', error);
       return leads;
     }
   }

@@ -25,7 +25,7 @@ const WorkspaceAssistant: React.FC<WorkspaceAssistantProps> = ({ onLeadsUpdate }
     {
       id: '1',
       role: 'assistant',
-      content: "Bonjour ! Je suis votre assistant CRM. Je peux vous aider à trouver des leads, enrichir vos prospects, envoyer des emails, et bien plus. Essayez de me demander : 'Trouve-moi 5 leads RH à Paris'",
+      content: "Bonjour ! Je suis votre assistant CRM. Je peux vous aider à trouver des leads via People Data Labs, enrichir vos prospects, envoyer des emails, et bien plus. Essayez de me demander : 'Trouve-moi 5 leads RH à Paris' (Nécessite une clé API PDL configurée)",
       timestamp: new Date()
     }
   ]);
@@ -94,7 +94,7 @@ const WorkspaceAssistant: React.FC<WorkspaceAssistantProps> = ({ onLeadsUpdate }
             response = result.message;
           } catch (error) {
             console.error('PDL search failed:', error);
-            response = "Désolé, j'ai rencontré une erreur lors de la recherche de leads. Veuillez réessayer.";
+            response = "Désolé, j'ai rencontré une erreur lors de la recherche de leads. Veuillez vérifier que votre clé API People Data Labs est configurée.";
           }
         } else {
           response = "Assistant non initialisé. Veuillez rafraîchir la page.";
@@ -136,7 +136,7 @@ const WorkspaceAssistant: React.FC<WorkspaceAssistantProps> = ({ onLeadsUpdate }
         response = "J'ai actualisé la liste des leads.";
       }
       else {
-        response = "Je n'ai pas compris votre demande. Voici ce que je peux faire :\n\n• Trouver des leads (ex: 'trouve-moi 5 leads RH à Paris')\n• Enrichir les leads non qualifiés\n• Filtrer les leads (ex: 'montre-moi les leads SaaS')\n• Envoyer des emails aux leads\n• Afficher les leads par statut ou date\n• Actualiser la liste des leads";
+        response = "Je n'ai pas compris votre demande. Voici ce que je peux faire :\n\n• Trouver des leads réels via People Data Labs (ex: 'trouve-moi 5 leads RH à Paris')\n• Enrichir les leads non qualifiés\n• Filtrer les leads (ex: 'montre-moi les leads SaaS')\n• Envoyer des emails aux leads\n• Afficher les leads par statut ou date\n• Actualiser la liste des leads\n\nNote: La recherche de leads nécessite une clé API People Data Labs configurée.";
       }
 
       const assistantMessage: Message = {
@@ -228,7 +228,7 @@ const WorkspaceAssistant: React.FC<WorkspaceAssistantProps> = ({ onLeadsUpdate }
           <Textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Exemple: 'Trouve-moi 5 leads RH à Paris' ou 'Enrichis mes leads'"
+            placeholder="Exemple: 'Trouve-moi 5 leads RH à Paris' (nécessite clé PDL) ou 'Enrichis mes leads'"
             className="flex-1 min-h-[60px] resize-none"
             disabled={processing}
             onKeyDown={(e) => {

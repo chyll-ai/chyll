@@ -106,69 +106,7 @@ function isExistingLead(person: any, existingLeads: ExistingLead[]): boolean {
   });
 }
 
-function generateDemoLeads(searchQuery: string, requestedCount: number = 5): any[] {
-  console.log('Generating demo leads for:', searchQuery, 'count:', requestedCount);
-  
-  const techCompanies = [
-    'Schneider Electric', 'Thales', 'Capgemini', 'Atos', 'Dassault Systèmes', 
-    'Orange', 'BNP Paribas', 'Société Générale', 'L\'Oréal', 'LVMH',
-    'Sanofi', 'Total Energies', 'Carrefour', 'Renault', 'PSA Group'
-  ];
-  
-  const frenchFirstNames = ['Alexandre', 'Sophie', 'Julien', 'Marine', 'Thomas', 'Camille', 'Nicolas', 'Amélie', 'Pierre', 'Claire'];
-  const frenchLastNames = ['Martin', 'Dubois', 'Moreau', 'Lefebvre', 'Garcia', 'Roux', 'Fournier', 'Girard', 'Bernard', 'Durand'];
-  const frenchCities = ['Paris', 'Lyon', 'Marseille', 'Toulouse', 'Nice', 'Nantes', 'Montpellier', 'Strasbourg', 'Bordeaux', 'Lille'];
-  
-  // Parse search query for job title hints
-  const queryLower = searchQuery.toLowerCase();
-  let jobTitle = 'Manager';
-  
-  if (queryLower.includes('rh') || queryLower.includes('ressources humaines')) {
-    jobTitle = 'Responsable RH';
-  } else if (queryLower.includes('commercial') || queryLower.includes('sales')) {
-    jobTitle = 'Responsable Commercial';
-  } else if (queryLower.includes('marketing')) {
-    jobTitle = 'Responsable Marketing';
-  } else if (queryLower.includes('dev') || queryLower.includes('développeur')) {
-    jobTitle = 'Développeur Senior';
-  }
-
-  const leads: any[] = [];
-
-  for (let i = 0; i < requestedCount; i++) {
-    const firstName = frenchFirstNames[Math.floor(Math.random() * frenchFirstNames.length)];
-    const lastName = frenchLastNames[Math.floor(Math.random() * frenchLastNames.length)];
-    const company = techCompanies[Math.floor(Math.random() * techCompanies.length)];
-    const city = frenchCities[Math.floor(Math.random() * frenchCities.length)];
-    
-    const lead = {
-      id: crypto.randomUUID(),
-      client_id: '',
-      full_name: `${firstName} ${lastName}`,
-      job_title: jobTitle,
-      company: company,
-      location: city,
-      email: '', // Pas d'email - sera enrichi plus tard
-      phone_number: `+33 6${Math.floor(Math.random() * 90000000) + 10000000}`,
-      linkedin_url: `linkedin.com/in/${firstName.toLowerCase()}-${lastName.toLowerCase()}-${Math.floor(Math.random() * 1000)}`,
-      status: 'new',
-      created_at: new Date().toISOString(),
-      enriched_from: {
-        source: 'demo_data',
-        timestamp: new Date().toISOString(),
-        notes: `Generated from search: "${searchQuery}" - Email to be enriched separately`
-      }
-    };
-    
-    leads.push(lead);
-  }
-
-  console.log('Generated demo leads without emails for enrichment:', leads.length);
-  return leads;
-}
-
 async function parseSearchQueryWithOpenAI(query: string): Promise<any> {
-  // Simplified parsing - focus on demo data generation
   const searchCriteria: any = {};
   const queryLower = query.toLowerCase();
 
@@ -186,6 +124,8 @@ async function parseSearchQueryWithOpenAI(query: string): Promise<any> {
     searchCriteria.job_title = 'sales';
   } else if (queryLower.includes('développeur') || queryLower.includes('developer')) {
     searchCriteria.job_title = 'developer';
+  } else if (queryLower.includes('product manager') || queryLower.includes('pm')) {
+    searchCriteria.job_title = 'product manager';
   } else {
     searchCriteria.job_title = 'manager';
   }
@@ -195,7 +135,6 @@ async function parseSearchQueryWithOpenAI(query: string): Promise<any> {
 
 async function searchPeopleWithPDL(searchParams: any, count: number = 10): Promise<PDLSearchResponse> {
   if (!PDL_API_KEY) {
-    console.log('PDL_API_KEY not configured, will use demo data');
     throw new Error('PDL_API_KEY is not configured');
   }
 
@@ -215,7 +154,6 @@ async function searchPeopleWithPDL(searchParams: any, count: number = 10): Promi
     conditions.push(`job_title LIKE '%manager%'`);
   }
 
-  // Suppression du filtre emails - on récupère tous les profils pertinents
   const sql = `SELECT * FROM person WHERE (${conditions.join(' AND ')})`;
   
   const searchBody = {
@@ -224,7 +162,7 @@ async function searchPeopleWithPDL(searchParams: any, count: number = 10): Promi
     pretty: true
   };
 
-  console.log('PDL Search request (no email filter):', JSON.stringify(searchBody, null, 2));
+  console.log('PDL Search request:', JSON.stringify(searchBody, null, 2));
 
   try {
     const response = await fetch(`${PDL_BASE_URL}/person/search`, {
@@ -241,18 +179,11 @@ async function searchPeopleWithPDL(searchParams: any, count: number = 10): Promi
 
     if (!response.ok) {
       console.error('PDL Search API error:', response.status, responseText);
-      
-      // Check if it's a payment error
-      if (response.status === 402) {
-        console.log('PDL account limit reached, falling back to demo data');
-        throw new Error('PDL_PAYMENT_REQUIRED');
-      }
-      
       throw new Error(`PDL Search API error: ${response.status} - ${responseText}`);
     }
 
     const data = JSON.parse(responseText);
-    console.log('PDL search successful, found:', data.data?.length || 0, 'results (without email filter)');
+    console.log('PDL search successful, found:', data.data?.length || 0, 'results');
     
     return {
       status: response.status,
@@ -276,6 +207,10 @@ serve(async (req: Request) => {
       throw new Error('Search query and user ID are required');
     }
 
+    if (!PDL_API_KEY) {
+      throw new Error('PDL API key is not configured. Please configure your People Data Labs API key to use real data search.');
+    }
+
     console.log(`Processing search query: "${searchQuery}"`);
 
     // Get existing leads for deduplication
@@ -292,99 +227,92 @@ serve(async (req: Request) => {
 
     console.log('Search criteria:', searchCriteria);
 
-    let leads: any[] = [];
-    let usedDemoData = false;
-    let pdlError = null;
+    // Perform PDL search
+    const pdlResults = await searchPeopleWithPDL(searchCriteria, count);
+    
+    if (!pdlResults.data?.data) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: 'No data returned from PDL API',
+          leads: [],
+          message: 'Aucun résultat trouvé pour cette recherche.'
+        }),
+        { 
+          status: 200, 
+          headers: { 
+            ...corsHeaders, 
+            'Content-Type': 'application/json' 
+          }
+        }
+      );
+    }
 
-    // Try PDL search first
-    try {
-      const pdlResults = await searchPeopleWithPDL(searchCriteria, count);
-      
-      if (pdlResults.data?.data) {
-        // Plus de filtre par email - on garde tous les profils valides
-        const validPdlLeads = pdlResults.data.data.filter((person: any) => {
-          // Doit avoir au minimum un nom et une entreprise
-          if (!person.full_name || !person.job_company_name) {
-            console.log('Filtering out PDL result without basic info:', person);
-            return false;
-          }
-          
-          // Check if not duplicate based on name+company only
-          if (isExistingLead(person, existingLeads)) {
-            return false;
-          }
-          
-          return true;
-        });
-        
-        console.log('Valid PDL leads (no email requirement):', validPdlLeads.length);
-        
-        // Transform PDL results to our lead format
-        leads = validPdlLeads.slice(0, count).map((person: any) => {
-          let location = 'Unknown';
-          
-          if (typeof person.location_name === 'string' && person.location_name.trim()) {
-            location = person.location_name;
-          } else if (typeof person.location_country === 'string' && person.location_country.trim()) {
-            location = person.location_country;
-          }
-          
-          return {
-            id: crypto.randomUUID(),
-            client_id: userId,
-            full_name: person.full_name || 'N/A',
-            job_title: person.job_title || 'N/A',
-            company: person.job_company_name || 'N/A',
-            location: location,
-            email: person.emails?.[0]?.address || '', // Email optionnel - sera enrichi
-            phone_number: person.phone_numbers?.[0]?.number || '',
-            linkedin_url: person.linkedin_url || '',
-            status: 'new',
-            created_at: new Date().toISOString(),
-            enriched_from: {
-              source: 'peopledatalabs',
-              timestamp: new Date().toISOString(),
-              query: searchQuery,
-              parsed_criteria: searchCriteria,
-              notes: 'Email enrichment may be needed separately'
-            },
-            linkedin_profile_data: {
-              skills: person.skills || [],
-              summary: person.summary || ''
-            }
-          };
-        });
+    // Filter and transform PDL results
+    const validPdlLeads = pdlResults.data.data.filter((person: any) => {
+      // Must have at minimum a name and a company
+      if (!person.full_name || !person.job_company_name) {
+        console.log('Filtering out PDL result without basic info:', person);
+        return false;
       }
-    } catch (error) {
-      console.error('PDL search failed:', error);
-      pdlError = error.message;
-      usedDemoData = true;
-    }
-
-    // If PDL failed or returned no valid results, use demo data
-    if (leads.length === 0) {
-      console.log('No valid PDL results, generating demo data');
-      usedDemoData = true;
       
-      const demoLeads = generateDemoLeads(searchQuery, count);
-      leads = demoLeads.map(lead => ({
-        ...lead,
-        client_id: userId
-      }));
-    }
+      // Check if not duplicate based on name+company
+      if (isExistingLead(person, existingLeads)) {
+        return false;
+      }
+      
+      return true;
+    });
+    
+    console.log('Valid PDL leads:', validPdlLeads.length);
+    
+    // Transform PDL results to our lead format
+    const leads = validPdlLeads.slice(0, count).map((person: any) => {
+      let location = 'Unknown';
+      
+      if (typeof person.location_name === 'string' && person.location_name.trim()) {
+        location = person.location_name;
+      } else if (typeof person.location_country === 'string' && person.location_country.trim()) {
+        location = person.location_country;
+      }
+      
+      return {
+        id: crypto.randomUUID(),
+        client_id: userId,
+        full_name: person.full_name || 'N/A',
+        job_title: person.job_title || 'N/A',
+        company: person.job_company_name || 'N/A',
+        location: location,
+        email: person.emails?.[0]?.address || '',
+        phone_number: person.phone_numbers?.[0]?.number || '',
+        linkedin_url: person.linkedin_url || '',
+        status: 'new',
+        created_at: new Date().toISOString(),
+        enriched_from: {
+          source: 'peopledatalabs',
+          timestamp: new Date().toISOString(),
+          query: searchQuery,
+          parsed_criteria: searchCriteria,
+          notes: 'Real data from People Data Labs'
+        },
+        linkedin_profile_data: {
+          skills: person.skills || [],
+          summary: person.summary || ''
+        }
+      };
+    });
 
     let responseMessage = '';
     
-    if (usedDemoData) {
-      if (pdlError?.includes('PDL_PAYMENT_REQUIRED')) {
-        responseMessage = `Votre compte People Data Labs a atteint sa limite. J'ai généré ${leads.length} leads de démonstration pour "${searchQuery}". Les emails seront enrichis séparément. Pour utiliser de vraies données, veuillez recharger votre compte PDL.`;
-      } else {
-        responseMessage = `J'ai généré ${leads.length} leads de démonstration pour "${searchQuery}". Les emails seront enrichis dans une étape séparée. Pour utiliser de vraies données, vérifiez votre configuration PDL.`;
+    if (leads.length === 0) {
+      responseMessage = `Aucun nouveau lead trouvé pour "${searchQuery}". Essayez d'utiliser des termes différents ou élargissez vos critères de recherche.`;
+      if (existingLeads.length > 0) {
+        responseMessage += ` Note: ${existingLeads.length} leads existants ont été automatiquement exclus pour éviter les doublons.`;
       }
     } else {
       const withEmails = leads.filter(lead => lead.email).length;
       const withoutEmails = leads.length - withEmails;
-      responseMessage = `Excellent ! J'ai trouvé ${leads.length} profils réels via People Data Labs pour "${searchQuery}". ${withEmails} ont déjà un email, ${withoutEmails} pourront être enrichis séparément.`;
+      responseMessage = `Excellent ! J'ai trouvé ${leads.length} profils réels via People Data Labs pour "${searchQuery}". ${withEmails} ont déjà un email, ${withoutEmails} pourront être enrichis séparément avec d'autres services.`;
     }
 
     return new Response(
@@ -395,8 +323,7 @@ serve(async (req: Request) => {
         query: searchQuery,
         searchCriteria,
         message: responseMessage,
-        usedDemoData,
-        pdlError,
+        usedDemoData: false,
         existingLeadsExcluded: existingLeads.length
       }),
       { 
@@ -415,7 +342,10 @@ serve(async (req: Request) => {
       JSON.stringify({ 
         success: false,
         error: errorMessage,
-        leads: []
+        leads: [],
+        message: errorMessage.includes('PDL API key') 
+          ? 'Clé API People Data Labs manquante. Veuillez configurer votre clé API pour utiliser la recherche de données réelles.'
+          : 'Erreur lors de la recherche PDL. Veuillez réessayer ou vérifier votre configuration.'
       }),
       { 
         status: 400, 
