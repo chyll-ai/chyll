@@ -224,11 +224,14 @@ export type Database = {
           full_name: string | null
           id: string
           job_title: string | null
+          last_contact_date: string | null
+          linkedin_profile_data: Json | null
           linkedin_url: string | null
           location: string | null
           phone_number: string | null
           search_id: string | null
           status: string | null
+          updated_at: string | null
         }
         Insert: {
           client_id?: string | null
@@ -239,11 +242,14 @@ export type Database = {
           full_name?: string | null
           id?: string
           job_title?: string | null
+          last_contact_date?: string | null
+          linkedin_profile_data?: Json | null
           linkedin_url?: string | null
           location?: string | null
           phone_number?: string | null
           search_id?: string | null
           status?: string | null
+          updated_at?: string | null
         }
         Update: {
           client_id?: string | null
@@ -254,11 +260,14 @@ export type Database = {
           full_name?: string | null
           id?: string
           job_title?: string | null
+          last_contact_date?: string | null
+          linkedin_profile_data?: Json | null
           linkedin_url?: string | null
           location?: string | null
           phone_number?: string | null
           search_id?: string | null
           status?: string | null
+          updated_at?: string | null
         }
         Relationships: [
           {
