@@ -13,39 +13,39 @@ import { useLanguage } from '@/context/LanguageContext';
 export function FAQSection() {
   const { language, t } = useLanguage();
   
-  // Updated FAQ items focused on chyll's B2B prospecting automation
+  // Updated FAQ items focused on chyll as the future CRM with natural language
   const defaultFaqItems = [
     {
-      question: "🎯 Comment chyll automatise-t-il ma prospection B2B ?",
-      answer: "chyll utilise l'IA pour identifier automatiquement les prospects qualifiés selon vos critères (secteur, taille d'entreprise, fonction). Il enrichit ensuite ces profils avec des emails professionnels vérifiés et des numéros de téléphone directs, puis synchronise tout dans votre CRM personnalisé."
+      question: "🎯 Comment chyll révolutionne-t-il la gestion de prospects ?",
+      answer: "chyll est le CRM du futur qui utilise le langage naturel. Plus besoin d'apprendre des interfaces complexes : vous parlez à chyll comme à un assistant humain pour gérer vos prospects, lancer des recherches, et organiser votre pipeline commercial."
     },
     {
-      question: "📊 Quelles données puis-je obtenir sur mes prospects ?",
-      answer: "Pour chaque prospect, chyll vous fournit : coordonnées complètes (email + téléphone), informations professionnelles détaillées, données sur l'entreprise, profils sociaux, historique professionnel, compétences, et bien plus - le tout enrichi automatiquement."
+      question: "🤖 Qu'est-ce qui rend chyll différent des CRM traditionnels ?",
+      answer: "Contrairement aux CRM classiques avec leurs interfaces rigides, chyll comprend le langage naturel. Dites simplement 'Trouve-moi des directeurs marketing dans la fintech parisienne' et chyll s'exécute. C'est la gestion commerciale réinventée pour l'ère de l'IA."
     },
     {
-      question: "⚡ En combien de temps puis-je avoir mes premiers prospects ?",
-      answer: "Votre assistant chyll est opérationnel en 48h maximum. Une fois configuré selon vos personas et critères, il commence immédiatement à identifier et enrichir vos prospects. Vous pouvez voir les premiers résultats dès les premières heures."
+      question: "⚡ En combien de temps puis-je maîtriser chyll ?",
+      answer: "Immédiatement ! Avec chyll, plus besoin de formation complexe. Vous lui parlez naturellement en français, comme vous le feriez avec un collègue. L'interface s'adapte à votre façon de travailler, pas l'inverse."
     },
     {
-      question: "🔄 Comment fonctionne l'intégration avec mon CRM ?",
-      answer: "chyll s'intègre nativement avec Airtable et peut se connecter à la plupart des CRM populaires. Tous vos prospects enrichis sont automatiquement organisés dans une interface claire, accessible 24/7, que vous pouvez partager avec votre équipe."
+      question: "📊 Comment chyll organise-t-il mes données prospects ?",
+      answer: "chyll structure automatiquement toutes vos données dans un CRM intelligent. Prospects enrichis, historique des interactions, statuts de suivi - tout est organisé de manière logique et accessible via des commandes en langage naturel."
     },
     {
-      question: "🎨 Puis-je personnaliser mes critères de recherche ?",
-      answer: "Absolument ! Vous définissez précisément vos personas : secteurs d'activité, taille d'entreprise, fonctions ciblées, localisation, mots-clés spécifiques, etc. chyll s'adapte parfaitement à vos besoins de prospection spécifiques."
+      question: "🎨 Puis-je personnaliser chyll selon mes besoins ?",
+      answer: "Absolument ! chyll apprend de vos préférences et s'adapte à votre workflow. Plus vous l'utilisez, plus il comprend vos habitudes et personnalise l'expérience selon votre méthode de prospection unique."
     },
     {
-      question: "📈 Quel ROI puis-je espérer avec chyll ?",
-      answer: "Nos clients constatent en moyenne : temps de prospection divisé par 5, taux de conversion augmenté de 40%, coût par lead réduit de 60%, et plus de temps pour se concentrer sur les conversations qui comptent vraiment."
+      question: "📈 Quel impact chyll a-t-il sur ma productivité commerciale ?",
+      answer: "Nos clients rapportent une productivité multipliée par 10 : recherche de prospects instantanée, gestion simplifiée, suivi automatisé. chyll élimine la friction entre vous et vos données pour vous concentrer sur la vente."
     },
     {
-      question: "🔐 Mes données prospects sont-elles sécurisées ?",
-      answer: "Oui, totalement. Votre espace chyll est isolé et protégé. Aucune donnée n'est partagée avec des tiers. Vous gardez le contrôle complet sur vos prospects et pouvez exporter toutes vos données à tout moment."
+      question: "🔐 Mes données sont-elles sécurisées avec chyll ?",
+      answer: "Totalement. chyll utilise un chiffrement de niveau bancaire et respecte le RGPD. Vos données prospects restent privées et sécurisées dans votre espace personnel, accessible uniquement par vous et votre équipe."
     },
     {
-      question: "💼 chyll remplace-t-il mon équipe commerciale ?",
-      answer: "Non ! chyll automatise uniquement les tâches chronophages de recherche et d'enrichissement. Vous restez maître de la relation client : c'est vous qui décidez comment et quand contacter vos prospects. chyll vous fait gagner du temps, pas remplacer vos compétences."
+      question: "💼 chyll peut-il remplacer complètement mon CRM actuel ?",
+      answer: "Oui ! chyll est conçu pour être votre CRM principal. Plus besoin de jongler entre plusieurs outils : prospection, enrichissement, suivi, analyses - tout est centralisé dans une interface conversationnelle intuitive."
     }
   ];
   

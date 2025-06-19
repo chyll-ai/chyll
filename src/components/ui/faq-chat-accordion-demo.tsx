@@ -5,43 +5,43 @@ import { useLanguage } from "@/context/LanguageContext";
 function DefaultDemo() {
   const { language, t } = useLanguage();
   
-  // Updated data focused on chyll's AI prospecting capabilities
+  // Updated data focused on chyll as the future CRM with natural language
   const defaultData = [
     {
-      answer: "chyll utilise des algorithmes d'IA avancés pour scanner LinkedIn et d'autres sources de données professionnelles. Il identifie automatiquement les profils correspondant à vos personas et critères de ciblage, puis enrichit ces données avec des informations de contact vérifiées.",
+      answer: "chyll utilise l'intelligence artificielle conversationnelle pour comprendre vos demandes en langage naturel. Dites simplement ce que vous voulez : 'Trouve des prospects dans la tech' ou 'Montre-moi les leads chauds', et chyll exécute instantanément.",
       icon: "🤖",
       iconPosition: "right" as const,
       id: 1,
-      question: "Comment l'IA de chyll trouve-t-elle des prospects qualifiés ?",
+      question: "Comment fonctionne le CRM en langage naturel de chyll ?",
     },
     {
-      answer: "chyll utilise plusieurs sources de données premium pour enrichir vos prospects : bases de données B2B, APIs de validation d'emails, réseaux sociaux professionnels, et données publiques d'entreprises. Tout est vérifié en temps réel pour garantir la qualité.",
+      answer: "chyll enrichit automatiquement vos prospects avec des données premium : coordonnées vérifiées, informations professionnelles, données d'entreprise, tout en maintenant une base de données structurée et accessible via conversation.",
       id: 2,
-      question: "D'où proviennent les données d'enrichissement ?",
+      question: "Comment chyll enrichit-il les données prospects ?",
     },
     {
-      answer: "Votre interface CRM personnalisée est accessible 24/7 via un tableau de bord sécurisé. Vous pouvez filtrer, trier, exporter vos prospects, suivre leur statut, et partager l'accès avec votre équipe. L'interface est intuitive et ne nécessite aucune formation technique.",
+      answer: "Votre CRM chyll est accessible 24/7 via une interface conversationnelle. Posez des questions, lancez des recherches, consultez vos statistiques - tout se fait en parlant naturellement à votre assistant commercial IA.",
       id: 3,
-      question: "Comment accéder à mes données prospects enrichies ?",
+      question: "Comment accéder à mes données dans chyll ?",
     },
     {
-      answer: "chyll s'intègre nativement avec Airtable pour le CRM. Nous proposons aussi des connexions avec Salesforce, HubSpot, Pipedrive, et d'autres CRM populaires. Des intégrations personnalisées sont possibles selon vos besoins spécifiques.",
+      answer: "chyll est votre CRM principal, pas une intégration. Nous avons conçu l'expérience CRM du futur : plus d'interfaces complexes, juste des conversations naturelles pour gérer votre pipeline commercial efficacement.",
       icon: "⚙️",
       iconPosition: "left" as const,
       id: 4,
-      question: "Quelles intégrations CRM sont disponibles ?",
+      question: "chyll s'intègre-t-il à mon CRM existant ?",
     },
     {
-      answer: "Nous offrons un support complet incluant : configuration initiale personnalisée, formation de l'équipe, optimisation continue des performances, support technique réactif, et un accompagnement dédié pour maximiser votre ROI avec chyll.",
+      answer: "Nous offrons un accompagnement complet pour migrer vers chyll : transfert de données, formation à l'approche conversationnelle, optimisation de vos workflows, et support continu pour maximiser vos résultats commerciaux.",
       id: 5,
-      question: "Quel accompagnement proposez-vous ?",
+      question: "Quel accompagnement pour adopter chyll ?",
     },
     {
-      answer: "Oui ! Vous pouvez cibler précisément par : secteur d'activité, taille d'entreprise (CA, nombre d'employés), fonction/titre, localisation géographique, technologies utilisées, mots-clés LinkedIn, et bien d'autres critères selon vos besoins.",
+      answer: "chyll apprend de vos préférences et s'adapte à votre style commercial. Plus vous l'utilisez, plus il comprend vos habitudes et personnalise l'expérience selon vos besoins spécifiques de prospection.",
       icon: "🔒",
       iconPosition: "right" as const,
       id: 6,
-      question: "Puis-je personnaliser finement mes critères de ciblage ?",
+      question: "chyll peut-il s'adapter à ma façon de travailler ?",
     },
   ];
   
@@ -87,42 +87,42 @@ function CustomStyleDemo() {
 
 export { DefaultDemo, CustomStyleDemo };
 
-// Updated default data for chyll's B2B prospecting focus
+// Updated default data for chyll as the future CRM
 const defaultData = [
   {
-    answer: "chyll's AI prospecting system automatically identifies and enriches qualified B2B leads based on your specific criteria. It scans professional networks, validates contact information, and organizes everything in your personalized CRM - transforming how businesses approach lead generation.",
+    answer: "chyll is the future of CRM - a conversational AI that understands natural language. Simply tell chyll what you need: 'Find tech prospects in Paris' or 'Show me hot leads', and it executes instantly without complex interfaces.",
     icon: "🤖",
     iconPosition: "right" as const,
     id: 1,
-    question: "How does chyll's AI prospecting work for my business?",
+    question: "How does chyll's natural language CRM work?",
   },
   {
-    answer: "Not at all! chyll is designed to be user-friendly and integrates seamlessly into your existing sales workflow. Our team provides comprehensive setup and training to help you maximize lead generation results from day one.",
+    answer: "Not at all! chyll eliminates the learning curve of traditional CRMs. You simply talk to it naturally, and it understands and executes your requests. No training, no complex menus - just conversation.",
     id: 2,
-    question: "Do I need technical skills to use chyll's prospecting tools?",
+    question: "Do I need to learn complex CRM software with chyll?",
   },
   {
-    answer: "Most businesses can have their chyll AI assistant operational within 48 hours. We handle the complete setup process, including persona configuration and CRM integration, so you can start generating qualified leads immediately.",
+    answer: "Immediately! Unlike traditional CRMs that take weeks to master, chyll works from day one. Start having conversations about your prospects and sales pipeline instantly - the AI handles the complexity.",
     id: 3,
-    question: "How quickly can I start generating leads with chyll?",
+    question: "How quickly can I be productive with chyll?",
   },
   {
-    answer: "Yes! chyll integrates natively with Airtable and connects with popular CRMs like Salesforce, HubSpot, and Pipedrive. Custom integrations are available to ensure perfect alignment with your existing sales tech stack.",
+    answer: "chyll IS your CRM - we're not an integration, we're the replacement. We've built the next generation of customer relationship management using conversational AI instead of outdated interfaces.",
     icon: "⚙️",
     iconPosition: "left" as const,
     id: 4,
-    question: "Does chyll integrate with my existing CRM and sales tools?",
+    question: "Does chyll integrate with existing CRM systems?",
   },
   {
-    answer: "We provide comprehensive support including initial setup, persona optimization, performance monitoring, and dedicated account management. Our goal is to ensure chyll continuously delivers high-quality prospects and maximizes your sales ROI.",
+    answer: "We provide complete migration support: data transfer from your old CRM, training on conversational workflows, and ongoing optimization to ensure chyll becomes your team's preferred way to manage prospects.",
     id: 5,
-    question: "What support do you provide for lead generation optimization?",
+    question: "What support do you provide for CRM migration?",
   },
   {
-    answer: "Data security is paramount. Your prospect data is completely isolated and protected with enterprise-grade encryption. We follow strict data protection protocols and you maintain full control over your leads with export capabilities at any time.",
+    answer: "Absolutely. chyll learns your preferences and adapts to your sales style. The more you use it, the better it understands your workflow and personalizes the experience to match your unique approach.",
     icon: "🔒",
     iconPosition: "right" as const,
     id: 6,
-    question: "How secure is my prospect data with chyll?",
+    question: "Can chyll adapt to my specific sales process?",
   },
 ];

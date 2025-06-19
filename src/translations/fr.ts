@@ -17,47 +17,47 @@ export const fr = {
   home: {
     hero: {
       introducing: "Découvrez",
-      title: "chyll, l'assistant commercial IA",
-      actions: ["Appels", "Emails", "Données"],
-      subtitle: "Assistant commercial IA",
-      description: "chyll automatise la prospection B2B et enrichit vos données pour vous permettre de vous concentrer sur les conversations qui comptent.",
+      title: "chyll, le CRM du futur",
+      actions: ["Conversationnel", "Intelligent", "Naturel"],
+      subtitle: "CRM nouvelle génération",
+      description: "chyll révolutionne la gestion commerciale avec un CRM qui comprend le langage naturel. Plus d'interfaces complexes, juste des conversations pour gérer vos prospects.",
       buttons: {
         bookDemo: "Réserver une démo",
         hireNow: "Essayer maintenant"
       }
     },
     features: {
-      title: "Libérez votre potentiel de vente avec chyll",
-      subtitle: "Comment chyll aide les équipes commerciales"
+      title: "Le CRM qui parle votre langue",
+      subtitle: "Comment chyll transforme la gestion commerciale"
     },
     meetTeam: {
-      title: "Rencontrez nos IA",
-      subtitle: "Une équipe dédiée pour chaque besoin"
+      title: "Rencontrez notre IA",
+      subtitle: "Un assistant qui comprend vraiment"
     },
     howItWorks: {
       title: "Comment fonctionne chyll",
-      subtitle: "Intégrer chyll à votre workflow est simple",
+      subtitle: "Adopter le CRM du futur est simple",
       steps: [
-        "Nous configurons votre assistant commercial chyll selon vos besoins",
-        "L'assistant identifie et enrichit automatiquement les prospects pertinents",
-        "Les données enrichies sont synchronisées avec votre CRM",
-        "Concentrez-vous sur les conversations qui comptent"
+        "Nous configurons votre CRM chyll selon vos besoins",
+        "Vous parlez naturellement à chyll pour gérer vos prospects",
+        "L'IA comprend et exécute vos demandes automatiquement",
+        "Concentrez-vous sur la vente, pas sur les outils"
       ]
     },
     faq: {
       title: "Vos questions sur chyll",
-      subtitle: "Tout ce que vous devez savoir"
+      subtitle: "Tout ce que vous devez savoir sur le CRM du futur"
     },
     testimonials: {
       title: "Ce que nos clients disent",
       subtitle: "Découvrez comment chyll transforme leur approche commerciale"
     },
     partners: {
-      title: "Ils font confiance à chyll"
+      title: "Ils ont choisi le CRM du futur"
     }
   },
   footer: {
-    tagline: "Automatisez votre prospection B2B",
+    tagline: "Le CRM qui comprend le langage naturel",
     copyright: "© 2025 chyll - Tous droits réservés",
     menuTitles: {
       product: "Produit",
@@ -78,26 +78,26 @@ export const fr = {
     title: "À propos de chyll",
     story: {
       title: "Notre histoire",
-      text1: "Chyll a été créé en 2024 par une équipe passionnée par la technologie et l'intelligence artificielle.",
-      text2: "Nous avons constaté que les équipes commerciales passaient trop de temps sur des tâches répétitives et pas assez sur les interactions humaines qui font la différence."
+      text1: "Chyll a été créé en 2024 par une équipe passionnée par l'IA conversationnelle et la révolution des outils commerciaux.",
+      text2: "Nous avons constaté que les CRM traditionnels étaient trop complexes et peu intuitifs. Nous avons décidé de créer le CRM du futur."
     },
     mission: {
       title: "Notre mission",
-      text1: "Notre mission est de révolutionner la prospection B2B en utilisant l'intelligence artificielle pour automatiser les tâches chronophages.",
-      text2: "Nous voulons permettre aux équipes commerciales de se concentrer sur ce qui compte vraiment : créer des relations et conclure des affaires."
+      text1: "Notre mission est de révolutionner la gestion commerciale avec un CRM qui comprend le langage naturel.",
+      text2: "Nous voulons éliminer la friction entre les commerciaux et leurs outils pour maximiser leur efficacité."
     },
     unique: {
       title: "Notre approche unique",
       items: [
-        "Une IA spécialement formée pour la prospection B2B",
-        "Une intégration fluide avec les outils que vous utilisez déjà",
-        "Une configuration personnalisée pour répondre à vos besoins spécifiques",
-        "Un support humain pour vous accompagner à chaque étape"
+        "Un CRM entièrement conversationnel en langage naturel",
+        "Une IA qui comprend et s'adapte à votre façon de travailler",
+        "Plus d'interfaces complexes, juste des conversations",
+        "Le futur de la gestion commerciale, disponible aujourd'hui"
       ]
     },
     cta: {
-      title: "Prêt à transformer votre approche commerciale ?",
-      text: "Découvrez comment chyll peut vous aider à générer plus de leads qualifiés et à augmenter vos ventes.",
+      title: "Prêt à découvrir le CRM du futur ?",
+      text: "Découvrez comment chyll peut transformer votre approche commerciale avec le langage naturel.",
       button: "Réserver une démo"
     }
   },
@@ -111,7 +111,7 @@ export const fr = {
   pricing: {
     title: "Des tarifs adaptés à vos besoins",
     description: "Choisissez l'offre qui correspond le mieux à votre entreprise",
-    joinText: "Rejoignez les entreprises qui utilisent chyll pour transformer leur prospection",
+    joinText: "Rejoignez les entreprises qui utilisent le CRM du futur",
     plans: {
       starter: {
         name: "Starter",
@@ -119,10 +119,10 @@ export const fr = {
         period: "/mois",
         description: "Parfait pour les petites équipes",
         features: [
-          "50 numéros de téléphone + 50 adresses email par mois",
-          "Personas illimités (LinkedIn)",
+          "CRM conversationnel illimité",
+          "50 prospects enrichis par mois",
           "2 utilisateurs",
-          "Interface CRM personnalisée",
+          "IA en langage naturel",
           "Support par email",
           "Mise à jour quotidienne"
         ],
@@ -136,12 +136,12 @@ export const fr = {
         badge: "Le plus populaire",
         trial: "Essai de 14 jours",
         features: [
-          "200 numéros de téléphone + 200 adresses email par mois",
-          "Personas illimités (LinkedIn)",
+          "CRM conversationnel illimité",
+          "200 prospects enrichis par mois",
           "3 utilisateurs",
-          "Interface CRM personnalisée",
+          "IA avancée en langage naturel",
           "Support prioritaire",
-          "Mises à jour en temps réel",
+          "Analytics conversationnelles",
           "Export et import de data"
         ],
         buttonText: "Réserver une démo"
@@ -152,15 +152,15 @@ export const fr = {
         period: "/mois",
         description: "Pour les équipes commerciales établies",
         features: [
-          "400 numéros de téléphone + 400 adresses email par mois",
-          "Personas illimités (LinkedIn)",
+          "CRM conversationnel illimité",
+          "400 prospects enrichis par mois",
           "5 utilisateurs",
-          "Interface CRM sur mesure",
+          "IA sur mesure en langage naturel",
           "Support dédié",
-          "Mises à jour en temps réel",
+          "Analytics avancées",
           "Export et import de data",
-          "Critères de recherche illimités",
-          "Rapports de performance"
+          "Workflows personnalisés",
+          "Rapports conversationnels"
         ],
         buttonText: "Réserver une démo"
       }
@@ -214,50 +214,50 @@ export const fr = {
       items: [
         {
           question: "Qu'est-ce que chyll exactement ?",
-          answer: "chyll est un assistant commercial IA spécialisé dans la prospection B2B automatisée. Il identifie, enrichit et organise vos prospects qualifiés sans effort technique de votre part."
+          answer: "chyll est le CRM du futur qui utilise l'intelligence artificielle conversationnelle. Plus besoin d'apprendre des interfaces complexes : vous parlez naturellement à chyll pour gérer vos prospects et votre pipeline commercial."
         },
         {
-          question: "En combien de temps chyll est-il opérationnel ?",
-          answer: "Votre assistant chyll est configuré et opérationnel en 48h maximum. Notre équipe s'occupe de toute la mise en place selon vos besoins spécifiques."
+          question: "En combien de temps puis-je maîtriser chyll ?",
+          answer: "Immédiatement ! Contrairement aux CRM traditionnels, chyll comprend le langage naturel. Vous n'avez aucune interface à apprendre - vous lui parlez comme à un collègue."
         },
         {
-          question: "Quel ROI puis-je attendre avec chyll ?",
-          answer: "Nos clients constatent en moyenne : temps de prospection divisé par 5, taux de conversion augmenté de 40%, et coût par lead réduit de 60%."
+          question: "Quel avantage par rapport aux CRM classiques ?",
+          answer: "chyll élimine toute la complexité des CRM traditionnels. Plus de menus, de formations, ou de configurations compliquées. Juste des conversations naturelles pour une productivité commerciale décuplée."
         }
       ]
     },
     aiEmployees: {
-      title: "L'IA de prospection chyll",
+      title: "Le CRM conversationnel chyll",
       items: [
         {
-          question: "Comment l'IA de chyll trouve-t-elle des prospects qualifiés ?",
-          answer: "chyll utilise des algorithmes d'IA avancés pour scanner LinkedIn et d'autres sources professionnelles, identifier les profils correspondant à vos personas, puis enrichir automatiquement ces données avec des informations de contact vérifiées."
+          question: "Comment fonctionne le CRM en langage naturel de chyll ?",
+          answer: "chyll utilise l'IA conversationnelle pour comprendre vos demandes en français. Dites simplement 'Trouve des prospects dans la tech' ou 'Montre-moi mes leads chauds', et chyll exécute instantanément sans interface complexe."
         },
         {
-          question: "Puis-je personnaliser mes critères de prospection ?",
-          answer: "Absolument ! Vous définissez précisément vos personas selon le secteur, la taille d'entreprise, les fonctions, la localisation, et bien d'autres critères. chyll s'adapte parfaitement à vos besoins spécifiques."
+          question: "Puis-je personnaliser chyll selon ma façon de travailler ?",
+          answer: "Absolument ! chyll apprend de vos préférences et s'adapte à votre style commercial. Plus vous l'utilisez, plus il comprend vos habitudes et personnalise l'expérience selon vos besoins."
         },
         {
-          question: "Quelles données puis-je obtenir sur mes prospects ?",
-          answer: "Pour chaque prospect : coordonnées complètes (email + téléphone), informations professionnelles, données d'entreprise, profils sociaux, historique professionnel, compétences - le tout enrichi automatiquement."
+          question: "Quelles données puis-je gérer dans chyll ?",
+          answer: "Tout ce dont vous avez besoin : prospects enrichis automatiquement, historique des interactions, pipeline de vente, analyses de performance - le tout accessible via des conversations naturelles."
         },
         {
-          question: "Comment accéder à mes prospects enrichis ?",
-          answer: "Via votre interface CRM personnalisée accessible 24/7. Vous pouvez filtrer, trier, exporter vos prospects, suivre leur statut, et partager l'accès avec votre équipe."
+          question: "Comment accéder à mes données dans chyll ?",
+          answer: "Votre CRM chyll est accessible 24/7 via une interface conversationnelle. Posez des questions, lancez des recherches, consultez vos statistiques - tout se fait en parlant naturellement."
         },
         {
-          question: "chyll s'intègre-t-il avec mon CRM existant ?",
-          answer: "Oui ! chyll s'intègre nativement avec Airtable et se connecte avec Salesforce, HubSpot, Pipedrive et d'autres CRM populaires. Des intégrations personnalisées sont possibles."
+          question: "chyll peut-il remplacer mon CRM actuel ?",
+          answer: "Oui ! chyll est conçu pour être votre CRM principal du futur. Plus besoin de jongler entre outils complexes : prospection, suivi, analyses - tout est centralisé dans une expérience conversationnelle."
         },
         {
-          question: "Mes données prospects sont-elles sécurisées ?",
-          answer: "Totalement. Votre espace est isolé et protégé avec un chiffrement de niveau entreprise. Aucune donnée n'est partagée et vous gardez le contrôle complet avec possibilité d'export à tout moment."
+          question: "Mes données sont-elles sécurisées avec chyll ?",
+          answer: "Totalement. chyll utilise un chiffrement de niveau entreprise et respecte le RGPD. Vos données restent privées dans votre espace personnel, accessible uniquement par vous et votre équipe."
         }
       ]
     },
     stillHaveQuestions: {
-      title: "D'autres questions sur chyll ?",
-      description: "Notre équipe est là pour vous expliquer comment chyll peut transformer votre prospection B2B. Contactez-nous pour en savoir plus."
+      title: "D'autres questions sur le CRM du futur ?",
+      description: "Notre équipe est là pour vous expliquer comment chyll peut révolutionner votre gestion commerciale. Contactez-nous pour découvrir le futur des CRM."
     },
     lastUpdated: "Dernière mise à jour : Juin 2025"
   },
