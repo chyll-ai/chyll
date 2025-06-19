@@ -196,6 +196,47 @@ export interface Database {
           updated_at?: string
         }
       }
+      email_jobs: {
+        Row: {
+          id: string
+          client_id: string
+          lead_id: string
+          subject: string
+          body: string
+          status: string
+          type: string
+          sent_at: string | null
+          error: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          client_id: string
+          lead_id: string
+          subject: string
+          body: string
+          status?: string
+          type?: string
+          sent_at?: string | null
+          error?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          client_id?: string
+          lead_id?: string
+          subject?: string
+          body?: string
+          status?: string
+          type?: string
+          sent_at?: string | null
+          error?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
       tokens: {
         Row: {
           id: string
