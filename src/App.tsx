@@ -1,9 +1,8 @@
-
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { AuthProvider } from './context/AuthContext';
 import { LanguageProvider } from './context/LanguageContext';
+import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import SuperadminGuard from './components/SuperadminGuard';
 import SEOMetadata from './components/SEOMetadata';
@@ -47,9 +46,9 @@ const queryClient = new QueryClient({
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <LanguageProvider>
-          <Router>
+      <LanguageProvider>
+        <Router>
+          <AuthProvider>
             <SEOMetadata 
               title="Chyll - AI-Powered CRM for Modern Business"
               description="Revolutionize your customer relationships with Chyll, the AI-driven CRM designed to streamline your sales process and boost productivity."
@@ -99,9 +98,9 @@ function App() {
               {/* Catch all route */}
               <Route path="*" element={<NotFound />} />
             </Routes>
-          </Router>
-        </LanguageProvider>
-      </AuthProvider>
+          </AuthProvider>
+        </Router>
+      </LanguageProvider>
     </QueryClientProvider>
   );
 }
