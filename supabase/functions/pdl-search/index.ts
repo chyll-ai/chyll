@@ -1,3 +1,4 @@
+
 // @ts-ignore: Deno imports
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 // @ts-ignore: Deno imports
@@ -143,39 +144,40 @@ async function searchPeopleWithPDL(searchParams: any, count: number = 10): Promi
     throw new Error('PDL_API_KEY is not configured');
   }
 
-  // Build the search body using the exact field names from your working SQL query
-  const searchBody: any = {
-    size: Math.min(count, 100),
-    pretty: true
-  };
+  // Build SQL query conditions
+  const conditions: string[] = [];
   
-  // Use exact field names from your working SQL query
   if (searchParams.job_title) {
-    searchBody.job_title = searchParams.job_title.toLowerCase();
+    conditions.push(`job_title = '${searchParams.job_title.toLowerCase()}'`);
   }
   
   if (searchParams.location_name) {
-    searchBody.location_name = searchParams.location_name.toLowerCase();
+    conditions.push(`location_name = '${searchParams.location_name.toLowerCase()}'`);
   }
   
   if (searchParams.job_company_industry) {
-    searchBody.job_company_industry = searchParams.job_company_industry.toLowerCase();
+    conditions.push(`job_company_industry = '${searchParams.job_company_industry.toLowerCase()}'`);
   }
   
   if (searchParams.job_seniority) {
-    searchBody.job_seniority = searchParams.job_seniority.toLowerCase();
+    conditions.push(`job_seniority = '${searchParams.job_seniority.toLowerCase()}'`);
   }
 
-  // Ensure we have at least one search parameter
-  const hasSearchParams = Object.keys(searchBody).some(key => 
-    key !== 'size' && key !== 'pretty' && searchBody[key]
-  );
+  // Default to searching for managers if no conditions
+  if (conditions.length === 0) {
+    conditions.push(`job_title = 'manager'`);
+  }
+
+  // Construct the SQL query
+  const sql = `SELECT * FROM person WHERE (${conditions.join(' AND ')})`;
   
-  if (!hasSearchParams) {
-    searchBody.job_title = 'manager'; // Default fallback
-  }
+  const searchBody = {
+    sql: sql,
+    size: Math.min(count, 100),
+    pretty: true
+  };
 
-  console.log('PDL Search request (using location_name):', JSON.stringify(searchBody, null, 2));
+  console.log('PDL Search request with SQL:', JSON.stringify(searchBody, null, 2));
 
   try {
     const response = await fetch(`${PDL_BASE_URL}/person/search`, {
