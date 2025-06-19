@@ -104,7 +104,7 @@ export class AssistantService {
 
       // Enhanced search detection with better logging
       if (this.isSearchQuery(content)) {
-        console.log('AssistantService: Detected search query, using PDL search');
+        console.log('AssistantService: Detected search query, using search');
         
         // Check for recent identical searches
         const cachedResults = this.checkRecentSearch(content);
@@ -124,10 +124,10 @@ export class AssistantService {
         const numberMatch = content.match(/(\d+)/);
         const requestedCount = Math.min(numberMatch ? parseInt(numberMatch[1]) : 5, 10);
         
-        console.log(`AssistantService: Searching with PDL for ${requestedCount} leads`);
+        console.log(`AssistantService: Searching for ${requestedCount} leads`);
         
         try {
-          // Call PDL search function with the natural language query
+          // Call search function with the natural language query
           const { data: searchResult, error: searchError } = await supabase.functions
             .invoke('pdl-search', {
               body: {
@@ -138,7 +138,7 @@ export class AssistantService {
             });
 
           if (searchError) {
-            console.error('PDL search error:', searchError);
+            console.error('Search error:', searchError);
             throw searchError;
           }
 
@@ -150,7 +150,7 @@ export class AssistantService {
           const message = searchResult.message || '';
           const existingLeadsExcluded = searchResult.existingLeadsExcluded || 0;
           
-          console.log('PDL search found:', leads.length, 'leads');
+          console.log('Search found:', leads.length, 'leads');
           console.log('Existing leads excluded:', existingLeadsExcluded);
 
           if (leads.length > 0) {
