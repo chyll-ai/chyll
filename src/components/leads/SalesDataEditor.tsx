@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { DollarSign, TrendingUp, Calendar } from 'lucide-react';
+import { Edit, TrendingUp, Calendar } from 'lucide-react';
 import { Lead } from '@/types/assistant';
 
 interface SalesDataEditorProps {
@@ -44,7 +44,7 @@ const SalesDataEditor: React.FC<SalesDataEditorProps> = ({ lead, onUpdate }) => 
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline" size="sm" className="h-6 w-6 p-0">
-          <DollarSign className="h-3 w-3" />
+          <Edit className="h-3 w-3" />
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-md">
