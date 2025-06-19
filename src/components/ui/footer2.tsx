@@ -2,7 +2,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '@/context/LanguageContext';
-import { Globe, Mail, MessageCircle } from "lucide-react";
+import { Globe, Mail, Users } from "lucide-react";
+import { Button } from '@/components/ui/button';
 
 export function Footer2() {
   const { t } = useLanguage();
@@ -11,7 +12,7 @@ export function Footer2() {
   return (
     <footer className="bg-gray-900 text-white">
       <div className="container-custom py-12 md:py-16">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="col-span-1 md:col-span-2">
             <div className="mb-6">
               <Link to="/">
@@ -55,24 +56,31 @@ export function Footer2() {
           </div>
 
           <div>
-            <h3 className="text-lg font-medium mb-4">{t.footer.menuTitles.product}</h3>
-            <ul className="space-y-3">
-              <li><a href="/#features" className="text-gray-300 hover:text-white transition-colors">{t.nav.features}</a></li>
-              <li><a href="/#how-it-works" className="text-gray-300 hover:text-white transition-colors">{t.nav.howItWorks}</a></li>
-              <li><a href="/#pricing" className="text-gray-300 hover:text-white transition-colors">{t.nav.pricing}</a></li>
-              <li><Link to="/blog" className="text-gray-300 hover:text-white transition-colors">Blog</Link></li>
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="text-lg font-medium mb-4">{t.footer.menuTitles.company}</h3>
-            <ul className="space-y-3">
-              <li><Link to="/about-us" className="text-gray-300 hover:text-white transition-colors">{t.footer.links.aboutUs}</Link></li>
-              <li><Link to="/contact" className="text-gray-300 hover:text-white transition-colors">{t.common.contactUs}</Link></li>
-              <li><Link to="/privacy" className="text-gray-300 hover:text-white transition-colors">{t.footer.links.privacy}</Link></li>
-              <li><Link to="/terms" className="text-gray-300 hover:text-white transition-colors">{t.footer.links.terms}</Link></li>
-              <li><Link to="/cookies" className="text-gray-300 hover:text-white transition-colors">{t.footer.links.cookies}</Link></li>
-            </ul>
+            <h3 className="text-lg font-medium mb-4">Ressources</h3>
+            <div className="space-y-4">
+              <div>
+                <Link to="/blog" className="text-gray-300 hover:text-white transition-colors block">
+                  Blog
+                </Link>
+              </div>
+              <div>
+                <Button size="sm" variant="rainbow" className="gap-2" asChild>
+                  <Link to="/waitlist">
+                    <Users className="w-4 h-4" />
+                    Rejoindre la liste d'attente
+                  </Link>
+                </Button>
+              </div>
+            </div>
+            
+            <div className="mt-8">
+              <h4 className="text-sm font-medium mb-3 text-gray-300">Légal</h4>
+              <ul className="space-y-2">
+                <li><Link to="/privacy" className="text-gray-400 hover:text-white transition-colors text-sm">{t.footer.links.privacy}</Link></li>
+                <li><Link to="/terms" className="text-gray-400 hover:text-white transition-colors text-sm">{t.footer.links.terms}</Link></li>
+                <li><Link to="/cookies" className="text-gray-400 hover:text-white transition-colors text-sm">{t.footer.links.cookies}</Link></li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
