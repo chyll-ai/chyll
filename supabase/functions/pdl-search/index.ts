@@ -237,30 +237,49 @@ serve(async (req: Request) => {
 
     const searchResults = await searchPeopleWithPDL(searchCriteria, count);
 
-    // Transform PDL results to our lead format
-    const leads = searchResults.data?.data?.map((person: any) => ({
-      id: crypto.randomUUID(),
-      client_id: userId,
-      full_name: person.full_name || 'N/A',
-      job_title: person.job_title || 'N/A',
-      company: person.job_company_name || 'N/A',
-      location: person.location_name || 'N/A',
-      email: person.emails?.[0]?.address || '',
-      phone_number: person.phone_numbers?.[0]?.number || '',
-      linkedin_url: person.linkedin_url || '',
-      status: 'new',
-      created_at: new Date().toISOString(),
-      enriched_from: {
-        source: 'peopledatalabs',
-        timestamp: new Date().toISOString(),
-        query: searchQuery,
-        parsed_criteria: searchCriteria
-      },
-      linkedin_profile_data: {
-        skills: person.skills || [],
-        summary: person.summary || ''
+    // Transform PDL results to our lead format with proper location handling
+    const leads = searchResults.data?.data?.map((person: any) => {
+      // Log the actual person object structure to debug location issues
+      console.log('Processing person object:', JSON.stringify(person, null, 2));
+      
+      // Extract location with defensive checking and fallbacks
+      let location = 'Unknown';
+      
+      // Check various location fields that PDL might return
+      if (typeof person.location_name === 'string' && person.location_name.trim()) {
+        location = person.location_name;
+      } else if (typeof person.location_country === 'string' && person.location_country.trim()) {
+        location = person.location_country;
+      } else if (person.job_company_location_name && typeof person.job_company_location_name === 'string') {
+        location = person.job_company_location_name;
       }
-    })) || [];
+      
+      console.log('Extracted location for', person.full_name, ':', location);
+      
+      return {
+        id: crypto.randomUUID(),
+        client_id: userId,
+        full_name: person.full_name || 'N/A',
+        job_title: person.job_title || 'N/A',
+        company: person.job_company_name || 'N/A',
+        location: location,
+        email: person.emails?.[0]?.address || '',
+        phone_number: person.phone_numbers?.[0]?.number || '',
+        linkedin_url: person.linkedin_url || '',
+        status: 'new',
+        created_at: new Date().toISOString(),
+        enriched_from: {
+          source: 'peopledatalabs',
+          timestamp: new Date().toISOString(),
+          query: searchQuery,
+          parsed_criteria: searchCriteria
+        },
+        linkedin_profile_data: {
+          skills: person.skills || [],
+          summary: person.summary || ''
+        }
+      };
+    }) || [];
 
     return new Response(
       JSON.stringify({
