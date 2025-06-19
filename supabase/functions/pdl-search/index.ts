@@ -143,15 +143,15 @@ async function searchPeopleWithPDL(searchParams: any, count: number = 10): Promi
     throw new Error('PDL_API_KEY is not configured');
   }
 
-  // Build the search body directly - PDL expects parameters at the root level, not nested in a query object
+  // Build the search body using the exact field names from your working SQL query
   const searchBody: any = {
     size: Math.min(count, 100),
     pretty: true
   };
   
-  // Add search parameters directly to the request body (not nested in a query object)
+  // Use job_title instead of job_title_role to match your SQL query
   if (searchParams.job_title) {
-    searchBody.job_title_role = searchParams.job_title.toLowerCase();
+    searchBody.job_title = searchParams.job_title.toLowerCase();
   }
   
   if (searchParams.location_country) {
@@ -176,33 +176,41 @@ async function searchPeopleWithPDL(searchParams: any, count: number = 10): Promi
   );
   
   if (!hasSearchParams) {
-    searchBody.job_title_role = 'manager'; // Default fallback
+    searchBody.job_title = 'manager'; // Default fallback using job_title
   }
 
-  console.log('PDL Search request:', JSON.stringify(searchBody, null, 2));
+  console.log('PDL Search request (matching your SQL format):', JSON.stringify(searchBody, null, 2));
 
-  const response = await fetch(`${PDL_BASE_URL}/person/search`, {
-    method: 'POST',
-    headers: {
-      'X-Api-Key': PDL_API_KEY,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(searchBody)
-  });
+  try {
+    const response = await fetch(`${PDL_BASE_URL}/person/search`, {
+      method: 'POST',
+      headers: {
+        'X-Api-Key': PDL_API_KEY,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(searchBody)
+    });
 
-  if (!response.ok) {
-    const errorText = await response.text();
-    console.error('PDL Search API error:', response.status, errorText);
-    throw new Error(`PDL Search API error: ${response.status} - ${errorText}`);
+    const responseText = await response.text();
+    console.log('PDL API response status:', response.status);
+    console.log('PDL API response text:', responseText);
+
+    if (!response.ok) {
+      console.error('PDL Search API error:', response.status, responseText);
+      throw new Error(`PDL Search API error: ${response.status} - ${responseText}`);
+    }
+
+    const data = JSON.parse(responseText);
+    console.log('PDL search successful, found:', data.data?.length || 0, 'results');
+    
+    return {
+      status: response.status,
+      data
+    };
+  } catch (error) {
+    console.error('Error in PDL search request:', error);
+    throw error;
   }
-
-  const data = await response.json();
-  console.log('PDL search successful, found:', data.data?.length || 0, 'results');
-  
-  return {
-    status: response.status,
-    data
-  };
 }
 
 serve(async (req: Request) => {
