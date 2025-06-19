@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -23,25 +22,7 @@ import { useApolloEnrichment } from '@/hooks/useApolloEnrichment';
 import { useGmailSender } from '@/hooks/useGmailSender';
 import LeadStatusSelector from '@/components/dashboard/LeadStatusSelector';
 import LeadActionsMenu from '@/components/dashboard/LeadActionsMenu';
-
-interface Lead {
-  id: string;
-  client_id?: string;
-  full_name?: string;
-  email?: string;
-  phone_number?: string;
-  job_title?: string;
-  company?: string;
-  location?: string;
-  linkedin_url?: string;
-  linkedin_profile_data?: any;
-  status?: string;
-  last_contact_date?: string;
-  created_at?: string;
-  updated_at?: string;
-  enriched_from?: any;
-  search_id?: string;
-}
+import { Lead } from '@/types/assistant';
 
 const WorkspaceLeadTable: React.FC = () => {
   const navigate = useNavigate();
@@ -225,13 +206,13 @@ const WorkspaceLeadTable: React.FC = () => {
                     </TableCell>
                     <TableCell>
                       <LeadStatusSelector 
-                        lead={lead} 
+                        lead={lead as Lead} 
                         onStatusUpdate={handleStatusUpdate}
                       />
                     </TableCell>
                     <TableCell>
                       <LeadActionsMenu 
-                        lead={lead} 
+                        lead={lead as Lead} 
                         onStatusUpdate={handleStatusUpdate}
                       />
                     </TableCell>
