@@ -31,12 +31,12 @@ function App() {
               <Router>
                 <AuthProvider>
                   <Routes>
-                    <Route path="/*" element={<RootLayout />}>
-                      <Route path="/" element={<AssistantPage />} />
-                      <Route path="/login" element={<LoginPage />} />
-                      <Route path="/pricing" element={<PricingPage />} />
-                      <Route path="/workspace" element={<WorkspacePage />} />
-                      <Route path="/closed-beta-demo" element={<ClosedBetaDemo />} />
+                    <Route path="/" element={<RootLayout />}>
+                      <Route index element={<AssistantPage />} />
+                      <Route path="login" element={<LoginPage />} />
+                      <Route path="pricing" element={<PricingPage />} />
+                      <Route path="workspace" element={<WorkspacePage />} />
+                      <Route path="closed-beta-demo" element={<ClosedBetaDemo />} />
                     </Route>
                   </Routes>
                 </AuthProvider>
