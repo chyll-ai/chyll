@@ -26,14 +26,21 @@ import { useGmailSender } from '@/hooks/useGmailSender';
 
 interface Lead {
   id: string;
-  full_name: string;
+  client_id?: string;
+  full_name?: string;
   email?: string;
-  company?: string;
+  phone_number?: string;
   job_title?: string;
-  status: string;
+  company?: string;
+  location?: string;
   linkedin_url?: string;
   linkedin_profile_data?: any;
-  created_at: string;
+  status?: string;
+  last_contact_date?: string;
+  created_at?: string;
+  updated_at?: string;
+  enriched_from?: any;
+  search_id?: string;
 }
 
 const WorkspaceLeadTable: React.FC = () => {
@@ -106,7 +113,6 @@ const WorkspaceLeadTable: React.FC = () => {
             Leads ({displayLeads.length})
           </CardTitle>
           
-          {/* Actions pour leads sélectionnés */}
           {selectedLeads.length > 0 && (
             <div className="flex gap-2">
               <Button 
@@ -153,8 +159,10 @@ const WorkspaceLeadTable: React.FC = () => {
                 </TableHead>
                 <TableHead>Nom</TableHead>
                 <TableHead>Email</TableHead>
+                <TableHead>Téléphone</TableHead>
                 <TableHead>Société</TableHead>
                 <TableHead>Poste</TableHead>
+                <TableHead>Localisation</TableHead>
                 <TableHead>Statut</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
@@ -162,13 +170,13 @@ const WorkspaceLeadTable: React.FC = () => {
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8">
+                  <TableCell colSpan={9} className="text-center py-8">
                     Chargement des leads...
                   </TableCell>
                 </TableRow>
               ) : displayLeads.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8">
+                  <TableCell colSpan={9} className="text-center py-8">
                     Aucun lead trouvé
                   </TableCell>
                 </TableRow>
@@ -196,11 +204,13 @@ const WorkspaceLeadTable: React.FC = () => {
                         'N/A'
                       )}
                     </TableCell>
+                    <TableCell>{lead.phone_number || 'N/A'}</TableCell>
                     <TableCell>{lead.company || 'N/A'}</TableCell>
                     <TableCell>{lead.job_title || 'N/A'}</TableCell>
+                    <TableCell>{lead.location || 'N/A'}</TableCell>
                     <TableCell>
-                      <Badge className={getStatusColor(lead.status)}>
-                        {lead.status}
+                      <Badge className={getStatusColor(lead.status || 'new')}>
+                        {lead.status || 'new'}
                       </Badge>
                     </TableCell>
                     <TableCell>

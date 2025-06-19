@@ -1,4 +1,3 @@
-
 import { useState, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useApolloEnrichment } from './useApolloEnrichment';
@@ -8,11 +7,21 @@ import { toast } from 'sonner';
 
 interface Lead {
   id: string;
-  full_name: string;
+  client_id?: string;
+  full_name?: string;
   email?: string;
+  phone_number?: string;
+  job_title?: string;
   company?: string;
-  status: string;
-  created_at: string;
+  location?: string;
+  linkedin_url?: string;
+  linkedin_profile_data?: any;
+  status?: string;
+  last_contact_date?: string;
+  created_at?: string;
+  updated_at?: string;
+  enriched_from?: any;
+  search_id?: string;
 }
 
 export const useAssistantActions = () => {
@@ -32,7 +41,24 @@ export const useAssistantActions = () => {
 
       const { data, error } = await supabase
         .from('leads')
-        .select('*')
+        .select(`
+          id,
+          client_id,
+          full_name,
+          email,
+          phone_number,
+          job_title,
+          company,
+          location,
+          linkedin_url,
+          linkedin_profile_data,
+          status,
+          last_contact_date,
+          created_at,
+          updated_at,
+          enriched_from,
+          search_id
+        `)
         .eq('client_id', user.id)
         .order('created_at', { ascending: false });
 
@@ -70,7 +96,7 @@ export const useAssistantActions = () => {
   const getLeadsByDate = useCallback((date: string) => {
     const targetDate = new Date(date).toDateString();
     const filtered = leads.filter(lead => 
-      new Date(lead.created_at).toDateString() === targetDate
+      lead.created_at && new Date(lead.created_at).toDateString() === targetDate
     );
     setFilteredLeads(filtered);
     return filtered;
@@ -95,7 +121,7 @@ export const useAssistantActions = () => {
       .map(lead => ({
         to: lead.email!,
         subject: defaultSubject,
-        body: defaultBody.replace('{name}', lead.full_name)
+        body: defaultBody.replace('{name}', lead.full_name || '')
       }));
 
     if (emails.length === 0) {
