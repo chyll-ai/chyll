@@ -23,9 +23,9 @@ export const usePDLEnrichment = () => {
         throw new Error('Lead not found');
       }
 
-      console.log('Enriching lead with PDL:', leadId);
+      console.log('Enriching lead:', leadId);
 
-      // Call PDL enrichment function
+      // Call enrichment function
       const { data: enrichmentResult, error: enrichmentError } = await supabase.functions
         .invoke('pdl-enrichment', {
           body: {
@@ -88,10 +88,10 @@ export const usePDLEnrichment = () => {
 
       if (updateError) throw updateError;
       
-      toast.success('Lead enrichi avec succès via People Data Labs');
+      toast.success('Lead enrichi avec succès');
       return enrichmentResult;
     } catch (error: any) {
-      console.error('Error enriching lead with PDL:', error);
+      console.error('Error enriching lead:', error);
       toast.error('Erreur lors de l\'enrichissement: ' + (error.message || 'Erreur inconnue'));
       throw error;
     } finally {
@@ -120,7 +120,7 @@ export const usePDLEnrichment = () => {
       
       toast.success(`Enrichissement terminé: ${successCount} réussis, ${errorCount} échecs`);
     } catch (error: any) {
-      console.error('Error bulk enriching leads with PDL:', error);
+      console.error('Error bulk enriching leads:', error);
       toast.error('Erreur lors de l\'enrichissement en masse');
     } finally {
       setBulkEnriching(false);
