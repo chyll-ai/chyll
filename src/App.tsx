@@ -3,6 +3,7 @@ import { Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from '@/components/ui/sonner';
 import { TolgeeProvider } from '@tolgee/react';
+import { HelmetProvider } from 'react-helmet-async';
 import { tolgee } from '@/lib/tolgee';
 import { AuthProvider } from '@/context/AuthContext';
 import { LanguageProvider } from '@/context/LanguageContext';
@@ -30,40 +31,42 @@ import Leads from '@/pages/Leads';
 
 function App() {
   return (
-    <TolgeeProvider tolgee={tolgee} fallback="Loading translations...">
-      <Suspense fallback="Loading...">
-        <LanguageProvider>
-          <Router>
-            <AuthProvider>
-              <div className="App">
-                <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/assistant" element={<Assistant />} />
-                  <Route path="/contact" element={<Contact />} />
-                  <Route path="/faq" element={<FAQ />} />
-                  <Route path="/company" element={<Company />} />
-                  <Route path="/support" element={<Support />} />
-                  <Route path="/workspace" element={<Workspace />} />
-                  <Route path="/team" element={<Team />} />
-                  <Route path="/careers" element={<Careers />} />
-                  <Route path="/waitlist-subscription" element={<WaitlistSubscription />} />
-                  <Route path="/blog" element={<Blog />} />
-                  <Route path="/blog/:id" element={<BlogPostPage />} />
-                  <Route path="/terms" element={<Terms />} />
-                  <Route path="/about-us" element={<AboutUs />} />
-                  <Route path="/cookies" element={<Cookies />} />
-                  <Route path="/onboarding" element={<Onboarding />} />
-                  <Route path="/leads" element={<Leads />} />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-                <Toaster />
-              </div>
-            </AuthProvider>
-          </Router>
-        </LanguageProvider>
-      </Suspense>
-    </TolgeeProvider>
+    <HelmetProvider>
+      <TolgeeProvider tolgee={tolgee} fallback="Loading translations...">
+        <Suspense fallback="Loading...">
+          <LanguageProvider>
+            <Router>
+              <AuthProvider>
+                <div className="App">
+                  <Routes>
+                    <Route path="/" element={<Index />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/assistant" element={<Assistant />} />
+                    <Route path="/contact" element={<Contact />} />
+                    <Route path="/faq" element={<FAQ />} />
+                    <Route path="/company" element={<Company />} />
+                    <Route path="/support" element={<Support />} />
+                    <Route path="/workspace" element={<Workspace />} />
+                    <Route path="/team" element={<Team />} />
+                    <Route path="/careers" element={<Careers />} />
+                    <Route path="/waitlist-subscription" element={<WaitlistSubscription />} />
+                    <Route path="/blog" element={<Blog />} />
+                    <Route path="/blog/:id" element={<BlogPostPage />} />
+                    <Route path="/terms" element={<Terms />} />
+                    <Route path="/about-us" element={<AboutUs />} />
+                    <Route path="/cookies" element={<Cookies />} />
+                    <Route path="/onboarding" element={<Onboarding />} />
+                    <Route path="/leads" element={<Leads />} />
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                  <Toaster />
+                </div>
+              </AuthProvider>
+            </Router>
+          </LanguageProvider>
+        </Suspense>
+      </TolgeeProvider>
+    </HelmetProvider>
   );
 }
 
