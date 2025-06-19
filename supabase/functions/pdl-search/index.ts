@@ -1,6 +1,8 @@
 
 // @ts-ignore: Deno imports
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+// @ts-ignore: Deno imports
+import OpenAI from 'npm:openai@4.24.1';
 
 declare const Deno: {
   env: {
@@ -9,6 +11,7 @@ declare const Deno: {
 };
 
 const PDL_API_KEY = Deno.env.get('PDL_API_KEY');
+const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
 const PDL_BASE_URL = 'https://api.peopledatalabs.com/v5';
 
 const corsHeaders = {
@@ -48,54 +51,88 @@ interface PDLSearchResponse {
   error?: string;
 }
 
-function parseSearchQuery(query: string): any {
+async function parseSearchQueryWithOpenAI(query: string): Promise<any> {
+  if (!OPENAI_API_KEY) {
+    console.log('OpenAI API key not found, falling back to basic parsing');
+    return parseSearchQueryBasic(query);
+  }
+
+  const openai = new OpenAI({
+    apiKey: OPENAI_API_KEY
+  });
+
+  const systemPrompt = `You are an expert at parsing job search queries and converting them to structured search criteria for People Data Labs API.
+
+Extract the following information from the user's natural language query and return it as JSON:
+- job_title: The job title or role being searched for
+- location_country: Country (use full country name like "france", "united states")
+- location_region: City or region name
+- job_company_industry: Industry sector
+- job_seniority: Seniority level (entry, mid, senior, executive, etc.)
+
+Rules:
+- For French locations like "Paris", "Lyon", etc., set location_country to "france"
+- Convert French job titles to English equivalents when possible
+- For "RH" or "Ressources Humaines", use "Human Resources" or "HR"
+- For "Commercial", use "Sales" 
+- For "Développeur", use "Developer"
+- Be flexible with job titles - extract the core meaning
+- If location is just a city, infer the country when obvious
+- Return only the JSON object, no other text
+
+Example query: "trouve moi 5 leads de rh à paris"
+Expected output: {"job_title": "Human Resources", "location_country": "france", "location_region": "paris"}`;
+
+  try {
+    const completion = await openai.chat.completions.create({
+      model: 'gpt-4o-mini',
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: query }
+      ],
+      temperature: 0.1,
+      max_tokens: 300,
+      response_format: { type: "json_object" }
+    });
+
+    const responseContent = completion.choices[0]?.message?.content;
+    if (!responseContent) {
+      throw new Error('No response from OpenAI');
+    }
+
+    const searchCriteria = JSON.parse(responseContent);
+    console.log('OpenAI parsed search criteria:', searchCriteria);
+    return searchCriteria;
+  } catch (error) {
+    console.error('OpenAI parsing failed:', error);
+    console.log('Falling back to basic parsing');
+    return parseSearchQueryBasic(query);
+  }
+}
+
+function parseSearchQueryBasic(query: string): any {
   const searchCriteria: any = {};
   const queryLower = query.toLowerCase();
 
-  // Extract job titles
-  const jobTitlePatterns = [
-    { pattern: /(?:vp|vice president|vice-président).*(?:sales|commercial)/i, title: 'VP Sales' },
-    { pattern: /(?:director|directeur).*(?:sales|commercial)/i, title: 'Sales Director' },
-    { pattern: /(?:head of|chef).*(?:sales|ventes)/i, title: 'Head of Sales' },
-    { pattern: /(?:sales manager|responsable commercial)/i, title: 'Sales Manager' },
-    { pattern: /(?:business developer|développeur commercial)/i, title: 'Business Developer' },
-    { pattern: /(?:cto|chief technical officer|directeur technique)/i, title: 'CTO' },
-    { pattern: /(?:ceo|chief executive officer|directeur général)/i, title: 'CEO' },
-    { pattern: /(?:product manager|chef de produit)/i, title: 'Product Manager' },
-    { pattern: /(?:marketing manager|responsable marketing)/i, title: 'Marketing Manager' },
-    { pattern: /(?:lead developer|développeur principal)/i, title: 'Lead Developer' }
-  ];
-
-  for (const { pattern, title } of jobTitlePatterns) {
-    if (pattern.test(queryLower)) {
-      searchCriteria.job_title = title;
+  // Basic French location detection
+  const frenchCities = ['paris', 'lyon', 'marseille', 'toulouse', 'nice', 'nantes', 'montpellier', 'strasbourg', 'bordeaux', 'lille'];
+  for (const city of frenchCities) {
+    if (queryLower.includes(city)) {
+      searchCriteria.location_country = 'france';
+      searchCriteria.location_region = city;
       break;
     }
   }
 
-  // Extract locations
-  const locationPatterns = [
-    'paris', 'lyon', 'marseille', 'toulouse', 'nice', 'nantes', 
-    'montpellier', 'strasbourg', 'bordeaux', 'lille', 'france'
-  ];
-  
-  for (const location of locationPatterns) {
-    if (queryLower.includes(location)) {
-      searchCriteria.location_country = location === 'france' ? 'france' : null;
-      if (location !== 'france') {
-        searchCriteria.location_region = location;
-      }
-      break;
-    }
-  }
-
-  // Extract industries
-  if (queryLower.includes('tech') || queryLower.includes('technolog')) {
-    searchCriteria.job_company_industry = 'technology';
-  } else if (queryLower.includes('saas')) {
-    searchCriteria.job_company_industry = 'computer software';
-  } else if (queryLower.includes('finance')) {
-    searchCriteria.job_company_industry = 'financial services';
+  // Basic job title detection
+  if (queryLower.includes('rh') || queryLower.includes('ressources humaines')) {
+    searchCriteria.job_title = 'Human Resources';
+  } else if (queryLower.includes('commercial') || queryLower.includes('sales')) {
+    searchCriteria.job_title = 'Sales';
+  } else if (queryLower.includes('développeur') || queryLower.includes('developer')) {
+    searchCriteria.job_title = 'Developer';
+  } else if (queryLower.includes('cto')) {
+    searchCriteria.job_title = 'CTO';
   }
 
   return searchCriteria;
@@ -108,7 +145,7 @@ async function searchPeopleWithPDL(searchParams: any, count: number = 10): Promi
 
   const searchBody = {
     query: searchParams,
-    size: Math.min(count, 100), // PDL has limits
+    size: Math.min(count, 100),
     dataset: 'person'
   };
 
@@ -150,13 +187,17 @@ serve(async (req: Request) => {
       throw new Error('Search query and user ID are required');
     }
 
-    // Parse the natural language search query
-    const searchCriteria = parseSearchQuery(searchQuery);
+    console.log(`Processing search query: "${searchQuery}"`);
+
+    // Use OpenAI to intelligently parse the search query
+    const searchCriteria = await parseSearchQueryWithOpenAI(searchQuery);
     
     // Apply additional filters if provided
     if (filters) {
       Object.assign(searchCriteria, filters);
     }
+
+    console.log('Final search criteria:', searchCriteria);
 
     const searchResults = await searchPeopleWithPDL(searchCriteria, count);
 
@@ -176,7 +217,8 @@ serve(async (req: Request) => {
       enriched_from: {
         source: 'peopledatalabs',
         timestamp: new Date().toISOString(),
-        query: searchQuery
+        query: searchQuery,
+        parsed_criteria: searchCriteria
       },
       linkedin_profile_data: {
         skills: person.skills || [],

@@ -37,39 +37,47 @@ export class AssistantService {
   private isSearchQuery(content: string): boolean {
     const lowerContent = content.toLowerCase();
     
-    // Enhanced search detection patterns
+    // Enhanced search detection patterns - much more comprehensive
     const searchPatterns = [
       // French search terms
       'trouve', 'cherche', 'recherche', 'trouve-moi', 'trouvez', 'cherchez',
-      'trouver', 'chercher', 'rechercher', 'localise', 'localiser',
+      'trouver', 'chercher', 'rechercher', 'localise', 'localiser', 'obtenir',
+      'récupère', 'récupérer', 'identifier', 'dénicher', 'pêcher',
       
-      // English search terms
-      'find', 'search', 'look for', 'get me', 'show me', 'fetch',
+      // English search terms  
+      'find', 'search', 'look for', 'get me', 'show me', 'fetch', 'retrieve',
+      'locate', 'discover', 'identify', 'acquire', 'obtain',
       
       // Lead/contact/profile related terms
-      'leads', 'prospects', 'contacts', 'profils', 'profiles',
-      'personnes', 'people', 'candidats', 'candidates',
+      'leads', 'prospects', 'contacts', 'profils', 'profiles', 'candidats',
+      'personnes', 'people', 'candidates', 'professionnels', 'professionals',
       
-      // Industry/role specific terms
-      'freelances', 'freelance', 'indépendant', 'developers', 'développeurs',
-      'commerciaux', 'sales', 'managers', 'directeurs', 'cto', 'ceo',
+      // Industry/role terms (broader detection)
+      'rh', 'ressources humaines', 'human resources', 'hr',
+      'commercial', 'commerciaux', 'sales', 'ventes', 'vendeur', 'vendeurs',
+      'développeur', 'développeurs', 'developer', 'developers', 'dev',
+      'manager', 'managers', 'directeur', 'directeurs', 'director', 'directors',
+      'cto', 'ceo', 'cmo', 'cfo', 'responsable', 'chef', 'head of',
       
-      // Location-based searches
-      'à paris', 'in paris', 'à lyon', 'in london', 'en france', 'in france',
-      
-      // Action words for search
-      'list', 'liste', 'affiche', 'show', 'montre', 'display'
+      // Action indicators
+      'besoin de', 'j\'ai besoin', 'il me faut', 'peux-tu', 'pouvez-vous',
+      'i need', 'can you', 'could you', 'help me find', 'aide-moi'
     ];
 
     // Check if the message contains any search patterns
-    return searchPatterns.some(pattern => lowerContent.includes(pattern));
+    const hasSearchPattern = searchPatterns.some(pattern => lowerContent.includes(pattern));
+    
+    // Also check for number + "leads" pattern (e.g., "5 leads", "10 prospects")
+    const hasNumberLeadPattern = /\d+\s*(leads?|prospects?|contacts?|profils?)/i.test(content);
+    
+    return hasSearchPattern || hasNumberLeadPattern;
   }
 
   async sendMessage(content: string): Promise<{ message: string }> {
     try {
       console.log('AssistantService: Sending message:', { content, userId: this.userId });
 
-      // Enhanced search detection
+      // Enhanced search detection with better logging
       if (this.isSearchQuery(content)) {
         console.log('AssistantService: Detected search query, using PDL search');
         
@@ -80,7 +88,7 @@ export class AssistantService {
         console.log(`AssistantService: Searching with PDL for ${requestedCount} leads`);
         
         try {
-          // Call PDL search function
+          // Call PDL search function with the natural language query
           const { data: searchResult, error: searchError } = await supabase.functions
             .invoke('pdl-search', {
               body: {
@@ -117,7 +125,7 @@ export class AssistantService {
             };
           } else {
             return {
-              message: `Je n'ai pas trouvé de leads correspondant exactement à votre recherche "${content}". Essayez d'utiliser des termes plus généraux comme "Commercial Paris" ou "CTO France".`
+              message: `Je n'ai pas trouvé de leads correspondant exactement à votre recherche "${content}". Essayez d'utiliser des termes plus généraux ou différents mots-clés.`
             };
           }
         } catch (error) {
@@ -216,10 +224,6 @@ export class AssistantService {
   private generateDemoLeads(searchQuery: string, requestedCount: number = 5): Lead[] {
     console.log('Generating demo leads for:', searchQuery, 'count:', requestedCount);
     
-    // Parse the search query to extract job title and location
-    const jobTitleMatch = this.extractJobTitle(searchQuery);
-    const locationMatch = this.extractLocation(searchQuery);
-    
     const techCompanies = [
       'DataFlow Systems', 'NextGen Analytics', 'CloudFirst Technologies', 'ByteForge Labs', 
       'SmartCode Solutions', 'DevStream Technologies', 'TechPulse SAS', 'DigitalMind Studio',
@@ -230,20 +234,16 @@ export class AssistantService {
     const frenchFirstNames = ['Alexandre', 'Sophie', 'Julien', 'Marine', 'Thomas', 'Camille', 'Nicolas', 'Amélie', 'Pierre', 'Claire'];
     const frenchLastNames = ['Martin', 'Dubois', 'Moreau', 'Lefebvre', 'Garcia', 'Roux', 'Fournier', 'Girard', 'Bernard', 'Durand'];
     
-    // Default to Paris if no location specified
-    const targetLocation = locationMatch || 'Paris';
-    const targetJobTitle = jobTitleMatch || 'Responsable Commercial';
-    
-    console.log('Extracted job title:', targetJobTitle, 'location:', targetLocation);
+    // Use Paris as default location and "Responsable Commercial" as default job title
+    const targetLocation = 'Paris';
+    const targetJobTitle = 'Responsable Commercial';
 
     const leads: Lead[] = [];
 
-    // Generate exactly the requested number of leads
     for (let i = 0; i < requestedCount; i++) {
       let firstName, lastName, fullName, email, company;
       let attempts = 0;
       
-      // Ensure uniqueness
       do {
         firstName = frenchFirstNames[Math.floor(Math.random() * frenchFirstNames.length)];
         lastName = frenchLastNames[Math.floor(Math.random() * frenchLastNames.length)];
@@ -253,7 +253,6 @@ export class AssistantService {
         attempts++;
       } while ((this.generatedNames.has(fullName) || this.generatedEmails.has(email)) && attempts < 50);
       
-      // If we couldn't find unique names after 50 attempts, add a number suffix
       if (attempts >= 50) {
         fullName = `${firstName} ${lastName}${i + 1}`;
         email = `${firstName.toLowerCase()}.${lastName.toLowerCase()}${i + 1}@${company.toLowerCase().replace(/\s+/g, '').replace(/'/g, '')}.fr`;
@@ -288,53 +287,10 @@ export class AssistantService {
     return leads;
   }
 
-  private extractJobTitle(searchQuery: string): string {
-    const query = searchQuery.toLowerCase();
-    
-    // Map of keywords to job titles
-    const jobTitleMappings = [
-      { keywords: ['freelances', 'freelance', 'indépendant'], title: 'Freelance' },
-      { keywords: ['vp sales', 'vice president sales', 'vice-président commercial'], title: 'VP Sales' },
-      { keywords: ['directeur commercial', 'director sales'], title: 'Directeur Commercial' },
-      { keywords: ['responsable commercial', 'sales manager'], title: 'Responsable Commercial' },
-      { keywords: ['head of sales', 'chef des ventes'], title: 'Head of Sales' },
-      { keywords: ['commercial senior', 'senior sales'], title: 'Commercial Senior' },
-      { keywords: ['business developer', 'développeur commercial'], title: 'Business Developer' },
-      { keywords: ['cto', 'directeur technique'], title: 'CTO' },
-      { keywords: ['lead developer', 'développeur principal'], title: 'Lead Developer' },
-      { keywords: ['product manager', 'chef de produit'], title: 'Product Manager' },
-      { keywords: ['marketing manager', 'responsable marketing'], title: 'Marketing Manager' }
-    ];
-
-    for (const mapping of jobTitleMappings) {
-      for (const keyword of mapping.keywords) {
-        if (query.includes(keyword)) {
-          return mapping.title;
-        }
-      }
-    }
-
-    return 'Responsable Commercial'; // Default
-  }
-
-  private extractLocation(searchQuery: string): string {
-    const query = searchQuery.toLowerCase();
-    const locations = ['paris', 'lyon', 'marseille', 'toulouse', 'nice', 'nantes', 'montpellier', 'strasbourg', 'bordeaux', 'lille'];
-    
-    for (const location of locations) {
-      if (query.includes(location)) {
-        return location.charAt(0).toUpperCase() + location.slice(1);
-      }
-    }
-    
-    return 'Paris'; // Default location
-  }
-
   private async saveDemoLeads(leads: Lead[]): Promise<Lead[]> {
     try {
       console.log('AssistantService: Saving leads to database');
       
-      // Insert leads one by one to handle conflicts better
       const savedLeads: Lead[] = [];
       
       for (const lead of leads) {
@@ -346,7 +302,6 @@ export class AssistantService {
             .single();
 
           if (error) {
-            // If it's a unique constraint error, try to update
             if (error.code === '23505') {
               console.log('Lead already exists, skipping:', lead.email);
               continue;
@@ -369,7 +324,6 @@ export class AssistantService {
       return savedLeads;
     } catch (error) {
       console.error('AssistantService: Error in saveDemoLeads:', error);
-      // Return original leads if save fails so UI can still update
       return leads;
     }
   }
