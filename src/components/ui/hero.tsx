@@ -72,7 +72,7 @@ export function Hero() {
             className="inline-flex items-center justify-center whitespace-nowrap gap-2"
             asChild
           >
-            <a href="/closed-beta-demo">
+            <a href="/waitlist-subscription">
               <Users className="size-5" />
               Rejoindre la liste d'attente
             </a>

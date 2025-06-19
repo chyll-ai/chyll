@@ -78,7 +78,7 @@ function Hero() {
           </div>
           <div className="flex justify-center w-full">
             <Button size={isMobile ? "default" : "lg"} className="gap-2 w-full sm:w-auto" variant="rainbow" asChild>
-              <a href="/closed-beta-demo">
+              <a href="/waitlist-subscription">
                 <Users className="w-4 h-4" />
                 Rejoindre la liste d'attente
               </a>
