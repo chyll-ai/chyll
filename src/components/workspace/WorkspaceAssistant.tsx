@@ -1,10 +1,12 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Bot, Send, Loader2 } from 'lucide-react';
 import { useAssistantActions } from '@/hooks/useAssistantActions';
+import { AssistantService } from '@/services/assistant/index';
+import { useAuth } from '@/context/AuthContext';
 import { toast } from 'sonner';
 
 interface Message {
@@ -23,14 +25,57 @@ const WorkspaceAssistant: React.FC<WorkspaceAssistantProps> = ({ onLeadsUpdate }
     {
       id: '1',
       role: 'assistant',
-      content: "Bonjour ! Je suis votre assistant CRM. Je peux vous aider à enrichir vos leads, envoyer des emails, filtrer vos prospects et bien plus. Que souhaitez-vous faire ?",
+      content: "Bonjour ! Je suis votre assistant CRM. Je peux vous aider à trouver des leads, enrichir vos prospects, envoyer des emails, et bien plus. Essayez de me demander : 'Trouve-moi 5 leads RH à Paris'",
       timestamp: new Date()
     }
   ]);
   const [input, setInput] = useState('');
   const [processing, setProcessing] = useState(false);
+  const [assistantService, setAssistantService] = useState<AssistantService | null>(null);
   
+  const { user } = useAuth();
   const { assistantActions, leads, filteredLeads } = useAssistantActions();
+
+  // Initialize AssistantService
+  useEffect(() => {
+    if (user && !assistantService) {
+      const service = new AssistantService(user.id);
+      service.setLeadsUpdateCallback(() => {
+        onLeadsUpdate?.();
+      });
+      setAssistantService(service);
+    }
+  }, [user, assistantService, onLeadsUpdate]);
+
+  // Enhanced search detection
+  const isSearchQuery = (content: string): boolean => {
+    const lowerContent = content.toLowerCase();
+    
+    const searchPatterns = [
+      // French search terms
+      'trouve', 'cherche', 'recherche', 'trouve-moi', 'trouvez', 'cherchez',
+      'trouver', 'chercher', 'rechercher', 'localise', 'localiser',
+      
+      // English search terms
+      'find', 'search', 'look for', 'get me', 'show me', 'fetch',
+      
+      // Lead/contact/profile related terms
+      'leads', 'prospects', 'contacts', 'profils', 'profiles',
+      'personnes', 'people', 'candidats', 'candidates',
+      
+      // Industry/role specific terms
+      'freelances', 'freelance', 'indépendant', 'developers', 'développeurs',
+      'commerciaux', 'sales', 'managers', 'directeurs', 'cto', 'ceo', 'rh',
+      
+      // Location-based searches
+      'à paris', 'in paris', 'à lyon', 'in london', 'en france', 'in france',
+      
+      // Action words for search
+      'list', 'liste', 'affiche', 'show', 'montre', 'display'
+    ];
+
+    return searchPatterns.some(pattern => lowerContent.includes(pattern));
+  };
 
   const processUserInput = async (userMessage: string) => {
     setProcessing(true);
@@ -39,8 +84,24 @@ const WorkspaceAssistant: React.FC<WorkspaceAssistantProps> = ({ onLeadsUpdate }
       let response = '';
       const lowerInput = userMessage.toLowerCase();
 
-      // Analyser l'intention de l'utilisateur et exécuter l'action correspondante
-      if (lowerInput.includes('enrichis') && lowerInput.includes('non qualifiés')) {
+      // Check if this is a search query that should use PDL API
+      if (isSearchQuery(userMessage)) {
+        console.log('WorkspaceAssistant: Detected search query, using AssistantService PDL search');
+        
+        if (assistantService) {
+          try {
+            const result = await assistantService.sendMessage(userMessage);
+            response = result.message;
+          } catch (error) {
+            console.error('PDL search failed:', error);
+            response = "Désolé, j'ai rencontré une erreur lors de la recherche de leads. Veuillez réessayer.";
+          }
+        } else {
+          response = "Assistant non initialisé. Veuillez rafraîchir la page.";
+        }
+      }
+      // Handle other assistant actions
+      else if (lowerInput.includes('enrichis') && lowerInput.includes('non qualifiés')) {
         await assistantActions.enrichNonQualifiedLeads();
         response = `J'ai lancé l'enrichissement de ${leads.filter(l => l.status === 'new').length} leads non qualifiés.`;
       }
@@ -75,7 +136,7 @@ const WorkspaceAssistant: React.FC<WorkspaceAssistantProps> = ({ onLeadsUpdate }
         response = "J'ai actualisé la liste des leads.";
       }
       else {
-        response = "Je n'ai pas compris votre demande. Voici ce que je peux faire :\n\n• Enrichir les leads non qualifiés\n• Filtrer les leads (ex: 'montre-moi les leads SaaS')\n• Envoyer des emails aux leads\n• Afficher les leads par statut ou date\n• Actualiser la liste des leads";
+        response = "Je n'ai pas compris votre demande. Voici ce que je peux faire :\n\n• Trouver des leads (ex: 'trouve-moi 5 leads RH à Paris')\n• Enrichir les leads non qualifiés\n• Filtrer les leads (ex: 'montre-moi les leads SaaS')\n• Envoyer des emails aux leads\n• Afficher les leads par statut ou date\n• Actualiser la liste des leads";
       }
 
       const assistantMessage: Message = {
@@ -167,7 +228,7 @@ const WorkspaceAssistant: React.FC<WorkspaceAssistantProps> = ({ onLeadsUpdate }
           <Textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Demandez-moi d'enrichir vos leads, d'envoyer des emails..."
+            placeholder="Exemple: 'Trouve-moi 5 leads RH à Paris' ou 'Enrichis mes leads'"
             className="flex-1 min-h-[60px] resize-none"
             disabled={processing}
             onKeyDown={(e) => {
