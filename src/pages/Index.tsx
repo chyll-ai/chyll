@@ -4,13 +4,9 @@ import Header from '@/components/layout/Header';
 import { Footer2 } from '@/components/ui/footer2';
 import SEOMetadata from '@/components/SEOMetadata';
 import { HeroDemo } from '@/components/ui/animated-hero-demo';
-import { TestimonialsCarousel } from '@/components/ui/testimonials-carousel';
 import { FAQSection } from '@/components/ui/faq-section';
-import { useLanguage } from '@/context/LanguageContext';
 
 const Index = () => {
-  const { t } = useLanguage();
-
   return (
     <>
       <Header />
@@ -23,21 +19,6 @@ const Index = () => {
       {/* Hero Section */}
       <section className="relative overflow-hidden">
         <HeroDemo />
-      </section>
-
-      {/* Testimonials Section */}
-      <section className="py-20 bg-muted/30">
-        <div className="container">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              {t.home?.testimonials?.title || "Ce que disent nos clients"}
-            </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              {t.home?.testimonials?.subtitle || "Découvrez comment chyll a transformé leur activité commerciale"}
-            </p>
-          </div>
-          <TestimonialsCarousel />
-        </div>
       </section>
 
       {/* FAQ Section */}
