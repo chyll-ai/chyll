@@ -92,17 +92,23 @@ function isExistingLead(person: any, existingLeads: ExistingLead[]): boolean {
   const fullName = person.full_name?.toLowerCase();
   const company = person.job_company_name?.toLowerCase();
 
+  // More lenient duplicate detection
   return existingLeads.some(existing => {
-    // Check email match
-    if (email && existing.email?.toLowerCase() === email) {
+    // Check email match (primary check)
+    if (email && existing.email && existing.email.toLowerCase() === email) {
+      console.log('Skipping duplicate email:', email);
       return true;
     }
     
-    // Check name + company match (stricter duplicate detection)
-    if (fullName && company && 
-        existing.full_name?.toLowerCase() === fullName && 
-        existing.company?.toLowerCase() === company) {
-      return true;
+    // Check name + company match (secondary check, more lenient)
+    if (fullName && company && existing.full_name && existing.company) {
+      const existingNameLower = existing.full_name.toLowerCase();
+      const existingCompanyLower = existing.company.toLowerCase();
+      
+      if (existingNameLower === fullName && existingCompanyLower === company) {
+        console.log('Skipping duplicate name+company:', fullName, company);
+        return true;
+      }
     }
     
     return false;
@@ -119,38 +125,34 @@ async function parseSearchQueryWithOpenAI(query: string): Promise<any> {
     apiKey: OPENAI_API_KEY
   });
 
-  const systemPrompt = `You are an expert at parsing job search queries and converting them to search criteria for People Data Labs API.
+  const systemPrompt = `You are an expert at parsing job search queries for People Data Labs API.
 
-Your goal is to generate SIMPLE, FOCUSED search parameters that work reliably with PDL.
+Generate SIMPLE search parameters that work reliably with PDL. Use broader, more flexible terms.
 
-Extract the following information and return as JSON:
+Extract this information and return as JSON:
 
-Primary search strategy:
-- job_title: The main job title (use English equivalents)
-- location_name: Full location format like "city, region, country" 
-- job_company_industry: Industry sector (optional, only if clearly specified)
+Primary search:
+- job_title: Use broader terms (e.g., "manager" instead of "human resources manager")
+- location: Use simpler format ("paris" instead of "paris, île-de-france, france")
+- job_company_industry: Only if clearly specified
 
-Alternative search strategies (provide 2-3 SIMPLE alternatives):
-- alt_searches: Array of alternative search objects with different:
-  - Job titles (use synonyms, related roles)
-  - Industries (vary if helpful)
+Alternative searches (2-3 SIMPLE alternatives):
+- Use related job titles and broader locations
 
 Rules:
-- For French locations, use full format: "paris, île-de-france, france"
-- Convert French terms to English equivalents
-- Use lowercase for all values
-- Keep searches SIMPLE - avoid complex conditions
-- DO NOT use job_seniority or other unsupported fields
-- Return only JSON, no other text
+- Keep job titles simple and broad
+- Use city names only for locations
+- Convert French terms to English
+- Use lowercase
+- Prioritize broad matches over exact matches
 
 Example for "responsable rh à paris":
 {
-  "job_title": "human resources manager",
-  "location_name": "paris, île-de-france, france",
-  "job_company_industry": "technology",
+  "job_title": "manager",
+  "location": "paris",
   "alt_searches": [
-    {"job_title": "hr manager", "location_name": "paris, île-de-france, france"},
-    {"job_title": "talent acquisition", "location_name": "paris, île-de-france, france", "job_company_industry": "finance"}
+    {"job_title": "hr", "location": "paris"},
+    {"job_title": "human resources", "location": "france"}
   ]
 }`;
 
@@ -187,45 +189,51 @@ function parseSearchQueryBasic(query: string): any {
   };
   const queryLower = query.toLowerCase();
 
-  // Basic French location detection
+  // Basic location detection - use simple city names
   if (queryLower.includes('paris')) {
-    searchCriteria.location_name = 'paris, île-de-france, france';
+    searchCriteria.location = 'paris';
   } else if (queryLower.includes('lyon')) {
-    searchCriteria.location_name = 'lyon, auvergne-rhône-alpes, france';
+    searchCriteria.location = 'lyon';
   } else if (queryLower.includes('marseille')) {
-    searchCriteria.location_name = 'marseille, provence-alpes-côte d\'azur, france';
+    searchCriteria.location = 'marseille';
   } else if (queryLower.includes('toulouse')) {
-    searchCriteria.location_name = 'toulouse, occitanie, france';
+    searchCriteria.location = 'toulouse';
+  } else if (queryLower.includes('france')) {
+    searchCriteria.location = 'france';
   }
 
-  // Basic job title detection
+  // Basic job title detection - use broader terms
   if (queryLower.includes('rh') || queryLower.includes('ressources humaines')) {
-    searchCriteria.job_title = 'human resources manager';
+    searchCriteria.job_title = 'manager';
     searchCriteria.alt_searches = [
-      { job_title: 'hr manager', location_name: searchCriteria.location_name },
-      { job_title: 'talent acquisition', location_name: searchCriteria.location_name }
+      { job_title: 'hr', location: searchCriteria.location },
+      { job_title: 'human resources', location: searchCriteria.location }
     ];
   } else if (queryLower.includes('commercial') || queryLower.includes('sales')) {
-    searchCriteria.job_title = 'sales manager';
+    searchCriteria.job_title = 'sales';
     searchCriteria.alt_searches = [
-      { job_title: 'business development', location_name: searchCriteria.location_name },
-      { job_title: 'account manager', location_name: searchCriteria.location_name }
+      { job_title: 'business development', location: searchCriteria.location },
+      { job_title: 'account manager', location: searchCriteria.location }
     ];
   } else if (queryLower.includes('communication')) {
-    searchCriteria.job_title = 'marketing manager';
+    searchCriteria.job_title = 'marketing';
     searchCriteria.alt_searches = [
-      { job_title: 'communications specialist', location_name: searchCriteria.location_name },
-      { job_title: 'brand manager', location_name: searchCriteria.location_name }
+      { job_title: 'communications', location: searchCriteria.location },
+      { job_title: 'brand', location: searchCriteria.location }
     ];
   } else if (queryLower.includes('développeur') || queryLower.includes('developer')) {
-    searchCriteria.job_title = 'software developer';
+    searchCriteria.job_title = 'developer';
     searchCriteria.alt_searches = [
-      { job_title: 'software engineer', location_name: searchCriteria.location_name },
-      { job_title: 'frontend developer', location_name: searchCriteria.location_name }
+      { job_title: 'engineer', location: searchCriteria.location },
+      { job_title: 'software', location: searchCriteria.location }
     ];
   } else {
-    // Default fallback
+    // Default fallback with broader terms
     searchCriteria.job_title = 'manager';
+    searchCriteria.alt_searches = [
+      { job_title: 'director', location: searchCriteria.location },
+      { job_title: 'lead', location: searchCriteria.location }
+    ];
   }
 
   return searchCriteria;
@@ -236,38 +244,37 @@ async function searchPeopleWithPDL(searchParams: any, count: number = 10): Promi
     throw new Error('PDL_API_KEY is not configured');
   }
 
-  // Build simple SQL query conditions - only use supported fields
+  // Build more flexible SQL query using LIKE operators
   const conditions: string[] = [];
   
   if (searchParams.job_title) {
-    // Escape single quotes properly
     const jobTitle = searchParams.job_title.replace(/'/g, "''");
-    conditions.push(`job_title = '${jobTitle}'`);
+    // Use LIKE for more flexible matching
+    conditions.push(`job_title LIKE '%${jobTitle}%'`);
   }
   
-  if (searchParams.location_name) {
-    // Escape single quotes properly
-    const location = searchParams.location_name.replace(/'/g, "''");
-    conditions.push(`location_name = '${location}'`);
+  if (searchParams.location) {
+    const location = searchParams.location.replace(/'/g, "''");
+    // Use LIKE for more flexible location matching
+    conditions.push(`location_name LIKE '%${location}%'`);
   }
   
   if (searchParams.job_company_industry) {
-    // Escape single quotes properly
     const industry = searchParams.job_company_industry.replace(/'/g, "''");
-    conditions.push(`job_company_industry = '${industry}'`);
+    conditions.push(`job_company_industry LIKE '%${industry}%'`);
   }
 
-  // Default to searching for managers if no conditions
+  // Fallback to basic search if no conditions
   if (conditions.length === 0) {
-    conditions.push(`job_title = 'manager'`);
+    conditions.push(`job_title LIKE '%manager%'`);
   }
 
-  // Construct simple SQL query
+  // Construct more flexible SQL query
   const sql = `SELECT * FROM person WHERE (${conditions.join(' AND ')})`;
   
   const searchBody = {
     sql: sql,
-    size: Math.min(count * 2, 50), // Request 2x to account for filtering
+    size: Math.min(count * 3, 100), // Request more to account for filtering
     pretty: true
   };
 
@@ -285,6 +292,7 @@ async function searchPeopleWithPDL(searchParams: any, count: number = 10): Promi
 
     const responseText = await response.text();
     console.log('PDL API response status:', response.status);
+    console.log('PDL API response preview:', responseText.substring(0, 500));
 
     if (!response.ok) {
       console.error('PDL Search API error:', response.status, responseText);
@@ -293,6 +301,11 @@ async function searchPeopleWithPDL(searchParams: any, count: number = 10): Promi
 
     const data = JSON.parse(responseText);
     console.log('PDL search successful, found:', data.data?.length || 0, 'results');
+    
+    // Log sample results for debugging
+    if (data.data && data.data.length > 0) {
+      console.log('Sample result structure:', JSON.stringify(data.data[0], null, 2));
+    }
     
     return {
       status: response.status,
@@ -304,50 +317,55 @@ async function searchPeopleWithPDL(searchParams: any, count: number = 10): Promi
   }
 }
 
-async function performDiversifiedSearch(searchCriteria: any, count: number, existingLeads: ExistingLead[]): Promise<any[]> {
+async function performSearchWithProgressiveRelaxation(searchCriteria: any, count: number, existingLeads: ExistingLead[]): Promise<any[]> {
   const allLeads: any[] = [];
   const targetCount = count;
-  const usedKeys = new Set<string>(); // Track unique combinations
+  const usedEmails = new Set<string>();
   
-  // Helper function to create unique key
-  const createUniqueKey = (person: any) => {
-    const email = person.emails?.[0]?.address?.toLowerCase();
-    const name = person.full_name?.toLowerCase();
-    const company = person.job_company_name?.toLowerCase();
-    return `${email || 'no-email'}-${name || 'no-name'}-${company || 'no-company'}`;
+  // Helper function to process and filter results
+  const processResults = (results: any[]) => {
+    const newLeads: any[] = [];
+    
+    for (const person of results) {
+      // Check if person has required data
+      if (!person.emails?.[0]?.address) {
+        console.log('Skipping person without email:', person.full_name);
+        continue;
+      }
+      
+      const email = person.emails[0].address.toLowerCase();
+      
+      // Skip if email already processed
+      if (usedEmails.has(email)) {
+        console.log('Skipping duplicate email in results:', email);
+        continue;
+      }
+      
+      // Skip if exists in user's leads (more lenient check)
+      if (isExistingLead(person, existingLeads)) {
+        continue;
+      }
+      
+      usedEmails.add(email);
+      newLeads.push(person);
+      
+      console.log('Added new lead:', person.full_name, email);
+      
+      if (newLeads.length >= targetCount) break;
+    }
+    
+    return newLeads;
   };
 
   // Try primary search first
   try {
     console.log('Trying primary search:', searchCriteria);
-    const primaryResults = await searchPeopleWithPDL(searchCriteria, Math.ceil(targetCount / 2));
+    const primaryResults = await searchPeopleWithPDL(searchCriteria, targetCount * 2);
+    
     if (primaryResults.data?.data) {
-      // Filter out duplicates and existing leads
-      const filteredResults = primaryResults.data.data.filter(person => {
-        const uniqueKey = createUniqueKey(person);
-        
-        // Skip if already processed
-        if (usedKeys.has(uniqueKey)) {
-          return false;
-        }
-        
-        // Skip if exists in user's current leads
-        if (isExistingLead(person, existingLeads)) {
-          console.log('Skipping existing lead:', person.full_name);
-          return false;
-        }
-        
-        // Skip if no email
-        if (!person.emails?.[0]?.address) {
-          return false;
-        }
-        
-        usedKeys.add(uniqueKey);
-        return true;
-      });
-      
-      allLeads.push(...filteredResults);
-      console.log('Primary search found:', filteredResults.length, 'unique leads');
+      const newLeads = processResults(primaryResults.data.data);
+      allLeads.push(...newLeads);
+      console.log('Primary search found:', newLeads.length, 'valid leads');
     }
   } catch (error) {
     console.error('Primary search failed:', error);
@@ -360,33 +378,12 @@ async function performDiversifiedSearch(searchCriteria: any, count: number, exis
       
       try {
         console.log('Trying alternative search:', altSearch);
-        const remainingCount = targetCount - allLeads.length;
-        const altResults = await searchPeopleWithPDL(altSearch, remainingCount * 2);
+        const altResults = await searchPeopleWithPDL(altSearch, targetCount * 2);
         
         if (altResults.data?.data) {
-          // Filter out duplicates by unique key
-          const newLeads = altResults.data.data.filter(person => {
-            const uniqueKey = createUniqueKey(person);
-            
-            if (usedKeys.has(uniqueKey)) {
-              return false;
-            }
-            
-            if (isExistingLead(person, existingLeads)) {
-              console.log('Skipping existing lead in alt search:', person.full_name);
-              return false;
-            }
-            
-            if (!person.emails?.[0]?.address) {
-              return false;
-            }
-            
-            usedKeys.add(uniqueKey);
-            return true;
-          });
-          
+          const newLeads = processResults(altResults.data.data);
           allLeads.push(...newLeads);
-          console.log('Alternative search found:', newLeads.length, 'new unique leads');
+          console.log('Alternative search found:', newLeads.length, 'new valid leads');
         }
       } catch (error) {
         console.error('Alternative search failed:', error);
@@ -395,9 +392,40 @@ async function performDiversifiedSearch(searchCriteria: any, count: number, exis
     }
   }
 
+  // If still no results, try very broad searches
+  if (allLeads.length === 0) {
+    console.log('No results found, trying broader searches...');
+    
+    const broadSearches = [
+      { job_title: 'manager', location: 'france' },
+      { job_title: 'director', location: 'france' },
+      { job_title: 'manager' } // Location-agnostic
+    ];
+    
+    for (const broadSearch of broadSearches) {
+      if (allLeads.length >= targetCount) break;
+      
+      try {
+        console.log('Trying broad search:', broadSearch);
+        const broadResults = await searchPeopleWithPDL(broadSearch, targetCount * 2);
+        
+        if (broadResults.data?.data) {
+          const newLeads = processResults(broadResults.data.data);
+          allLeads.push(...newLeads);
+          console.log('Broad search found:', newLeads.length, 'new valid leads');
+          
+          if (newLeads.length > 0) break; // Stop after first successful broad search
+        }
+      } catch (error) {
+        console.error('Broad search failed:', error);
+        continue;
+      }
+    }
+  }
+
   // Return up to the requested count
   const finalLeads = allLeads.slice(0, targetCount);
-  console.log('Total unique leads after diversified search:', finalLeads.length);
+  console.log('Total leads after progressive search:', finalLeads.length);
   
   return finalLeads;
 }
@@ -416,11 +444,11 @@ serve(async (req: Request) => {
 
     console.log(`Processing search query: "${searchQuery}"`);
 
-    // Get existing leads for post-processing deduplication
+    // Get existing leads for deduplication
     const existingLeads = await getExistingLeads(userId);
     console.log('Found', existingLeads.length, 'existing leads to exclude');
 
-    // Use OpenAI to intelligently parse the search query
+    // Parse the search query
     const searchCriteria = await parseSearchQueryWithOpenAI(searchQuery);
     
     // Apply additional filters if provided
@@ -430,8 +458,8 @@ serve(async (req: Request) => {
 
     console.log('Final search criteria:', searchCriteria);
 
-    // Perform diversified search with post-processing deduplication
-    const allLeads = await performDiversifiedSearch(searchCriteria, count, existingLeads);
+    // Perform search with progressive relaxation
+    const allLeads = await performSearchWithProgressiveRelaxation(searchCriteria, count, existingLeads);
 
     // Transform PDL results to our lead format
     const leads = allLeads.map((person: any) => {
@@ -463,7 +491,7 @@ serve(async (req: Request) => {
           timestamp: new Date().toISOString(),
           query: searchQuery,
           parsed_criteria: searchCriteria,
-          search_strategy: 'simplified_with_post_processing'
+          search_strategy: 'progressive_relaxation'
         },
         linkedin_profile_data: {
           skills: person.skills || [],
@@ -473,8 +501,8 @@ serve(async (req: Request) => {
     });
 
     const responseMessage = leads.length > 0 
-      ? `Found ${leads.length} unique leads using simplified search strategies.`
-      : 'No new leads found with the current search criteria. Try using different search terms.';
+      ? `Found ${leads.length} unique leads using progressive search relaxation.`
+      : 'No leads found with the current search criteria. The search has been attempted with multiple strategies.';
 
     return new Response(
       JSON.stringify({
@@ -484,9 +512,8 @@ serve(async (req: Request) => {
         query: searchQuery,
         searchCriteria,
         message: responseMessage,
-        strategiesUsed: searchCriteria.alt_searches ? ['primary', 'alternatives'] : ['primary'],
-        existingLeadsExcluded: existingLeads.length,
-        duplicatesAvoided: allLeads.length - leads.length
+        strategiesUsed: ['primary', 'alternatives', 'progressive_relaxation'],
+        existingLeadsExcluded: existingLeads.length
       }),
       { 
         headers: { 
