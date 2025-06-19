@@ -8,16 +8,12 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { useLanguage } from '@/context/LanguageContext';
 
 export function FAQSection() {
-  const { language, t } = useLanguage();
-  
-  // Updated FAQ items focused on chyll as the future CRM with natural language
-  const defaultFaqItems = [
+  const faqItems = [
     {
-      question: "🎯 Comment chyll révolutionne-t-il la gestion de prospects ?",
-      answer: "chyll est le CRM du futur qui utilise le langage naturel. Plus besoin d'apprendre des interfaces complexes : vous parlez à chyll comme à un assistant humain pour gérer vos prospects, lancer des recherches, et organiser votre pipeline commercial."
+      question: "🎯 Comment chyll révolutionne-t-il la gestion commerciale ?",
+      answer: "chyll est le CRM du futur qui utilise le langage naturel. Plus besoin d'apprendre des interfaces complexes : vous parlez à chyll comme à un assistant humain pour gérer vos prospects, enrichir vos données, et organiser votre pipeline commercial."
     },
     {
       question: "🤖 Qu'est-ce qui rend chyll différent des CRM traditionnels ?",
@@ -28,16 +24,16 @@ export function FAQSection() {
       answer: "Immédiatement ! Avec chyll, plus besoin de formation complexe. Vous lui parlez naturellement en français, comme vous le feriez avec un collègue. L'interface s'adapte à votre façon de travailler, pas l'inverse."
     },
     {
-      question: "📊 Comment chyll organise-t-il mes données prospects ?",
-      answer: "chyll structure automatiquement toutes vos données dans un CRM intelligent. Prospects enrichis, historique des interactions, statuts de suivi - tout est organisé de manière logique et accessible via des commandes en langage naturel."
+      question: "📊 Comment chyll enrichit-il mes données prospects ?",
+      answer: "chyll enrichit automatiquement vos prospects avec des données premium : coordonnées vérifiées, informations professionnelles, données d'entreprise, le tout organisé intelligemment et accessible via des commandes en langage naturel."
     },
     {
       question: "🎨 Puis-je personnaliser chyll selon mes besoins ?",
-      answer: "Absolument ! chyll apprend de vos préférences et s'adapte à votre workflow. Plus vous l'utilisez, plus il comprend vos habitudes et personnalise l'expérience selon votre méthode de prospection unique."
+      answer: "Absolument ! chyll apprend de vos préférences et s'adapte à votre workflow commercial. Plus vous l'utilisez, plus il comprend vos habitudes et personnalise l'expérience selon votre méthode de prospection unique."
     },
     {
       question: "📈 Quel impact chyll a-t-il sur ma productivité commerciale ?",
-      answer: "Nos clients rapportent une productivité multipliée par 10 : recherche de prospects instantanée, gestion simplifiée, suivi automatisé. chyll élimine la friction entre vous et vos données pour vous concentrer sur la vente."
+      answer: "Nos clients rapportent une productivité multipliée par 10 : recherche de prospects instantanée, enrichissement automatique, gestion simplifiée. chyll élimine la friction entre vous et vos données pour vous concentrer sur la vente."
     },
     {
       question: "🔐 Mes données sont-elles sécurisées avec chyll ?",
@@ -45,11 +41,9 @@ export function FAQSection() {
     },
     {
       question: "💼 chyll peut-il remplacer complètement mon CRM actuel ?",
-      answer: "Oui ! chyll est conçu pour être votre CRM principal. Plus besoin de jongler entre plusieurs outils : prospection, enrichissement, suivi, analyses - tout est centralisé dans une interface conversationnelle intuitive."
+      answer: "Oui ! chyll est conçu pour être votre CRM principal du futur. Plus besoin de jongler entre plusieurs outils : prospection, enrichissement, suivi, analyses - tout est centralisé dans une interface conversationnelle intuitive."
     }
   ];
-  
-  const faqItems = defaultFaqItems;
   
   return (
     <div className="w-full max-w-4xl mx-auto px-4 sm:px-0">
