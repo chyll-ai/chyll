@@ -5,25 +5,7 @@ import { usePDLEnrichment } from './usePDLEnrichment';
 import { useGmailSender } from './useGmailSender';
 import { useEmailJobs } from './useEmailJobs';
 import { toast } from 'sonner';
-
-interface Lead {
-  id: string;
-  client_id?: string;
-  full_name?: string;
-  email?: string;
-  phone_number?: string;
-  job_title?: string;
-  company?: string;
-  location?: string;
-  linkedin_url?: string;
-  linkedin_profile_data?: any;
-  status?: string;
-  last_contact_date?: string;
-  created_at?: string;
-  updated_at?: string;
-  enriched_from?: any;
-  search_id?: string;
-}
+import { Lead } from '@/types/assistant';
 
 export const useAssistantActions = () => {
   const [leads, setLeads] = useState<Lead[]>([]);
@@ -52,13 +34,25 @@ export const useAssistantActions = () => {
           company,
           location,
           linkedin_url,
-          linkedin_profile_data,
+          github_url,
+          twitter_url,
+          facebook_url,
+          job_company_industry,
+          job_company_size,
+          job_company_website,
+          job_seniority,
+          experience_years,
+          headline,
+          summary,
+          skills,
+          languages,
+          education,
+          certifications,
           status,
-          last_contact_date,
           created_at,
-          updated_at,
           enriched_from,
-          search_id
+          email_jobs,
+          linkedin_profile_data
         `)
         .eq('client_id', user.id)
         .order('created_at', { ascending: false });

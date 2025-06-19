@@ -2,15 +2,7 @@
 import { useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
-
-interface Lead {
-  id: string;
-  full_name?: string;
-  email?: string;
-  linkedin_url?: string;
-  company?: string;
-  status: string;
-}
+import { Lead } from '@/types/assistant';
 
 export const usePDLEnrichment = () => {
   const [enriching, setEnriching] = useState(false);
