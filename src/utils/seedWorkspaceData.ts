@@ -241,11 +241,11 @@ export const seedWorkspaceData = async () => {
         volunteer_work: Math.random() > 0.7 ? JSON.stringify(["Tech mentorship", "Open source contributions"]) : null,
         personality_traits: JSON.stringify(["Analytical", "Creative", "Leadership", "Problem-solving"]),
         
-        // Financial and business - using numeric type for mrr/arr
+        // Financial and business - using proper numeric types
         salary_range: `€${Math.floor(Math.random() * 80) + 60}K - €${Math.floor(Math.random() * 50) + 100}K`,
         net_worth: Math.random() > 0.8 ? `€${Math.floor(Math.random() * 500) + 200}K` : null,
         
-        // Sales and pipeline data - ensuring proper types
+        // Sales and pipeline data - ensuring proper numeric types
         mrr: Math.random() > 0.4 ? Math.floor(Math.random() * 15000) + 2000 : null,
         arr: Math.random() > 0.4 ? Math.floor(Math.random() * 180000) + 24000 : null,
         pipeline_stage: pipelineStages[Math.floor(Math.random() * pipelineStages.length)],
