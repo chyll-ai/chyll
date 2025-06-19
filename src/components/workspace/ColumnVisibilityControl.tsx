@@ -36,15 +36,14 @@ const ColumnVisibilityControl: React.FC<ColumnVisibilityControlProps> = ({
               const categoryColumns = columns.filter(col => col.category === category);
               const allVisible = categoryColumns.every(col => col.visible);
               const someVisible = categoryColumns.some(col => col.visible);
+              const isIndeterminate = someVisible && !allVisible;
               
               return (
                 <div key={category} className="mb-3">
                   <div className="flex items-center gap-2 mb-2">
                     <Checkbox
                       checked={allVisible}
-                      ref={(el) => {
-                        if (el) el.indeterminate = someVisible && !allVisible;
-                      }}
+                      {...(isIndeterminate && { 'data-state': 'indeterminate' })}
                       onCheckedChange={(checked) => onToggleCategory(category, checked as boolean)}
                     />
                     <span className="text-sm font-medium">{category}</span>
