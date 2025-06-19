@@ -108,7 +108,13 @@ export class AssistantService {
           }
 
           const leads = searchResult.leads || [];
+          const message = searchResult.message || '';
+          const strategiesUsed = searchResult.strategiesUsed || [];
+          const existingLeadsExcluded = searchResult.existingLeadsExcluded || 0;
+          
           console.log('PDL search found:', leads.length, 'leads');
+          console.log('Search strategies used:', strategiesUsed);
+          console.log('Existing leads excluded:', existingLeadsExcluded);
 
           if (leads.length > 0) {
             // Save leads to database
@@ -120,13 +126,29 @@ export class AssistantService {
             
             toast.success(`${savedLeads.length} nouveaux leads trouvés via People Data Labs`);
 
-            return {
-              message: `Excellent ! J'ai trouvé ${savedLeads.length} leads professionnels correspondant à votre recherche "${content}" via People Data Labs. Ces contacts ont été enrichis avec des données réelles et ajoutés à votre tableau de bord. Vous pouvez les voir dans la section des leads.`
-            };
+            let responseMessage = `Excellent ! J'ai trouvé ${savedLeads.length} leads professionnels pour "${content}" via People Data Labs.`;
+            
+            if (strategiesUsed.includes('alternatives')) {
+              responseMessage += ' J\'ai utilisé plusieurs stratégies de recherche pour éviter les doublons et vous offrir plus de diversité.';
+            }
+            
+            if (existingLeadsExcluded > 0) {
+              responseMessage += ` J'ai automatiquement exclu ${existingLeadsExcluded} leads existants pour éviter les doublons.`;
+            }
+            
+            responseMessage += ' Ces contacts ont été enrichis avec des données réelles et ajoutés à votre tableau de bord.';
+
+            return { message: responseMessage };
           } else {
-            return {
-              message: `Je n'ai pas trouvé de leads correspondant exactement à votre recherche "${content}". Essayez d'utiliser des termes plus généraux ou différents mots-clés.`
-            };
+            let noResultsMessage = `Je n'ai pas trouvé de nouveaux leads pour "${content}".`;
+            
+            if (existingLeadsExcluded > 0) {
+              noResultsMessage += ` Cependant, j'ai trouvé ${existingLeadsExcluded} résultats qui correspondent à des leads déjà présents dans votre base de données.`;
+            }
+            
+            noResultsMessage += ' Essayez d\'utiliser des termes plus spécifiques ou différents mots-clés pour obtenir de nouveaux résultats.';
+            
+            return { message: noResultsMessage };
           }
         } catch (error) {
           console.error('PDL search failed, falling back to demo data:', error);
