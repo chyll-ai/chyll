@@ -52,6 +52,12 @@ export const useAssistantActions = () => {
           created_at,
           enriched_from,
           linkedin_profile_data,
+          mrr,
+          arr,
+          pipeline_stage,
+          close_probability,
+          expected_close_date,
+          last_activity_date,
           job_start_date,
           job_end_date,
           job_duration_months,
@@ -253,6 +259,41 @@ export const useAssistantActions = () => {
     }
   }, [loadLeads]);
 
+  const updateLeadSalesData = useCallback(async (leadId: string, salesData: {
+    mrr?: number;
+    arr?: number;
+    pipeline_stage?: string;
+    close_probability?: number;
+    expected_close_date?: string;
+    last_activity_date?: string;
+  }) => {
+    try {
+      console.log('Updating lead sales data:', leadId, salesData);
+      
+      const { error } = await supabase
+        .from('leads')
+        .update({
+          ...salesData,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', leadId);
+
+      if (error) {
+        console.error('Error updating lead sales data:', error);
+        throw error;
+      }
+      
+      console.log('Lead sales data updated successfully');
+      
+      // Refresh the leads data
+      await loadLeads();
+      toast.success('Données de vente mises à jour');
+    } catch (error: any) {
+      console.error('Error updating lead sales data:', error);
+      toast.error('Erreur lors de la mise à jour des données de vente');
+    }
+  }, [loadLeads]);
+
   // Actions exposées à l'assistant IA
   const assistantActions = {
     loadLeads,
@@ -262,6 +303,7 @@ export const useAssistantActions = () => {
     enrichLeadsAction,
     sendEmailsAction,
     updateLeadStatus,
+    updateLeadSalesData,
     // Fonctions utilitaires
     enrichNonQualifiedLeads: () => enrichLeadsAction(leads.filter(l => l.status === 'new').map(l => l.id)),
     showSaaSLeads: () => filterLeads('saas'),

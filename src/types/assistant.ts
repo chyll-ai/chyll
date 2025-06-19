@@ -34,6 +34,14 @@ export interface Lead {
   status: string;
   created_at: string;
   
+  // Sales and Pipeline tracking fields
+  mrr?: number;
+  arr?: number;
+  pipeline_stage?: string;
+  close_probability?: number;
+  expected_close_date?: string;
+  last_activity_date?: string;
+  
   // Extensive PDL fields
   job_start_date?: string;
   job_end_date?: string;

@@ -223,6 +223,7 @@ export type Database = {
       leads: {
         Row: {
           activities: string | null
+          arr: number | null
           awards: string | null
           birth_date: string | null
           birth_year: number | null
@@ -231,6 +232,7 @@ export type Database = {
           children_count: number | null
           city: string | null
           client_id: string | null
+          close_probability: number | null
           cloud_platforms: string | null
           communication_tools: string | null
           company: string | null
@@ -246,6 +248,7 @@ export type Database = {
           email: string | null
           enriched_from: Json | null
           environmental_interests: string | null
+          expected_close_date: string | null
           experience_years: number | null
           facebook_friends: number | null
           facebook_url: string | null
@@ -289,6 +292,7 @@ export type Database = {
           job_start_date: string | null
           job_title: string | null
           languages: Json | null
+          last_activity_date: string | null
           last_contact_date: string | null
           lifestyle_interests: string | null
           linkedin_connections: number | null
@@ -304,6 +308,7 @@ export type Database = {
           media_consumption: string | null
           mobile_devices: string | null
           mobile_phone: string | null
+          mrr: number | null
           net_worth: string | null
           operating_systems: string | null
           patents: string | null
@@ -311,6 +316,7 @@ export type Database = {
           personality_traits: string | null
           pet_ownership: string | null
           phone_number: string | null
+          pipeline_stage: string | null
           political_affiliation: string | null
           postal_code: string | null
           programming_languages: string | null
@@ -348,6 +354,7 @@ export type Database = {
         }
         Insert: {
           activities?: string | null
+          arr?: number | null
           awards?: string | null
           birth_date?: string | null
           birth_year?: number | null
@@ -356,6 +363,7 @@ export type Database = {
           children_count?: number | null
           city?: string | null
           client_id?: string | null
+          close_probability?: number | null
           cloud_platforms?: string | null
           communication_tools?: string | null
           company?: string | null
@@ -371,6 +379,7 @@ export type Database = {
           email?: string | null
           enriched_from?: Json | null
           environmental_interests?: string | null
+          expected_close_date?: string | null
           experience_years?: number | null
           facebook_friends?: number | null
           facebook_url?: string | null
@@ -414,6 +423,7 @@ export type Database = {
           job_start_date?: string | null
           job_title?: string | null
           languages?: Json | null
+          last_activity_date?: string | null
           last_contact_date?: string | null
           lifestyle_interests?: string | null
           linkedin_connections?: number | null
@@ -429,6 +439,7 @@ export type Database = {
           media_consumption?: string | null
           mobile_devices?: string | null
           mobile_phone?: string | null
+          mrr?: number | null
           net_worth?: string | null
           operating_systems?: string | null
           patents?: string | null
@@ -436,6 +447,7 @@ export type Database = {
           personality_traits?: string | null
           pet_ownership?: string | null
           phone_number?: string | null
+          pipeline_stage?: string | null
           political_affiliation?: string | null
           postal_code?: string | null
           programming_languages?: string | null
@@ -473,6 +485,7 @@ export type Database = {
         }
         Update: {
           activities?: string | null
+          arr?: number | null
           awards?: string | null
           birth_date?: string | null
           birth_year?: number | null
@@ -481,6 +494,7 @@ export type Database = {
           children_count?: number | null
           city?: string | null
           client_id?: string | null
+          close_probability?: number | null
           cloud_platforms?: string | null
           communication_tools?: string | null
           company?: string | null
@@ -496,6 +510,7 @@ export type Database = {
           email?: string | null
           enriched_from?: Json | null
           environmental_interests?: string | null
+          expected_close_date?: string | null
           experience_years?: number | null
           facebook_friends?: number | null
           facebook_url?: string | null
@@ -539,6 +554,7 @@ export type Database = {
           job_start_date?: string | null
           job_title?: string | null
           languages?: Json | null
+          last_activity_date?: string | null
           last_contact_date?: string | null
           lifestyle_interests?: string | null
           linkedin_connections?: number | null
@@ -554,6 +570,7 @@ export type Database = {
           media_consumption?: string | null
           mobile_devices?: string | null
           mobile_phone?: string | null
+          mrr?: number | null
           net_worth?: string | null
           operating_systems?: string | null
           patents?: string | null
@@ -561,6 +578,7 @@ export type Database = {
           personality_traits?: string | null
           pet_ownership?: string | null
           phone_number?: string | null
+          pipeline_stage?: string | null
           political_affiliation?: string | null
           postal_code?: string | null
           programming_languages?: string | null

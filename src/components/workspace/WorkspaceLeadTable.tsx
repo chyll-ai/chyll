@@ -47,6 +47,7 @@ import SkillsTagsDisplay from '@/components/leads/SkillsTagsDisplay';
 import LeadDetailCard from '@/components/leads/LeadDetailCard';
 import ColumnVisibilityControl from './ColumnVisibilityControl';
 import { Lead } from '@/types/assistant';
+import SalesDataEditor from '@/components/leads/SalesDataEditor';
 
 const WorkspaceLeadTable: React.FC = () => {
   const navigate = useNavigate();
@@ -65,6 +66,11 @@ const WorkspaceLeadTable: React.FC = () => {
     console.log('Handle status update called:', leadId, newStatus);
     // Refresh the leads data to get the latest status
     await assistantActions.loadLeads();
+  };
+
+  const handleSalesDataUpdate = async (leadId: string, salesData: any) => {
+    console.log('Handle sales data update called:', leadId, salesData);
+    await assistantActions.updateLeadSalesData(leadId, salesData);
   };
 
   const handleSelectLead = (leadId: string, checked: boolean) => {
@@ -461,6 +467,76 @@ const WorkspaceLeadTable: React.FC = () => {
     </div>
   );
 
+  const renderSalesData = (lead: Lead) => (
+    <div className="space-y-1">
+      <div className="flex items-center justify-between">
+        <div className="text-sm font-medium">Sales Data</div>
+        <SalesDataEditor lead={lead} onUpdate={handleSalesDataUpdate} />
+      </div>
+      {lead.mrr && (
+        <div className="flex items-center gap-1 text-xs">
+          <DollarSign className="h-3 w-3 text-green-500" />
+          <span>MRR: ${lead.mrr.toLocaleString()}</span>
+        </div>
+      )}
+      {lead.arr && (
+        <div className="flex items-center gap-1 text-xs">
+          <TrendingUp className="h-3 w-3 text-blue-500" />
+          <span>ARR: ${lead.arr.toLocaleString()}</span>
+        </div>
+      )}
+    </div>
+  );
+
+  const renderPipelineStage = (lead: Lead) => (
+    <div className="space-y-1">
+      {lead.pipeline_stage && (
+        <Badge variant="outline" className="text-xs">
+          {lead.pipeline_stage}
+        </Badge>
+      )}
+      {lead.close_probability !== null && lead.close_probability !== undefined && (
+        <div className="flex items-center gap-1 text-xs">
+          <Target className="h-3 w-3" />
+          <span>{lead.close_probability}%</span>
+        </div>
+      )}
+    </div>
+  );
+
+  const renderRevenueMetrics = (lead: Lead) => (
+    <div className="space-y-1">
+      <div className="grid grid-cols-1 gap-1">
+        {lead.mrr && (
+          <div className="text-xs">
+            <span className="text-muted-foreground">MRR:</span> ${lead.mrr.toLocaleString()}
+          </div>
+        )}
+        {lead.arr && (
+          <div className="text-xs">
+            <span className="text-muted-foreground">ARR:</span> ${lead.arr.toLocaleString()}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
+  const renderDealTimeline = (lead: Lead) => (
+    <div className="space-y-1">
+      {lead.expected_close_date && (
+        <div className="flex items-center gap-1 text-xs">
+          <Calendar className="h-3 w-3" />
+          <span>Close: {new Date(lead.expected_close_date).toLocaleDateString()}</span>
+        </div>
+      )}
+      {lead.last_activity_date && (
+        <div className="text-xs text-muted-foreground">
+          Last activity: {new Date(lead.last_activity_date).toLocaleDateString()}
+        </div>
+      )}
+    </div>
+  );
+
   return (
     <Card className="w-full h-full flex flex-col">
       <CardHeader className="pb-3 flex-shrink-0">
@@ -562,6 +638,10 @@ const WorkspaceLeadTable: React.FC = () => {
                           {column.key === 'contact_info' && renderContactInfo(lead)}
                           {column.key === 'company_role' && renderCompanyRole(lead)}
                           {column.key === 'location' && renderLocation(lead)}
+                          {column.key === 'sales_data' && renderSalesData(lead)}
+                          {column.key === 'pipeline_stage' && renderPipelineStage(lead)}
+                          {column.key === 'revenue_metrics' && renderRevenueMetrics(lead)}
+                          {column.key === 'deal_timeline' && renderDealTimeline(lead)}
                           {column.key === 'experience' && renderExperience(lead)}
                           {column.key === 'skills' && renderSkills(lead)}
                           {column.key === 'education' && renderEducation(lead)}

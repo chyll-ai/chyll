@@ -16,6 +16,12 @@ export const useColumnVisibility = () => {
     { key: 'location', label: 'Location', visible: true, category: 'Basic' },
     { key: 'status', label: 'Status', visible: true, category: 'Basic' },
     
+    // Sales & Pipeline
+    { key: 'sales_data', label: 'Sales Data', visible: false, category: 'Sales' },
+    { key: 'pipeline_stage', label: 'Pipeline Stage', visible: false, category: 'Sales' },
+    { key: 'revenue_metrics', label: 'Revenue Metrics', visible: false, category: 'Sales' },
+    { key: 'deal_timeline', label: 'Deal Timeline', visible: false, category: 'Sales' },
+    
     // Professional
     { key: 'experience', label: 'Experience', visible: false, category: 'Professional' },
     { key: 'skills', label: 'Skills', visible: false, category: 'Professional' },
