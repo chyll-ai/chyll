@@ -123,7 +123,35 @@ const LeadsTable: React.FC<LeadsTableProps> = ({ userId }) => {
       console.log('LeadsTable: Fetching leads for client_id:', clientId);
       const { data, error } = await supabase
         .from('leads')
-        .select('*')
+        .select(`
+          id,
+          client_id,
+          full_name,
+          email,
+          phone_number,
+          job_title,
+          company,
+          location,
+          linkedin_url,
+          github_url,
+          twitter_url,
+          facebook_url,
+          job_company_industry,
+          job_company_size,
+          job_company_website,
+          job_seniority,
+          experience_years,
+          headline,
+          summary,
+          skills,
+          languages,
+          education,
+          certifications,
+          status,
+          created_at,
+          enriched_from,
+          linkedin_profile_data
+        `)
         .eq('client_id', clientId)
         .order('created_at', { ascending: false });
 
