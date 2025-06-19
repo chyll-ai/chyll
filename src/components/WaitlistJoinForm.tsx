@@ -7,7 +7,7 @@ import { Mail, Sparkles } from 'lucide-react';
 import { useWaitlist } from '@/hooks/useWaitlist';
 
 interface WaitlistJoinFormProps {
-  onSuccess: () => void;
+  onSuccess: (data: any) => void;
   referralCode?: string;
 }
 
@@ -20,8 +20,8 @@ const WaitlistJoinForm: React.FC<WaitlistJoinFormProps> = ({ onSuccess, referral
     if (!email) return;
 
     try {
-      await joinWaitlist(email, referralCode);
-      onSuccess();
+      const data = await joinWaitlist(email, referralCode);
+      onSuccess(data);
     } catch (error) {
       // Error is handled in the hook
     }

@@ -8,15 +8,14 @@ import Header from '@/components/layout/Header';
 import { Footer2 } from '@/components/ui/footer2';
 import WaitlistJoinForm from '@/components/WaitlistJoinForm';
 import WaitlistConfirmation from '@/components/WaitlistConfirmation';
-import { useAuth } from '@/context/AuthContext';
 import { useWaitlist } from '@/hooks/useWaitlist';
 
 const WaitlistSubscription = () => {
   const [searchParams] = useSearchParams();
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [waitlistData, setWaitlistData] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
-  const { user } = useAuth();
-  const { waitlistData, loadWaitlistData } = useWaitlist();
+  const { loadWaitlistData } = useWaitlist();
   const referralCode = searchParams.get('ref');
 
   useEffect(() => {
@@ -30,18 +29,15 @@ const WaitlistSubscription = () => {
   }, []);
 
   useEffect(() => {
-    if (user) {
-      loadWaitlistData();
+    // Check if user already has waitlist data in localStorage
+    const savedEmail = localStorage.getItem('waitlist_email');
+    if (savedEmail) {
+      loadWaitlistData(savedEmail);
     }
-  }, [user]);
+  }, []);
 
-  useEffect(() => {
-    if (waitlistData) {
-      setShowConfirmation(true);
-    }
-  }, [waitlistData]);
-
-  const handleWaitlistSuccess = () => {
+  const handleWaitlistSuccess = (data: any) => {
+    setWaitlistData(data);
     setShowConfirmation(true);
   };
 
@@ -62,7 +58,10 @@ const WaitlistSubscription = () => {
                 Retour à l'accueil
               </Link>
 
-              <WaitlistConfirmation isMobile={isMobile} />
+              <WaitlistConfirmation 
+                isMobile={isMobile} 
+                waitlistData={waitlistData}
+              />
             </div>
           </div>
         </div>

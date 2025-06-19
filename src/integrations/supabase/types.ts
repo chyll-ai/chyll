@@ -492,6 +492,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: Json
       }
+      get_waitlist_data_by_email: {
+        Args: { p_email: string }
+        Returns: Json
+      }
       handle_waitlist_signup: {
         Args: { p_email: string; p_referral_code?: string }
         Returns: Json

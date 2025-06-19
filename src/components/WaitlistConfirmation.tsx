@@ -21,7 +21,6 @@ import {
   MessageCircle
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { supabase } from '@/lib/supabase';
 import confetti from 'canvas-confetti';
 
 interface WaitlistData {
@@ -37,15 +36,17 @@ interface WaitlistData {
 interface WaitlistConfirmationProps {
   onClose?: () => void;
   isMobile?: boolean;
+  waitlistData?: WaitlistData;
 }
 
-const WaitlistConfirmation: React.FC<WaitlistConfirmationProps> = ({ onClose, isMobile = false }) => {
-  const [waitlistData, setWaitlistData] = useState<WaitlistData | null>(null);
-  const [loading, setLoading] = useState(true);
+const WaitlistConfirmation: React.FC<WaitlistConfirmationProps> = ({ 
+  onClose, 
+  isMobile = false, 
+  waitlistData 
+}) => {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    loadWaitlistData();
     // Trigger confetti animation
     confetti({
       particleCount: 100,
@@ -54,44 +55,15 @@ const WaitlistConfirmation: React.FC<WaitlistConfirmationProps> = ({ onClose, is
     });
   }, []);
 
-  const loadWaitlistData = async () => {
-    try {
-      const { data, error } = await supabase.rpc('get_waitlist_data');
-      if (error) throw error;
-      if (data) {
-        setWaitlistData(data);
-      }
-    } catch (error) {
-      console.error('Error loading waitlist data:', error);
-      toast.error('Erreur lors du chargement des données');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleDiscordJoin = async () => {
-    if (waitlistData?.discord_joined) {
-      window.open('https://discord.gg/chyll', '_blank');
-      return;
-    }
-
-    try {
-      const { data, error } = await supabase.rpc('update_discord_status');
-      if (error) throw error;
-      if (data) {
-        setWaitlistData(data);
-        toast.success('🎉 +50 points ajoutés !');
-      }
-      window.open('https://discord.gg/chyll', '_blank');
-    } catch (error) {
-      console.error('Error updating Discord status:', error);
-      toast.error('Erreur lors de la mise à jour');
-    }
+    // For anonymous users, just open Discord link
+    window.open('https://discord.gg/chyll', '_blank');
+    toast.info('Rejoignez notre Discord pour obtenir des points bonus !');
   };
 
   const getReferralUrl = () => {
     if (!waitlistData) return '';
-    return `${window.location.origin}/?ref=${waitlistData.referral_code}`;
+    return `${window.location.origin}/waitlist-subscription?ref=${waitlistData.referral_code}`;
   };
 
   const copyReferralLink = async () => {
@@ -147,14 +119,6 @@ const WaitlistConfirmation: React.FC<WaitlistConfirmationProps> = ({ onClose, is
     const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(getReferralUrl())}`;
     window.open(qrUrl, '_blank');
   };
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center p-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
-      </div>
-    );
-  }
 
   if (!waitlistData) {
     return (
@@ -303,7 +267,7 @@ const WaitlistConfirmation: React.FC<WaitlistConfirmationProps> = ({ onClose, is
       <div className="text-center space-y-4">
         <div className="flex items-center justify-center gap-2">
           <Gift className="h-5 w-5 text-purple-500" />
-          <span className="font-medium">Connectez-vous avec nous +50 points</span>
+          <span className="font-medium">Connectez-vous avec nous</span>
         </div>
         <Button 
           onClick={handleDiscordJoin}
@@ -311,11 +275,11 @@ const WaitlistConfirmation: React.FC<WaitlistConfirmationProps> = ({ onClose, is
           size="lg"
           className="w-full md:w-auto"
         >
-          {waitlistData.discord_joined ? 'Rejoindre Discord' : 'Rejoindre Discord (+50 points)'}
+          Rejoindre Discord
         </Button>
-        {waitlistData.discord_joined && (
-          <p className="text-sm text-green-600">✅ Vous avez déjà rejoint Discord !</p>
-        )}
+        <p className="text-sm text-muted-foreground">
+          Rejoignez notre communauté Discord pour des mises à jour exclusives !
+        </p>
       </div>
     </div>
   );
