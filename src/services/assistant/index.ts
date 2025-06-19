@@ -16,6 +16,8 @@ export class AssistantService {
   private userId: string;
   private apiClient: APIClient;
   private onLeadsUpdate?: (leads: Lead[]) => void;
+  private generatedNames: Set<string> = new Set();
+  private generatedEmails: Set<string> = new Set();
 
   constructor(userId: string) {
     this.userId = userId;
