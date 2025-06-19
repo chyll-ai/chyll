@@ -263,7 +263,7 @@ const WorkspaceLeadTable: React.FC = () => {
                       {/* Status */}
                       <TableCell>
                         <LeadStatusSelector 
-                          lead={lead as Lead} 
+                          lead={lead} 
                           onStatusUpdate={handleStatusUpdate}
                         />
                       </TableCell>
@@ -277,7 +277,7 @@ const WorkspaceLeadTable: React.FC = () => {
                                 variant="ghost"
                                 size="sm"
                                 className="h-6 w-6 p-0"
-                                onClick={() => setSelectedLead(lead as Lead)}
+                                onClick={() => setSelectedLead(lead)}
                               >
                                 <Eye className="h-3 w-3" />
                               </Button>
@@ -287,7 +287,7 @@ const WorkspaceLeadTable: React.FC = () => {
                             </DialogContent>
                           </Dialog>
                           <LeadActionsMenu 
-                            lead={lead as Lead} 
+                            lead={lead} 
                             onStatusUpdate={handleStatusUpdate}
                           />
                         </div>
