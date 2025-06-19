@@ -1,4 +1,3 @@
-
 import { useState, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import { usePDLEnrichment } from './usePDLEnrichment';
@@ -51,7 +50,6 @@ export const useAssistantActions = () => {
           status,
           created_at,
           enriched_from,
-          email_jobs,
           linkedin_profile_data
         `)
         .eq('client_id', user.id)

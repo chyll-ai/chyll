@@ -38,12 +38,6 @@ export interface Lead {
     timestamp: string;
     notes?: string;
   };
-  email_jobs?: {
-    status: string;
-    sent_at: string;
-    subject: string;
-    body: string;
-  }[];
   linkedin_profile_data?: {
     headline?: string;
     summary?: string;
