@@ -3,7 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { User, Mail, Phone, MapPin, Calendar, Briefcase } from 'lucide-react';
+import { User, Mail, Phone, MapPin, Calendar, Briefcase, GraduationCap, Award } from 'lucide-react';
 import { Lead } from '@/types/assistant';
 import SocialLinksDisplay from './SocialLinksDisplay';
 import CompanyInfoDisplay from './CompanyInfoDisplay';
@@ -40,15 +40,20 @@ const LeadDetailCard: React.FC<LeadDetailCardProps> = ({ lead, className = "" })
 
   return (
     <Card className={`w-full ${className}`}>
-      <CardHeader className="pb-3">
+      <CardHeader className="pb-4">
         <div className="flex items-start justify-between">
-          <div className="space-y-1">
-            <CardTitle className="flex items-center gap-2 text-lg">
+          <div className="space-y-2">
+            <CardTitle className="flex items-center gap-2 text-xl">
               <User className="h-5 w-5 text-primary" />
               {lead.full_name}
             </CardTitle>
             {lead.headline && (
               <p className="text-sm text-muted-foreground font-medium">{lead.headline}</p>
+            )}
+            {lead.experience_years && (
+              <Badge variant="outline" className="text-xs">
+                {lead.experience_years} years experience
+              </Badge>
             )}
           </div>
           <SocialLinksDisplay
@@ -61,11 +66,14 @@ const LeadDetailCard: React.FC<LeadDetailCardProps> = ({ lead, className = "" })
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-6">
         {/* Contact Information */}
-        <div className="space-y-2">
-          <h4 className="text-sm font-semibold text-foreground">Contact</h4>
-          <div className="space-y-1 text-sm">
+        <div className="space-y-3">
+          <h4 className="text-sm font-semibold text-foreground flex items-center gap-2">
+            <Mail className="h-4 w-4" />
+            Contact Information
+          </h4>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
             {lead.email && (
               <div className="flex items-center gap-2">
                 <Mail className="h-4 w-4 text-muted-foreground" />
@@ -86,63 +94,105 @@ const LeadDetailCard: React.FC<LeadDetailCardProps> = ({ lead, className = "" })
                 <span>{lead.location}</span>
               </div>
             )}
+            {lead.mobile_phone && (
+              <div className="flex items-center gap-2">
+                <Phone className="h-4 w-4 text-muted-foreground" />
+                <span className="text-xs text-muted-foreground">Mobile: {lead.mobile_phone}</span>
+              </div>
+            )}
           </div>
         </div>
 
         <Separator />
 
-        {/* Job Information */}
-        <div className="space-y-2">
-          <h4 className="text-sm font-semibold text-foreground">Professional</h4>
-          <div className="flex items-center gap-2 text-sm">
-            <Briefcase className="h-4 w-4 text-muted-foreground" />
-            <span className="font-medium">{lead.job_title}</span>
-            {lead.experience_years && (
-              <Badge variant="outline" className="text-xs">
-                {lead.experience_years}y exp
-              </Badge>
+        {/* Professional Information */}
+        <div className="space-y-3">
+          <h4 className="text-sm font-semibold text-foreground flex items-center gap-2">
+            <Briefcase className="h-4 w-4" />
+            Professional Details
+          </h4>
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 text-sm">
+              <span className="font-medium">{lead.job_title}</span>
+              {lead.job_seniority && (
+                <Badge variant="outline" className="text-xs">
+                  {lead.job_seniority}
+                </Badge>
+              )}
+            </div>
+            <CompanyInfoDisplay
+              company={lead.company}
+              job_company_industry={lead.job_company_industry}
+              job_company_size={lead.job_company_size}
+              job_company_website={lead.job_company_website}
+              job_seniority={lead.job_seniority}
+            />
+            {lead.management_level && (
+              <div className="text-sm text-muted-foreground">
+                Management Level: {lead.management_level}
+              </div>
             )}
           </div>
-          <CompanyInfoDisplay
-            company={lead.company}
-            job_company_industry={lead.job_company_industry}
-            job_company_size={lead.job_company_size}
-            job_company_website={lead.job_company_website}
-            job_seniority={lead.job_seniority}
-          />
         </div>
 
         {lead.summary && (
           <>
             <Separator />
             <div className="space-y-2">
-              <h4 className="text-sm font-semibold text-foreground">Summary</h4>
+              <h4 className="text-sm font-semibold text-foreground">Professional Summary</h4>
               <p className="text-sm text-muted-foreground leading-relaxed">{lead.summary}</p>
             </div>
           </>
         )}
 
-        {(lead.skills || lead.languages) && (
+        {/* Skills & Technologies */}
+        {(lead.skills || lead.languages || lead.programming_languages) && (
           <>
             <Separator />
-            <div className="space-y-2">
-              <h4 className="text-sm font-semibold text-foreground">Skills & Languages</h4>
-              <SkillsTagsDisplay skills={lead.skills} languages={lead.languages} />
+            <div className="space-y-3">
+              <h4 className="text-sm font-semibold text-foreground">Skills & Technologies</h4>
+              <div className="space-y-2">
+                <SkillsTagsDisplay skills={lead.skills} languages={lead.languages} />
+                {lead.programming_languages && (
+                  <div className="text-sm">
+                    <span className="font-medium">Programming: </span>
+                    <span className="text-muted-foreground">{lead.programming_languages}</span>
+                  </div>
+                )}
+                {lead.technology_skills && (
+                  <div className="text-sm">
+                    <span className="font-medium">Technologies: </span>
+                    <span className="text-muted-foreground">{lead.technology_skills}</span>
+                  </div>
+                )}
+              </div>
             </div>
           </>
         )}
 
+        {/* Education */}
         {education.length > 0 && (
           <>
             <Separator />
-            <div className="space-y-2">
-              <h4 className="text-sm font-semibold text-foreground">Education</h4>
-              <div className="space-y-2">
-                {education.slice(0, 2).map((edu: any, index: number) => (
-                  <div key={index} className="text-sm">
-                    <div className="font-medium">{edu.school?.name || 'Unknown School'}</div>
-                    {edu.degrees && edu.degrees.length > 0 && (
-                      <div className="text-muted-foreground">{edu.degrees.join(', ')}</div>
+            <div className="space-y-3">
+              <h4 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                <GraduationCap className="h-4 w-4" />
+                Education
+              </h4>
+              <div className="space-y-3">
+                {education.slice(0, 3).map((edu: any, index: number) => (
+                  <div key={index} className="border-l-2 border-primary/20 pl-3">
+                    <div className="font-medium text-sm">
+                      {edu.school || 'Institution'}
+                    </div>
+                    {edu.degree && (
+                      <div className="text-sm text-muted-foreground">{edu.degree}</div>
+                    )}
+                    {edu.field && (
+                      <div className="text-xs text-muted-foreground">Field: {edu.field}</div>
+                    )}
+                    {edu.year && (
+                      <div className="text-xs text-muted-foreground">Year: {edu.year}</div>
                     )}
                   </div>
                 ))}
@@ -151,20 +201,51 @@ const LeadDetailCard: React.FC<LeadDetailCardProps> = ({ lead, className = "" })
           </>
         )}
 
+        {/* Certifications */}
         {certifications.length > 0 && (
           <>
             <Separator />
-            <div className="space-y-2">
-              <h4 className="text-sm font-semibold text-foreground">Certifications</h4>
-              <div className="space-y-1">
-                {certifications.slice(0, 3).map((cert: any, index: number) => (
-                  <div key={index} className="text-sm">
-                    <span className="font-medium">{cert.name}</span>
-                    {cert.organization && (
-                      <span className="text-muted-foreground"> - {cert.organization}</span>
-                    )}
-                  </div>
+            <div className="space-y-3">
+              <h4 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                <Award className="h-4 w-4" />
+                Certifications
+              </h4>
+              <div className="flex flex-wrap gap-2">
+                {certifications.slice(0, 5).map((cert: any, index: number) => (
+                  <Badge key={index} variant="secondary" className="text-xs">
+                    {typeof cert === 'string' ? cert : cert.name || 'Certification'}
+                  </Badge>
                 ))}
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* Sales Data */}
+        {(lead.mrr || lead.arr || lead.pipeline_stage) && (
+          <>
+            <Separator />
+            <div className="space-y-3">
+              <h4 className="text-sm font-semibold text-foreground">Sales Information</h4>
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                {lead.mrr && (
+                  <div>
+                    <span className="font-medium">MRR: </span>
+                    <span className="text-green-600">${lead.mrr.toLocaleString()}</span>
+                  </div>
+                )}
+                {lead.arr && (
+                  <div>
+                    <span className="font-medium">ARR: </span>
+                    <span className="text-blue-600">${lead.arr.toLocaleString()}</span>
+                  </div>
+                )}
+                {lead.pipeline_stage && (
+                  <div className="col-span-2">
+                    <span className="font-medium">Pipeline: </span>
+                    <Badge variant="outline">{lead.pipeline_stage}</Badge>
+                  </div>
+                )}
               </div>
             </div>
           </>
@@ -180,6 +261,9 @@ const LeadDetailCard: React.FC<LeadDetailCardProps> = ({ lead, className = "" })
           {lead.enriched_from && (
             <div>Source: {lead.enriched_from.source}</div>
           )}
+          <div className="text-xs text-primary/70">
+            Status: <Badge variant="outline" className="text-xs">{lead.status}</Badge>
+          </div>
         </div>
       </CardContent>
     </Card>
