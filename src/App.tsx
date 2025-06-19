@@ -6,8 +6,8 @@ import { LanguageProvider } from './context/LanguageContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import SuperadminGuard from './components/SuperadminGuard';
 import SEOMetadata from './components/SEOMetadata';
-import AuthCallback from './pages/auth/AuthCallback';
-import AuthConfirm from './pages/auth/AuthConfirm';
+import AuthCallback from './routes/auth/callback';
+import AuthConfirm from './routes/auth/confirm';
 import NotFound from './pages/NotFound';
 
 // Lazy-loaded components
@@ -31,7 +31,7 @@ const WaitlistSubscription = lazy(() => import('./pages/WaitlistSubscription'));
 const Privacy = lazy(() => import('./pages/Privacy'));
 const Terms = lazy(() => import('./pages/Terms'));
 const Cookies = lazy(() => import('./pages/Cookies'));
-const WaitlistManagement = lazy(() => import('./pages/admin/WaitlistManagement'));
+const WaitlistManagement = lazy(() => import('./pages/WaitlistManagement'));
 
 // Create a client
 const queryClient = new QueryClient({
@@ -49,7 +49,10 @@ function App() {
       <AuthProvider>
         <LanguageProvider>
           <Router>
-            <SEOMetadata />
+            <SEOMetadata 
+              title="Chyll - AI-Powered CRM for Modern Business"
+              description="Revolutionize your customer relationships with Chyll, the AI-driven CRM designed to streamline your sales process and boost productivity."
+            />
             <Routes>
               <Route path="/" element={<Suspense fallback={<div>Loading...</div>}><Index /></Suspense>} />
               <Route path="/login" element={<Suspense fallback={<div>Loading...</div>}><Login /></Suspense>} />

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import { Footer2 } from '@/components/ui/footer2';
@@ -101,7 +100,7 @@ const Blog = () => {
         ogType="website"
       />
       
-      <Navbar currentPath={location.pathname} />
+      <Navbar />
       
       <section className="bg-indigo-50 py-20">
         <div className="container-custom">

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import { Footer2 } from '@/components/ui/footer2';
@@ -28,7 +27,7 @@ const FAQ = () => {
   
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar currentPath={location.pathname} />
+      <Navbar />
       
       <section className="bg-indigo-50 py-12 sm:py-20">
         <div className="container-custom">

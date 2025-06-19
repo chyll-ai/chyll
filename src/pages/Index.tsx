@@ -1,25 +1,23 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { RootLayout } from '@/components/RootLayout';
-import { SEOMetadata } from '@/components/SEOMetadata';
+import Header from '@/components/layout/Header';
+import { Footer2 } from '@/components/ui/footer2';
+import SEOMetadata from '@/components/SEOMetadata';
 import { useAuth } from '@/context/AuthContext';
 import { ArrowRight, Rocket } from 'lucide-react';
-import { Pricing } from '@/components/Pricing';
-import { Testimonials } from '@/components/Testimonials';
-import { Features } from '@/components/Features';
-import { FAQ } from '@/components/FAQ';
-import { WaitlistForm } from '@/components/WaitlistForm';
 
 const Index = () => {
   const { isAuthenticated } = useAuth();
 
   return (
-    <RootLayout>
+    <>
+      <Header />
       <SEOMetadata
         title="Chyll - AI-Powered CRM for Modern Business"
         description="Revolutionize your customer relationships with Chyll, the AI-driven CRM designed to streamline your sales process and boost productivity."
-        keywords="CRM, AI, Sales, Automation, Lead Management, Customer Relationship Management"
+        keywords={["CRM", "AI", "Sales", "Automation", "Lead Management", "Customer Relationship Management"]}
       />
       
       <section className="relative py-20 lg:py-32 overflow-hidden">
@@ -53,16 +51,8 @@ const Index = () => {
         </div>
       </section>
       
-      <Features />
-      
-      <Pricing />
-      
-      <Testimonials />
-      
-      <FAQ />
-
-      <WaitlistForm />
-    </RootLayout>
+      <Footer2 />
+    </>
   );
 };
 
