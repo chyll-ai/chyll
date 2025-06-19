@@ -28,16 +28,20 @@ function App() {
               <Toaster />
               <Sonner />
               <Router>
-                <RootLayout>
-                  <Routes>
-                    <Route path="/" element={<AssistantPage />} />
-                    <Route path="/login" element={<LoginPage />} />
-                    <Route path="/register" element={<RegisterPage />} />
-                    <Route path="/pricing" element={<PricingPage />} />
-                    <Route path="/workspace" element={<WorkspacePage />} />
-                    <Route path="/closed-beta-demo" element={<ClosedBetaDemo />} />
-                  </Routes>
-                </RootLayout>
+                <Routes>
+                  <Route path="/*" element={
+                    <RootLayout>
+                      <Routes>
+                        <Route path="/" element={<AssistantPage />} />
+                        <Route path="/login" element={<LoginPage />} />
+                        <Route path="/register" element={<RegisterPage />} />
+                        <Route path="/pricing" element={<PricingPage />} />
+                        <Route path="/workspace" element={<WorkspacePage />} />
+                        <Route path="/closed-beta-demo" element={<ClosedBetaDemo />} />
+                      </Routes>
+                    </RootLayout>
+                  } />
+                </Routes>
               </Router>
             </TooltipProvider>
           </LanguageProvider>
