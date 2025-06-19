@@ -5,7 +5,7 @@ import { useTranslate, useTolgee } from '@tolgee/react';
 interface LanguageContextType {
   language: string;
   changeLanguage: (lang: string) => void;
-  t: ReturnType<typeof useTranslate>;
+  t: ReturnType<typeof useTranslate>['t'];
 }
 
 const LanguageContext = createContext<LanguageContextType | null>(null);
