@@ -174,6 +174,7 @@ export type Database = {
         Row: {
           body: string | null
           client_id: string | null
+          created_at: string | null
           error: string | null
           id: string
           lead_id: string | null
@@ -181,10 +182,12 @@ export type Database = {
           status: string | null
           subject: string | null
           type: string | null
+          updated_at: string | null
         }
         Insert: {
           body?: string | null
           client_id?: string | null
+          created_at?: string | null
           error?: string | null
           id?: string
           lead_id?: string | null
@@ -192,10 +195,12 @@ export type Database = {
           status?: string | null
           subject?: string | null
           type?: string | null
+          updated_at?: string | null
         }
         Update: {
           body?: string | null
           client_id?: string | null
+          created_at?: string | null
           error?: string | null
           id?: string
           lead_id?: string | null
@@ -203,6 +208,7 @@ export type Database = {
           status?: string | null
           subject?: string | null
           type?: string | null
+          updated_at?: string | null
         }
         Relationships: [
           {

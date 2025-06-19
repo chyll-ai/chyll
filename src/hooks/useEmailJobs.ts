@@ -13,7 +13,8 @@ interface EmailJob {
   type: 'cold_email' | 'followup_1' | 'followup_2';
   sent_at?: string;
   error?: string;
-  created_at?: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export const useEmailJobs = () => {
