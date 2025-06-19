@@ -1,3 +1,4 @@
+
 export const fr = {
   common: {
     bookDemo: "Réserver une démo",
@@ -209,36 +210,60 @@ export const fr = {
   },
   faq: {
     general: {
-      title: "Questions générales",
+      title: "Questions générales sur chyll",
       items: [
         {
-          question: "C'est quoi chyll ?",
-          answer: "chyll est un assistant commercial IA pour les entreprises modernes. Il automatise votre prospection B2B sans nécessiter de compétences techniques."
+          question: "Qu'est-ce que chyll exactement ?",
+          answer: "chyll est un assistant commercial IA spécialisé dans la prospection B2B automatisée. Il identifie, enrichit et organise vos prospects qualifiés sans effort technique de votre part."
         },
         {
-          question: "Combien de temps faut-il pour déployer chyll ?",
-          answer: "Votre assistant chyll est prêt en 48h maximum. Notre équipe s'occupe de toute la configuration et l'intégration pour vous."
+          question: "En combien de temps chyll est-il opérationnel ?",
+          answer: "Votre assistant chyll est configuré et opérationnel en 48h maximum. Notre équipe s'occupe de toute la mise en place selon vos besoins spécifiques."
+        },
+        {
+          question: "Quel ROI puis-je attendre avec chyll ?",
+          answer: "Nos clients constatent en moyenne : temps de prospection divisé par 5, taux de conversion augmenté de 40%, et coût par lead réduit de 60%."
         }
       ]
     },
     aiEmployees: {
-      title: "Les IA de chyll",
+      title: "L'IA de prospection chyll",
       items: [
         {
-          question: "Comment sont formées les IA de chyll ?",
-          answer: "Nos IA sont formées sur des données spécifiques à votre secteur et à votre entreprise pour garantir des résultats pertinents."
+          question: "Comment l'IA de chyll trouve-t-elle des prospects qualifiés ?",
+          answer: "chyll utilise des algorithmes d'IA avancés pour scanner LinkedIn et d'autres sources professionnelles, identifier les profils correspondant à vos personas, puis enrichir automatiquement ces données avec des informations de contact vérifiées."
+        },
+        {
+          question: "Puis-je personnaliser mes critères de prospection ?",
+          answer: "Absolument ! Vous définissez précisément vos personas selon le secteur, la taille d'entreprise, les fonctions, la localisation, et bien d'autres critères. chyll s'adapte parfaitement à vos besoins spécifiques."
+        },
+        {
+          question: "Quelles données puis-je obtenir sur mes prospects ?",
+          answer: "Pour chaque prospect : coordonnées complètes (email + téléphone), informations professionnelles, données d'entreprise, profils sociaux, historique professionnel, compétences - le tout enrichi automatiquement."
+        },
+        {
+          question: "Comment accéder à mes prospects enrichis ?",
+          answer: "Via votre interface CRM personnalisée accessible 24/7. Vous pouvez filtrer, trier, exporter vos prospects, suivre leur statut, et partager l'accès avec votre équipe."
+        },
+        {
+          question: "chyll s'intègre-t-il avec mon CRM existant ?",
+          answer: "Oui ! chyll s'intègre nativement avec Airtable et se connecte avec Salesforce, HubSpot, Pipedrive et d'autres CRM populaires. Des intégrations personnalisées sont possibles."
+        },
+        {
+          question: "Mes données prospects sont-elles sécurisées ?",
+          answer: "Totalement. Votre espace est isolé et protégé avec un chiffrement de niveau entreprise. Aucune donnée n'est partagée et vous gardez le contrôle complet avec possibilité d'export à tout moment."
         }
       ]
     },
     stillHaveQuestions: {
-      title: "Vous avez encore des questions ?",
-      description: "Contactez-nous pour en savoir plus sur chyll et comment il peut aider votre entreprise."
+      title: "D'autres questions sur chyll ?",
+      description: "Notre équipe est là pour vous expliquer comment chyll peut transformer votre prospection B2B. Contactez-nous pour en savoir plus."
     },
-    lastUpdated: "Dernière mise à jour : 13 mai 2025"
+    lastUpdated: "Dernière mise à jour : Juin 2025"
   },
   notFound: {
     title: "Page non trouvée",
-    message: "Désolé, la page que vous recherchez n'existe pas ou a été déplacée.",
+    message: "Désolé, la page que vous recherchez n'existe pas ou a été déplacé.",
     button: "Retour à l'accueil"
   }
 };

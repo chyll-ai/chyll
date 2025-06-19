@@ -13,43 +13,42 @@ import { useLanguage } from '@/context/LanguageContext';
 export function FAQSection() {
   const { language, t } = useLanguage();
   
-  // Default FAQ items for the homepage
+  // Updated FAQ items focused on chyll's B2B prospecting automation
   const defaultFaqItems = [
     {
-      question: "📈 Quel type de résultats puis-je attendre ?",
-      answer: "Nos utilisateurs constatent en moyenne : Un temps de prospection divisé par 5, une baisse significative du coût par lead, une meilleure priorisation des prospects réellement activables."
+      question: "🎯 Comment chyll automatise-t-il ma prospection B2B ?",
+      answer: "chyll utilise l'IA pour identifier automatiquement les prospects qualifiés selon vos critères (secteur, taille d'entreprise, fonction). Il enrichit ensuite ces profils avec des emails professionnels vérifiés et des numéros de téléphone directs, puis synchronise tout dans votre CRM personnalisé."
     },
     {
-      question: "🔍 Comment utiliser efficacement les personas LinkedIn ?",
-      answer: "Nos personas vous permettent de définir précisément votre cible idéale selon le poste, l'industrie, la taille d'entreprise et d'autres critères pertinents. Vous pouvez créer autant de personas que nécessaire pour vos différentes campagnes."
+      question: "📊 Quelles données puis-je obtenir sur mes prospects ?",
+      answer: "Pour chaque prospect, chyll vous fournit : coordonnées complètes (email + téléphone), informations professionnelles détaillées, données sur l'entreprise, profils sociaux, historique professionnel, compétences, et bien plus - le tout enrichi automatiquement."
     },
     {
-      question: "📱 Comment sont actualisées les données de contact ?",
-      answer: "Selon votre forfait, nous mettons à jour les informations quotidiennement ou en temps réel, garantissant que vous travaillez toujours avec les contacts les plus récents et précis pour votre prospection."
+      question: "⚡ En combien de temps puis-je avoir mes premiers prospects ?",
+      answer: "Votre assistant chyll est opérationnel en 48h maximum. Une fois configuré selon vos personas et critères, il commence immédiatement à identifier et enrichir vos prospects. Vous pouvez voir les premiers résultats dès les premières heures."
     },
     {
-      question: "🤖 Est-ce que c'est un chatbot ou un outil de messagerie ?",
-      answer: "Non. chyll n'écrit pas aux leads à votre place. C'est un outil d'aide à la prospection, pas un outil d'email automation. Il vous fournit des leads enrichis, organisés, et suivis — à vous de décider comment les contacter."
+      question: "🔄 Comment fonctionne l'intégration avec mon CRM ?",
+      answer: "chyll s'intègre nativement avec Airtable et peut se connecter à la plupart des CRM populaires. Tous vos prospects enrichis sont automatiquement organisés dans une interface claire, accessible 24/7, que vous pouvez partager avec votre équipe."
     },
     {
-      question: "👥 À qui s'adresse chyll ?",
-      answer: "chyll est conçu pour : Les fondateurs de startups, les freelances en B2B, les commerciaux en PME ou agences, les équipes marketing/growth qui veulent gagner du temps et scaler sans recruter."
+      question: "🎨 Puis-je personnaliser mes critères de recherche ?",
+      answer: "Absolument ! Vous définissez précisément vos personas : secteurs d'activité, taille d'entreprise, fonctions ciblées, localisation, mots-clés spécifiques, etc. chyll s'adapte parfaitement à vos besoins de prospection spécifiques."
     },
     {
-      question: "💼 Combien de contacts puis-je générer par mois ?",
-      answer: "Le volume dépend de votre forfait : 50 contacts par mois avec Starter, 100 avec Growth et 200 avec Scale. Chaque contact comprend à la fois un email vérifié et un numéro de téléphone direct."
+      question: "📈 Quel ROI puis-je espérer avec chyll ?",
+      answer: "Nos clients constatent en moyenne : temps de prospection divisé par 5, taux de conversion augmenté de 40%, coût par lead réduit de 60%, et plus de temps pour se concentrer sur les conversations qui comptent vraiment."
     },
     {
-      question: "🔐 Mes données sont-elles sécurisées ?",
-      answer: "Oui. Votre espace est isolé, protégé, et aucune donnée n'est partagée ou exposée à des tiers. Vous gardez le contrôle complet sur vos contacts."
+      question: "🔐 Mes données prospects sont-elles sécurisées ?",
+      answer: "Oui, totalement. Votre espace chyll est isolé et protégé. Aucune donnée n'est partagée avec des tiers. Vous gardez le contrôle complet sur vos prospects et pouvez exporter toutes vos données à tout moment."
     },
     {
-      question: "💳 Comment s'abonner ?",
-      answer: "Il vous suffit de démarrer l'essai gratuit de 14 jours. Notre équipe vous accompagnera dans la configuration de vos personas et la mise en place de votre interface CRM personnalisée."
+      question: "💼 chyll remplace-t-il mon équipe commerciale ?",
+      answer: "Non ! chyll automatise uniquement les tâches chronophages de recherche et d'enrichissement. Vous restez maître de la relation client : c'est vous qui décidez comment et quand contacter vos prospects. chyll vous fait gagner du temps, pas remplacer vos compétences."
     }
   ];
   
-  // Use the default FAQ items
   const faqItems = defaultFaqItems;
   
   return (
