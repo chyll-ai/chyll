@@ -1,6 +1,5 @@
 
 import { Tolgee, DevTools, FormatSimple } from '@tolgee/i18n';
-import { TolgeeProvider } from '@tolgee/react';
 
 export const tolgee = Tolgee()
   .use(DevTools())
