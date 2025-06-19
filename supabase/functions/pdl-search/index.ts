@@ -146,7 +146,7 @@ async function searchPeopleWithPDL(searchParams: any, count: number = 10): Promi
   const searchBody = {
     query: searchParams,
     size: Math.min(count, 100),
-    dataset: 'person'
+    dataset: 'all'
   };
 
   console.log('PDL Search request:', JSON.stringify(searchBody, null, 2));
