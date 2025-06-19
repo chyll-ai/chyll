@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -50,9 +49,12 @@ import LeadDetailCard from '@/components/leads/LeadDetailCard';
 import ColumnVisibilityControl from './ColumnVisibilityControl';
 import { Lead } from '@/types/assistant';
 import SalesDataEditor from '@/components/leads/SalesDataEditor';
+import { useCurrency } from '@/context/CurrencyContext';
+import CurrencySelector from '@/components/CurrencySelector';
 
 const WorkspaceLeadTable: React.FC = () => {
   const navigate = useNavigate();
+  const { formatCurrency } = useCurrency();
   const [selectedLeads, setSelectedLeads] = useState<string[]>([]);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const { leads, filteredLeads, loading, assistantActions } = useAssistantActions();
@@ -233,13 +235,13 @@ const WorkspaceLeadTable: React.FC = () => {
       {lead.mrr && (
         <div className="flex items-center gap-1 text-xs">
           <DollarSign className="h-3 w-3 text-green-500" />
-          <span>MRR: ${lead.mrr.toLocaleString()}</span>
+          <span>MRR: {formatCurrency(lead.mrr)}</span>
         </div>
       )}
       {lead.arr && (
         <div className="flex items-center gap-1 text-xs">
           <TrendingUp className="h-3 w-3 text-blue-500" />
-          <span>ARR: ${lead.arr.toLocaleString()}</span>
+          <span>ARR: {formatCurrency(lead.arr)}</span>
         </div>
       )}
       {lead.pipeline_stage && (
@@ -296,40 +298,43 @@ const WorkspaceLeadTable: React.FC = () => {
           </CardTitle>
           
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
-            {selectedLeads.length > 0 && (
-              <div className="flex flex-wrap gap-2">
-                <Button 
-                  size="sm" 
-                  variant="outline"
-                  onClick={handleEnrichSelected}
-                  disabled={enriching}
-                  className="text-xs px-2 sm:px-3 h-8"
-                >
-                  <Zap className="h-3 w-3 sm:mr-2" />
-                  <span className="hidden sm:inline">Enrichir ({selectedLeads.length})</span>
-                  <span className="sm:hidden">({selectedLeads.length})</span>
-                </Button>
-                <Button 
-                  size="sm" 
-                  variant="outline"
-                  onClick={handleSendEmailsSelected}
-                  disabled={sending}
-                  className="text-xs px-2 sm:px-3 h-8"
-                >
-                  <Mail className="h-3 w-3 sm:mr-2" />
-                  <span className="hidden sm:inline">Email</span>
-                </Button>
-                <Button 
-                  size="sm" 
-                  variant="outline"
-                  onClick={handleArchiveSelected}
-                  className="text-xs px-2 sm:px-3 h-8"
-                >
-                  <Archive className="h-3 w-3 sm:mr-2" />
-                  <span className="hidden sm:inline">Archive</span>
-                </Button>
-              </div>
-            )}
+            <div className="flex items-center gap-2">
+              <CurrencySelector />
+              {selectedLeads.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  <Button 
+                    size="sm" 
+                    variant="outline"
+                    onClick={handleEnrichSelected}
+                    disabled={enriching}
+                    className="text-xs px-2 sm:px-3 h-8"
+                  >
+                    <Zap className="h-3 w-3 sm:mr-2" />
+                    <span className="hidden sm:inline">Enrichir ({selectedLeads.length})</span>
+                    <span className="sm:hidden">({selectedLeads.length})</span>
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    variant="outline"
+                    onClick={handleSendEmailsSelected}
+                    disabled={sending}
+                    className="text-xs px-2 sm:px-3 h-8"
+                  >
+                    <Mail className="h-3 w-3 sm:mr-2" />
+                    <span className="hidden sm:inline">Email</span>
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    variant="outline"
+                    onClick={handleArchiveSelected}
+                    className="text-xs px-2 sm:px-3 h-8"
+                  >
+                    <Archive className="h-3 w-3 sm:mr-2" />
+                    <span className="hidden sm:inline">Archive</span>
+                  </Button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </CardHeader>

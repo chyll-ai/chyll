@@ -3,13 +3,14 @@ import { Button } from '@/components/ui/button';
 import { Check } from 'lucide-react';
 import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card';
 import { useLanguage } from '@/context/LanguageContext';
+import { useCurrency } from '@/context/CurrencyContext';
 import { Link } from 'react-router-dom';
 
-// French pricing plans
+// French pricing plans with dynamic currency symbol
 const frPricingPlans = [
   {
     name: "Starter",
-    price: "99€",
+    price: `99${getCurrencySymbol()}`,
     period: "/mois",
     description: "Parfait pour les petites équipes",
     features: [
@@ -28,7 +29,7 @@ const frPricingPlans = [
   },
   {
     name: "Growth",
-    price: "199€",
+    price: `199${getCurrencySymbol()}`,
     period: "/mois",
     description: "Pour les équipes en croissance",
     features: [
@@ -48,7 +49,7 @@ const frPricingPlans = [
   },
   {
     name: "Scale",
-    price: "399€",
+    price: `399${getCurrencySymbol()}`,
     period: "/mois",
     description: "Pour les équipes commerciales établies",
     features: [
@@ -85,6 +86,7 @@ const getPlanIcon = (color: string) => {
 
 const PricingCards = () => {
   const { language } = useLanguage();
+  const { getCurrencySymbol } = useCurrency();
   const plans = frPricingPlans;
 
   return (
