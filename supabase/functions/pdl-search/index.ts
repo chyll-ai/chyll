@@ -143,37 +143,38 @@ async function searchPeopleWithPDL(searchParams: any, count: number = 10): Promi
     throw new Error('PDL_API_KEY is not configured');
   }
 
-  // Build the SQL query for PDL API
-  const conditions: string[] = [];
+  // Build the query object for PDL API (not SQL)
+  const query: any = {};
   
   if (searchParams.job_title) {
-    conditions.push(`job_title:"${searchParams.job_title}"`);
+    query.job_title_role = searchParams.job_title.toLowerCase();
   }
   
-  if (searchParams.location_country && searchParams.location_region) {
-    conditions.push(`location_country:"${searchParams.location_country}" AND location_region:"${searchParams.location_region}"`);
-  } else if (searchParams.location_country) {
-    conditions.push(`location_country:"${searchParams.location_country}"`);
+  if (searchParams.location_country) {
+    query.location_country = searchParams.location_country.toLowerCase();
+  }
+  
+  if (searchParams.location_region) {
+    query.location_region = searchParams.location_region.toLowerCase();
   }
   
   if (searchParams.job_company_industry) {
-    conditions.push(`job_company_industry:"${searchParams.job_company_industry}"`);
+    query.job_company_industry = searchParams.job_company_industry.toLowerCase();
   }
   
   if (searchParams.job_seniority) {
-    conditions.push(`job_seniority:"${searchParams.job_seniority}"`);
+    query.job_seniority = searchParams.job_seniority.toLowerCase();
   }
 
-  // If no conditions, add a basic filter to avoid empty query
-  if (conditions.length === 0) {
-    conditions.push('job_title_role:*');
+  // Ensure we have at least one search parameter
+  if (Object.keys(query).length === 0) {
+    query.job_title_role = 'manager'; // Default fallback
   }
-
-  const sqlQuery = conditions.join(' AND ');
 
   const searchBody = {
-    sql: `SELECT * FROM person WHERE ${sqlQuery}`,
-    size: Math.min(count, 100)
+    query: query,
+    size: Math.min(count, 100),
+    pretty: true
   };
 
   console.log('PDL Search request:', JSON.stringify(searchBody, null, 2));
