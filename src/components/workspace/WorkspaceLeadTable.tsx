@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -17,7 +18,8 @@ import {
   Mail, 
   Zap, 
   Archive,
-  ExternalLink
+  ExternalLink,
+  History
 } from 'lucide-react';
 import { useAssistantActions } from '@/hooks/useAssistantActions';
 import { useApolloEnrichment } from '@/hooks/useApolloEnrichment';
@@ -43,6 +45,7 @@ interface Lead {
 }
 
 const WorkspaceLeadTable: React.FC = () => {
+  const navigate = useNavigate();
   const [selectedLeads, setSelectedLeads] = useState<string[]>([]);
   const { leads, filteredLeads, loading, assistantActions } = useAssistantActions();
   const { enrichLead, enriching } = useApolloEnrichment();
@@ -166,7 +169,7 @@ const WorkspaceLeadTable: React.FC = () => {
                 <TableHead className="w-44">Poste</TableHead>
                 <TableHead className="w-40">Localisation</TableHead>
                 <TableHead className="w-24">Statut</TableHead>
-                <TableHead className="w-28">Actions</TableHead>
+                <TableHead className="w-36">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -236,6 +239,15 @@ const WorkspaceLeadTable: React.FC = () => {
                     </TableCell>
                     <TableCell>
                       <div className="flex gap-1">
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => navigate(`/lead-history/${lead.id}`)}
+                          className="h-8 w-8 p-0"
+                          title="Voir l'historique"
+                        >
+                          <History className="h-4 w-4" />
+                        </Button>
                         <Button
                           size="sm"
                           variant="ghost"
