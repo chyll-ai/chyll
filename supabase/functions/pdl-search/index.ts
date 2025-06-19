@@ -143,39 +143,41 @@ async function searchPeopleWithPDL(searchParams: any, count: number = 10): Promi
     throw new Error('PDL_API_KEY is not configured');
   }
 
-  // Build the query object for PDL API (not SQL)
-  const query: any = {};
-  
-  if (searchParams.job_title) {
-    query.job_title_role = searchParams.job_title.toLowerCase();
-  }
-  
-  if (searchParams.location_country) {
-    query.location_country = searchParams.location_country.toLowerCase();
-  }
-  
-  if (searchParams.location_region) {
-    query.location_region = searchParams.location_region.toLowerCase();
-  }
-  
-  if (searchParams.job_company_industry) {
-    query.job_company_industry = searchParams.job_company_industry.toLowerCase();
-  }
-  
-  if (searchParams.job_seniority) {
-    query.job_seniority = searchParams.job_seniority.toLowerCase();
-  }
-
-  // Ensure we have at least one search parameter
-  if (Object.keys(query).length === 0) {
-    query.job_title_role = 'manager'; // Default fallback
-  }
-
-  const searchBody = {
-    query: query,
+  // Build the search body directly - PDL expects parameters at the root level, not nested in a query object
+  const searchBody: any = {
     size: Math.min(count, 100),
     pretty: true
   };
+  
+  // Add search parameters directly to the request body (not nested in a query object)
+  if (searchParams.job_title) {
+    searchBody.job_title_role = searchParams.job_title.toLowerCase();
+  }
+  
+  if (searchParams.location_country) {
+    searchBody.location_country = searchParams.location_country.toLowerCase();
+  }
+  
+  if (searchParams.location_region) {
+    searchBody.location_region = searchParams.location_region.toLowerCase();
+  }
+  
+  if (searchParams.job_company_industry) {
+    searchBody.job_company_industry = searchParams.job_company_industry.toLowerCase();
+  }
+  
+  if (searchParams.job_seniority) {
+    searchBody.job_seniority = searchParams.job_seniority.toLowerCase();
+  }
+
+  // Ensure we have at least one search parameter
+  const hasSearchParams = Object.keys(searchBody).some(key => 
+    key !== 'size' && key !== 'pretty' && searchBody[key]
+  );
+  
+  if (!hasSearchParams) {
+    searchBody.job_title_role = 'manager'; // Default fallback
+  }
 
   console.log('PDL Search request:', JSON.stringify(searchBody, null, 2));
 
