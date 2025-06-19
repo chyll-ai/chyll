@@ -143,10 +143,37 @@ async function searchPeopleWithPDL(searchParams: any, count: number = 10): Promi
     throw new Error('PDL_API_KEY is not configured');
   }
 
+  // Build the SQL query for PDL API
+  const conditions: string[] = [];
+  
+  if (searchParams.job_title) {
+    conditions.push(`job_title:"${searchParams.job_title}"`);
+  }
+  
+  if (searchParams.location_country && searchParams.location_region) {
+    conditions.push(`location_country:"${searchParams.location_country}" AND location_region:"${searchParams.location_region}"`);
+  } else if (searchParams.location_country) {
+    conditions.push(`location_country:"${searchParams.location_country}"`);
+  }
+  
+  if (searchParams.job_company_industry) {
+    conditions.push(`job_company_industry:"${searchParams.job_company_industry}"`);
+  }
+  
+  if (searchParams.job_seniority) {
+    conditions.push(`job_seniority:"${searchParams.job_seniority}"`);
+  }
+
+  // If no conditions, add a basic filter to avoid empty query
+  if (conditions.length === 0) {
+    conditions.push('job_title_role:*');
+  }
+
+  const sqlQuery = conditions.join(' AND ');
+
   const searchBody = {
-    query: searchParams,
-    size: Math.min(count, 100),
-    dataset: 'all'
+    sql: `SELECT * FROM person WHERE ${sqlQuery}`,
+    size: Math.min(count, 100)
   };
 
   console.log('PDL Search request:', JSON.stringify(searchBody, null, 2));
