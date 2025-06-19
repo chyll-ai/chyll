@@ -1,3 +1,4 @@
+
 export interface Message {
   id: string;
   role: 'user' | 'assistant';
@@ -16,6 +17,20 @@ export interface Lead {
   email: string;
   phone_number: string;
   linkedin_url: string;
+  github_url?: string;
+  twitter_url?: string;
+  facebook_url?: string;
+  job_company_industry?: string;
+  job_company_size?: string;
+  job_company_website?: string;
+  job_seniority?: string;
+  experience_years?: number;
+  headline?: string;
+  summary?: string;
+  skills?: string; // JSON string
+  languages?: string; // JSON string
+  education?: string; // JSON string
+  certifications?: string; // JSON string
   status: string;
   created_at: string;
   enriched_from?: {
@@ -37,6 +52,7 @@ export interface Lead {
     education?: string[];
     languages?: string[];
     connections?: number;
+    recommendations?: number;
   };
 }
 

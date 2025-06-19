@@ -1,4 +1,3 @@
-
 // @ts-ignore: Deno imports
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 // @ts-ignore: Deno imports
@@ -45,8 +44,44 @@ interface PDLSearchResponse {
       linkedin_url: string;
       job_title: string;
       job_company_name: string;
+      job_company_industry: string;
+      job_company_size: string;
+      job_company_website: string;
+      job_seniority: string;
       location_name: string;
       skills: string[];
+      headline: string;
+      summary: string;
+      experience: Array<{
+        company: { name: string; website?: string; industry?: string; size?: string };
+        title: string;
+        start_date: string;
+        end_date?: string;
+        description?: string;
+        location?: string;
+      }>;
+      education: Array<{
+        school: { name: string; type?: string };
+        degrees: string[];
+        start_date?: string;
+        end_date?: string;
+        gpa?: number;
+      }>;
+      certifications: Array<{
+        name: string;
+        organization: string;
+        start_date?: string;
+        end_date?: string;
+      }>;
+      languages: Array<{
+        name: string;
+        proficiency?: string;
+      }>;
+      github_url?: string;
+      twitter_url?: string;
+      facebook_url?: string;
+      connections?: number;
+      recommendations?: number;
     }>;
   };
   error?: string;
@@ -195,6 +230,46 @@ async function searchPeopleWithPDL(searchParams: any, count: number = 10): Promi
   }
 }
 
+function calculateExperienceYears(experience: any[]): number {
+  if (!experience || experience.length === 0) return 0;
+  
+  let totalMonths = 0;
+  experience.forEach(exp => {
+    if (exp.start_date) {
+      const startDate = new Date(exp.start_date);
+      const endDate = exp.end_date ? new Date(exp.end_date) : new Date();
+      const months = Math.max(0, (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24 * 30));
+      totalMonths += months;
+    }
+  });
+  
+  return Math.round(totalMonths / 12);
+}
+
+function extractCompanySize(size: string | number): string {
+  if (!size) return 'unknown';
+  
+  const sizeStr = size.toString().toLowerCase();
+  if (sizeStr.includes('1-10') || sizeStr.includes('startup')) return 'startup';
+  if (sizeStr.includes('11-50') || sizeStr.includes('small')) return 'small';
+  if (sizeStr.includes('51-200') || sizeStr.includes('medium')) return 'medium';
+  if (sizeStr.includes('201-1000') || sizeStr.includes('large')) return 'large';
+  if (sizeStr.includes('1000+') || sizeStr.includes('enterprise')) return 'enterprise';
+  
+  return 'unknown';
+}
+
+function extractSeniority(title: string): string {
+  if (!title) return 'unknown';
+  
+  const titleLower = title.toLowerCase();
+  if (titleLower.includes('junior') || titleLower.includes('intern') || titleLower.includes('associate')) return 'junior';
+  if (titleLower.includes('senior') || titleLower.includes('lead') || titleLower.includes('principal')) return 'senior';
+  if (titleLower.includes('director') || titleLower.includes('vp') || titleLower.includes('cto') || titleLower.includes('ceo')) return 'executive';
+  
+  return 'mid';
+}
+
 serve(async (req: Request) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -248,7 +323,7 @@ serve(async (req: Request) => {
       );
     }
 
-    // Filter and transform PDL results
+    // Filter and transform PDL results with enhanced data
     const validPdlLeads = pdlResults.data.data.filter((person: any) => {
       // Must have at minimum a name and a company
       if (!person.full_name || !person.job_company_name) {
@@ -266,7 +341,7 @@ serve(async (req: Request) => {
     
     console.log('Valid PDL leads:', validPdlLeads.length);
     
-    // Transform PDL results to our lead format
+    // Transform PDL results to our enhanced lead format
     const leads = validPdlLeads.slice(0, count).map((person: any) => {
       let location = 'Unknown';
       
@@ -286,6 +361,20 @@ serve(async (req: Request) => {
         email: person.emails?.[0]?.address || '',
         phone_number: person.phone_numbers?.[0]?.number || '',
         linkedin_url: person.linkedin_url || '',
+        github_url: person.github_url || '',
+        twitter_url: person.twitter_url || '',
+        facebook_url: person.facebook_url || '',
+        job_company_industry: person.job_company_industry || '',
+        job_company_size: extractCompanySize(person.job_company_size),
+        job_company_website: person.job_company_website || '',
+        job_seniority: extractSeniority(person.job_title),
+        experience_years: calculateExperienceYears(person.experience),
+        headline: person.headline || '',
+        summary: person.summary || '',
+        skills: person.skills ? JSON.stringify(person.skills) : null,
+        languages: person.languages ? JSON.stringify(person.languages) : null,
+        education: person.education ? JSON.stringify(person.education) : null,
+        certifications: person.certifications ? JSON.stringify(person.certifications) : null,
         status: 'new',
         created_at: new Date().toISOString(),
         enriched_from: {
@@ -293,11 +382,14 @@ serve(async (req: Request) => {
           timestamp: new Date().toISOString(),
           query: searchQuery,
           parsed_criteria: searchCriteria,
-          notes: 'Real data from People Data Labs'
+          notes: 'Enhanced data from People Data Labs with company and social profiles'
         },
         linkedin_profile_data: {
           skills: person.skills || [],
-          summary: person.summary || ''
+          summary: person.summary || '',
+          connections: person.connections || 0,
+          recommendations: person.recommendations || 0,
+          experience: person.experience || []
         }
       };
     });
@@ -312,7 +404,8 @@ serve(async (req: Request) => {
     } else {
       const withEmails = leads.filter(lead => lead.email).length;
       const withoutEmails = leads.length - withEmails;
-      responseMessage = `Excellent ! J'ai trouvé ${leads.length} profils réels via People Data Labs pour "${searchQuery}". ${withEmails} ont déjà un email, ${withoutEmails} pourront être enrichis séparément avec d'autres services.`;
+      const withSocial = leads.filter(lead => lead.linkedin_url || lead.github_url || lead.twitter_url).length;
+      responseMessage = `Excellent ! J'ai trouvé ${leads.length} profils enrichis via People Data Labs pour "${searchQuery}". ${withEmails} ont un email, ${withSocial} ont des profils sociaux, avec des données complètes sur l'entreprise et l'expérience.`;
     }
 
     return new Response(

@@ -222,57 +222,99 @@ export type Database = {
       }
       leads: {
         Row: {
+          certifications: Json | null
           client_id: string | null
           company: string | null
           created_at: string | null
+          education: Json | null
           email: string | null
           enriched_from: Json | null
+          experience_years: number | null
+          facebook_url: string | null
           full_name: string | null
+          github_url: string | null
+          headline: string | null
           id: string
+          job_company_industry: string | null
+          job_company_size: string | null
+          job_company_website: string | null
+          job_seniority: string | null
           job_title: string | null
+          languages: Json | null
           last_contact_date: string | null
           linkedin_profile_data: Json | null
           linkedin_url: string | null
           location: string | null
           phone_number: string | null
           search_id: string | null
+          skills: Json | null
           status: string | null
+          summary: string | null
+          twitter_url: string | null
           updated_at: string | null
         }
         Insert: {
+          certifications?: Json | null
           client_id?: string | null
           company?: string | null
           created_at?: string | null
+          education?: Json | null
           email?: string | null
           enriched_from?: Json | null
+          experience_years?: number | null
+          facebook_url?: string | null
           full_name?: string | null
+          github_url?: string | null
+          headline?: string | null
           id?: string
+          job_company_industry?: string | null
+          job_company_size?: string | null
+          job_company_website?: string | null
+          job_seniority?: string | null
           job_title?: string | null
+          languages?: Json | null
           last_contact_date?: string | null
           linkedin_profile_data?: Json | null
           linkedin_url?: string | null
           location?: string | null
           phone_number?: string | null
           search_id?: string | null
+          skills?: Json | null
           status?: string | null
+          summary?: string | null
+          twitter_url?: string | null
           updated_at?: string | null
         }
         Update: {
+          certifications?: Json | null
           client_id?: string | null
           company?: string | null
           created_at?: string | null
+          education?: Json | null
           email?: string | null
           enriched_from?: Json | null
+          experience_years?: number | null
+          facebook_url?: string | null
           full_name?: string | null
+          github_url?: string | null
+          headline?: string | null
           id?: string
+          job_company_industry?: string | null
+          job_company_size?: string | null
+          job_company_website?: string | null
+          job_seniority?: string | null
           job_title?: string | null
+          languages?: Json | null
           last_contact_date?: string | null
           linkedin_profile_data?: Json | null
           linkedin_url?: string | null
           location?: string | null
           phone_number?: string | null
           search_id?: string | null
+          skills?: Json | null
           status?: string | null
+          summary?: string | null
+          twitter_url?: string | null
           updated_at?: string | null
         }
         Relationships: [
