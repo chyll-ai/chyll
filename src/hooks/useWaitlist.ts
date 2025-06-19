@@ -77,19 +77,19 @@ export const useWaitlist = () => {
     }
   };
 
-  const updateDiscordStatus = async () => {
+  const updateCircleStatus = async () => {
     try {
       if (!waitlistData?.email) {
         toast.error('Email introuvable');
         return;
       }
 
-      // For now, we'll just update the local state since Discord integration requires auth
+      // For now, we'll just update the local state since Circle integration requires auth
       // This would need to be implemented with a different approach for anonymous users
-      toast.info('Fonctionnalité Discord disponible après inscription complète');
+      toast.info('Fonctionnalité Circle disponible après inscription complète');
       
     } catch (error) {
-      console.error('Error updating Discord status:', error);
+      console.error('Error updating Circle status:', error);
       throw error;
     }
   };
@@ -99,6 +99,6 @@ export const useWaitlist = () => {
     loading,
     joinWaitlist,
     loadWaitlistData,
-    updateDiscordStatus
+    updateCircleStatus
   };
 };

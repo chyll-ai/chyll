@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -55,10 +54,10 @@ const WaitlistConfirmation: React.FC<WaitlistConfirmationProps> = ({
     });
   }, []);
 
-  const handleDiscordJoin = async () => {
-    // For anonymous users, just open Discord link
-    window.open('https://discord.gg/chyll', '_blank');
-    toast.info('Rejoignez notre Discord pour obtenir des points bonus !');
+  const handleCircleJoin = async () => {
+    // For anonymous users, just open Circle link
+    window.open('https://circle.chyll.ai', '_blank');
+    toast.info('Rejoignez notre communauté Circle pour obtenir des points bonus !');
   };
 
   const getReferralUrl = () => {
@@ -188,7 +187,7 @@ const WaitlistConfirmation: React.FC<WaitlistConfirmationProps> = ({
       <div className="text-center space-y-3">
         <h2 className="text-xl font-semibold">Vous voulez passer devant dans la file ? 🚀</h2>
         <p className="text-muted-foreground">Parrainez des amis et gagnez +10 points par ami</p>
-        <p className="text-sm text-green-600 font-medium">🎁 Bonus +30 points quand ils rejoignent notre Discord !</p>
+        <p className="text-sm text-green-600 font-medium">🎁 Bonus +30 points quand ils rejoignent notre Circle !</p>
       </div>
 
       {/* Referral Buttons */}
@@ -263,22 +262,22 @@ const WaitlistConfirmation: React.FC<WaitlistConfirmationProps> = ({
 
       <Separator />
 
-      {/* Discord Connection */}
+      {/* Circle Connection */}
       <div className="text-center space-y-4">
         <div className="flex items-center justify-center gap-2">
           <Gift className="h-5 w-5 text-purple-500" />
           <span className="font-medium">Connectez-vous avec nous</span>
         </div>
         <Button 
-          onClick={handleDiscordJoin}
+          onClick={handleCircleJoin}
           variant="rainbow"
           size="lg"
           className="w-full md:w-auto"
         >
-          Rejoindre Discord
+          Rejoindre Circle
         </Button>
         <p className="text-sm text-muted-foreground">
-          Rejoignez notre communauté Discord pour des mises à jour exclusives !
+          Rejoignez notre communauté Circle pour des mises à jour exclusives !
         </p>
       </div>
     </div>

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -67,7 +68,7 @@ const WaitlistManagement = () => {
   );
 
   const exportToCsv = () => {
-    const headers = ['Position', 'Email', 'Code de parrainage', 'Points', 'Parrainages', 'Discord', 'Date d\'inscription'];
+    const headers = ['Position', 'Email', 'Code de parrainage', 'Points', 'Parrainages', 'Circle', 'Date d\'inscription'];
     const csvContent = [
       headers.join(','),
       ...filteredEntries.map(entry => [
@@ -93,7 +94,7 @@ const WaitlistManagement = () => {
   };
 
   const totalPoints = waitlistEntries.reduce((sum, entry) => sum + entry.points, 0);
-  const discordMembers = waitlistEntries.filter(entry => entry.discord_joined).length;
+  const circleMembers = waitlistEntries.filter(entry => entry.discord_joined).length;
 
   return (
     <SuperadminGuard>
@@ -172,8 +173,8 @@ const WaitlistManagement = () => {
                         <Users className="h-6 w-6 text-purple-600" />
                       </div>
                       <div>
-                        <p className="text-sm text-muted-foreground">Membres Discord</p>
-                        <p className="text-2xl font-bold">{discordMembers}</p>
+                        <p className="text-sm text-muted-foreground">Membres Circle</p>
+                        <p className="text-2xl font-bold">{circleMembers}</p>
                       </div>
                     </div>
                   </CardContent>
@@ -186,9 +187,9 @@ const WaitlistManagement = () => {
                         <Trophy className="h-6 w-6 text-green-600" />
                       </div>
                       <div>
-                        <p className="text-sm text-muted-foreground">Taux Discord</p>
+                        <p className="text-sm text-muted-foreground">Taux Circle</p>
                         <p className="text-2xl font-bold">
-                          {totalEntries > 0 ? Math.round((discordMembers / totalEntries) * 100) : 0}%
+                          {totalEntries > 0 ? Math.round((circleMembers / totalEntries) * 100) : 0}%
                         </p>
                       </div>
                     </div>
@@ -243,7 +244,7 @@ const WaitlistManagement = () => {
                             <TableHead>Code de parrainage</TableHead>
                             <TableHead>Points</TableHead>
                             <TableHead>Parrainages</TableHead>
-                            <TableHead>Discord</TableHead>
+                            <TableHead>Circle</TableHead>
                             <TableHead>Date d'inscription</TableHead>
                           </TableRow>
                         </TableHeader>
