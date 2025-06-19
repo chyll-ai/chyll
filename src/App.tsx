@@ -1,3 +1,4 @@
+
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -80,7 +81,7 @@ function App() {
               <Route path="/terms" element={<Suspense fallback={<div>Loading...</div>}><Terms /></Suspense>} />
               <Route path="/cookies" element={<Suspense fallback={<div>Loading...</div>}><Cookies /></Suspense>} />
               
-              {/* Admin routes */}
+              {/* Admin routes - only for super admin waitlist management */}
               <Route path="/waitlist-management" element={
                 <ProtectedRoute>
                   <SuperadminGuard>

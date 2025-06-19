@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Plus, Database, MessageSquare, Users, Settings } from 'lucide-react';
+import { Plus, Database, MessageSquare, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import WorkspaceAssistant from '@/components/workspace/WorkspaceAssistant';
@@ -38,11 +38,12 @@ const Workspace: React.FC = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Link 
-                to="/dashboard" 
+                to="/" 
                 className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
               >
-                <ArrowLeft className="h-4 w-4" />
-                <span className="hidden sm:inline">Retour au dashboard</span>
+                <span className="font-bold text-xl bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+                  Chyll
+                </span>
               </Link>
               <Separator orientation="vertical" className="h-6" />
               <div>

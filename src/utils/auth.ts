@@ -1,3 +1,4 @@
+
 import { supabase } from '@/lib/supabase';
 import { toast } from '@/components/ui/sonner';
 
@@ -101,7 +102,7 @@ export const handleAuthError = (error: any) => {
 export const redirectBasedOnProfile = async (userId: string, navigate: (path: string) => void) => {
   try {
     const { isComplete } = await checkProfileCompletion(userId);
-    navigate(isComplete ? '/dashboard' : '/assistant');
+    navigate(isComplete ? '/workspace' : '/assistant');
   } catch (error) {
     handleAuthError(error);
     navigate('/login');
