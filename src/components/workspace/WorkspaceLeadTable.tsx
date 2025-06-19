@@ -33,7 +33,8 @@ import {
   Target,
   Code,
   Database,
-  Cloud
+  Cloud,
+  ChevronRight
 } from 'lucide-react';
 import { useAssistantActions } from '@/hooks/useAssistantActions';
 import { usePDLEnrichment } from '@/hooks/usePDLEnrichment';
@@ -64,7 +65,6 @@ const WorkspaceLeadTable: React.FC = () => {
 
   const handleStatusUpdate = async (leadId: string, newStatus: string) => {
     console.log('Handle status update called:', leadId, newStatus);
-    // Refresh the leads data to get the latest status
     await assistantActions.loadLeads();
   };
 
@@ -540,13 +540,13 @@ const WorkspaceLeadTable: React.FC = () => {
   return (
     <Card className="w-full h-full flex flex-col">
       <CardHeader className="pb-3 flex-shrink-0">
-        <div className="flex items-center justify-between gap-2">
-          <CardTitle className="flex items-center gap-2 text-lg">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
             <Users className="h-4 w-4 text-primary" />
-            Leads ({displayLeads.length})
+            <span>Leads ({displayLeads.length})</span>
           </CardTitle>
           
-          <div className="flex items-center gap-2">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
             <ColumnVisibilityControl
               columns={columns}
               categories={categories}
@@ -555,35 +555,36 @@ const WorkspaceLeadTable: React.FC = () => {
             />
             
             {selectedLeads.length > 0 && (
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 <Button 
                   size="sm" 
                   variant="outline"
                   onClick={handleEnrichSelected}
                   disabled={enriching}
-                  className="text-sm px-3"
+                  className="text-xs px-2 sm:px-3 h-8"
                 >
-                  <Zap className="h-4 w-4 mr-2" />
-                  Enrichir ({selectedLeads.length})
+                  <Zap className="h-3 w-3 sm:mr-2" />
+                  <span className="hidden sm:inline">Enrichir ({selectedLeads.length})</span>
+                  <span className="sm:hidden">({selectedLeads.length})</span>
                 </Button>
                 <Button 
                   size="sm" 
                   variant="outline"
                   onClick={handleSendEmailsSelected}
                   disabled={sending}
-                  className="text-sm px-3"
+                  className="text-xs px-2 sm:px-3 h-8"
                 >
-                  <Mail className="h-4 w-4 mr-2" />
-                  Email
+                  <Mail className="h-3 w-3 sm:mr-2" />
+                  <span className="hidden sm:inline">Email</span>
                 </Button>
                 <Button 
                   size="sm" 
                   variant="outline"
                   onClick={handleArchiveSelected}
-                  className="text-sm px-3"
+                  className="text-xs px-2 sm:px-3 h-8"
                 >
-                  <Archive className="h-4 w-4 mr-2" />
-                  Archive
+                  <Archive className="h-3 w-3 sm:mr-2" />
+                  <span className="hidden sm:inline">Archive</span>
                 </Button>
               </div>
             )}
@@ -593,18 +594,18 @@ const WorkspaceLeadTable: React.FC = () => {
       
       <CardContent className="p-0 flex-1 min-h-0">
         <ScrollArea className="h-full w-full">
-          <div className="min-w-[800px]">
+          <div className="min-w-[1200px]">
             <Table>
-              <TableHeader>
+              <TableHeader className="sticky top-0 bg-background/95 backdrop-blur-sm border-b">
                 <TableRow>
-                  <TableHead className="w-12">
+                  <TableHead className="w-12 pl-4">
                     <Checkbox
                       checked={selectedLeads.length === displayLeads.length && displayLeads.length > 0}
                       onCheckedChange={handleSelectAll}
                     />
                   </TableHead>
                   {visibleColumns.map(column => (
-                    <TableHead key={column.key} className="min-w-[180px]">
+                    <TableHead key={column.key} className="min-w-[180px] text-xs font-medium">
                       {column.label}
                     </TableHead>
                   ))}
@@ -613,20 +614,27 @@ const WorkspaceLeadTable: React.FC = () => {
               <TableBody>
                 {loading ? (
                   <TableRow>
-                    <TableCell colSpan={visibleColumns.length + 1} className="text-center py-8">
-                      Chargement...
+                    <TableCell colSpan={visibleColumns.length + 1} className="text-center py-12">
+                      <div className="flex flex-col items-center gap-2">
+                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                        <span className="text-sm text-muted-foreground">Chargement des leads...</span>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ) : displayLeads.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={visibleColumns.length + 1} className="text-center py-8">
-                      Aucun lead trouvé
+                    <TableCell colSpan={visibleColumns.length + 1} className="text-center py-12">
+                      <div className="flex flex-col items-center gap-2">
+                        <Users className="h-8 w-8 text-muted-foreground/50" />
+                        <span className="text-sm text-muted-foreground">Aucun lead trouvé</span>
+                        <p className="text-xs text-muted-foreground/70">Commencez par demander à l'assistant de rechercher des prospects</p>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ) : (
                   displayLeads.map((lead) => (
-                    <TableRow key={lead.id} className="hover:bg-muted/50">
-                      <TableCell>
+                    <TableRow key={lead.id} className="hover:bg-muted/30 transition-colors">
+                      <TableCell className="pl-4">
                         <Checkbox
                           checked={selectedLeads.includes(lead.id)}
                           onCheckedChange={(checked) => handleSelectLead(lead.id, checked as boolean)}
@@ -634,48 +642,51 @@ const WorkspaceLeadTable: React.FC = () => {
                       </TableCell>
                       
                       {visibleColumns.map(column => (
-                        <TableCell key={column.key}>
-                          {column.key === 'contact_info' && renderContactInfo(lead)}
-                          {column.key === 'company_role' && renderCompanyRole(lead)}
-                          {column.key === 'location' && renderLocation(lead)}
-                          {column.key === 'sales_data' && renderSalesData(lead)}
-                          {column.key === 'pipeline_stage' && renderPipelineStage(lead)}
-                          {column.key === 'revenue_metrics' && renderRevenueMetrics(lead)}
-                          {column.key === 'deal_timeline' && renderDealTimeline(lead)}
-                          {column.key === 'experience' && renderExperience(lead)}
-                          {column.key === 'skills' && renderSkills(lead)}
-                          {column.key === 'education' && renderEducation(lead)}
-                          {column.key === 'job_history' && renderJobHistory(lead)}
-                          {column.key === 'management_level' && (
-                            <div className="text-sm">
-                              {lead.management_level && (
-                                <Badge variant="outline">{lead.management_level}</Badge>
+                        <TableCell key={column.key} className="max-w-[200px]">
+                          {column.key === 'contact_info' && (
+                            <div className="space-y-1">
+                              <div className="font-medium text-sm truncate max-w-[180px]" title={lead.full_name || 'N/A'}>
+                                {lead.full_name || 'N/A'}
+                              </div>
+                              {lead.headline && (
+                                <div className="text-xs text-muted-foreground truncate max-w-[180px]" title={lead.headline}>
+                                  {lead.headline}
+                                </div>
                               )}
+                              <div className="flex flex-col gap-1">
+                                {lead.email && (
+                                  <a 
+                                    href={`mailto:${lead.email}`}
+                                    className="text-xs text-blue-600 hover:underline flex items-center gap-1"
+                                    title={lead.email}
+                                  >
+                                    <Mail className="h-3 w-3" />
+                                    <span className="truncate max-w-[140px]">{lead.email}</span>
+                                  </a>
+                                )}
+                                {lead.phone_number && (
+                                  <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                                    <Phone className="h-3 w-3" />
+                                    <span className="truncate max-w-[140px]">{lead.phone_number}</span>
+                                  </div>
+                                )}
+                              </div>
                             </div>
                           )}
-                          {column.key === 'departments' && (
-                            <div className="text-xs text-muted-foreground truncate max-w-[140px]" title={lead.departments || ''}>
-                              {lead.departments || 'N/A'}
+                          {column.key === 'company_role' && (
+                            <div className="space-y-1">
+                              <div className="text-sm font-medium truncate max-w-[200px]" title={lead.job_title || 'N/A'}>
+                                {lead.job_title || 'N/A'}
+                              </div>
+                              <CompanyInfoDisplay
+                                company={lead.company}
+                                job_company_industry={lead.job_company_industry}
+                                job_company_size={lead.job_company_size}
+                                job_company_website={lead.job_company_website}
+                                job_seniority={lead.job_seniority}
+                              />
                             </div>
                           )}
-                          {column.key === 'job_functions' && (
-                            <div className="text-xs text-muted-foreground truncate max-w-[140px]" title={lead.job_functions || ''}>
-                              {lead.job_functions || 'N/A'}
-                            </div>
-                          )}
-                          {column.key === 'company_details' && renderCompanyDetails(lead)}
-                          {column.key === 'company_metrics' && renderCompanyMetrics(lead)}
-                          {column.key === 'company_funding' && renderCompanyFunding(lead)}
-                          {column.key === 'personal_details' && renderPersonalDetails(lead)}
-                          {column.key === 'demographics' && renderDemographics(lead)}
-                          {column.key === 'lifestyle' && renderLifestyle(lead)}
-                          {column.key === 'preferences' && renderPreferences(lead)}
-                          {column.key === 'social_links' && renderSocialLinks(lead)}
-                          {column.key === 'social_metrics' && renderSocialMetrics(lead)}
-                          {column.key === 'tech_skills' && renderTechSkills(lead)}
-                          {column.key === 'tools_platforms' && renderToolsPlatforms(lead)}
-                          {column.key === 'achievements' && renderAchievements(lead)}
-                          {column.key === 'publications' && renderPublications(lead)}
                           {column.key === 'status' && (
                             <LeadStatusSelector 
                               lead={lead} 
