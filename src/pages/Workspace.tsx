@@ -31,9 +31,9 @@ const Workspace: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      {/* Header - Fixed height */}
-      <header className="border-b border-border bg-card flex-shrink-0">
+    <div className="min-h-screen bg-background">
+      {/* Header - Fixed */}
+      <header className="sticky top-0 z-50 border-b border-border bg-card">
         <div className="w-full px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -68,17 +68,19 @@ const Workspace: React.FC = () => {
         </div>
       </header>
 
-      {/* Main Content - Takes remaining height */}
-      <main className="flex-1 w-full px-4 py-4 overflow-hidden">
-        <div className="flex gap-4 h-full">
-          {/* Assistant Column - Fixed width on the left */}
-          <div className="w-80 flex-shrink-0">
-            <WorkspaceAssistant onLeadsUpdate={handleLeadsUpdate} />
+      {/* Main Content - Grid Layout */}
+      <main className="container mx-auto px-4 py-6">
+        <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
+          {/* Lead Table - Takes 3/4 of space on xl screens, full width on smaller screens */}
+          <div className="xl:col-span-3 order-2 xl:order-1">
+            <WorkspaceLeadTable key={refreshKey} />
           </div>
 
-          {/* Lead Table Column - Takes all remaining space */}
-          <div className="flex-1 min-w-0">
-            <WorkspaceLeadTable key={refreshKey} />
+          {/* Assistant - Takes 1/4 of space on xl screens, full width on smaller screens */}
+          <div className="xl:col-span-1 order-1 xl:order-2">
+            <div className="sticky top-24">
+              <WorkspaceAssistant onLeadsUpdate={handleLeadsUpdate} />
+            </div>
           </div>
         </div>
       </main>

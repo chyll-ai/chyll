@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -79,8 +80,8 @@ const WorkspaceLeadTable: React.FC = () => {
   const displayLeads = filteredLeads.length > 0 ? filteredLeads : leads;
 
   return (
-    <Card className="h-full flex flex-col">
-      <CardHeader className="flex-shrink-0 pb-3">
+    <Card className="w-full">
+      <CardHeader className="pb-3">
         <div className="flex items-center justify-between gap-2">
           <CardTitle className="flex items-center gap-2 text-lg">
             <Users className="h-4 w-4 text-primary" />
@@ -123,10 +124,10 @@ const WorkspaceLeadTable: React.FC = () => {
         </div>
       </CardHeader>
       
-      <CardContent className="flex-1 overflow-hidden p-0">
-        <div className="h-full overflow-auto">
+      <CardContent className="p-0">
+        <div className="overflow-x-auto">
           <Table>
-            <TableHeader className="sticky top-0 bg-background z-10">
+            <TableHeader>
               <TableRow>
                 <TableHead className="w-12">
                   <Checkbox
@@ -134,26 +135,26 @@ const WorkspaceLeadTable: React.FC = () => {
                     onCheckedChange={handleSelectAll}
                   />
                 </TableHead>
-                <TableHead className="w-40">Nom</TableHead>
-                <TableHead className="w-52">Email</TableHead>
-                <TableHead className="w-32">Téléphone</TableHead>
-                <TableHead className="w-44">Société</TableHead>
-                <TableHead className="w-44">Poste</TableHead>
-                <TableHead className="w-40">Localisation</TableHead>
-                <TableHead className="w-32">Statut</TableHead>
-                <TableHead className="w-64">Actions</TableHead>
+                <TableHead className="min-w-[140px]">Nom</TableHead>
+                <TableHead className="min-w-[200px]">Email</TableHead>
+                <TableHead className="min-w-[120px]">Téléphone</TableHead>
+                <TableHead className="min-w-[150px]">Société</TableHead>
+                <TableHead className="min-w-[130px]">Poste</TableHead>
+                <TableHead className="min-w-[120px]">Localisation</TableHead>
+                <TableHead className="min-w-[140px]">Statut</TableHead>
+                <TableHead className="min-w-[100px]">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={9} className="text-center py-4">
+                  <TableCell colSpan={9} className="text-center py-8">
                     Chargement...
                   </TableCell>
                 </TableRow>
               ) : displayLeads.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={9} className="text-center py-4">
+                  <TableCell colSpan={9} className="text-center py-8">
                     Aucun lead trouvé
                   </TableCell>
                 </TableRow>
@@ -167,7 +168,7 @@ const WorkspaceLeadTable: React.FC = () => {
                       />
                     </TableCell>
                     <TableCell className="font-medium text-sm">
-                      <div className="truncate" title={lead.full_name || 'N/A'}>
+                      <div className="truncate max-w-[140px]" title={lead.full_name || 'N/A'}>
                         {lead.full_name || 'N/A'}
                       </div>
                     </TableCell>
@@ -175,7 +176,7 @@ const WorkspaceLeadTable: React.FC = () => {
                       {lead.email ? (
                         <a 
                           href={`mailto:${lead.email}`}
-                          className="text-blue-600 hover:underline truncate block"
+                          className="text-blue-600 hover:underline truncate block max-w-[200px]"
                           title={lead.email}
                         >
                           {lead.email}
@@ -185,22 +186,22 @@ const WorkspaceLeadTable: React.FC = () => {
                       )}
                     </TableCell>
                     <TableCell className="text-sm">
-                      <div className="truncate" title={lead.phone_number || 'N/A'}>
+                      <div className="truncate max-w-[120px]" title={lead.phone_number || 'N/A'}>
                         {lead.phone_number || 'N/A'}
                       </div>
                     </TableCell>
                     <TableCell className="text-sm">
-                      <div className="truncate" title={lead.company || 'N/A'}>
+                      <div className="truncate max-w-[150px]" title={lead.company || 'N/A'}>
                         {lead.company || 'N/A'}
                       </div>
                     </TableCell>
                     <TableCell className="text-sm">
-                      <div className="truncate" title={lead.job_title || 'N/A'}>
+                      <div className="truncate max-w-[130px]" title={lead.job_title || 'N/A'}>
                         {lead.job_title || 'N/A'}
                       </div>
                     </TableCell>
                     <TableCell className="text-sm">
-                      <div className="truncate" title={lead.location || 'N/A'}>
+                      <div className="truncate max-w-[120px]" title={lead.location || 'N/A'}>
                         {lead.location || 'N/A'}
                       </div>
                     </TableCell>
