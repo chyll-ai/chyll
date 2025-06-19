@@ -1,3 +1,4 @@
+
 // @ts-ignore: Deno imports
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 // @ts-ignore: Deno imports
@@ -87,16 +88,10 @@ async function getExistingLeads(userId: string): Promise<ExistingLead[]> {
 }
 
 function isExistingLead(person: any, existingLeads: ExistingLead[]): boolean {
-  const email = person.emails?.[0]?.address?.toLowerCase();
   const fullName = person.full_name?.toLowerCase();
   const company = person.job_company_name?.toLowerCase();
 
   return existingLeads.some(existing => {
-    if (email && existing.email && existing.email.toLowerCase() === email) {
-      console.log('Skipping duplicate email:', email);
-      return true;
-    }
-    
     if (fullName && company && existing.full_name && existing.company) {
       const existingNameLower = existing.full_name.toLowerCase();
       const existingCompanyLower = existing.company.toLowerCase();
@@ -139,23 +134,12 @@ function generateDemoLeads(searchQuery: string, requestedCount: number = 5): any
   }
 
   const leads: any[] = [];
-  const usedEmails = new Set<string>();
 
   for (let i = 0; i < requestedCount; i++) {
     const firstName = frenchFirstNames[Math.floor(Math.random() * frenchFirstNames.length)];
     const lastName = frenchLastNames[Math.floor(Math.random() * frenchLastNames.length)];
     const company = techCompanies[Math.floor(Math.random() * techCompanies.length)];
     const city = frenchCities[Math.floor(Math.random() * frenchCities.length)];
-    
-    let email: string;
-    let attempts = 0;
-    do {
-      const emailSuffix = attempts > 0 ? (attempts + 1).toString() : '';
-      email = `${firstName.toLowerCase()}.${lastName.toLowerCase()}${emailSuffix}@${company.toLowerCase().replace(/\s+/g, '').replace(/'/g, '')}.fr`;
-      attempts++;
-    } while (usedEmails.has(email) && attempts < 10);
-    
-    usedEmails.add(email);
     
     const lead = {
       id: crypto.randomUUID(),
@@ -164,7 +148,7 @@ function generateDemoLeads(searchQuery: string, requestedCount: number = 5): any
       job_title: jobTitle,
       company: company,
       location: city,
-      email: email,
+      email: '', // Pas d'email - sera enrichi plus tard
       phone_number: `+33 6${Math.floor(Math.random() * 90000000) + 10000000}`,
       linkedin_url: `linkedin.com/in/${firstName.toLowerCase()}-${lastName.toLowerCase()}-${Math.floor(Math.random() * 1000)}`,
       status: 'new',
@@ -172,14 +156,14 @@ function generateDemoLeads(searchQuery: string, requestedCount: number = 5): any
       enriched_from: {
         source: 'demo_data',
         timestamp: new Date().toISOString(),
-        notes: `Generated from search: "${searchQuery}"`
+        notes: `Generated from search: "${searchQuery}" - Email to be enriched separately`
       }
     };
     
     leads.push(lead);
   }
 
-  console.log('Generated demo leads:', leads.length);
+  console.log('Generated demo leads without emails for enrichment:', leads.length);
   return leads;
 }
 
@@ -231,7 +215,8 @@ async function searchPeopleWithPDL(searchParams: any, count: number = 10): Promi
     conditions.push(`job_title LIKE '%manager%'`);
   }
 
-  const sql = `SELECT * FROM person WHERE (${conditions.join(' AND ')}) AND emails IS NOT NULL`;
+  // Suppression du filtre emails - on récupère tous les profils pertinents
+  const sql = `SELECT * FROM person WHERE (${conditions.join(' AND ')})`;
   
   const searchBody = {
     sql: sql,
@@ -239,7 +224,7 @@ async function searchPeopleWithPDL(searchParams: any, count: number = 10): Promi
     pretty: true
   };
 
-  console.log('PDL Search request:', JSON.stringify(searchBody, null, 2));
+  console.log('PDL Search request (no email filter):', JSON.stringify(searchBody, null, 2));
 
   try {
     const response = await fetch(`${PDL_BASE_URL}/person/search`, {
@@ -267,7 +252,7 @@ async function searchPeopleWithPDL(searchParams: any, count: number = 10): Promi
     }
 
     const data = JSON.parse(responseText);
-    console.log('PDL search successful, found:', data.data?.length || 0, 'results');
+    console.log('PDL search successful, found:', data.data?.length || 0, 'results (without email filter)');
     
     return {
       status: response.status,
@@ -316,15 +301,15 @@ serve(async (req: Request) => {
       const pdlResults = await searchPeopleWithPDL(searchCriteria, count);
       
       if (pdlResults.data?.data) {
-        // Filter PDL results - only keep those with emails
+        // Plus de filtre par email - on garde tous les profils valides
         const validPdlLeads = pdlResults.data.data.filter((person: any) => {
-          // Must have email
-          if (!person.emails?.[0]?.address) {
-            console.log('Filtering out PDL result without email:', person.full_name);
+          // Doit avoir au minimum un nom et une entreprise
+          if (!person.full_name || !person.job_company_name) {
+            console.log('Filtering out PDL result without basic info:', person);
             return false;
           }
           
-          // Check if not duplicate
+          // Check if not duplicate based on name+company only
           if (isExistingLead(person, existingLeads)) {
             return false;
           }
@@ -332,7 +317,7 @@ serve(async (req: Request) => {
           return true;
         });
         
-        console.log('Valid PDL leads with emails:', validPdlLeads.length);
+        console.log('Valid PDL leads (no email requirement):', validPdlLeads.length);
         
         // Transform PDL results to our lead format
         leads = validPdlLeads.slice(0, count).map((person: any) => {
@@ -351,7 +336,7 @@ serve(async (req: Request) => {
             job_title: person.job_title || 'N/A',
             company: person.job_company_name || 'N/A',
             location: location,
-            email: person.emails[0].address,
+            email: person.emails?.[0]?.address || '', // Email optionnel - sera enrichi
             phone_number: person.phone_numbers?.[0]?.number || '',
             linkedin_url: person.linkedin_url || '',
             status: 'new',
@@ -360,7 +345,8 @@ serve(async (req: Request) => {
               source: 'peopledatalabs',
               timestamp: new Date().toISOString(),
               query: searchQuery,
-              parsed_criteria: searchCriteria
+              parsed_criteria: searchCriteria,
+              notes: 'Email enrichment may be needed separately'
             },
             linkedin_profile_data: {
               skills: person.skills || [],
@@ -391,12 +377,14 @@ serve(async (req: Request) => {
     
     if (usedDemoData) {
       if (pdlError?.includes('PDL_PAYMENT_REQUIRED')) {
-        responseMessage = `Votre compte People Data Labs a atteint sa limite. J'ai généré ${leads.length} leads de démonstration pour "${searchQuery}". Pour utiliser de vraies données, veuillez recharger votre compte PDL.`;
+        responseMessage = `Votre compte People Data Labs a atteint sa limite. J'ai généré ${leads.length} leads de démonstration pour "${searchQuery}". Les emails seront enrichis séparément. Pour utiliser de vraies données, veuillez recharger votre compte PDL.`;
       } else {
-        responseMessage = `J'ai généré ${leads.length} leads de démonstration pour "${searchQuery}". Pour utiliser de vraies données, vérifiez votre configuration PDL.`;
+        responseMessage = `J'ai généré ${leads.length} leads de démonstration pour "${searchQuery}". Les emails seront enrichis dans une étape séparée. Pour utiliser de vraies données, vérifiez votre configuration PDL.`;
       }
     } else {
-      responseMessage = `Excellent ! J'ai trouvé ${leads.length} leads réels avec emails via People Data Labs pour "${searchQuery}".`;
+      const withEmails = leads.filter(lead => lead.email).length;
+      const withoutEmails = leads.length - withEmails;
+      responseMessage = `Excellent ! J'ai trouvé ${leads.length} profils réels via People Data Labs pour "${searchQuery}". ${withEmails} ont déjà un email, ${withoutEmails} pourront être enrichis séparément.`;
     }
 
     return new Response(
