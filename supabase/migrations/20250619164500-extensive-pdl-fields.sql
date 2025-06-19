@@ -1,0 +1,113 @@
+
+-- Add extensive PDL fields to the leads table
+ALTER TABLE public.leads 
+ADD COLUMN IF NOT EXISTS job_start_date text,
+ADD COLUMN IF NOT EXISTS job_end_date text,
+ADD COLUMN IF NOT EXISTS job_duration_months integer,
+ADD COLUMN IF NOT EXISTS job_description text,
+ADD COLUMN IF NOT EXISTS job_location text,
+ADD COLUMN IF NOT EXISTS job_company_linkedin_url text,
+ADD COLUMN IF NOT EXISTS job_company_twitter_url text,
+ADD COLUMN IF NOT EXISTS job_company_facebook_url text,
+ADD COLUMN IF NOT EXISTS job_company_founded_year integer,
+ADD COLUMN IF NOT EXISTS job_company_employees_count integer,
+ADD COLUMN IF NOT EXISTS job_company_revenue text,
+ADD COLUMN IF NOT EXISTS job_company_funding text,
+ADD COLUMN IF NOT EXISTS job_company_tags jsonb,
+ADD COLUMN IF NOT EXISTS personal_emails jsonb,
+ADD COLUMN IF NOT EXISTS work_email text,
+ADD COLUMN IF NOT EXISTS mobile_phone text,
+ADD COLUMN IF NOT EXISTS work_phone text,
+ADD COLUMN IF NOT EXISTS birth_year integer,
+ADD COLUMN IF NOT EXISTS birth_date text,
+ADD COLUMN IF NOT EXISTS gender text,
+ADD COLUMN IF NOT EXISTS street_address text,
+ADD COLUMN IF NOT EXISTS city text,
+ADD COLUMN IF NOT EXISTS state text,
+ADD COLUMN IF NOT EXISTS postal_code text,
+ADD COLUMN IF NOT EXISTS country text,
+ADD COLUMN IF NOT EXISTS time_zone text,
+ADD COLUMN IF NOT EXISTS interests jsonb,
+ADD COLUMN IF NOT EXISTS industry_experience jsonb,
+ADD COLUMN IF NOT EXISTS management_level text,
+ADD COLUMN IF NOT EXISTS departments jsonb,
+ADD COLUMN IF NOT EXISTS subdepartments jsonb,
+ADD COLUMN IF NOT EXISTS job_functions jsonb,
+ADD COLUMN IF NOT EXISTS job_history jsonb,
+ADD COLUMN IF NOT EXISTS education_history jsonb,
+ADD COLUMN IF NOT EXISTS degree_names jsonb,
+ADD COLUMN IF NOT EXISTS school_names jsonb,
+ADD COLUMN IF NOT EXISTS major_fields jsonb,
+ADD COLUMN IF NOT EXISTS graduation_dates jsonb,
+ADD COLUMN IF NOT EXISTS gpa_scores jsonb,
+ADD COLUMN IF NOT EXISTS honors jsonb,
+ADD COLUMN IF NOT EXISTS activities jsonb,
+ADD COLUMN IF NOT EXISTS societies jsonb,
+ADD COLUMN IF NOT EXISTS linkedin_connections integer,
+ADD COLUMN IF NOT EXISTS linkedin_followers integer,
+ADD COLUMN IF NOT EXISTS linkedin_premium boolean,
+ADD COLUMN IF NOT EXISTS linkedin_verified boolean,
+ADD COLUMN IF NOT EXISTS github_followers integer,
+ADD COLUMN IF NOT EXISTS github_following integer,
+ADD COLUMN IF NOT EXISTS github_repos integer,
+ADD COLUMN IF NOT EXISTS twitter_followers integer,
+ADD COLUMN IF NOT EXISTS twitter_following integer,
+ADD COLUMN IF NOT EXISTS facebook_friends integer,
+ADD COLUMN IF NOT EXISTS social_profiles jsonb,
+ADD COLUMN IF NOT EXISTS patents jsonb,
+ADD COLUMN IF NOT EXISTS publications jsonb,
+ADD COLUMN IF NOT EXISTS awards jsonb,
+ADD COLUMN IF NOT EXISTS volunteer_work jsonb,
+ADD COLUMN IF NOT EXISTS recommendations_received integer,
+ADD COLUMN IF NOT EXISTS recommendations_given integer,
+ADD COLUMN IF NOT EXISTS personality_traits jsonb,
+ADD COLUMN IF NOT EXISTS work_preferences jsonb,
+ADD COLUMN IF NOT EXISTS salary_range text,
+ADD COLUMN IF NOT EXISTS net_worth text,
+ADD COLUMN IF NOT EXISTS investment_interests jsonb,
+ADD COLUMN IF NOT EXISTS technology_skills jsonb,
+ADD COLUMN IF NOT EXISTS software_proficiency jsonb,
+ADD COLUMN IF NOT EXISTS programming_languages jsonb,
+ADD COLUMN IF NOT EXISTS databases_used jsonb,
+ADD COLUMN IF NOT EXISTS frameworks_used jsonb,
+ADD COLUMN IF NOT EXISTS cloud_platforms jsonb,
+ADD COLUMN IF NOT EXISTS project_management_tools jsonb,
+ADD COLUMN IF NOT EXISTS design_tools jsonb,
+ADD COLUMN IF NOT EXISTS marketing_tools jsonb,
+ADD COLUMN IF NOT EXISTS sales_tools jsonb,
+ADD COLUMN IF NOT EXISTS communication_tools jsonb,
+ADD COLUMN IF NOT EXISTS mobile_devices jsonb,
+ADD COLUMN IF NOT EXISTS operating_systems jsonb,
+ADD COLUMN IF NOT EXISTS browser_preferences jsonb,
+ADD COLUMN IF NOT EXISTS shopping_preferences jsonb,
+ADD COLUMN IF NOT EXISTS travel_preferences jsonb,
+ADD COLUMN IF NOT EXISTS lifestyle_interests jsonb,
+ADD COLUMN IF NOT EXISTS media_consumption jsonb,
+ADD COLUMN IF NOT EXISTS political_affiliation text,
+ADD COLUMN IF NOT EXISTS religious_beliefs text,
+ADD COLUMN IF NOT EXISTS family_status text,
+ADD COLUMN IF NOT EXISTS children_count integer,
+ADD COLUMN IF NOT EXISTS pet_ownership jsonb,
+ADD COLUMN IF NOT EXISTS home_ownership text,
+ADD COLUMN IF NOT EXISTS vehicle_ownership jsonb,
+ADD COLUMN IF NOT EXISTS health_interests jsonb,
+ADD COLUMN IF NOT EXISTS fitness_activities jsonb,
+ADD COLUMN IF NOT EXISTS dietary_preferences jsonb,
+ADD COLUMN IF NOT EXISTS environmental_interests jsonb;
+
+-- Add indexes for commonly searched fields
+CREATE INDEX IF NOT EXISTS idx_leads_work_email ON public.leads(work_email);
+CREATE INDEX IF NOT EXISTS idx_leads_job_start_date ON public.leads(job_start_date);
+CREATE INDEX IF NOT EXISTS idx_leads_management_level ON public.leads(management_level);
+CREATE INDEX IF NOT EXISTS idx_leads_city ON public.leads(city);
+CREATE INDEX IF NOT EXISTS idx_leads_state ON public.leads(state);
+CREATE INDEX IF NOT EXISTS idx_leads_country ON public.leads(country);
+
+-- Add GIN indexes for new JSONB fields
+CREATE INDEX IF NOT EXISTS idx_leads_job_company_tags_gin ON public.leads USING GIN(job_company_tags);
+CREATE INDEX IF NOT EXISTS idx_leads_personal_emails_gin ON public.leads USING GIN(personal_emails);
+CREATE INDEX IF NOT EXISTS idx_leads_interests_gin ON public.leads USING GIN(interests);
+CREATE INDEX IF NOT EXISTS idx_leads_departments_gin ON public.leads USING GIN(departments);
+CREATE INDEX IF NOT EXISTS idx_leads_job_functions_gin ON public.leads USING GIN(job_functions);
+CREATE INDEX IF NOT EXISTS idx_leads_technology_skills_gin ON public.leads USING GIN(technology_skills);
+CREATE INDEX IF NOT EXISTS idx_leads_social_profiles_gin ON public.leads USING GIN(social_profiles);
