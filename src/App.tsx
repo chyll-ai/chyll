@@ -32,9 +32,9 @@ function App() {
   return (
     <TolgeeProvider tolgee={tolgee} fallback="Loading translations...">
       <Suspense fallback="Loading...">
-        <AuthProvider>
-          <LanguageProvider>
-            <Router>
+        <LanguageProvider>
+          <Router>
+            <AuthProvider>
               <div className="App">
                 <Routes>
                   <Route path="/" element={<Index />} />
@@ -59,9 +59,9 @@ function App() {
                 </Routes>
                 <Toaster />
               </div>
-            </Router>
-          </LanguageProvider>
-        </AuthProvider>
+            </AuthProvider>
+          </Router>
+        </LanguageProvider>
       </Suspense>
     </TolgeeProvider>
   );
