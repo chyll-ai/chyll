@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -17,12 +16,12 @@ import {
   Mail, 
   Zap, 
   Archive,
-  Eye,
   ExternalLink
 } from 'lucide-react';
 import { useAssistantActions } from '@/hooks/useAssistantActions';
 import { useApolloEnrichment } from '@/hooks/useApolloEnrichment';
 import { useGmailSender } from '@/hooks/useGmailSender';
+import { useResponsive } from '@/hooks/use-responsive';
 
 interface Lead {
   id: string;
@@ -48,6 +47,7 @@ const WorkspaceLeadTable: React.FC = () => {
   const { leads, filteredLeads, loading, assistantActions } = useAssistantActions();
   const { enrichLead, enriching } = useApolloEnrichment();
   const { sendEmail, sending } = useGmailSender();
+  const { isMobile, isTablet } = useResponsive();
 
   useEffect(() => {
     assistantActions.loadLeads();
@@ -106,40 +106,43 @@ const WorkspaceLeadTable: React.FC = () => {
 
   return (
     <Card className="h-full flex flex-col">
-      <CardHeader className="flex-shrink-0">
-        <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
-            <Users className="h-5 w-5 text-primary" />
-            Leads ({displayLeads.length})
+      <CardHeader className="flex-shrink-0 pb-3">
+        <div className="flex items-center justify-between gap-2">
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <Users className="h-4 w-4 text-primary" />
+            <span className="hidden sm:inline">Leads</span> ({displayLeads.length})
           </CardTitle>
           
           {selectedLeads.length > 0 && (
-            <div className="flex gap-2">
+            <div className="flex gap-1">
               <Button 
                 size="sm" 
                 variant="outline"
                 onClick={handleEnrichSelected}
                 disabled={enriching}
+                className="text-xs px-2"
               >
-                <Zap className="h-4 w-4 mr-1" />
-                Enrichir ({selectedLeads.length})
+                <Zap className="h-3 w-3 mr-1" />
+                {!isMobile && `Enrichir (${selectedLeads.length})`}
               </Button>
               <Button 
                 size="sm" 
                 variant="outline"
                 onClick={handleSendEmailsSelected}
                 disabled={sending}
+                className="text-xs px-2"
               >
-                <Mail className="h-4 w-4 mr-1" />
-                Envoyer
+                <Mail className="h-3 w-3 mr-1" />
+                {!isMobile && "Email"}
               </Button>
               <Button 
                 size="sm" 
                 variant="outline"
                 onClick={handleArchiveSelected}
+                className="text-xs px-2"
               >
-                <Archive className="h-4 w-4 mr-1" />
-                Archiver
+                <Archive className="h-3 w-3 mr-1" />
+                {!isMobile && "Archive"}
               </Button>
             </div>
           )}
@@ -147,69 +150,101 @@ const WorkspaceLeadTable: React.FC = () => {
       </CardHeader>
       
       <CardContent className="flex-1 overflow-hidden p-0">
-        <div className="overflow-auto h-full">
+        <div className="h-full overflow-auto">
           <Table>
-            <TableHeader>
+            <TableHeader className="sticky top-0 bg-background z-10">
               <TableRow>
-                <TableHead className="w-12">
+                <TableHead className="w-8">
                   <Checkbox
                     checked={selectedLeads.length === displayLeads.length && displayLeads.length > 0}
                     onCheckedChange={handleSelectAll}
                   />
                 </TableHead>
-                <TableHead>Nom</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Téléphone</TableHead>
-                <TableHead>Société</TableHead>
-                <TableHead>Poste</TableHead>
-                <TableHead>Localisation</TableHead>
-                <TableHead>Statut</TableHead>
-                <TableHead>Actions</TableHead>
+                <TableHead className="min-w-[120px]">Nom</TableHead>
+                {!isMobile && <TableHead className="min-w-[150px]">Email</TableHead>}
+                {!isMobile && !isTablet && <TableHead className="min-w-[100px]">Téléphone</TableHead>}
+                <TableHead className="min-w-[100px]">Société</TableHead>
+                {!isMobile && <TableHead className="min-w-[100px]">Poste</TableHead>}
+                {!isMobile && !isTablet && <TableHead className="min-w-[100px]">Localisation</TableHead>}
+                <TableHead className="min-w-[80px]">Statut</TableHead>
+                <TableHead className="w-20">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={9} className="text-center py-8">
-                    Chargement des leads...
+                  <TableCell colSpan={9} className="text-center py-4">
+                    Chargement...
                   </TableCell>
                 </TableRow>
               ) : displayLeads.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={9} className="text-center py-8">
+                  <TableCell colSpan={9} className="text-center py-4">
                     Aucun lead trouvé
                   </TableCell>
                 </TableRow>
               ) : (
                 displayLeads.map((lead) => (
-                  <TableRow key={lead.id}>
+                  <TableRow key={lead.id} className="hover:bg-muted/50">
                     <TableCell>
                       <Checkbox
                         checked={selectedLeads.includes(lead.id)}
                         onCheckedChange={(checked) => handleSelectLead(lead.id, checked as boolean)}
                       />
                     </TableCell>
-                    <TableCell className="font-medium">
-                      {lead.full_name || 'N/A'}
-                    </TableCell>
-                    <TableCell>
-                      {lead.email ? (
-                        <a 
-                          href={`mailto:${lead.email}`}
-                          className="text-blue-600 hover:underline"
-                        >
+                    <TableCell className="font-medium text-sm">
+                      <div className="truncate max-w-[120px]" title={lead.full_name || 'N/A'}>
+                        {lead.full_name || 'N/A'}
+                      </div>
+                      {isMobile && lead.email && (
+                        <div className="text-xs text-muted-foreground truncate">
                           {lead.email}
-                        </a>
-                      ) : (
-                        'N/A'
+                        </div>
                       )}
                     </TableCell>
-                    <TableCell>{lead.phone_number || 'N/A'}</TableCell>
-                    <TableCell>{lead.company || 'N/A'}</TableCell>
-                    <TableCell>{lead.job_title || 'N/A'}</TableCell>
-                    <TableCell>{lead.location || 'N/A'}</TableCell>
+                    {!isMobile && (
+                      <TableCell className="text-sm">
+                        {lead.email ? (
+                          <a 
+                            href={`mailto:${lead.email}`}
+                            className="text-blue-600 hover:underline truncate block max-w-[150px]"
+                            title={lead.email}
+                          >
+                            {lead.email}
+                          </a>
+                        ) : (
+                          'N/A'
+                        )}
+                      </TableCell>
+                    )}
+                    {!isMobile && !isTablet && (
+                      <TableCell className="text-sm">
+                        <div className="truncate max-w-[100px]" title={lead.phone_number || 'N/A'}>
+                          {lead.phone_number || 'N/A'}
+                        </div>
+                      </TableCell>
+                    )}
+                    <TableCell className="text-sm">
+                      <div className="truncate max-w-[100px]" title={lead.company || 'N/A'}>
+                        {lead.company || 'N/A'}
+                      </div>
+                    </TableCell>
+                    {!isMobile && (
+                      <TableCell className="text-sm">
+                        <div className="truncate max-w-[100px]" title={lead.job_title || 'N/A'}>
+                          {lead.job_title || 'N/A'}
+                        </div>
+                      </TableCell>
+                    )}
+                    {!isMobile && !isTablet && (
+                      <TableCell className="text-sm">
+                        <div className="truncate max-w-[100px]" title={lead.location || 'N/A'}>
+                          {lead.location || 'N/A'}
+                        </div>
+                      </TableCell>
+                    )}
                     <TableCell>
-                      <Badge className={getStatusColor(lead.status || 'new')}>
+                      <Badge className={`${getStatusColor(lead.status || 'new')} text-xs`}>
                         {lead.status || 'new'}
                       </Badge>
                     </TableCell>
@@ -220,6 +255,7 @@ const WorkspaceLeadTable: React.FC = () => {
                           variant="ghost"
                           onClick={() => enrichLead(lead.id)}
                           disabled={enriching}
+                          className="h-6 w-6 p-0"
                         >
                           <Zap className="h-3 w-3" />
                         </Button>
@@ -229,6 +265,7 @@ const WorkspaceLeadTable: React.FC = () => {
                             variant="ghost"
                             onClick={() => sendEmail(lead.email!, 'Contact', 'Bonjour...')}
                             disabled={sending}
+                            className="h-6 w-6 p-0"
                           >
                             <Mail className="h-3 w-3" />
                           </Button>
@@ -238,6 +275,7 @@ const WorkspaceLeadTable: React.FC = () => {
                             size="sm"
                             variant="ghost"
                             onClick={() => window.open(lead.linkedin_url, '_blank')}
+                            className="h-6 w-6 p-0"
                           >
                             <ExternalLink className="h-3 w-3" />
                           </Button>
