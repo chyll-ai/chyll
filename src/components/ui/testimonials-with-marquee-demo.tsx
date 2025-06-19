@@ -3,17 +3,17 @@ import { TestimonialsSection } from "@/components/ui/testimonials-with-marquee";
 import { useLanguage } from "@/context/LanguageContext";
 
 export function TestimonialsWithMarqueeDemo() {
-  const { language, t } = useLanguage();
+  const { language } = useLanguage();
 
-  // Default testimonials in case translations are missing
-  const defaultTestimonials = [
+  // French testimonials
+  const testimonials = [
     {
       author: {
         name: "Alex Chen",
         handle: "@alexfounder",
         avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face"
       },
-      text: "Our AI Employee handles all our customer emails with perfect accuracy. It's like having a dedicated team member who works 24/7 without breaks.",
+      text: "Notre Employé IA gère tous nos emails clients avec une précision parfaite. C'est comme avoir un membre d'équipe dédié qui travaille 24/7 sans pause.",
       href: "#"
     },
     {
@@ -22,7 +22,7 @@ export function TestimonialsWithMarqueeDemo() {
         handle: "@sarahstartup",
         avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=face"
       },
-      text: "As a solo founder, my AI Employee manages our entire sales pipeline. It follows up with leads, qualifies prospects, and even closes deals while I sleep.",
+      text: "En tant que fondatrice solo, mon Employé IA gère tout notre pipeline commercial. Il fait le suivi des prospects, qualifie les leads et conclut même des ventes pendant que je dors.",
       href: "#"
     },
     {
@@ -31,40 +31,13 @@ export function TestimonialsWithMarqueeDemo() {
         handle: "@mikeceo",
         avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face"
       },
-      text: "We've reduced our support team costs by 70% since implementing AI Employees. They handle routine inquiries with incredible accuracy and empathy."
+      text: "Nous avons réduit nos coûts d'équipe support de 70% depuis l'implémentation d'Employés IA. Ils gèrent les demandes routinières avec une précision et une empathie incroyables."
     }
   ];
-
-  // Check if French testimonials are available
-  const hasFrenchTestimonials = language === 'fr' && t.home?.testimonials?.quotes !== undefined;
-  
-  // Use testimonials from translations if available
-  const testimonials = hasFrenchTestimonials
-    ? t.home?.testimonials?.quotes?.map(quote => ({
-        author: {
-          name: quote.author,
-          handle: quote.handle,
-          avatar: getAvatarForName(quote.author)
-        },
-        text: quote.text,
-        href: "#"
-      }))
-    : defaultTestimonials;
   
   return (
     <TestimonialsSection
-      testimonials={testimonials || []}
+      testimonials={testimonials}
     />
   );
-}
-
-// Helper function to get avatar based on name
-function getAvatarForName(name: string) {
-  const avatarMap: {[key: string]: string} = {
-    "Alex Chen": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
-    "Sarah Miller": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=face",
-    "Michael Rodriguez": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face"
-  };
-  
-  return avatarMap[name] || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face";
 }

@@ -6,7 +6,7 @@ import { Globe, Mail, Users } from "lucide-react";
 import { Button } from '@/components/ui/button';
 
 export function Footer2() {
-  const { t } = useLanguage();
+  const { language } = useLanguage();
   const currentYear = new Date().getFullYear();
   
   return (
@@ -24,7 +24,7 @@ export function Footer2() {
               </Link>
             </div>
             <p className="text-gray-300 mb-6 max-w-md">
-              {t.footer.tagline}
+              L'assistant commercial IA qui automatise votre prospection B2B.
             </p>
             <div className="flex space-x-4">
               <a href="https://twitter.com/chyllai" className="text-gray-400 hover:text-white transition-colors">
@@ -51,7 +51,7 @@ export function Footer2() {
               </div>
             </div>
             <p className="text-gray-500 mt-6 text-sm">
-              {t.footer.copyright}
+              © {currentYear} chyll.ai. Tous droits réservés.
             </p>
           </div>
 
@@ -76,9 +76,9 @@ export function Footer2() {
             <div className="mt-8">
               <h4 className="text-sm font-medium mb-3 text-gray-300">Légal</h4>
               <ul className="space-y-2">
-                <li><Link to="/privacy" className="text-gray-400 hover:text-white transition-colors text-sm">{t.footer.links.privacy}</Link></li>
-                <li><Link to="/terms" className="text-gray-400 hover:text-white transition-colors text-sm">{t.footer.links.terms}</Link></li>
-                <li><Link to="/cookies" className="text-gray-400 hover:text-white transition-colors text-sm">{t.footer.links.cookies}</Link></li>
+                <li><Link to="/privacy" className="text-gray-400 hover:text-white transition-colors text-sm">Confidentialité</Link></li>
+                <li><Link to="/terms" className="text-gray-400 hover:text-white transition-colors text-sm">Conditions d'utilisation</Link></li>
+                <li><Link to="/cookies" className="text-gray-400 hover:text-white transition-colors text-sm">Cookies</Link></li>
               </ul>
             </div>
           </div>

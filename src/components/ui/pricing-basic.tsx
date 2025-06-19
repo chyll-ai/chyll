@@ -5,7 +5,7 @@ import { Pricing } from "@/components/ui/pricing";
 import { useLanguage } from "@/context/LanguageContext";
 
 function PricingBasic() {
-  const { t } = useLanguage();
+  const { language } = useLanguage();
   
   // Pricing plans with waitlist links only
   const pricingPlans = [

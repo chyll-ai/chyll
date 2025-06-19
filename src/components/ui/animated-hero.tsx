@@ -8,10 +8,10 @@ import { useLanguage } from "@/context/LanguageContext";
 import { useResponsive } from "@/hooks/use-responsive";
 
 function Hero() {
-  const { language, t } = useLanguage();
+  const { language } = useLanguage();
   const { isMobile } = useResponsive();
   const [titleNumber, setTitleNumber] = useState(0);
-  const titles = t.home.hero.actions || [
+  const titles = [
     "automatisée.",
     "simplifiée.",
     "efficace.",
@@ -45,7 +45,7 @@ function Hero() {
         <div className="flex gap-6 py-12 md:py-20 lg:py-40 items-center justify-center flex-col">
           <div className="flex gap-4 flex-col">
             <h1 className="text-4xl sm:text-5xl md:text-7xl max-w-2xl tracking-tighter text-center font-regular">
-              <span className="rainbow-text-static">{t.home.hero.title}</span>
+              <span className="rainbow-text-static">Prospection B2B</span>
               <span className="relative flex w-full justify-center overflow-hidden text-center md:pb-4 pt-1">
                 &nbsp;
                 {titles.map((title, index) => (
@@ -73,7 +73,7 @@ function Hero() {
             </h1>
 
             <p className="text-base md:text-lg lg:text-xl leading-relaxed tracking-tight text-muted-foreground max-w-2xl text-center">
-              {t.home.hero.description}
+              L'assistant commercial IA qui automatise votre prospection B2B, enrichit vos leads et gère votre pipeline commercial.
             </p>
           </div>
           <div className="flex justify-center w-full">

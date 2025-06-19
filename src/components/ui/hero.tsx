@@ -9,11 +9,17 @@ import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/context/LanguageContext";
 
 export function Hero() {
-  const { t } = useLanguage();
+  const { language } = useLanguage();
   
   // Initialize rotating words for the animation
   const [wordIndex, setWordIndex] = useState(0);
-  const rotatingWords = t.home.hero.actions;
+  const rotatingWords = [
+    "automatisée.",
+    "simplifiée.",
+    "efficace.",
+    "sans effort.",
+    "optimisée."
+  ];
 
   // Set up animation interval
   useEffect(() => {
@@ -34,13 +40,13 @@ export function Hero() {
       <div className="animation-delay-8 animate-fadeIn mt-20 flex flex-col items-center justify-center px-4 text-center md:mt-20">
         <div className="z-10 mb-6 mt-10 sm:justify-center md:mb-4 md:mt-20">
           <div className="relative flex items-center whitespace-nowrap rounded-full border bg-popover px-3 py-1 text-xs leading-6 text-primary/60">
-            <SquareCode className="h-5 p-1" /> {t.home.hero.introducing}
+            <SquareCode className="h-5 p-1" /> Présentation de chyll.ai
             <a
               href="/about"
               rel="noreferrer"
               className="hover:text-brand-blue ml-1 flex items-center font-semibold"
             >
-              {t.common.learnMore}{" "}
+              En savoir plus{" "}
               <span aria-hidden="true">
                 <MoveRight className="h-5 p-1" />
               </span>
@@ -50,7 +56,7 @@ export function Hero() {
 
         <div className="mb-6 md:mb-10">
           <div className="typography-h1 font-extrabold leading-tight tracking-tight text-center">
-            <span className="block text-5xl xl:text-8xl rainbow-text-static">{t.home.hero.title}</span>
+            <span className="block text-5xl xl:text-8xl rainbow-text-static">Prospection B2B</span>
             <div className="inline-block rainbow-text text-5xl xl:text-8xl">
               {rotatingWords[wordIndex]}
             </div>
@@ -58,11 +64,11 @@ export function Hero() {
         </div>
 
         <p className="max-w-3xl text-lg font-semibold text-gray-700 mb-4 md:text-xl md:leading-relaxed">
-          {t.home.hero.subtitle}
+          L'assistant commercial IA qui révolutionne la prospection B2B
         </p>
 
         <p className="max-w-2xl text-gray-600 mb-10">
-          {t.home.hero.description}
+          Automatisez votre prospection, enrichissez vos leads et gérez votre pipeline commercial avec notre intelligence artificielle avancée.
         </p>
 
         <div className="flex justify-center">

@@ -4,13 +4,13 @@ import { InfiniteSlider } from "@/components/ui/infinite-slider";
 import { useLanguage } from "@/context/LanguageContext";
 
 export function PartnerCompaniesDemo() {
-  const { t } = useLanguage();
+  const { language } = useLanguage();
   
   return (
     <div className="py-12">
       <div className="text-center mb-8">
         <h3 className="text-xl md:text-2xl font-semibold text-gray-800">
-          {t.home.partners.title}
+          Ils nous font confiance
         </h3>
       </div>
       

@@ -20,7 +20,7 @@ export function TestimonialsCarousel({
   className,
   testimonials,
 }: TestimonialsCarouselProps = {}) {
-  const { t } = useLanguage();
+  const { language } = useLanguage();
   
   return (
     <div className={className}>
