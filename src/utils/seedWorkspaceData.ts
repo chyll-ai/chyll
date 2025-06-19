@@ -41,7 +41,9 @@ export const seedWorkspaceData = async () => {
 
     const cities = ["Paris", "Lyon", "Marseille", "Bordeaux", "Lille", "Toulouse", "Nice", "Strasbourg", "Nantes", "Montpellier"];
     const jobTitles = ["CEO", "CTO", "VP Engineering", "Head of Product", "Lead Developer", "Product Manager", "Engineering Manager", "Data Scientist", "DevOps Engineer"];
-    const validStatuses = ["new", "contacted", "qualified", "à relancer", "interested"];
+    
+    // Use only valid status values that match the database constraint
+    const validStatuses = ["new", "contacted", "qualified", "interested"];
     const pipelineStages = ["prospect", "qualified", "proposal", "negotiation", "closed_won", "closed_lost"];
     const industries = ["Technology", "SaaS", "E-commerce", "FinTech", "HealthTech", "EdTech", "IoT"];
     const companySizes = ["1-10", "11-50", "51-200", "201-500", "501-1000", "1000+"];
@@ -251,7 +253,7 @@ export const seedWorkspaceData = async () => {
         expected_close_date: expectedCloseDate.toISOString().split('T')[0],
         last_activity_date: lastActivityDate.toISOString().split('T')[0],
         
-        // Status and metadata - using valid status values
+        // Status and metadata - using ONLY valid status values
         status: validStatuses[Math.floor(Math.random() * validStatuses.length)],
         enriched_from: { 
           source: 'test_data_comprehensive', 
