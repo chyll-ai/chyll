@@ -34,7 +34,7 @@ const Workspace: React.FC = () => {
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header - Fixed height */}
       <header className="border-b border-border bg-card flex-shrink-0">
-        <div className="container-custom py-3">
+        <div className="w-full px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Link 
@@ -69,15 +69,15 @@ const Workspace: React.FC = () => {
       </header>
 
       {/* Main Content - Takes remaining height */}
-      <main className="flex-1 container-custom py-4 overflow-hidden">
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 h-full">
-          {/* Assistant Column */}
-          <div className="flex flex-col min-h-0">
+      <main className="flex-1 w-full px-4 py-4 overflow-hidden">
+        <div className="flex gap-4 h-full">
+          {/* Assistant Column - Fixed width on the left */}
+          <div className="w-80 flex-shrink-0">
             <WorkspaceAssistant onLeadsUpdate={handleLeadsUpdate} />
           </div>
 
-          {/* Lead Table Column */}
-          <div className="flex flex-col min-h-0">
+          {/* Lead Table Column - Takes all remaining space */}
+          <div className="flex-1 min-w-0">
             <WorkspaceLeadTable key={refreshKey} />
           </div>
         </div>
