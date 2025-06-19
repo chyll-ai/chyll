@@ -14,7 +14,6 @@ interface EmailJob {
   sent_at?: string;
   error?: string;
   created_at?: string;
-  updated_at?: string;
 }
 
 export const useEmailJobs = () => {
@@ -27,7 +26,7 @@ export const useEmailJobs = () => {
       const { data, error } = await supabase
         .from('email_jobs')
         .select('*')
-        .order('updated_at', { ascending: false });
+        .order('created_at', { ascending: false });
 
       if (error) throw error;
       setEmailJobs(data || []);
