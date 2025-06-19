@@ -1,20 +1,17 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useLanguage } from '@/context/LanguageContext';
 import { ArrowLeft, Home } from 'lucide-react';
 
 export function NotFoundPage() {
-  const { t } = useLanguage();
-
   return (
     <div className="flex flex-col items-center justify-center min-h-[70vh] py-16">
       <div className="text-center">
         <h1 className="text-6xl font-bold text-gray-900 mb-4">
-          404 - {t.notFound.title}
+          404 - Page non trouvée
         </h1>
         <p className="text-xl text-gray-600 mb-8">
-          {t.notFound.message}
+          La page que vous recherchez n'existe pas.
         </p>
         
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -23,7 +20,7 @@ export function NotFoundPage() {
             className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-brand-blue hover:bg-brand-blue-dark transition-colors"
           >
             <Home className="mr-2" size={18} />
-            {t.notFound.button}
+            Retour à l'accueil
           </Link>
           
           <button 

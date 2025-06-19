@@ -3,13 +3,11 @@ import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import { NotFoundPage } from "@/components/ui/404-page-not-found";
 import SEOMetadata from "@/components/SEOMetadata";
-import { useLanguage } from '@/context/LanguageContext';
 import Header from '@/components/layout/Header';
 import { Footer2 } from '@/components/ui/footer2';
 
 const NotFound = () => {
   const location = useLocation();
-  const { t } = useLanguage();
   
   // Set the proper HTTP status code to 404
   useEffect(() => {
@@ -20,7 +18,7 @@ const NotFound = () => {
     );
     
     // Set HTTP status code to 404 - this helps search engines identify true 404s
-    document.title = `404 - ${t.notFound.title} | chyll.ai`;
+    document.title = `404 - Page non trouvée | chyll.ai`;
     
     // Add meta tag for status code (helps some crawlers)
     const metaStatus = document.createElement('meta');
@@ -35,7 +33,7 @@ const NotFound = () => {
         existingMeta.remove();
       }
     };
-  }, [location.pathname, t.notFound.title]);
+  }, [location.pathname]);
 
   // Define SEO metadata specific for the 404 page
   const structuredData = {
@@ -60,8 +58,8 @@ const NotFound = () => {
   return (
     <>
       <SEOMetadata
-        title={`404 - ${t.notFound.title}`}
-        description={t.notFound.message}
+        title="404 - Page non trouvée"
+        description="La page que vous recherchez n'existe pas."
         canonicalUrl="/"
         structuredData={structuredData}
         pageUrl="https://chyll.ai/"

@@ -3,13 +3,9 @@ import React from 'react';
 import { 
   DollarSign, Zap, PlayCircle, Clock, Globe, ArrowUpRight 
 } from 'lucide-react';
-import { useLanguage } from '@/context/LanguageContext';
 
 const Benefits = () => {
-  const { t } = useLanguage();
-
-  // Default French benefits if no translations are available
-  const defaultBenefits = [
+  const benefits = [
     {
       title: "Rentabilité",
       icon: DollarSign,
@@ -44,7 +40,7 @@ const Benefits = () => {
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-      {defaultBenefits.map((benefit, index) => (
+      {benefits.map((benefit, index) => (
         <div 
           key={index} 
           className="flex flex-col items-center text-center p-4 hover-lift"

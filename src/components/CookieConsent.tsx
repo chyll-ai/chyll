@@ -5,11 +5,9 @@ import { toast } from '@/components/ui/sonner';
 import { Cookie, Check, X } from 'lucide-react';
 import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Link } from 'react-router-dom';
-import { useLanguage } from '@/context/LanguageContext';
 
 const CookieConsent = () => {
   const [open, setOpen] = useState(false);
-  const { t } = useLanguage();
 
   useEffect(() => {
     // Check if user has already made a cookie choice
@@ -26,8 +24,8 @@ const CookieConsent = () => {
   const acceptCookies = () => {
     localStorage.setItem('cookiesAccepted', 'true');
     setOpen(false);
-    toast(t.legal.cookies.consent.toast.accepted, {
-      description: t.legal.cookies.consent.toast.description,
+    toast("Cookies acceptés", {
+      description: "Vos préférences ont été enregistrées",
       duration: 3000,
     });
   };
@@ -35,8 +33,8 @@ const CookieConsent = () => {
   const acceptEssentialOnly = () => {
     localStorage.setItem('cookiesAccepted', 'essential');
     setOpen(false);
-    toast(t.legal.cookies.consent.toast.essential, {
-      description: t.legal.cookies.consent.toast.essentialDescription,
+    toast("Cookies essentiels acceptés", {
+      description: "Seuls les cookies nécessaires seront utilisés",
       duration: 3000,
     });
   };
@@ -44,8 +42,8 @@ const CookieConsent = () => {
   const refuseCookies = () => {
     localStorage.setItem('cookiesAccepted', 'refused');
     setOpen(false);
-    toast(t.legal.cookies.consent.toast.refused, {
-      description: t.legal.cookies.consent.toast.refusedDescription,
+    toast("Cookies refusés", {
+      description: "Aucun cookie ne sera utilisé",
       duration: 3000,
     });
   };
@@ -61,17 +59,17 @@ const CookieConsent = () => {
         <div className="p-6 max-w-5xl mx-auto">
           <SheetHeader className="flex flex-row items-center gap-3 mb-4">
             <Cookie className="h-5 w-5 text-brand-blue" />
-            <SheetTitle className="text-xl">{t.legal.cookies.consent.title}</SheetTitle>
+            <SheetTitle className="text-xl">Nous utilisons des cookies</SheetTitle>
           </SheetHeader>
           
           <div className="mb-4 text-sm text-gray-600">
             <p>
-              {t.legal.cookies.consent.description}
+              Nous utilisons des cookies pour améliorer votre expérience sur notre site. Vous pouvez accepter tous les cookies ou choisir vos préférences.
             </p>
             <p className="mt-2">
-              {t.legal.cookies.consent.learnMore}{' '}
+              Pour en savoir plus, consultez notre{' '}
               <Link to="/cookies" className="text-brand-blue hover:underline" onClick={() => setOpen(false)}>
-                {t.footer.links.cookies}
+                politique des cookies
               </Link>.
             </p>
           </div>
@@ -83,17 +81,17 @@ const CookieConsent = () => {
               className="border-red-200 hover:bg-red-50 hover:text-red-600 text-red-500"
             >
               <X className="h-4 w-4 mr-2" />
-              {t.legal.cookies.consent.buttons.refuse}
+              Refuser
             </Button>
             <Button
               variant="outline"
               onClick={acceptEssentialOnly}
             >
-              {t.legal.cookies.consent.buttons.essentialOnly}
+              Essentiels uniquement
             </Button>
             <Button onClick={acceptCookies} className="bg-brand-blue hover:bg-brand-blue/90">
               <Check className="h-4 w-4 mr-2" />
-              {t.legal.cookies.consent.buttons.acceptAll}
+              Tout accepter
             </Button>
           </SheetFooter>
         </div>

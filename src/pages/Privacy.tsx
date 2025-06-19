@@ -1,13 +1,9 @@
-
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import { Footer2 } from '@/components/ui/footer2';
-import { useLanguage } from '@/context/LanguageContext';
 import { Helmet } from 'react-helmet-async';
 
 const Privacy = () => {
-  const { t } = useLanguage();
-  
   return (
     <div className="min-h-screen flex flex-col">
       <Helmet>

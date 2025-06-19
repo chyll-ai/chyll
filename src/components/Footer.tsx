@@ -1,11 +1,9 @@
 
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { useLanguage } from '@/context/LanguageContext';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
-  const { t } = useLanguage();
   const location = useLocation();
   const isFAQPage = location.pathname === '/faq';
 
@@ -24,7 +22,7 @@ const Footer = () => {
               </Link>
             </div>
             <p className="text-gray-600 mb-4 max-w-md">
-              {t.footer.tagline}
+              L'assistant commercial IA qui automatise votre prospection B2B.
             </p>
             <p className="text-gray-500 text-sm">
               © 2025 chyll.ai
@@ -33,28 +31,28 @@ const Footer = () => {
 
           {!isFAQPage && (
             <div>
-              <h3 className="text-gray-800 font-medium mb-4">{t.footer.menuTitles.product}</h3>
+              <h3 className="text-gray-800 font-medium mb-4">Produit</h3>
               <ul className="space-y-2">
-                <li><a href="#features" className="text-gray-600 hover:text-brand-blue transition-colors">{t.nav.features}</a></li>
-                <li><a href="#how-it-works" className="text-gray-600 hover:text-brand-blue transition-colors">{t.nav.howItWorks}</a></li>
-                <li><a href="#pricing" className="text-gray-600 hover:text-brand-blue transition-colors">{t.nav.pricing}</a></li>
+                <li><a href="#features" className="text-gray-600 hover:text-brand-blue transition-colors">Fonctionnalités</a></li>
+                <li><a href="#how-it-works" className="text-gray-600 hover:text-brand-blue transition-colors">Comment ça marche</a></li>
+                <li><a href="#pricing" className="text-gray-600 hover:text-brand-blue transition-colors">Tarifs</a></li>
                 <li><Link to="/blog" className="text-gray-600 hover:text-brand-blue transition-colors">Blog</Link></li>
               </ul>
             </div>
           )}
 
           <div>
-            <h3 className="text-gray-800 font-medium mb-4">{t.footer.menuTitles.company}</h3>
+            <h3 className="text-gray-800 font-medium mb-4">Entreprise</h3>
             <ul className="space-y-2">
               <li><Link to="/about-us" className="text-gray-600 hover:text-brand-blue transition-colors">À propos</Link></li>
               <li><Link to="/careers" className="text-gray-600 hover:text-brand-blue transition-colors">Carrières</Link></li>
-              <li><Link to="/contact" className="text-gray-600 hover:text-brand-blue transition-colors">{t.common.contactUs}</Link></li>
+              <li><Link to="/contact" className="text-gray-600 hover:text-brand-blue transition-colors">Contact</Link></li>
               <li><Link to="/blog" className="text-gray-600 hover:text-brand-blue transition-colors">Blog</Link></li>
               {!isFAQPage && (
                 <li><Link to="/faq" className="text-gray-600 hover:text-brand-blue transition-colors">FAQ</Link></li>
               )}
-              <li><Link to="/privacy" className="text-gray-600 hover:text-brand-blue transition-colors">{t.footer.links.privacy}</Link></li>
-              <li><Link to="/terms" className="text-gray-600 hover:text-brand-blue transition-colors">{t.footer.links.terms}</Link></li>
+              <li><Link to="/privacy" className="text-gray-600 hover:text-brand-blue transition-colors">Confidentialité</Link></li>
+              <li><Link to="/terms" className="text-gray-600 hover:text-brand-blue transition-colors">Conditions</Link></li>
             </ul>
           </div>
         </div>

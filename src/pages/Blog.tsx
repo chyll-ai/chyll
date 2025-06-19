@@ -1,8 +1,7 @@
+
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import { Footer2 } from '@/components/ui/footer2';
-import { useLocation } from 'react-router-dom';
-import { useLanguage } from '@/context/LanguageContext';
 import SEOMetadata from '@/components/SEOMetadata';
 import { Blog8 } from "@/components/ui/blog8";
 import { initialBlogPosts, additionalBlogPosts, finalBlogPosts } from '@/components/blog/blog-data';
@@ -57,8 +56,6 @@ const chyllOptimizedPosts = [
 ];
 
 const Blog = () => {
-  const location = useLocation();
-  const { t } = useLanguage();
   const [isLoading, setIsLoading] = React.useState(false);
 
   // Transform our blog data to match the Blog8 component's format

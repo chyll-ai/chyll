@@ -1,8 +1,8 @@
+
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import { Footer2 } from '@/components/ui/footer2';
 import { Headset, FileText, MessageCircle, BookOpen, Clock, Shield } from 'lucide-react';
-import { useLanguage } from '@/context/LanguageContext';
 
 interface SupportCard {
   icon: React.ReactNode;
@@ -27,8 +27,6 @@ const SupportOption = ({ option }: { option: SupportCard }) => (
 );
 
 const Support = () => {
-  const { t } = useLanguage();
-
   const supportOptions: SupportCard[] = [
     {
       icon: <MessageCircle className="w-8 h-8 text-indigo-600" />,

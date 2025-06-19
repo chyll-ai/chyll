@@ -6,12 +6,10 @@ import { Footer2 } from '@/components/ui/footer2';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { initialBlogPosts, additionalBlogPosts, finalBlogPosts } from '@/components/blog/blog-data';
-import { useLanguage } from '@/context/LanguageContext';
 
 const BlogPostPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { t } = useLanguage();
   
   // Find the blog post with the matching ID
   const allPosts = [...initialBlogPosts, ...additionalBlogPosts, ...finalBlogPosts];
@@ -22,11 +20,11 @@ const BlogPostPage = () => {
       <div className="min-h-screen flex flex-col">
         <Header />
         <div className="flex-1 container mx-auto py-20 flex flex-col items-center justify-center">
-          <h1 className="text-3xl font-bold mb-4">{t.blog.postNotFound}</h1>
-          <p className="mb-8">{t.blog.postNotFoundDesc}</p>
+          <h1 className="text-3xl font-bold mb-4">Article non trouvé</h1>
+          <p className="mb-8">L'article que vous recherchez n'existe pas ou a été supprimé.</p>
           <Button onClick={() => navigate('/blog')}>
             <ArrowLeft className="mr-2" size={16} />
-            {t.blog.backToBlog}
+            Retour au blog
           </Button>
         </div>
         <Footer2 />
