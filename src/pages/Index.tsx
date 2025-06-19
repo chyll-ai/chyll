@@ -37,7 +37,7 @@ const Index = () => {
               {t.home?.aiEmployees?.title || "Vos employés IA, toujours à votre service"}
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              {t.home?.aiEmployees?.subtitle || "Une équipe d'agents IA spécialisés pour automatiser toutes vos tâches commerciales"}
+              Une équipe d'agents IA spécialisés pour automatiser toutes vos tâches commerciales
             </p>
           </div>
           <BentoDemo />
@@ -67,7 +67,7 @@ const Index = () => {
               {t.home?.benefits?.title || "Les avantages de chyll"}
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              {t.home?.benefits?.subtitle || "Découvrez comment chyll transforme votre approche commerciale"}
+              {t.home?.benefits?.description || "Découvrez comment chyll transforme votre approche commerciale"}
             </p>
           </div>
           <Benefits />
@@ -115,10 +115,10 @@ const Index = () => {
       <section className="py-20 bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10">
         <div className="container text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            {t.home?.cta?.title || "Prêt à automatiser votre prospection ?"}
+            Prêt à automatiser votre prospection ?
           </h2>
           <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-            {t.home?.cta?.subtitle || "Rejoignez les entreprises qui ont déjà révolutionné leur approche commerciale avec chyll"}
+            Rejoignez les entreprises qui ont déjà révolutionné leur approche commerciale avec chyll
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
