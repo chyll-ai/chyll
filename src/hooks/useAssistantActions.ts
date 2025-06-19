@@ -1,6 +1,7 @@
+
 import { useState, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
-import { useApolloEnrichment } from './useApolloEnrichment';
+import { usePDLEnrichment } from './usePDLEnrichment';
 import { useGmailSender } from './useGmailSender';
 import { useEmailJobs } from './useEmailJobs';
 import { toast } from 'sonner';
@@ -29,7 +30,7 @@ export const useAssistantActions = () => {
   const [filteredLeads, setFilteredLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(false);
   
-  const { enrichLead, bulkEnrichLeads } = useApolloEnrichment();
+  const { enrichLead, bulkEnrichLeads } = usePDLEnrichment();
   const { sendEmail, sendBulkEmails } = useGmailSender();
   const { createEmailJob } = useEmailJobs();
 

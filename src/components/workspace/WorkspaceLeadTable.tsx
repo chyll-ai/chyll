@@ -20,7 +20,7 @@ import {
   Archive
 } from 'lucide-react';
 import { useAssistantActions } from '@/hooks/useAssistantActions';
-import { useApolloEnrichment } from '@/hooks/useApolloEnrichment';
+import { usePDLEnrichment } from '@/hooks/usePDLEnrichment';
 import { useGmailSender } from '@/hooks/useGmailSender';
 import LeadStatusSelector from '@/components/dashboard/LeadStatusSelector';
 import LeadActionsMenu from '@/components/dashboard/LeadActionsMenu';
@@ -30,7 +30,7 @@ const WorkspaceLeadTable: React.FC = () => {
   const navigate = useNavigate();
   const [selectedLeads, setSelectedLeads] = useState<string[]>([]);
   const { leads, filteredLeads, loading, assistantActions } = useAssistantActions();
-  const { enrichLead, enriching } = useApolloEnrichment();
+  const { enrichLead, enriching } = usePDLEnrichment();
   const { sendEmail, sending } = useGmailSender();
 
   useEffect(() => {

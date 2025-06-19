@@ -1,4 +1,3 @@
-
 import { supabase } from '@/lib/supabase';
 import { toast } from '@/components/ui/sonner';
 import { APIClient } from '@/lib/api-client';
@@ -17,8 +16,6 @@ export class AssistantService {
   private userId: string;
   private apiClient: APIClient;
   private onLeadsUpdate?: (leads: Lead[]) => void;
-  private generatedNames: Set<string> = new Set();
-  private generatedEmails: Set<string> = new Set();
 
   constructor(userId: string) {
     this.userId = userId;
@@ -46,27 +43,72 @@ export class AssistantService {
           content.toLowerCase().includes('leads') ||
           content.toLowerCase().includes('prospects') ||
           content.toLowerCase().includes('freelances')) {
-        console.log('AssistantService: Detected search query, generating demo leads');
+        console.log('AssistantService: Detected search query, using PDL search');
         
-        // Extract number from query (default to 3 if not specified, max 5)
+        // Extract number from query (default to 5 if not specified, max 10)
         const numberMatch = content.match(/(\d+)/);
-        const requestedCount = Math.min(numberMatch ? parseInt(numberMatch[1]) : 3, 5);
+        const requestedCount = Math.min(numberMatch ? parseInt(numberMatch[1]) : 5, 10);
         
-        console.log(`AssistantService: Generating ${requestedCount} demo leads`);
+        console.log(`AssistantService: Searching with PDL for ${requestedCount} leads`);
         
-        // Always generate demo leads for simplicity
-        const demoLeads = this.generateDemoLeads(content, requestedCount);
-        const savedLeads = await this.saveDemoLeads(demoLeads);
-        
-        if (this.onLeadsUpdate) {
-          this.onLeadsUpdate(savedLeads);
-        }
-        
-        toast.success(`${savedLeads.length} nouveaux leads ajoutés au tableau de bord`);
+        try {
+          // Call PDL search function
+          const { data: searchResult, error: searchError } = await supabase.functions
+            .invoke('pdl-search', {
+              body: {
+                searchQuery: content,
+                userId: this.userId,
+                count: requestedCount
+              }
+            });
 
-        return {
-          message: `Parfait ! J'ai trouvé ${savedLeads.length} leads spécialisés correspondant à votre recherche "${content}". Ces contacts ont été soigneusement sélectionnés pour correspondre exactement à vos critères. Vous pouvez les voir dans la section "Recent Leads" à droite.`
-        };
+          if (searchError) {
+            console.error('PDL search error:', searchError);
+            throw searchError;
+          }
+
+          if (!searchResult.success) {
+            throw new Error(searchResult.error || 'Search failed');
+          }
+
+          const leads = searchResult.leads || [];
+          console.log('PDL search found:', leads.length, 'leads');
+
+          if (leads.length > 0) {
+            // Save leads to database
+            const savedLeads = await this.savePDLLeads(leads);
+            
+            if (this.onLeadsUpdate) {
+              this.onLeadsUpdate(savedLeads);
+            }
+            
+            toast.success(`${savedLeads.length} nouveaux leads trouvés via People Data Labs`);
+
+            return {
+              message: `Excellent ! J'ai trouvé ${savedLeads.length} leads professionnels correspondant à votre recherche "${content}" via People Data Labs. Ces contacts ont été enrichis avec des données réelles et ajoutés à votre tableau de bord. Vous pouvez les voir dans la section des leads.`
+            };
+          } else {
+            return {
+              message: `Je n'ai pas trouvé de leads correspondant exactement à votre recherche "${content}". Essayez d'utiliser des termes plus généraux comme "Commercial Paris" ou "CTO France".`
+            };
+          }
+        } catch (error) {
+          console.error('PDL search failed, falling back to demo data:', error);
+          
+          // Fallback to demo leads if PDL fails
+          const demoLeads = this.generateDemoLeads(content, requestedCount);
+          const savedLeads = await this.saveDemoLeads(demoLeads);
+          
+          if (this.onLeadsUpdate) {
+            this.onLeadsUpdate(savedLeads);
+          }
+          
+          toast.warning('Données de démonstration utilisées (erreur PDL)');
+
+          return {
+            message: `J'ai rencontré une difficulté avec l'API People Data Labs, mais j'ai généré ${savedLeads.length} leads de démonstration pour "${content}". Pour utiliser de vraies données, vérifiez votre configuration PDL.`
+          };
+        }
       }
 
       // For non-search messages, proceed with normal message handling
@@ -99,6 +141,47 @@ export class AssistantService {
       console.error('AssistantService: Error in sendMessage:', error);
       toast.error('Échec de l\'envoi du message. Veuillez réessayer.');
       throw error;
+    }
+  }
+
+  private async savePDLLeads(leads: Lead[]): Promise<Lead[]> {
+    try {
+      console.log('AssistantService: Saving PDL leads to database');
+      
+      const savedLeads: Lead[] = [];
+      
+      for (const lead of leads) {
+        try {
+          const { data: savedLead, error } = await supabase
+            .from('leads')
+            .insert(lead)
+            .select('*')
+            .single();
+
+          if (error) {
+            if (error.code === '23505') {
+              console.log('Lead already exists, skipping:', lead.email);
+              continue;
+            } else {
+              console.error('Error saving individual PDL lead:', error);
+              continue;
+            }
+          }
+
+          if (savedLead) {
+            savedLeads.push(savedLead);
+          }
+        } catch (individualError) {
+          console.error('Error processing individual PDL lead:', individualError);
+          continue;
+        }
+      }
+
+      console.log('AssistantService: Successfully saved PDL leads:', savedLeads.length);
+      return savedLeads;
+    } catch (error) {
+      console.error('AssistantService: Error in savePDLLeads:', error);
+      return leads;
     }
   }
 
