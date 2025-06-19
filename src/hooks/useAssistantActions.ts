@@ -227,17 +227,29 @@ export const useAssistantActions = () => {
 
   const updateLeadStatus = useCallback(async (leadId: string, status: string) => {
     try {
+      console.log('Updating lead status:', leadId, 'to:', status);
+      
       const { error } = await supabase
         .from('leads')
-        .update({ status, updated_at: new Date().toISOString() })
+        .update({ 
+          status: status,
+          updated_at: new Date().toISOString() 
+        })
         .eq('id', leadId);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error updating lead status:', error);
+        throw error;
+      }
+      
+      console.log('Lead status updated successfully');
+      
+      // Refresh the leads data
       await loadLeads();
       toast.success('Statut mis à jour');
     } catch (error: any) {
       console.error('Error updating lead status:', error);
-      toast.error('Erreur lors de la mise à jour');
+      toast.error('Erreur lors de la mise à jour du statut');
     }
   }, [loadLeads]);
 

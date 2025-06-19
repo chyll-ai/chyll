@@ -61,6 +61,12 @@ const WorkspaceLeadTable: React.FC = () => {
     assistantActions.loadLeads();
   }, []);
 
+  const handleStatusUpdate = async (leadId: string, newStatus: string) => {
+    console.log('Handle status update called:', leadId, newStatus);
+    // Refresh the leads data to get the latest status
+    await assistantActions.loadLeads();
+  };
+
   const handleSelectLead = (leadId: string, checked: boolean) => {
     if (checked) {
       setSelectedLeads(prev => [...prev, leadId]);
@@ -593,7 +599,7 @@ const WorkspaceLeadTable: React.FC = () => {
                           {column.key === 'status' && (
                             <LeadStatusSelector 
                               lead={lead} 
-                              onStatusUpdate={() => {}}
+                              onStatusUpdate={handleStatusUpdate}
                             />
                           )}
                           {column.key === 'actions' && (
@@ -615,7 +621,7 @@ const WorkspaceLeadTable: React.FC = () => {
                               </Dialog>
                               <LeadActionsMenu 
                                 lead={lead} 
-                                onStatusUpdate={() => {}}
+                                onStatusUpdate={handleStatusUpdate}
                               />
                             </div>
                           )}
