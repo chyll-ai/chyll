@@ -1,4 +1,3 @@
-
 // @ts-ignore: Deno imports
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 // @ts-ignore: Deno imports
@@ -65,23 +64,23 @@ async function parseSearchQueryWithOpenAI(query: string): Promise<any> {
 
 Extract the following information from the user's natural language query and return it as JSON:
 - job_title: The job title or role being searched for
-- location_country: Country (use full country name like "france", "united states")
-- location_region: City or region name
+- location_name: Full location name (city, region, country format like "paris, île-de-france, france")
 - job_company_industry: Industry sector
 - job_seniority: Seniority level (entry, mid, senior, executive, etc.)
 
 Rules:
-- For French locations like "Paris", "Lyon", etc., set location_country to "france"
+- For French locations like "Paris", use the full format "paris, île-de-france, france"
+- For "Lyon", use "lyon, auvergne-rhône-alpes, france"
 - Convert French job titles to English equivalents when possible
-- For "RH" or "Ressources Humaines", use "Human Resources" or "HR"
-- For "Commercial", use "Sales" 
-- For "Développeur", use "Developer"
+- For "RH" or "Ressources Humaines", use "Human Resources Manager" or "HR Manager"
+- For "Commercial", use "Sales Manager" 
+- For "Développeur", use "Software Developer"
 - Be flexible with job titles - extract the core meaning
-- If location is just a city, infer the country when obvious
+- Use lowercase for all values
 - Return only the JSON object, no other text
 
 Example query: "trouve moi 5 leads de rh à paris"
-Expected output: {"job_title": "Human Resources", "location_country": "france", "location_region": "paris"}`;
+Expected output: {"job_title": "human resources manager", "location_name": "paris, île-de-france, france"}`;
 
   try {
     const completion = await openai.chat.completions.create({
@@ -114,25 +113,26 @@ function parseSearchQueryBasic(query: string): any {
   const searchCriteria: any = {};
   const queryLower = query.toLowerCase();
 
-  // Basic French location detection
-  const frenchCities = ['paris', 'lyon', 'marseille', 'toulouse', 'nice', 'nantes', 'montpellier', 'strasbourg', 'bordeaux', 'lille'];
-  for (const city of frenchCities) {
-    if (queryLower.includes(city)) {
-      searchCriteria.location_country = 'france';
-      searchCriteria.location_region = city;
-      break;
-    }
+  // Basic French location detection with full format
+  if (queryLower.includes('paris')) {
+    searchCriteria.location_name = 'paris, île-de-france, france';
+  } else if (queryLower.includes('lyon')) {
+    searchCriteria.location_name = 'lyon, auvergne-rhône-alpes, france';
+  } else if (queryLower.includes('marseille')) {
+    searchCriteria.location_name = 'marseille, provence-alpes-côte d\'azur, france';
+  } else if (queryLower.includes('toulouse')) {
+    searchCriteria.location_name = 'toulouse, occitanie, france';
   }
 
   // Basic job title detection
   if (queryLower.includes('rh') || queryLower.includes('ressources humaines')) {
-    searchCriteria.job_title = 'Human Resources';
+    searchCriteria.job_title = 'human resources manager';
   } else if (queryLower.includes('commercial') || queryLower.includes('sales')) {
-    searchCriteria.job_title = 'Sales';
+    searchCriteria.job_title = 'sales manager';
   } else if (queryLower.includes('développeur') || queryLower.includes('developer')) {
-    searchCriteria.job_title = 'Developer';
+    searchCriteria.job_title = 'software developer';
   } else if (queryLower.includes('cto')) {
-    searchCriteria.job_title = 'CTO';
+    searchCriteria.job_title = 'cto';
   }
 
   return searchCriteria;
@@ -149,17 +149,13 @@ async function searchPeopleWithPDL(searchParams: any, count: number = 10): Promi
     pretty: true
   };
   
-  // Use job_title instead of job_title_role to match your SQL query
+  // Use exact field names from your working SQL query
   if (searchParams.job_title) {
     searchBody.job_title = searchParams.job_title.toLowerCase();
   }
   
-  if (searchParams.location_country) {
-    searchBody.location_country = searchParams.location_country.toLowerCase();
-  }
-  
-  if (searchParams.location_region) {
-    searchBody.location_region = searchParams.location_region.toLowerCase();
+  if (searchParams.location_name) {
+    searchBody.location_name = searchParams.location_name.toLowerCase();
   }
   
   if (searchParams.job_company_industry) {
@@ -176,10 +172,10 @@ async function searchPeopleWithPDL(searchParams: any, count: number = 10): Promi
   );
   
   if (!hasSearchParams) {
-    searchBody.job_title = 'manager'; // Default fallback using job_title
+    searchBody.job_title = 'manager'; // Default fallback
   }
 
-  console.log('PDL Search request (matching your SQL format):', JSON.stringify(searchBody, null, 2));
+  console.log('PDL Search request (using location_name):', JSON.stringify(searchBody, null, 2));
 
   try {
     const response = await fetch(`${PDL_BASE_URL}/person/search`, {
