@@ -1,19 +1,18 @@
+
 "use client";
 
 import { Pricing } from "@/components/ui/pricing";
 import { useLanguage } from "@/context/LanguageContext";
-import { useCurrency } from "@/context/CurrencyContext";
 
 function PricingBasic() {
   const { t } = useLanguage();
-  const { getCurrencySymbol } = useCurrency();
   
-  // Pricing plans with currency symbol from context
+  // Pricing plans with waitlist links only
   const pricingPlans = [
     {
       name: t('pricing.starter.name', 'Starter'),
-      price: `99${getCurrencySymbol()}`,
-      yearlyPrice: `950${getCurrencySymbol()}`,
+      price: "99€",
+      yearlyPrice: "950€",
       period: t('pricing.period', '/mois'),
       features: [
         t('pricing.starter.feature1', '50 numéros de téléphone + 50 adresses email par mois'),
@@ -31,8 +30,8 @@ function PricingBasic() {
     },
     {
       name: t('pricing.growth.name', 'Growth'),
-      price: `199${getCurrencySymbol()}`,
-      yearlyPrice: `1910${getCurrencySymbol()}`,
+      price: "199€",
+      yearlyPrice: "1910€",
       period: t('pricing.period', '/mois'),
       features: [
         t('pricing.growth.feature1', '200 numéros de téléphone + 200 adresses email par mois'),
@@ -51,8 +50,8 @@ function PricingBasic() {
     },
     {
       name: t('pricing.scale.name', 'Scale'),
-      price: `399${getCurrencySymbol()}`,
-      yearlyPrice: `3830${getCurrencySymbol()}`,
+      price: "399€",
+      yearlyPrice: "3830€",
       period: t('pricing.period', '/mois'),
       features: [
         t('pricing.scale.feature1', '400 numéros de téléphone + 400 adresses email par mois'),

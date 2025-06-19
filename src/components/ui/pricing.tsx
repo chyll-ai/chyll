@@ -11,7 +11,6 @@ import { useState, useRef } from "react";
 import confetti from "canvas-confetti";
 import NumberFlow from "@number-flow/react";
 import { Link } from "react-router-dom";
-import { useCurrency } from "@/context/CurrencyContext";
 
 interface PricingPlan {
   name: string;
@@ -42,7 +41,6 @@ export function Pricing({
   const [isMonthly, setIsMonthly] = useState(true);
   const isDesktop = useMediaQuery("(min-width: 768px)");
   const switchRef = useRef<HTMLButtonElement>(null);
-  const { getCurrencySymbol } = useCurrency();
 
   const handleToggle = (checked: boolean) => {
     setIsMonthly(!checked);
@@ -73,8 +71,8 @@ export function Pricing({
     }
   };
 
-  // Use the selected currency symbol
-  const currencySymbol = getCurrencySymbol();
+  // Always use Euro symbol for this application
+  const currencySymbol = "€";
 
   // Calculate monthly price with 20% discount for yearly subscription
   const calculateDiscountedMonthlyPrice = (price: string): string => {

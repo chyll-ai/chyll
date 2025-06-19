@@ -7,7 +7,6 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Edit, TrendingUp, Calendar } from 'lucide-react';
 import { Lead } from '@/types/assistant';
-import { useCurrency } from '@/context/CurrencyContext';
 
 interface SalesDataEditorProps {
   lead: Lead;
@@ -15,7 +14,6 @@ interface SalesDataEditorProps {
 }
 
 const SalesDataEditor: React.FC<SalesDataEditorProps> = ({ lead, onUpdate }) => {
-  const { getCurrencySymbol } = useCurrency();
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState({
     mrr: lead.mrr || '',
@@ -56,7 +54,7 @@ const SalesDataEditor: React.FC<SalesDataEditorProps> = ({ lead, onUpdate }) => 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="mrr">MRR ({getCurrencySymbol()})</Label>
+              <Label htmlFor="mrr">MRR ($)</Label>
               <Input
                 id="mrr"
                 type="number"
@@ -67,7 +65,7 @@ const SalesDataEditor: React.FC<SalesDataEditorProps> = ({ lead, onUpdate }) => 
               />
             </div>
             <div>
-              <Label htmlFor="arr">ARR ({getCurrencySymbol()})</Label>
+              <Label htmlFor="arr">ARR ($)</Label>
               <Input
                 id="arr"
                 type="number"

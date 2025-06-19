@@ -1,51 +1,72 @@
 
-import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Suspense } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Toaster } from '@/components/ui/sonner';
 import { TolgeeProvider } from '@tolgee/react';
-import { AuthProvider } from './context/AuthContext';
-import { LanguageProvider } from './context/LanguageContext';
-import { TooltipProvider } from "@/components/ui/tooltip"
-import { Toaster } from "@/components/ui/toaster"
-import { Toaster as Sonner } from './components/ui/sonner';
-import RootLayout from './components/layout/RootLayout';
-import AssistantPage from './pages/Assistant';
-import LoginPage from './pages/Login';
-import PricingPage from './pages/PricingPage';
-import WorkspacePage from './pages/Workspace';
-import ClosedBetaDemo from './pages/ClosedBetaDemo';
-import { CurrencyProvider } from '@/context/CurrencyContext';
-import { tolgee } from './lib/tolgee';
+import { HelmetProvider } from 'react-helmet-async';
+import { tolgee } from '@/lib/tolgee';
+import { AuthProvider } from '@/context/AuthContext';
+import { LanguageProvider } from '@/context/LanguageContext';
 
-const queryClient = new QueryClient();
+// Import all pages
+import Index from '@/pages/Index';
+import Login from '@/pages/Login';
+import Assistant from '@/pages/Assistant';
+import Contact from '@/pages/Contact';
+import NotFound from '@/pages/NotFound';
+import FAQ from '@/pages/FAQ';
+import Company from '@/pages/Company';
+import Support from '@/pages/Support';
+import Workspace from '@/pages/Workspace';
+import Team from '@/pages/Team';
+import Careers from '@/pages/Careers';
+import WaitlistSubscription from '@/pages/WaitlistSubscription';
+import Blog from '@/pages/Blog';
+import BlogPostPage from '@/pages/BlogPostPage';
+import Terms from '@/pages/Terms';
+import AboutUs from '@/pages/AboutUs';
+import Cookies from '@/pages/Cookies';
+import Onboarding from '@/pages/Onboarding';
+import Leads from '@/pages/Leads';
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <TolgeeProvider tolgee={tolgee}>
-        <CurrencyProvider>
+    <HelmetProvider>
+      <TolgeeProvider tolgee={tolgee} fallback="Loading translations...">
+        <Suspense fallback="Loading...">
           <LanguageProvider>
-            <TooltipProvider>
-              <Toaster />
-              <Sonner />
-              <Router>
-                <AuthProvider>
+            <Router>
+              <AuthProvider>
+                <div className="App">
                   <Routes>
-                    <Route path="/" element={<RootLayout />}>
-                      <Route index element={<AssistantPage />} />
-                      <Route path="login" element={<LoginPage />} />
-                      <Route path="pricing" element={<PricingPage />} />
-                      <Route path="workspace" element={<WorkspacePage />} />
-                      <Route path="closed-beta-demo" element={<ClosedBetaDemo />} />
-                    </Route>
+                    <Route path="/" element={<Index />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/assistant" element={<Assistant />} />
+                    <Route path="/contact" element={<Contact />} />
+                    <Route path="/faq" element={<FAQ />} />
+                    <Route path="/company" element={<Company />} />
+                    <Route path="/support" element={<Support />} />
+                    <Route path="/workspace" element={<Workspace />} />
+                    <Route path="/team" element={<Team />} />
+                    <Route path="/careers" element={<Careers />} />
+                    <Route path="/waitlist-subscription" element={<WaitlistSubscription />} />
+                    <Route path="/blog" element={<Blog />} />
+                    <Route path="/blog/:id" element={<BlogPostPage />} />
+                    <Route path="/terms" element={<Terms />} />
+                    <Route path="/about-us" element={<AboutUs />} />
+                    <Route path="/cookies" element={<Cookies />} />
+                    <Route path="/onboarding" element={<Onboarding />} />
+                    <Route path="/leads" element={<Leads />} />
+                    <Route path="*" element={<NotFound />} />
                   </Routes>
-                </AuthProvider>
-              </Router>
-            </TooltipProvider>
+                  <Toaster />
+                </div>
+              </AuthProvider>
+            </Router>
           </LanguageProvider>
-        </CurrencyProvider>
+        </Suspense>
       </TolgeeProvider>
-    </QueryClientProvider>
+    </HelmetProvider>
   );
 }
 

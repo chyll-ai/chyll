@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -7,7 +8,6 @@ import { Lead } from '@/types/assistant';
 import SocialLinksDisplay from './SocialLinksDisplay';
 import CompanyInfoDisplay from './CompanyInfoDisplay';
 import SkillsTagsDisplay from './SkillsTagsDisplay';
-import { useCurrency } from '@/context/CurrencyContext';
 
 interface LeadDetailCardProps {
   lead: Lead;
@@ -15,8 +15,6 @@ interface LeadDetailCardProps {
 }
 
 const LeadDetailCard: React.FC<LeadDetailCardProps> = ({ lead, className = "" }) => {
-  const { formatCurrency } = useCurrency();
-  
   const parseEducation = () => {
     if (!lead.education) return [];
     try {
@@ -233,13 +231,13 @@ const LeadDetailCard: React.FC<LeadDetailCardProps> = ({ lead, className = "" })
                 {lead.mrr && (
                   <div>
                     <span className="font-medium">MRR: </span>
-                    <span className="text-green-600">{formatCurrency(lead.mrr)}</span>
+                    <span className="text-green-600">${lead.mrr.toLocaleString()}</span>
                   </div>
                 )}
                 {lead.arr && (
                   <div>
                     <span className="font-medium">ARR: </span>
-                    <span className="text-blue-600">{formatCurrency(lead.arr)}</span>
+                    <span className="text-blue-600">${lead.arr.toLocaleString()}</span>
                   </div>
                 )}
                 {lead.pipeline_stage && (
