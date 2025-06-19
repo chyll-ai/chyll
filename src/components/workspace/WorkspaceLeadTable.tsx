@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -27,7 +26,14 @@ import {
   Star,
   Award,
   Briefcase,
-  GraduationCap
+  GraduationCap,
+  TrendingUp,
+  DollarSign,
+  Calendar,
+  Target,
+  Code,
+  Database,
+  Cloud
 } from 'lucide-react';
 import { useAssistantActions } from '@/hooks/useAssistantActions';
 import { usePDLEnrichment } from '@/hooks/usePDLEnrichment';
@@ -219,6 +225,236 @@ const WorkspaceLeadTable: React.FC = () => {
     </div>
   );
 
+  const renderJobHistory = (lead: Lead) => (
+    <div className="space-y-1">
+      {lead.job_history && (
+        <div className="text-xs text-muted-foreground max-w-[200px] truncate" title={lead.job_history}>
+          {lead.job_history}
+        </div>
+      )}
+      {lead.job_start_date && (
+        <div className="flex items-center gap-1 text-xs">
+          <Calendar className="h-3 w-3" />
+          <span>{lead.job_start_date}</span>
+          {lead.job_end_date && <span> - {lead.job_end_date}</span>}
+        </div>
+      )}
+      {lead.job_duration_months && (
+        <Badge variant="outline" className="text-xs">
+          {lead.job_duration_months} months
+        </Badge>
+      )}
+    </div>
+  );
+
+  const renderCompanyDetails = (lead: Lead) => (
+    <div className="space-y-1">
+      {lead.job_company_founded_year && (
+        <div className="flex items-center gap-1 text-xs">
+          <Building2 className="h-3 w-3" />
+          <span>Founded {lead.job_company_founded_year}</span>
+        </div>
+      )}
+      {lead.job_company_industry && (
+        <div className="text-xs text-muted-foreground truncate max-w-[140px]" title={lead.job_company_industry}>
+          {lead.job_company_industry}
+        </div>
+      )}
+      {lead.job_company_tags && (
+        <div className="text-xs text-muted-foreground truncate max-w-[140px]" title={lead.job_company_tags}>
+          Tags: {lead.job_company_tags}
+        </div>
+      )}
+    </div>
+  );
+
+  const renderCompanyMetrics = (lead: Lead) => (
+    <div className="space-y-1">
+      {lead.job_company_employees_count && (
+        <div className="flex items-center gap-1 text-xs">
+          <Users className="h-3 w-3" />
+          <span>{lead.job_company_employees_count.toLocaleString()} employees</span>
+        </div>
+      )}
+      {lead.job_company_size && (
+        <Badge variant="outline" className="text-xs">
+          {lead.job_company_size}
+        </Badge>
+      )}
+    </div>
+  );
+
+  const renderCompanyFunding = (lead: Lead) => (
+    <div className="space-y-1">
+      {lead.job_company_revenue && (
+        <div className="flex items-center gap-1 text-xs">
+          <DollarSign className="h-3 w-3" />
+          <span className="truncate max-w-[120px]" title={lead.job_company_revenue}>
+            {lead.job_company_revenue}
+          </span>
+        </div>
+      )}
+      {lead.job_company_funding && (
+        <div className="text-xs text-muted-foreground truncate max-w-[120px]" title={lead.job_company_funding}>
+          Funding: {lead.job_company_funding}
+        </div>
+      )}
+    </div>
+  );
+
+  const renderPersonalDetails = (lead: Lead) => (
+    <div className="space-y-1">
+      {lead.birth_year && (
+        <div className="text-xs">Age: {new Date().getFullYear() - lead.birth_year}</div>
+      )}
+      {lead.gender && (
+        <div className="text-xs text-muted-foreground">{lead.gender}</div>
+      )}
+      {lead.family_status && (
+        <Badge variant="outline" className="text-xs">
+          {lead.family_status}
+        </Badge>
+      )}
+    </div>
+  );
+
+  const renderDemographics = (lead: Lead) => (
+    <div className="space-y-1">
+      {lead.country && (
+        <div className="flex items-center gap-1 text-xs">
+          <MapPin className="h-3 w-3" />
+          <span>{lead.country}</span>
+        </div>
+      )}
+      {lead.time_zone && (
+        <div className="text-xs text-muted-foreground">{lead.time_zone}</div>
+      )}
+    </div>
+  );
+
+  const renderLifestyle = (lead: Lead) => (
+    <div className="space-y-1">
+      {lead.lifestyle_interests && (
+        <div className="text-xs text-muted-foreground truncate max-w-[140px]" title={lead.lifestyle_interests}>
+          {lead.lifestyle_interests}
+        </div>
+      )}
+      {lead.fitness_activities && (
+        <div className="text-xs text-muted-foreground truncate max-w-[140px]" title={lead.fitness_activities}>
+          Fitness: {lead.fitness_activities}
+        </div>
+      )}
+    </div>
+  );
+
+  const renderPreferences = (lead: Lead) => (
+    <div className="space-y-1">
+      {lead.work_preferences && (
+        <div className="text-xs text-muted-foreground truncate max-w-[140px]" title={lead.work_preferences}>
+          Work: {lead.work_preferences}
+        </div>
+      )}
+      {lead.travel_preferences && (
+        <div className="text-xs text-muted-foreground truncate max-w-[140px]" title={lead.travel_preferences}>
+          Travel: {lead.travel_preferences}
+        </div>
+      )}
+    </div>
+  );
+
+  const renderSocialMetrics = (lead: Lead) => (
+    <div className="space-y-1">
+      {lead.linkedin_connections && (
+        <div className="flex items-center gap-1 text-xs">
+          <Users className="h-3 w-3 text-blue-500" />
+          <span>{lead.linkedin_connections.toLocaleString()} connections</span>
+        </div>
+      )}
+      {lead.github_repos && (
+        <div className="flex items-center gap-1 text-xs">
+          <Code className="h-3 w-3 text-gray-700" />
+          <span>{lead.github_repos} repos</span>
+        </div>
+      )}
+      {lead.twitter_followers && (
+        <div className="flex items-center gap-1 text-xs">
+          <Users className="h-3 w-3 text-sky-500" />
+          <span>{lead.twitter_followers.toLocaleString()} followers</span>
+        </div>
+      )}
+    </div>
+  );
+
+  const renderTechSkills = (lead: Lead) => (
+    <div className="space-y-1">
+      {lead.programming_languages && (
+        <div className="text-xs text-muted-foreground truncate max-w-[140px]" title={lead.programming_languages}>
+          <Code className="h-3 w-3 inline mr-1" />
+          {lead.programming_languages}
+        </div>
+      )}
+      {lead.technology_skills && (
+        <div className="text-xs text-muted-foreground truncate max-w-[140px]" title={lead.technology_skills}>
+          Tech: {lead.technology_skills}
+        </div>
+      )}
+    </div>
+  );
+
+  const renderToolsPlatforms = (lead: Lead) => (
+    <div className="space-y-1">
+      {lead.cloud_platforms && (
+        <div className="flex items-center gap-1 text-xs">
+          <Cloud className="h-3 w-3" />
+          <span className="truncate max-w-[120px]" title={lead.cloud_platforms}>
+            {lead.cloud_platforms}
+          </span>
+        </div>
+      )}
+      {lead.databases_used && (
+        <div className="flex items-center gap-1 text-xs">
+          <Database className="h-3 w-3" />
+          <span className="truncate max-w-[120px]" title={lead.databases_used}>
+            {lead.databases_used}
+          </span>
+        </div>
+      )}
+    </div>
+  );
+
+  const renderAchievements = (lead: Lead) => (
+    <div className="space-y-1">
+      {lead.awards && (
+        <div className="flex items-center gap-1 text-xs">
+          <Award className="h-3 w-3 text-yellow-500" />
+          <span className="truncate max-w-[120px]" title={lead.awards}>
+            {lead.awards}
+          </span>
+        </div>
+      )}
+      {lead.patents && (
+        <div className="text-xs text-muted-foreground truncate max-w-[120px]" title={lead.patents}>
+          Patents: {lead.patents}
+        </div>
+      )}
+    </div>
+  );
+
+  const renderPublications = (lead: Lead) => (
+    <div className="space-y-1">
+      {lead.publications && (
+        <div className="text-xs text-muted-foreground truncate max-w-[140px]" title={lead.publications}>
+          {lead.publications}
+        </div>
+      )}
+      {lead.volunteer_work && (
+        <div className="text-xs text-muted-foreground truncate max-w-[140px]" title={lead.volunteer_work}>
+          Volunteer: {lead.volunteer_work}
+        </div>
+      )}
+    </div>
+  );
+
   return (
     <Card className="w-full h-full flex flex-col">
       <CardHeader className="pb-3 flex-shrink-0">
@@ -323,7 +559,37 @@ const WorkspaceLeadTable: React.FC = () => {
                           {column.key === 'experience' && renderExperience(lead)}
                           {column.key === 'skills' && renderSkills(lead)}
                           {column.key === 'education' && renderEducation(lead)}
+                          {column.key === 'job_history' && renderJobHistory(lead)}
+                          {column.key === 'management_level' && (
+                            <div className="text-sm">
+                              {lead.management_level && (
+                                <Badge variant="outline">{lead.management_level}</Badge>
+                              )}
+                            </div>
+                          )}
+                          {column.key === 'departments' && (
+                            <div className="text-xs text-muted-foreground truncate max-w-[140px]" title={lead.departments || ''}>
+                              {lead.departments || 'N/A'}
+                            </div>
+                          )}
+                          {column.key === 'job_functions' && (
+                            <div className="text-xs text-muted-foreground truncate max-w-[140px]" title={lead.job_functions || ''}>
+                              {lead.job_functions || 'N/A'}
+                            </div>
+                          )}
+                          {column.key === 'company_details' && renderCompanyDetails(lead)}
+                          {column.key === 'company_metrics' && renderCompanyMetrics(lead)}
+                          {column.key === 'company_funding' && renderCompanyFunding(lead)}
+                          {column.key === 'personal_details' && renderPersonalDetails(lead)}
+                          {column.key === 'demographics' && renderDemographics(lead)}
+                          {column.key === 'lifestyle' && renderLifestyle(lead)}
+                          {column.key === 'preferences' && renderPreferences(lead)}
                           {column.key === 'social_links' && renderSocialLinks(lead)}
+                          {column.key === 'social_metrics' && renderSocialMetrics(lead)}
+                          {column.key === 'tech_skills' && renderTechSkills(lead)}
+                          {column.key === 'tools_platforms' && renderToolsPlatforms(lead)}
+                          {column.key === 'achievements' && renderAchievements(lead)}
+                          {column.key === 'publications' && renderPublications(lead)}
                           {column.key === 'status' && (
                             <LeadStatusSelector 
                               lead={lead} 
