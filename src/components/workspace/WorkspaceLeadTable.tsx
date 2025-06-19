@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { 
   Table, 
   TableBody, 
@@ -80,8 +81,8 @@ const WorkspaceLeadTable: React.FC = () => {
   const displayLeads = filteredLeads.length > 0 ? filteredLeads : leads;
 
   return (
-    <Card className="w-full">
-      <CardHeader className="pb-3">
+    <Card className="w-full h-full flex flex-col">
+      <CardHeader className="pb-3 flex-shrink-0">
         <div className="flex items-center justify-between gap-2">
           <CardTitle className="flex items-center gap-2 text-lg">
             <Users className="h-4 w-4 text-primary" />
@@ -124,105 +125,107 @@ const WorkspaceLeadTable: React.FC = () => {
         </div>
       </CardHeader>
       
-      <CardContent className="p-0">
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-12">
-                  <Checkbox
-                    checked={selectedLeads.length === displayLeads.length && displayLeads.length > 0}
-                    onCheckedChange={handleSelectAll}
-                  />
-                </TableHead>
-                <TableHead className="min-w-[140px]">Nom</TableHead>
-                <TableHead className="min-w-[200px]">Email</TableHead>
-                <TableHead className="min-w-[120px]">Téléphone</TableHead>
-                <TableHead className="min-w-[150px]">Société</TableHead>
-                <TableHead className="min-w-[130px]">Poste</TableHead>
-                <TableHead className="min-w-[120px]">Localisation</TableHead>
-                <TableHead className="min-w-[140px]">Statut</TableHead>
-                <TableHead className="min-w-[100px]">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {loading ? (
+      <CardContent className="p-0 flex-1 min-h-0">
+        <ScrollArea className="h-full w-full">
+          <div className="min-w-[1200px]">
+            <Table>
+              <TableHeader>
                 <TableRow>
-                  <TableCell colSpan={9} className="text-center py-8">
-                    Chargement...
-                  </TableCell>
+                  <TableHead className="w-12">
+                    <Checkbox
+                      checked={selectedLeads.length === displayLeads.length && displayLeads.length > 0}
+                      onCheckedChange={handleSelectAll}
+                    />
+                  </TableHead>
+                  <TableHead className="min-w-[140px]">Nom</TableHead>
+                  <TableHead className="min-w-[200px]">Email</TableHead>
+                  <TableHead className="min-w-[120px]">Téléphone</TableHead>
+                  <TableHead className="min-w-[150px]">Société</TableHead>
+                  <TableHead className="min-w-[130px]">Poste</TableHead>
+                  <TableHead className="min-w-[120px]">Localisation</TableHead>
+                  <TableHead className="min-w-[140px]">Statut</TableHead>
+                  <TableHead className="min-w-[100px]">Actions</TableHead>
                 </TableRow>
-              ) : displayLeads.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={9} className="text-center py-8">
-                    Aucun lead trouvé
-                  </TableCell>
-                </TableRow>
-              ) : (
-                displayLeads.map((lead) => (
-                  <TableRow key={lead.id} className="hover:bg-muted/50">
-                    <TableCell>
-                      <Checkbox
-                        checked={selectedLeads.includes(lead.id)}
-                        onCheckedChange={(checked) => handleSelectLead(lead.id, checked as boolean)}
-                      />
-                    </TableCell>
-                    <TableCell className="font-medium text-sm">
-                      <div className="truncate max-w-[140px]" title={lead.full_name || 'N/A'}>
-                        {lead.full_name || 'N/A'}
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-sm">
-                      {lead.email ? (
-                        <a 
-                          href={`mailto:${lead.email}`}
-                          className="text-blue-600 hover:underline truncate block max-w-[200px]"
-                          title={lead.email}
-                        >
-                          {lead.email}
-                        </a>
-                      ) : (
-                        'N/A'
-                      )}
-                    </TableCell>
-                    <TableCell className="text-sm">
-                      <div className="truncate max-w-[120px]" title={lead.phone_number || 'N/A'}>
-                        {lead.phone_number || 'N/A'}
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-sm">
-                      <div className="truncate max-w-[150px]" title={lead.company || 'N/A'}>
-                        {lead.company || 'N/A'}
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-sm">
-                      <div className="truncate max-w-[130px]" title={lead.job_title || 'N/A'}>
-                        {lead.job_title || 'N/A'}
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-sm">
-                      <div className="truncate max-w-[120px]" title={lead.location || 'N/A'}>
-                        {lead.location || 'N/A'}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <LeadStatusSelector 
-                        lead={lead as Lead} 
-                        onStatusUpdate={handleStatusUpdate}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <LeadActionsMenu 
-                        lead={lead as Lead} 
-                        onStatusUpdate={handleStatusUpdate}
-                      />
+              </TableHeader>
+              <TableBody>
+                {loading ? (
+                  <TableRow>
+                    <TableCell colSpan={9} className="text-center py-8">
+                      Chargement...
                     </TableCell>
                   </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </div>
+                ) : displayLeads.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={9} className="text-center py-8">
+                      Aucun lead trouvé
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  displayLeads.map((lead) => (
+                    <TableRow key={lead.id} className="hover:bg-muted/50">
+                      <TableCell>
+                        <Checkbox
+                          checked={selectedLeads.includes(lead.id)}
+                          onCheckedChange={(checked) => handleSelectLead(lead.id, checked as boolean)}
+                        />
+                      </TableCell>
+                      <TableCell className="font-medium text-sm">
+                        <div className="truncate max-w-[140px]" title={lead.full_name || 'N/A'}>
+                          {lead.full_name || 'N/A'}
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-sm">
+                        {lead.email ? (
+                          <a 
+                            href={`mailto:${lead.email}`}
+                            className="text-blue-600 hover:underline truncate block max-w-[200px]"
+                            title={lead.email}
+                          >
+                            {lead.email}
+                          </a>
+                        ) : (
+                          'N/A'
+                        )}
+                      </TableCell>
+                      <TableCell className="text-sm">
+                        <div className="truncate max-w-[120px]" title={lead.phone_number || 'N/A'}>
+                          {lead.phone_number || 'N/A'}
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-sm">
+                        <div className="truncate max-w-[150px]" title={lead.company || 'N/A'}>
+                          {lead.company || 'N/A'}
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-sm">
+                        <div className="truncate max-w-[130px]" title={lead.job_title || 'N/A'}>
+                          {lead.job_title || 'N/A'}
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-sm">
+                        <div className="truncate max-w-[120px]" title={lead.location || 'N/A'}>
+                          {lead.location || 'N/A'}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <LeadStatusSelector 
+                          lead={lead as Lead} 
+                          onStatusUpdate={handleStatusUpdate}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <LeadActionsMenu 
+                          lead={lead as Lead} 
+                          onStatusUpdate={handleStatusUpdate}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        </ScrollArea>
       </CardContent>
     </Card>
   );
