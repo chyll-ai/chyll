@@ -5,68 +5,68 @@ import { Pricing } from "@/components/ui/pricing";
 import { useLanguage } from "@/context/LanguageContext";
 
 function PricingBasic() {
-  const { language } = useLanguage();
+  const { t } = useLanguage();
   
   // Pricing plans with waitlist links only
   const pricingPlans = [
     {
-      name: "Starter",
+      name: t('pricing.starter.name', 'Starter'),
       price: "99€",
       yearlyPrice: "950€",
-      period: "/mois",
+      period: t('pricing.period', '/mois'),
       features: [
-        "50 numéros de téléphone + 50 adresses email par mois",
-        "Personas illimités (LinkedIn)",
-        "2 utilisateurs",
-        "Interface CRM personnalisée",
-        "Support par email",
-        "Mise à jour quotidienne"
+        t('pricing.starter.feature1', '50 numéros de téléphone + 50 adresses email par mois'),
+        t('pricing.starter.feature2', 'Personas illimités (LinkedIn)'),
+        t('pricing.starter.feature3', '2 utilisateurs'),
+        t('pricing.starter.feature4', 'Interface CRM personnalisée'),
+        t('pricing.starter.feature5', 'Support par email'),
+        t('pricing.starter.feature6', 'Mise à jour quotidienne')
       ],
-      description: "Parfait pour les petites équipes",
-      buttonText: "Liste d'attente",
-      yearlyButtonText: "Liste d'attente",
+      description: t('pricing.starter.description', 'Parfait pour les petites équipes'),
+      buttonText: t('pricing.waitlist', 'Liste d\'attente'),
+      yearlyButtonText: t('pricing.waitlist', 'Liste d\'attente'),
       href: "/closed-beta-demo",
       isPopular: false,
     },
     {
-      name: "Growth",
+      name: t('pricing.growth.name', 'Growth'),
       price: "199€",
       yearlyPrice: "1910€",
-      period: "/mois",
+      period: t('pricing.period', '/mois'),
       features: [
-        "200 numéros de téléphone + 200 adresses email par mois",
-        "Personas illimités (LinkedIn)",
-        "3 utilisateurs",
-        "Interface CRM personnalisée",
-        "Support prioritaire",
-        "Mises à jour en temps réel",
-        "Export et import de data"
+        t('pricing.growth.feature1', '200 numéros de téléphone + 200 adresses email par mois'),
+        t('pricing.growth.feature2', 'Personas illimités (LinkedIn)'),
+        t('pricing.growth.feature3', '3 utilisateurs'),
+        t('pricing.growth.feature4', 'Interface CRM personnalisée'),
+        t('pricing.growth.feature5', 'Support prioritaire'),
+        t('pricing.growth.feature6', 'Mises à jour en temps réel'),
+        t('pricing.growth.feature7', 'Export et import de data')
       ],
-      description: "Pour les équipes en croissance",
-      buttonText: "Liste d'attente",
-      yearlyButtonText: "Liste d'attente",
+      description: t('pricing.growth.description', 'Pour les équipes en croissance'),
+      buttonText: t('pricing.waitlist', 'Liste d\'attente'),
+      yearlyButtonText: t('pricing.waitlist', 'Liste d\'attente'),
       href: "/closed-beta-demo",
       isPopular: true,
     },
     {
-      name: "Scale",
+      name: t('pricing.scale.name', 'Scale'),
       price: "399€",
       yearlyPrice: "3830€",
-      period: "/mois",
+      period: t('pricing.period', '/mois'),
       features: [
-        "400 numéros de téléphone + 400 adresses email par mois",
-        "Personas illimités (LinkedIn)",
-        "5 utilisateurs",
-        "Interface CRM sur mesure",
-        "Support dédié",
-        "Mises à jour en temps réel",
-        "Export et import de data",
-        "Critères de recherche illimités",
-        "Rapports de performance"
+        t('pricing.scale.feature1', '400 numéros de téléphone + 400 adresses email par mois'),
+        t('pricing.scale.feature2', 'Personas illimités (LinkedIn)'),
+        t('pricing.scale.feature3', '5 utilisateurs'),
+        t('pricing.scale.feature4', 'Interface CRM sur mesure'),
+        t('pricing.scale.feature5', 'Support dédié'),
+        t('pricing.scale.feature6', 'Mises à jour en temps réel'),
+        t('pricing.scale.feature7', 'Export et import de data'),
+        t('pricing.scale.feature8', 'Critères de recherche illimités'),
+        t('pricing.scale.feature9', 'Rapports de performance')
       ],
-      description: "Pour les équipes commerciales établies",
-      buttonText: "Liste d'attente",
-      yearlyButtonText: "Liste d'attente",
+      description: t('pricing.scale.description', 'Pour les équipes commerciales établies'),
+      buttonText: t('pricing.waitlist', 'Liste d\'attente'),
+      yearlyButtonText: t('pricing.waitlist', 'Liste d\'attente'),
       href: "/closed-beta-demo",
       isPopular: false,
     }
@@ -76,8 +76,8 @@ function PricingBasic() {
     <div className="overflow-y-auto">
       <Pricing 
         plans={pricingPlans}
-        title="Tarifs simples et transparents"
-        description="Rejoignez notre liste d'attente gamifiée"
+        title={t('pricing.title', 'Tarifs simples et transparents')}
+        description={t('pricing.description', 'Rejoignez notre liste d\'attente gamifiée')}
         language="fr"
       />
     </div>
