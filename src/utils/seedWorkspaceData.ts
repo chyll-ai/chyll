@@ -41,6 +41,7 @@ export const seedWorkspaceData = async () => {
 
     const cities = ["Paris", "Lyon", "Marseille", "Bordeaux", "Lille", "Toulouse", "Nice", "Strasbourg", "Nantes", "Montpellier"];
     const jobTitles = ["CEO", "CTO", "VP Engineering", "Head of Product", "Lead Developer", "Product Manager", "Engineering Manager", "Data Scientist", "DevOps Engineer"];
+    const validStatuses = ["new", "contacted", "qualified", "à relancer", "interested"];
     const pipelineStages = ["prospect", "qualified", "proposal", "negotiation", "closed_won", "closed_lost"];
     const industries = ["Technology", "SaaS", "E-commerce", "FinTech", "HealthTech", "EdTech", "IoT"];
     const companySizes = ["1-10", "11-50", "51-200", "201-500", "501-1000", "1000+"];
@@ -71,6 +72,11 @@ export const seedWorkspaceData = async () => {
       const selectedClouds = cloudPlatforms.slice(0, Math.floor(Math.random() * 2) + 1);
       const selectedDbs = databases.slice(0, Math.floor(Math.random() * 3) + 1);
 
+      // Generate dates safely
+      const jobStartDate = new Date(Date.now() - Math.random() * 3 * 365 * 24 * 60 * 60 * 1000);
+      const expectedCloseDate = new Date(Date.now() + Math.random() * 180 * 24 * 60 * 60 * 1000);
+      const lastActivityDate = new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000);
+
       return {
         client_id: user.id,
         
@@ -93,14 +99,14 @@ export const seedWorkspaceData = async () => {
         headline: `${jobTitle} at ${company} | ${industry} Innovation Leader`,
         summary: `Experienced ${jobTitle.toLowerCase()} with ${Math.floor(Math.random() * 15) + 3}+ years in ${industry.toLowerCase()}. Passionate about building scalable solutions and driving digital transformation.`,
         
-        // Skills and languages
+        // Skills and languages - using JSON.stringify for JSONB fields
         skills: JSON.stringify([...selectedLanguages, ...selectedFrameworks].slice(0, 6)),
         languages: JSON.stringify(["French", "English", ...(Math.random() > 0.7 ? ["Spanish"] : [])]),
-        technology_skills: JSON.stringify([...selectedLanguages, ...selectedFrameworks]),
-        programming_languages: JSON.stringify(selectedLanguages),
-        frameworks_used: JSON.stringify(selectedFrameworks),
-        databases_used: JSON.stringify(selectedDbs),
-        cloud_platforms: JSON.stringify(selectedClouds),
+        technology_skills: selectedLanguages.concat(selectedFrameworks).join(', '),
+        programming_languages: selectedLanguages.join(', '),
+        frameworks_used: selectedFrameworks.join(', '),
+        databases_used: selectedDbs.join(', '),
+        cloud_platforms: selectedClouds.join(', '),
         
         // Company details
         job_company_industry: industry,
@@ -115,9 +121,9 @@ export const seedWorkspaceData = async () => {
         job_company_twitter_url: Math.random() > 0.6 ? `https://twitter.com/${company.toLowerCase()}` : null,
         job_company_facebook_url: Math.random() > 0.8 ? `https://facebook.com/${company.toLowerCase()}` : null,
         
-        // Job history and dates
-        job_start_date: new Date(Date.now() - Math.random() * 3 * 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        job_end_date: Math.random() > 0.8 ? new Date(Date.now() + Math.random() * 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] : null,
+        // Job history and dates - using proper date format
+        job_start_date: jobStartDate.toISOString().split('T')[0],
+        job_end_date: Math.random() > 0.8 ? new Date(jobStartDate.getTime() + Math.random() * 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] : null,
         job_duration_months: Math.floor(Math.random() * 48) + 6,
         job_description: `Leading ${industry.toLowerCase()} initiatives and managing cross-functional teams to deliver innovative solutions.`,
         job_history: JSON.stringify([{
@@ -233,20 +239,20 @@ export const seedWorkspaceData = async () => {
         volunteer_work: Math.random() > 0.7 ? JSON.stringify(["Tech mentorship", "Open source contributions"]) : null,
         personality_traits: JSON.stringify(["Analytical", "Creative", "Leadership", "Problem-solving"]),
         
-        // Financial and business
+        // Financial and business - using numeric type for mrr/arr
         salary_range: `€${Math.floor(Math.random() * 80) + 60}K - €${Math.floor(Math.random() * 50) + 100}K`,
         net_worth: Math.random() > 0.8 ? `€${Math.floor(Math.random() * 500) + 200}K` : null,
         
-        // Sales and pipeline data
+        // Sales and pipeline data - ensuring proper types
         mrr: Math.random() > 0.4 ? Math.floor(Math.random() * 15000) + 2000 : null,
         arr: Math.random() > 0.4 ? Math.floor(Math.random() * 180000) + 24000 : null,
         pipeline_stage: pipelineStages[Math.floor(Math.random() * pipelineStages.length)],
         close_probability: Math.floor(Math.random() * 100),
-        expected_close_date: new Date(Date.now() + Math.random() * 180 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        last_activity_date: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        expected_close_date: expectedCloseDate.toISOString().split('T')[0],
+        last_activity_date: lastActivityDate.toISOString().split('T')[0],
         
-        // Status and metadata
-        status: ['new', 'contacted', 'qualified', 'à relancer', 'interested'][Math.floor(Math.random() * 5)],
+        // Status and metadata - using valid status values
+        status: validStatuses[Math.floor(Math.random() * validStatuses.length)],
         enriched_from: { 
           source: 'test_data_comprehensive', 
           keyword: 'test_seed',
