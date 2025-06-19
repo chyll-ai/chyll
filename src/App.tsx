@@ -20,13 +20,13 @@ const queryClient = new QueryClient();
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <CurrencyProvider>
-          <LanguageProvider>
-            <TooltipProvider>
-              <Toaster />
-              <Sonner />
-              <Router>
+      <CurrencyProvider>
+        <LanguageProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <Router>
+              <AuthProvider>
                 <Routes>
                   <Route path="/*" element={<RootLayout />}>
                     <Route path="/" element={<AssistantPage />} />
@@ -36,11 +36,11 @@ function App() {
                     <Route path="/closed-beta-demo" element={<ClosedBetaDemo />} />
                   </Route>
                 </Routes>
-              </Router>
-            </TooltipProvider>
-          </LanguageProvider>
-        </CurrencyProvider>
-      </AuthProvider>
+              </AuthProvider>
+            </Router>
+          </TooltipProvider>
+        </LanguageProvider>
+      </CurrencyProvider>
     </QueryClientProvider>
   );
 }
