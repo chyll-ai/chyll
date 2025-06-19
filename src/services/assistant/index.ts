@@ -18,6 +18,7 @@ export class AssistantService {
   private onLeadsUpdate?: (leads: Lead[]) => void;
   private generatedNames: Set<string> = new Set();
   private generatedEmails: Set<string> = new Set();
+  private recentSearches: Map<string, { timestamp: number; results: Lead[] }> = new Map();
 
   constructor(userId: string) {
     this.userId = userId;
@@ -73,6 +74,32 @@ export class AssistantService {
     return hasSearchPattern || hasNumberLeadPattern;
   }
 
+  private checkRecentSearch(searchQuery: string): Lead[] | null {
+    const cacheKey = searchQuery.toLowerCase().trim();
+    const cached = this.recentSearches.get(cacheKey);
+    
+    if (cached && Date.now() - cached.timestamp < 300000) { // 5 minutes cache
+      console.log('AssistantService: Found recent search results in cache');
+      return cached.results;
+    }
+    
+    return null;
+  }
+
+  private cacheSearchResults(searchQuery: string, results: Lead[]) {
+    const cacheKey = searchQuery.toLowerCase().trim();
+    this.recentSearches.set(cacheKey, {
+      timestamp: Date.now(),
+      results: [...results]
+    });
+    
+    // Clean old cache entries (keep only last 10)
+    if (this.recentSearches.size > 10) {
+      const oldestKey = Array.from(this.recentSearches.keys())[0];
+      this.recentSearches.delete(oldestKey);
+    }
+  }
+
   async sendMessage(content: string): Promise<{ message: string }> {
     try {
       console.log('AssistantService: Sending message:', { content, userId: this.userId });
@@ -80,6 +107,20 @@ export class AssistantService {
       // Enhanced search detection with better logging
       if (this.isSearchQuery(content)) {
         console.log('AssistantService: Detected search query, using PDL search');
+        
+        // Check for recent identical searches
+        const cachedResults = this.checkRecentSearch(content);
+        if (cachedResults && cachedResults.length > 0) {
+          console.log('AssistantService: Using cached search results');
+          
+          if (this.onLeadsUpdate) {
+            this.onLeadsUpdate(cachedResults);
+          }
+          
+          return {
+            message: `J'ai trouvé ${cachedResults.length} leads dans votre recherche récente pour "${content}". Ces résultats sont mis en cache pour éviter les doublons.`
+          };
+        }
         
         // Extract number from query (default to 5 if not specified, max 10)
         const numberMatch = content.match(/(\d+)/);
@@ -111,14 +152,19 @@ export class AssistantService {
           const message = searchResult.message || '';
           const strategiesUsed = searchResult.strategiesUsed || [];
           const existingLeadsExcluded = searchResult.existingLeadsExcluded || 0;
+          const duplicatesAvoided = searchResult.duplicatesAvoided || 0;
           
           console.log('PDL search found:', leads.length, 'leads');
           console.log('Search strategies used:', strategiesUsed);
           console.log('Existing leads excluded:', existingLeadsExcluded);
+          console.log('Duplicates avoided:', duplicatesAvoided);
 
           if (leads.length > 0) {
-            // Save leads to database
-            const savedLeads = await this.savePDLLeads(leads);
+            // Save leads to database with enhanced duplicate detection
+            const savedLeads = await this.savePDLLeadsWithDuplicateCheck(leads);
+            
+            // Cache the successful search results
+            this.cacheSearchResults(content, savedLeads);
             
             if (this.onLeadsUpdate) {
               this.onLeadsUpdate(savedLeads);
@@ -126,27 +172,31 @@ export class AssistantService {
             
             toast.success(`${savedLeads.length} nouveaux leads trouvés via People Data Labs`);
 
-            let responseMessage = `Excellent ! J'ai trouvé ${savedLeads.length} leads professionnels pour "${content}" via People Data Labs.`;
+            let responseMessage = `Excellent ! J'ai trouvé ${savedLeads.length} leads professionnels uniques pour "${content}" via People Data Labs.`;
             
             if (strategiesUsed.includes('alternatives')) {
-              responseMessage += ' J\'ai utilisé plusieurs stratégies de recherche pour éviter les doublons et vous offrir plus de diversité.';
+              responseMessage += ' J\'ai utilisé plusieurs stratégies de recherche diversifiées pour éviter les doublons et vous offrir plus de variété.';
             }
             
             if (existingLeadsExcluded > 0) {
               responseMessage += ` J'ai automatiquement exclu ${existingLeadsExcluded} leads existants pour éviter les doublons.`;
             }
             
+            if (duplicatesAvoided > 0) {
+              responseMessage += ` J'ai également évité ${duplicatesAvoided} doublons potentiels dans les résultats.`;
+            }
+            
             responseMessage += ' Ces contacts ont été enrichis avec des données réelles et ajoutés à votre tableau de bord.';
 
             return { message: responseMessage };
           } else {
-            let noResultsMessage = `Je n'ai pas trouvé de nouveaux leads pour "${content}".`;
+            let noResultsMessage = `Je n'ai pas trouvé de nouveaux leads uniques pour "${content}".`;
             
             if (existingLeadsExcluded > 0) {
               noResultsMessage += ` Cependant, j'ai trouvé ${existingLeadsExcluded} résultats qui correspondent à des leads déjà présents dans votre base de données.`;
             }
             
-            noResultsMessage += ' Essayez d\'utiliser des termes plus spécifiques ou différents mots-clés pour obtenir de nouveaux résultats.';
+            noResultsMessage += ' Essayez d\'utiliser des termes plus spécifiques, différents mots-clés, ou une localisation différente pour obtenir de nouveaux résultats.';
             
             return { message: noResultsMessage };
           }
@@ -202,13 +252,33 @@ export class AssistantService {
     }
   }
 
-  private async savePDLLeads(leads: Lead[]): Promise<Lead[]> {
+  private async savePDLLeadsWithDuplicateCheck(leads: Lead[]): Promise<Lead[]> {
     try {
-      console.log('AssistantService: Saving PDL leads to database');
+      console.log('AssistantService: Saving PDL leads with enhanced duplicate checking');
+      
+      // Pre-check for existing emails in database
+      const leadEmails = leads.map(lead => lead.email?.toLowerCase()).filter(Boolean);
+      const { data: existingLeads } = await supabase
+        .from('leads')
+        .select('email')
+        .eq('client_id', this.userId)
+        .in('email', leadEmails);
+      
+      const existingEmailsSet = new Set(
+        (existingLeads || []).map(lead => lead.email?.toLowerCase()).filter(Boolean)
+      );
+      
+      console.log('Found existing emails in database:', existingEmailsSet.size);
       
       const savedLeads: Lead[] = [];
       
       for (const lead of leads) {
+        // Skip if email already exists
+        if (lead.email && existingEmailsSet.has(lead.email.toLowerCase())) {
+          console.log('Skipping duplicate email:', lead.email);
+          continue;
+        }
+        
         try {
           const { data: savedLead, error } = await supabase
             .from('leads')
@@ -218,7 +288,7 @@ export class AssistantService {
 
           if (error) {
             if (error.code === '23505') {
-              console.log('Lead already exists, skipping:', lead.email);
+              console.log('Lead already exists during insert, skipping:', lead.email);
               continue;
             } else {
               console.error('Error saving individual PDL lead:', error);
@@ -238,7 +308,7 @@ export class AssistantService {
       console.log('AssistantService: Successfully saved PDL leads:', savedLeads.length);
       return savedLeads;
     } catch (error) {
-      console.error('AssistantService: Error in savePDLLeads:', error);
+      console.error('AssistantService: Error in savePDLLeadsWithDuplicateCheck:', error);
       return leads;
     }
   }
