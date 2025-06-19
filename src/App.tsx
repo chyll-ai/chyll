@@ -1,17 +1,18 @@
+
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from 'react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from './context/AuthContext';
 import { LanguageProvider } from './context/LanguageContext';
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { Toaster } from "@/components/ui/toaster"
-import { Sonner } from './components/ui/sonner';
-import RootLayout from './components/RootLayout';
-import AssistantPage from './pages/AssistantPage';
-import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
+import { Toaster as Sonner } from './components/ui/sonner';
+import RootLayout from './components/layout/RootLayout';
+import AssistantPage from './pages/Assistant';
+import LoginPage from './pages/Login';
+import RegisterPage from './pages/Register';
 import PricingPage from './pages/PricingPage';
-import WorkspacePage from './pages/WorkspacePage';
+import WorkspacePage from './pages/Workspace';
 import ClosedBetaDemo from './pages/ClosedBetaDemo';
 import { CurrencyProvider } from '@/context/CurrencyContext';
 

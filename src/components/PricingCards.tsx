@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Check } from 'lucide-react';
@@ -6,87 +7,88 @@ import { useLanguage } from '@/context/LanguageContext';
 import { useCurrency } from '@/context/CurrencyContext';
 import { Link } from 'react-router-dom';
 
-// French pricing plans with dynamic currency symbol
-const frPricingPlans = [
-  {
-    name: "Starter",
-    price: `99${getCurrencySymbol()}`,
-    period: "/mois",
-    description: "Parfait pour les petites équipes",
-    features: [
-      "50 numéros de téléphone + 50 adresses email par mois",
-      "Personas illimités (LinkedIn)",
-      "2 utilisateurs",
-      "Interface CRM personnalisée",
-      "Support par email",
-      "Mise à jour quotidienne"
-    ],
-    highlight: false,
-    color: "blue",
-    trial: "Bêta fermée - Liste d'attente",
-    buttonText: "Liste d'attente",
-    href: "/closed-beta-demo"
-  },
-  {
-    name: "Growth",
-    price: `199${getCurrencySymbol()}`,
-    period: "/mois",
-    description: "Pour les équipes en croissance",
-    features: [
-      "200 numéros de téléphone + 200 adresses email par mois",
-      "Personas illimités (LinkedIn)",
-      "3 utilisateurs",
-      "Interface CRM personnalisée",
-      "Support prioritaire",
-      "Mises à jour en temps réel",
-      "Export et import de data"
-    ],
-    highlight: true,
-    color: "yellow",
-    trial: "Bêta fermée - Liste d'attente",
-    buttonText: "Liste d'attente",
-    href: "/closed-beta-demo"
-  },
-  {
-    name: "Scale",
-    price: `399${getCurrencySymbol()}`,
-    period: "/mois",
-    description: "Pour les équipes commerciales établies",
-    features: [
-      "400 numéros de téléphone + 400 adresses email par mois",
-      "Personas illimités (LinkedIn)",
-      "5 utilisateurs",
-      "Interface CRM sur mesure",
-      "Support dédié",
-      "Mises à jour en temps réel",
-      "Export et import de data",
-      "Critères de recherche illimités",
-      "Rapports de performance"
-    ],
-    highlight: false,
-    color: "red",
-    trial: "Bêta fermée - Liste d'attente",
-    buttonText: "Liste d'attente",
-    href: "/closed-beta-demo"
-  }
-];
-
-const getPlanIcon = (color: string) => {
-  switch (color) {
-    case "blue":
-      return <div className="inline-block w-5 h-5 mr-2 bg-blue-500 rounded-sm">🟦</div>;
-    case "yellow":
-      return <div className="inline-block w-5 h-5 mr-2 bg-yellow-400 rounded-sm">🟨</div>;
-    case "red":
-      return <div className="inline-block w-5 h-5 mr-2 bg-red-500 rounded-sm">🟥</div>;
-    default:
-      return null;
-  }
-};
-
 const PricingCards = () => {
   const { language } = useLanguage();
   const { getCurrencySymbol } = useCurrency();
+
+  // French pricing plans with dynamic currency symbol
+  const frPricingPlans = [
+    {
+      name: "Starter",
+      price: `99${getCurrencySymbol()}`,
+      period: "/mois",
+      description: "Parfait pour les petites équipes",
+      features: [
+        "50 numéros de téléphone + 50 adresses email par mois",
+        "Personas illimités (LinkedIn)",
+        "2 utilisateurs",
+        "Interface CRM personnalisée",
+        "Support par email",
+        "Mise à jour quotidienne"
+      ],
+      highlight: false,
+      color: "blue",
+      trial: "Bêta fermée - Liste d'attente",
+      buttonText: "Liste d'attente",
+      href: "/closed-beta-demo"
+    },
+    {
+      name: "Growth",
+      price: `199${getCurrencySymbol()}`,
+      period: "/mois",
+      description: "Pour les équipes en croissance",
+      features: [
+        "200 numéros de téléphone + 200 adresses email par mois",
+        "Personas illimités (LinkedIn)",
+        "3 utilisateurs",
+        "Interface CRM personnalisée",
+        "Support prioritaire",
+        "Mises à jour en temps réel",
+        "Export et import de data"
+      ],
+      highlight: true,
+      color: "yellow",
+      trial: "Bêta fermée - Liste d'attente",
+      buttonText: "Liste d'attente",
+      href: "/closed-beta-demo"
+    },
+    {
+      name: "Scale",
+      price: `399${getCurrencySymbol()}`,
+      period: "/mois",
+      description: "Pour les équipes commerciales établies",
+      features: [
+        "400 numéros de téléphone + 400 adresses email par mois",
+        "Personas illimités (LinkedIn)",
+        "5 utilisateurs",
+        "Interface CRM sur mesure",
+        "Support dédié",
+        "Mises à jour en temps réel",
+        "Export et import de data",
+        "Critères de recherche illimités",
+        "Rapports de performance"
+      ],
+      highlight: false,
+      color: "red",
+      trial: "Bêta fermée - Liste d'attente",
+      buttonText: "Liste d'attente",
+      href: "/closed-beta-demo"
+    }
+  ];
+
+  const getPlanIcon = (color: string) => {
+    switch (color) {
+      case "blue":
+        return <div className="inline-block w-5 h-5 mr-2 bg-blue-500 rounded-sm">🟦</div>;
+      case "yellow":
+        return <div className="inline-block w-5 h-5 mr-2 bg-yellow-400 rounded-sm">🟨</div>;
+      case "red":
+        return <div className="inline-block w-5 h-5 mr-2 bg-red-500 rounded-sm">🟥</div>;
+      default:
+        return null;
+    }
+  };
+
   const plans = frPricingPlans;
 
   return (
