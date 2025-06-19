@@ -34,17 +34,43 @@ export class AssistantService {
     this.onLeadsUpdate = callback;
   }
 
+  private isSearchQuery(content: string): boolean {
+    const lowerContent = content.toLowerCase();
+    
+    // Enhanced search detection patterns
+    const searchPatterns = [
+      // French search terms
+      'trouve', 'cherche', 'recherche', 'trouve-moi', 'trouvez', 'cherchez',
+      'trouver', 'chercher', 'rechercher', 'localise', 'localiser',
+      
+      // English search terms
+      'find', 'search', 'look for', 'get me', 'show me', 'fetch',
+      
+      // Lead/contact/profile related terms
+      'leads', 'prospects', 'contacts', 'profils', 'profiles',
+      'personnes', 'people', 'candidats', 'candidates',
+      
+      // Industry/role specific terms
+      'freelances', 'freelance', 'indépendant', 'developers', 'développeurs',
+      'commerciaux', 'sales', 'managers', 'directeurs', 'cto', 'ceo',
+      
+      // Location-based searches
+      'à paris', 'in paris', 'à lyon', 'in london', 'en france', 'in france',
+      
+      // Action words for search
+      'list', 'liste', 'affiche', 'show', 'montre', 'display'
+    ];
+
+    // Check if the message contains any search patterns
+    return searchPatterns.some(pattern => lowerContent.includes(pattern));
+  }
+
   async sendMessage(content: string): Promise<{ message: string }> {
     try {
       console.log('AssistantService: Sending message:', { content, userId: this.userId });
 
-      // Check if this is a search query
-      if (content.toLowerCase().includes('trouve') || 
-          content.toLowerCase().includes('cherche') || 
-          content.toLowerCase().includes('recherche') ||
-          content.toLowerCase().includes('leads') ||
-          content.toLowerCase().includes('prospects') ||
-          content.toLowerCase().includes('freelances')) {
+      // Enhanced search detection
+      if (this.isSearchQuery(content)) {
         console.log('AssistantService: Detected search query, using PDL search');
         
         // Extract number from query (default to 5 if not specified, max 10)

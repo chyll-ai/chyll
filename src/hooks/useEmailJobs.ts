@@ -24,12 +24,25 @@ export const useEmailJobs = () => {
   const loadEmailJobs = async () => {
     try {
       setLoading(true);
+      
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        console.log('No user found, skipping email jobs load');
+        return;
+      }
+
       const { data, error } = await supabase
         .from('email_jobs')
         .select('*')
+        .eq('client_id', user.id)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Email jobs error:', error);
+        throw error;
+      }
+      
       setEmailJobs(data || []);
     } catch (error: any) {
       console.error('Error loading email jobs:', error);
