@@ -1,3 +1,4 @@
+
 import { supabase } from './supabase';
 
 export const seedDummyData = async (userId: string) => {
@@ -23,7 +24,15 @@ export const seedDummyData = async (userId: string) => {
       throw profileError;
     }
 
-    // Then, create dummy leads
+    // Check for existing leads to avoid duplicates
+    const { data: existingLeads } = await supabase
+      .from('leads')
+      .select('email')
+      .eq('client_id', userId);
+    
+    const existingEmails = new Set((existingLeads || []).map(lead => lead.email?.toLowerCase()).filter(Boolean));
+
+    // Then, create dummy leads - only add if they don't exist
     const dummyLeads = [
       {
         client_id: userId,
@@ -82,16 +91,23 @@ export const seedDummyData = async (userId: string) => {
       }
     ];
 
-    const { error: leadsError } = await supabase
-      .from('leads')
-      .upsert(dummyLeads);
+    // Filter out leads that already exist
+    const newLeads = dummyLeads.filter(lead => 
+      lead.email && !existingEmails.has(lead.email.toLowerCase())
+    );
 
-    if (leadsError) {
-      console.error('Error seeding leads:', leadsError);
-      throw leadsError;
+    if (newLeads.length > 0) {
+      const { error: leadsError } = await supabase
+        .from('leads')
+        .insert(newLeads);
+
+      if (leadsError) {
+        console.error('Error seeding leads:', leadsError);
+        throw leadsError;
+      }
     }
 
-    return { success: true, profile, leadsCount: dummyLeads.length };
+    return { success: true, profile, leadsCount: newLeads.length, message: `${newLeads.length} new leads added` };
   } catch (error) {
     console.error('Error in seedDummyData:', error);
     throw error;

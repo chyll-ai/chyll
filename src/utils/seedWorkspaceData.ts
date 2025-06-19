@@ -9,7 +9,15 @@ export const seedWorkspaceData = async () => {
       return;
     }
 
-    // Données de test pour les leads
+    // Check if user already has leads to avoid duplicates
+    const { data: existingLeads } = await supabase
+      .from('leads')
+      .select('email')
+      .eq('client_id', user.id);
+    
+    const existingEmails = new Set((existingLeads || []).map(lead => lead.email?.toLowerCase()).filter(Boolean));
+
+    // Données de test pour les leads - only add if they don't exist
     const testLeads = [
       {
         client_id: user.id,
@@ -56,21 +64,32 @@ export const seedWorkspaceData = async () => {
       }
     ];
 
-    // Insérer les leads de test
+    // Filter out leads that already exist
+    const newLeads = testLeads.filter(lead => 
+      lead.email && !existingEmails.has(lead.email.toLowerCase())
+    );
+
+    if (newLeads.length === 0) {
+      console.log('All test leads already exist');
+      return { message: 'All test leads already exist', count: 0 };
+    }
+
+    // Insert only new leads
     const { data, error } = await supabase
       .from('leads')
-      .insert(testLeads)
+      .insert(newLeads)
       .select();
 
     if (error) {
       console.error('Error seeding data:', error);
-      return;
+      throw error;
     }
 
     console.log('Test data seeded successfully:', data);
-    return data;
+    return { message: `${newLeads.length} new test leads added`, data, count: newLeads.length };
     
   } catch (error) {
     console.error('Error in seedWorkspaceData:', error);
+    throw error;
   }
 };

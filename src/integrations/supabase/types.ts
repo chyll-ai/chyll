@@ -222,100 +222,379 @@ export type Database = {
       }
       leads: {
         Row: {
+          activities: string | null
+          awards: string | null
+          birth_date: string | null
+          birth_year: number | null
+          browser_preferences: string | null
           certifications: Json | null
+          children_count: number | null
+          city: string | null
           client_id: string | null
+          cloud_platforms: string | null
+          communication_tools: string | null
           company: string | null
+          country: string | null
           created_at: string | null
+          databases_used: string | null
+          degree_names: string | null
+          departments: string | null
+          design_tools: string | null
+          dietary_preferences: string | null
           education: Json | null
+          education_history: string | null
           email: string | null
           enriched_from: Json | null
+          environmental_interests: string | null
           experience_years: number | null
+          facebook_friends: number | null
           facebook_url: string | null
+          family_status: string | null
+          fitness_activities: string | null
+          frameworks_used: string | null
           full_name: string | null
+          gender: string | null
+          github_followers: number | null
+          github_following: number | null
+          github_repos: number | null
           github_url: string | null
+          gpa_scores: string | null
+          graduation_dates: string | null
           headline: string | null
+          health_interests: string | null
+          home_ownership: string | null
+          honors: string | null
           id: string
+          industry_experience: string | null
+          interests: string | null
+          investment_interests: string | null
+          job_company_employees_count: number | null
+          job_company_facebook_url: string | null
+          job_company_founded_year: number | null
+          job_company_funding: string | null
           job_company_industry: string | null
+          job_company_linkedin_url: string | null
+          job_company_revenue: string | null
           job_company_size: string | null
+          job_company_tags: string | null
+          job_company_twitter_url: string | null
           job_company_website: string | null
+          job_description: string | null
+          job_duration_months: number | null
+          job_end_date: string | null
+          job_functions: string | null
+          job_history: string | null
+          job_location: string | null
           job_seniority: string | null
+          job_start_date: string | null
           job_title: string | null
           languages: Json | null
           last_contact_date: string | null
+          lifestyle_interests: string | null
+          linkedin_connections: number | null
+          linkedin_followers: number | null
+          linkedin_premium: boolean | null
           linkedin_profile_data: Json | null
           linkedin_url: string | null
+          linkedin_verified: boolean | null
           location: string | null
+          major_fields: string | null
+          management_level: string | null
+          marketing_tools: string | null
+          media_consumption: string | null
+          mobile_devices: string | null
+          mobile_phone: string | null
+          net_worth: string | null
+          operating_systems: string | null
+          patents: string | null
+          personal_emails: string | null
+          personality_traits: string | null
+          pet_ownership: string | null
           phone_number: string | null
+          political_affiliation: string | null
+          postal_code: string | null
+          programming_languages: string | null
+          project_management_tools: string | null
+          publications: string | null
+          recommendations_given: number | null
+          recommendations_received: number | null
+          religious_beliefs: string | null
+          salary_range: string | null
+          sales_tools: string | null
+          school_names: string | null
           search_id: string | null
+          shopping_preferences: string | null
           skills: Json | null
+          social_profiles: string | null
+          societies: string | null
+          software_proficiency: string | null
+          state: string | null
           status: string | null
+          street_address: string | null
+          subdepartments: string | null
           summary: string | null
+          technology_skills: string | null
+          time_zone: string | null
+          travel_preferences: string | null
+          twitter_followers: number | null
+          twitter_following: number | null
           twitter_url: string | null
           updated_at: string | null
+          vehicle_ownership: string | null
+          volunteer_work: string | null
+          work_email: string | null
+          work_phone: string | null
+          work_preferences: string | null
         }
         Insert: {
+          activities?: string | null
+          awards?: string | null
+          birth_date?: string | null
+          birth_year?: number | null
+          browser_preferences?: string | null
           certifications?: Json | null
+          children_count?: number | null
+          city?: string | null
           client_id?: string | null
+          cloud_platforms?: string | null
+          communication_tools?: string | null
           company?: string | null
+          country?: string | null
           created_at?: string | null
+          databases_used?: string | null
+          degree_names?: string | null
+          departments?: string | null
+          design_tools?: string | null
+          dietary_preferences?: string | null
           education?: Json | null
+          education_history?: string | null
           email?: string | null
           enriched_from?: Json | null
+          environmental_interests?: string | null
           experience_years?: number | null
+          facebook_friends?: number | null
           facebook_url?: string | null
+          family_status?: string | null
+          fitness_activities?: string | null
+          frameworks_used?: string | null
           full_name?: string | null
+          gender?: string | null
+          github_followers?: number | null
+          github_following?: number | null
+          github_repos?: number | null
           github_url?: string | null
+          gpa_scores?: string | null
+          graduation_dates?: string | null
           headline?: string | null
+          health_interests?: string | null
+          home_ownership?: string | null
+          honors?: string | null
           id?: string
+          industry_experience?: string | null
+          interests?: string | null
+          investment_interests?: string | null
+          job_company_employees_count?: number | null
+          job_company_facebook_url?: string | null
+          job_company_founded_year?: number | null
+          job_company_funding?: string | null
           job_company_industry?: string | null
+          job_company_linkedin_url?: string | null
+          job_company_revenue?: string | null
           job_company_size?: string | null
+          job_company_tags?: string | null
+          job_company_twitter_url?: string | null
           job_company_website?: string | null
+          job_description?: string | null
+          job_duration_months?: number | null
+          job_end_date?: string | null
+          job_functions?: string | null
+          job_history?: string | null
+          job_location?: string | null
           job_seniority?: string | null
+          job_start_date?: string | null
           job_title?: string | null
           languages?: Json | null
           last_contact_date?: string | null
+          lifestyle_interests?: string | null
+          linkedin_connections?: number | null
+          linkedin_followers?: number | null
+          linkedin_premium?: boolean | null
           linkedin_profile_data?: Json | null
           linkedin_url?: string | null
+          linkedin_verified?: boolean | null
           location?: string | null
+          major_fields?: string | null
+          management_level?: string | null
+          marketing_tools?: string | null
+          media_consumption?: string | null
+          mobile_devices?: string | null
+          mobile_phone?: string | null
+          net_worth?: string | null
+          operating_systems?: string | null
+          patents?: string | null
+          personal_emails?: string | null
+          personality_traits?: string | null
+          pet_ownership?: string | null
           phone_number?: string | null
+          political_affiliation?: string | null
+          postal_code?: string | null
+          programming_languages?: string | null
+          project_management_tools?: string | null
+          publications?: string | null
+          recommendations_given?: number | null
+          recommendations_received?: number | null
+          religious_beliefs?: string | null
+          salary_range?: string | null
+          sales_tools?: string | null
+          school_names?: string | null
           search_id?: string | null
+          shopping_preferences?: string | null
           skills?: Json | null
+          social_profiles?: string | null
+          societies?: string | null
+          software_proficiency?: string | null
+          state?: string | null
           status?: string | null
+          street_address?: string | null
+          subdepartments?: string | null
           summary?: string | null
+          technology_skills?: string | null
+          time_zone?: string | null
+          travel_preferences?: string | null
+          twitter_followers?: number | null
+          twitter_following?: number | null
           twitter_url?: string | null
           updated_at?: string | null
+          vehicle_ownership?: string | null
+          volunteer_work?: string | null
+          work_email?: string | null
+          work_phone?: string | null
+          work_preferences?: string | null
         }
         Update: {
+          activities?: string | null
+          awards?: string | null
+          birth_date?: string | null
+          birth_year?: number | null
+          browser_preferences?: string | null
           certifications?: Json | null
+          children_count?: number | null
+          city?: string | null
           client_id?: string | null
+          cloud_platforms?: string | null
+          communication_tools?: string | null
           company?: string | null
+          country?: string | null
           created_at?: string | null
+          databases_used?: string | null
+          degree_names?: string | null
+          departments?: string | null
+          design_tools?: string | null
+          dietary_preferences?: string | null
           education?: Json | null
+          education_history?: string | null
           email?: string | null
           enriched_from?: Json | null
+          environmental_interests?: string | null
           experience_years?: number | null
+          facebook_friends?: number | null
           facebook_url?: string | null
+          family_status?: string | null
+          fitness_activities?: string | null
+          frameworks_used?: string | null
           full_name?: string | null
+          gender?: string | null
+          github_followers?: number | null
+          github_following?: number | null
+          github_repos?: number | null
           github_url?: string | null
+          gpa_scores?: string | null
+          graduation_dates?: string | null
           headline?: string | null
+          health_interests?: string | null
+          home_ownership?: string | null
+          honors?: string | null
           id?: string
+          industry_experience?: string | null
+          interests?: string | null
+          investment_interests?: string | null
+          job_company_employees_count?: number | null
+          job_company_facebook_url?: string | null
+          job_company_founded_year?: number | null
+          job_company_funding?: string | null
           job_company_industry?: string | null
+          job_company_linkedin_url?: string | null
+          job_company_revenue?: string | null
           job_company_size?: string | null
+          job_company_tags?: string | null
+          job_company_twitter_url?: string | null
           job_company_website?: string | null
+          job_description?: string | null
+          job_duration_months?: number | null
+          job_end_date?: string | null
+          job_functions?: string | null
+          job_history?: string | null
+          job_location?: string | null
           job_seniority?: string | null
+          job_start_date?: string | null
           job_title?: string | null
           languages?: Json | null
           last_contact_date?: string | null
+          lifestyle_interests?: string | null
+          linkedin_connections?: number | null
+          linkedin_followers?: number | null
+          linkedin_premium?: boolean | null
           linkedin_profile_data?: Json | null
           linkedin_url?: string | null
+          linkedin_verified?: boolean | null
           location?: string | null
+          major_fields?: string | null
+          management_level?: string | null
+          marketing_tools?: string | null
+          media_consumption?: string | null
+          mobile_devices?: string | null
+          mobile_phone?: string | null
+          net_worth?: string | null
+          operating_systems?: string | null
+          patents?: string | null
+          personal_emails?: string | null
+          personality_traits?: string | null
+          pet_ownership?: string | null
           phone_number?: string | null
+          political_affiliation?: string | null
+          postal_code?: string | null
+          programming_languages?: string | null
+          project_management_tools?: string | null
+          publications?: string | null
+          recommendations_given?: number | null
+          recommendations_received?: number | null
+          religious_beliefs?: string | null
+          salary_range?: string | null
+          sales_tools?: string | null
+          school_names?: string | null
           search_id?: string | null
+          shopping_preferences?: string | null
           skills?: Json | null
+          social_profiles?: string | null
+          societies?: string | null
+          software_proficiency?: string | null
+          state?: string | null
           status?: string | null
+          street_address?: string | null
+          subdepartments?: string | null
           summary?: string | null
+          technology_skills?: string | null
+          time_zone?: string | null
+          travel_preferences?: string | null
+          twitter_followers?: number | null
+          twitter_following?: number | null
           twitter_url?: string | null
           updated_at?: string | null
+          vehicle_ownership?: string | null
+          volunteer_work?: string | null
+          work_email?: string | null
+          work_phone?: string | null
+          work_preferences?: string | null
         }
         Relationships: [
           {
