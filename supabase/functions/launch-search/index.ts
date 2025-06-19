@@ -1,3 +1,4 @@
+
 // @deno-types="https://deno.land/std@0.168.0/http/server.ts"
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 // @deno-types="https://esm.sh/@supabase/supabase-js@2.49.4"
@@ -37,7 +38,7 @@ serve(async (req: Request) => {
 
     console.log("Launch search request:", { keyword, filters, client_id });
 
-    // Generate 30 fake leads
+    // Generate 30 fake leads with comprehensive data
     const firstNames = [
       "Alice", "Julien", "Sophie", "Lucas", "Emma", "Thomas", "Marie", "Pierre", 
       "Camille", "Nicolas", "Laura", "Antoine", "Chloe", "Maxime", "Sarah", 
@@ -61,6 +62,18 @@ serve(async (req: Request) => {
     ];
 
     const cities = ["Paris", "Lyon", "Marseille", "Bordeaux", "Lille", "Toulouse", "Nice", "Strasbourg"];
+    
+    const jobTitles = ["CEO", "CTO", "VP Engineering", "Head of Product", "Lead Developer", "Product Manager", "Engineering Manager"];
+    
+    const pipelineStages = ["prospect", "qualified", "proposal", "negotiation", "closed_won", "closed_lost"];
+    
+    const skills = [
+      ["JavaScript", "React", "Node.js"],
+      ["Python", "Django", "PostgreSQL"],
+      ["Java", "Spring", "AWS"],
+      ["Go", "Docker", "Kubernetes"],
+      ["TypeScript", "Vue.js", "GraphQL"]
+    ];
 
     const leads = Array.from({ length: 30 }).map((_, index) => {
       const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
@@ -69,18 +82,97 @@ serve(async (req: Request) => {
       const company = companies[Math.floor(Math.random() * companies.length)];
       const email = `${firstName.toLowerCase()}.${lastName.toLowerCase()}@${company.toLowerCase()}.com`;
       const location = filters?.location || cities[Math.floor(Math.random() * cities.length)];
+      const jobTitle = jobTitles[Math.floor(Math.random() * jobTitles.length)];
+      const selectedSkills = skills[Math.floor(Math.random() * skills.length)];
 
       return {
         client_id: client_id,
         full_name: fullName,
-        job_title: 'CEO',
+        job_title: jobTitle,
         email: email,
         company: company,
         location: location,
+        phone_number: `+33 6 ${Math.floor(Math.random() * 90) + 10} ${Math.floor(Math.random() * 90) + 10} ${Math.floor(Math.random() * 90) + 10} ${Math.floor(Math.random() * 90) + 10}`,
         status: 'à contacter',
-        enriched_from: { source: 'demo', keyword: keyword, search_id: `demo_${Date.now()}_${index}` },
-        created_at: new Date().toISOString(),
-        linkedin_url: `https://linkedin.com/in/${firstName.toLowerCase()}-${lastName.toLowerCase()}-${Math.floor(Math.random() * 1000)}`
+        
+        // Professional details
+        experience_years: Math.floor(Math.random() * 15) + 3,
+        headline: `${jobTitle} at ${company} | Tech Leadership & Innovation`,
+        summary: `Experienced ${jobTitle.toLowerCase()} with ${Math.floor(Math.random() * 15) + 3} years in tech industry. Passionate about building scalable solutions and leading high-performing teams.`,
+        skills: JSON.stringify(selectedSkills),
+        languages: JSON.stringify(["French", "English"]),
+        
+        // Company information
+        job_company_industry: "Technology",
+        job_company_size: Math.random() > 0.5 ? "51-200" : "201-500",
+        job_company_website: `https://${company.toLowerCase()}.com`,
+        job_seniority: "Senior",
+        job_start_date: "2022-01-01",
+        job_location: location,
+        job_company_employees_count: Math.floor(Math.random() * 500) + 50,
+        job_company_founded_year: Math.floor(Math.random() * 20) + 2005,
+        
+        // Contact information
+        linkedin_url: `https://linkedin.com/in/${firstName.toLowerCase()}-${lastName.toLowerCase()}-${Math.floor(Math.random() * 1000)}`,
+        github_url: Math.random() > 0.7 ? `https://github.com/${firstName.toLowerCase()}${lastName.toLowerCase()}` : null,
+        twitter_url: Math.random() > 0.8 ? `https://twitter.com/${firstName.toLowerCase()}_${lastName.toLowerCase()}` : null,
+        
+        // Personal details
+        birth_year: Math.floor(Math.random() * 20) + 1975,
+        gender: Math.random() > 0.5 ? "Male" : "Female",
+        city: location.split(",")[0],
+        country: "France",
+        
+        // Social metrics
+        linkedin_connections: Math.floor(Math.random() * 1000) + 500,
+        linkedin_followers: Math.floor(Math.random() * 500) + 100,
+        linkedin_premium: Math.random() > 0.7,
+        github_followers: Math.random() > 0.5 ? Math.floor(Math.random() * 100) + 10 : null,
+        github_repos: Math.random() > 0.5 ? Math.floor(Math.random() * 50) + 5 : null,
+        
+        // Sales and pipeline data
+        mrr: Math.random() > 0.6 ? Math.floor(Math.random() * 10000) + 1000 : null,
+        arr: Math.random() > 0.6 ? Math.floor(Math.random() * 120000) + 12000 : null,
+        pipeline_stage: pipelineStages[Math.floor(Math.random() * pipelineStages.length)],
+        close_probability: Math.floor(Math.random() * 100),
+        expected_close_date: new Date(Date.now() + Math.random() * 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        last_activity_date: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        
+        // Education
+        education: JSON.stringify([{
+          school: "École Polytechnique",
+          degree: "Master of Engineering",
+          field: "Computer Science",
+          year: "2018"
+        }]),
+        
+        // Technology skills
+        technology_skills: JSON.stringify(selectedSkills),
+        programming_languages: JSON.stringify(selectedSkills.filter(skill => 
+          ["JavaScript", "Python", "Java", "Go", "TypeScript"].includes(skill)
+        )),
+        frameworks_used: JSON.stringify(selectedSkills.filter(skill => 
+          ["React", "Django", "Spring", "Vue.js"].includes(skill)
+        )),
+        cloud_platforms: JSON.stringify(["AWS", "Azure"].slice(0, Math.floor(Math.random() * 2) + 1)),
+        
+        // Work preferences
+        management_level: jobTitle.includes("CEO") || jobTitle.includes("VP") || jobTitle.includes("Head") ? "Executive" : "Senior",
+        departments: JSON.stringify(["Engineering", "Product"]),
+        job_functions: JSON.stringify(["Software Development", "Team Leadership"]),
+        
+        // Interests
+        interests: JSON.stringify(["Technology", "Innovation", "Startups", "AI/ML"]),
+        investment_interests: JSON.stringify(["SaaS", "B2B Technology", "AI/ML"]),
+        
+        // Metadata
+        enriched_from: { 
+          source: 'demo', 
+          keyword: keyword, 
+          search_id: `demo_${Date.now()}_${index}`,
+          timestamp: new Date().toISOString()
+        },
+        created_at: new Date().toISOString()
       };
     });
 
@@ -92,6 +184,8 @@ serve(async (req: Request) => {
       console.log('Inserting lead:', {
         full_name: lead.full_name,
         client_id: lead.client_id,
+        pipeline_stage: lead.pipeline_stage,
+        mrr: lead.mrr,
         timestamp: new Date().toISOString()
       });
 
@@ -113,6 +207,7 @@ serve(async (req: Request) => {
       console.log('Successfully inserted lead:', {
         id: data.id,
         full_name: data.full_name,
+        pipeline_stage: data.pipeline_stage,
         timestamp: new Date().toISOString()
       });
 
