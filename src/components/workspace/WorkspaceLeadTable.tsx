@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { 
   Table, 
@@ -17,13 +16,13 @@ import {
   Users, 
   Mail, 
   Zap, 
-  Archive,
-  ExternalLink,
-  History
+  Archive
 } from 'lucide-react';
 import { useAssistantActions } from '@/hooks/useAssistantActions';
 import { useApolloEnrichment } from '@/hooks/useApolloEnrichment';
 import { useGmailSender } from '@/hooks/useGmailSender';
+import LeadStatusSelector from '@/components/dashboard/LeadStatusSelector';
+import LeadActionsMenu from '@/components/dashboard/LeadActionsMenu';
 
 interface Lead {
   id: string;
@@ -54,19 +53,6 @@ const WorkspaceLeadTable: React.FC = () => {
   useEffect(() => {
     assistantActions.loadLeads();
   }, []);
-
-  const getStatusColor = (status: string) => {
-    switch (status.toLowerCase()) {
-      case 'new': return 'bg-gray-100 text-gray-800';
-      case 'enriching': return 'bg-yellow-100 text-yellow-800';
-      case 'enriched': return 'bg-blue-100 text-blue-800';
-      case 'contacted': return 'bg-green-100 text-green-800';
-      case 'responded': return 'bg-purple-100 text-purple-800';
-      case 'qualified': return 'bg-emerald-100 text-emerald-800';
-      case 'lost': return 'bg-red-100 text-red-800';
-      default: return 'bg-slate-100 text-slate-800';
-    }
-  };
 
   const handleSelectLead = (leadId: string, checked: boolean) => {
     if (checked) {
@@ -102,6 +88,11 @@ const WorkspaceLeadTable: React.FC = () => {
       await assistantActions.updateLeadStatus(leadId, 'archived');
     }
     setSelectedLeads([]);
+  };
+
+  const handleStatusUpdate = (leadId: string, newStatus: string) => {
+    // This will be handled by the LeadStatusSelector component internally
+    // and the leads will be refreshed through the assistantActions
   };
 
   const displayLeads = filteredLeads.length > 0 ? filteredLeads : leads;
@@ -168,8 +159,8 @@ const WorkspaceLeadTable: React.FC = () => {
                 <TableHead className="w-44">Société</TableHead>
                 <TableHead className="w-44">Poste</TableHead>
                 <TableHead className="w-40">Localisation</TableHead>
-                <TableHead className="w-24">Statut</TableHead>
-                <TableHead className="w-36">Actions</TableHead>
+                <TableHead className="w-32">Statut</TableHead>
+                <TableHead className="w-64">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -233,55 +224,16 @@ const WorkspaceLeadTable: React.FC = () => {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Badge className={`${getStatusColor(lead.status || 'new')} text-xs`}>
-                        {lead.status || 'new'}
-                      </Badge>
+                      <LeadStatusSelector 
+                        lead={lead} 
+                        onStatusUpdate={handleStatusUpdate}
+                      />
                     </TableCell>
                     <TableCell>
-                      <div className="flex gap-1">
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => navigate(`/lead-history/${lead.id}`)}
-                          className="h-8 w-8 p-0"
-                          title="Voir l'historique"
-                        >
-                          <History className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => enrichLead(lead.id)}
-                          disabled={enriching}
-                          className="h-8 w-8 p-0"
-                          title="Enrichir"
-                        >
-                          <Zap className="h-4 w-4" />
-                        </Button>
-                        {lead.email && (
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => sendEmail(lead.email!, 'Contact', 'Bonjour...')}
-                            disabled={sending}
-                            className="h-8 w-8 p-0"
-                            title="Envoyer email"
-                          >
-                            <Mail className="h-4 w-4" />
-                          </Button>
-                        )}
-                        {lead.linkedin_url && (
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => window.open(lead.linkedin_url, '_blank')}
-                            className="h-8 w-8 p-0"
-                            title="Voir LinkedIn"
-                          >
-                            <ExternalLink className="h-4 w-4" />
-                          </Button>
-                        )}
-                      </div>
+                      <LeadActionsMenu 
+                        lead={lead} 
+                        onStatusUpdate={handleStatusUpdate}
+                      />
                     </TableCell>
                   </TableRow>
                 ))
