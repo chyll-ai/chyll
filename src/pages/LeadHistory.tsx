@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Mail, Calendar, User, Building2, MapPin, Phone, ExternalLink, RefreshCw, CheckCircle, XCircle, Redo2 } from 'lucide-react';
 import { toast } from '@/components/ui/sonner';
-import LeadStatusBadge from '@/components/dashboard/LeadStatusBadge';
+import LeadStatusBadge from '@/components/workspace/LeadStatusBadge';
 
 interface EmailJob {
   id: string;

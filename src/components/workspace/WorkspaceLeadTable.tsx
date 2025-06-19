@@ -25,8 +25,8 @@ import {
 import { useAssistantActions } from '@/hooks/useAssistantActions';
 import { usePDLEnrichment } from '@/hooks/usePDLEnrichment';
 import { useGmailSender } from '@/hooks/useGmailSender';
-import LeadStatusSelector from '@/components/dashboard/LeadStatusSelector';
-import LeadActionsMenu from '@/components/dashboard/LeadActionsMenu';
+import LeadStatusSelector from './LeadStatusSelector';
+import LeadActionsMenu from './LeadActionsMenu';
 import SocialLinksDisplay from '@/components/leads/SocialLinksDisplay';
 import CompanyInfoDisplay from '@/components/leads/CompanyInfoDisplay';
 import SkillsTagsDisplay from '@/components/leads/SkillsTagsDisplay';
