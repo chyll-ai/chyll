@@ -1,4 +1,3 @@
-
 import { useState, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import { usePDLEnrichment } from './usePDLEnrichment';
@@ -156,6 +155,19 @@ export const useAssistantActions = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
+      
+      // Debug logging to check LinkedIn URLs
+      console.log('Loaded leads data from Supabase:');
+      data?.forEach((lead, index) => {
+        console.log(`Lead ${index + 1} (${lead.full_name}):`, {
+          id: lead.id,
+          linkedin_url: lead.linkedin_url,
+          linkedin_url_type: typeof lead.linkedin_url,
+          linkedin_url_length: lead.linkedin_url?.length,
+          raw_linkedin_field: lead.linkedin_url
+        });
+      });
+      
       setLeads(data || []);
       setFilteredLeads(data || []);
     } catch (error: any) {
