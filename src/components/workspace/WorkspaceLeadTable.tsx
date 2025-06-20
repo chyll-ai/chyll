@@ -202,15 +202,17 @@ const WorkspaceLeadTable: React.FC = () => {
     console.log('Lead LinkedIn data:', {
       leadName: lead.full_name,
       linkedin_url: lead.linkedin_url,
-      typeof_linkedin_url: typeof lead.linkedin_url,
-      normalized: normalizeUrl(lead.linkedin_url)
+      typeof_linkedin_url: typeof lead.linkedin_url
     });
     
-    const linkedinUrl = normalizeUrl(lead.linkedin_url);
-    
-    if (!linkedinUrl) {
+    if (!lead.linkedin_url) {
       return <span className="text-xs text-muted-foreground">No LinkedIn</span>;
     }
+
+    // Use the URL as-is from the database, just ensure it has protocol for opening
+    const urlToOpen = lead.linkedin_url.startsWith('http') 
+      ? lead.linkedin_url 
+      : `https://${lead.linkedin_url}`;
 
     return (
       <div className="flex items-center gap-1">
@@ -218,7 +220,7 @@ const WorkspaceLeadTable: React.FC = () => {
           variant="ghost"
           size="sm"
           className="h-6 px-2 text-blue-600 hover:bg-blue-50"
-          onClick={() => window.open(linkedinUrl, '_blank', 'noopener,noreferrer')}
+          onClick={() => window.open(urlToOpen, '_blank', 'noopener,noreferrer')}
         >
           <Linkedin className="h-3 w-3 mr-1" />
           <span className="text-xs truncate max-w-[120px]">LinkedIn</span>

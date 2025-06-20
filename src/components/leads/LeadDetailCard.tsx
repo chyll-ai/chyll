@@ -19,8 +19,7 @@ const LeadDetailCard: React.FC<LeadDetailCardProps> = ({ lead, className = "" })
   console.log('LeadDetailCard - LinkedIn data:', {
     leadName: lead.full_name,
     linkedin_url: lead.linkedin_url,
-    typeof_linkedin_url: typeof lead.linkedin_url,
-    raw_lead_data: lead
+    typeof_linkedin_url: typeof lead.linkedin_url
   });
 
   const parseEducation = () => {
@@ -45,9 +44,7 @@ const LeadDetailCard: React.FC<LeadDetailCardProps> = ({ lead, className = "" })
 
   const education = parseEducation();
   const certifications = parseCertifications();
-  const linkedinUrl = normalizeUrl(lead.linkedin_url);
-  console.log('Normalized LinkedIn URL:', linkedinUrl);
-
+  
   return (
     <Card className={`w-full ${className}`}>
       <CardHeader className="pb-4">
@@ -113,12 +110,17 @@ const LeadDetailCard: React.FC<LeadDetailCardProps> = ({ lead, className = "" })
           </div>
           
           {/* LinkedIn URL Section */}
-          {linkedinUrl && (
+          {lead.linkedin_url && (
             <div className="mt-4">
               <Button
                 variant="outline"
                 className="flex items-center gap-2 text-blue-600 border-blue-200 hover:bg-blue-50"
-                onClick={() => window.open(linkedinUrl, '_blank', 'noopener,noreferrer')}
+                onClick={() => {
+                  const urlToOpen = lead.linkedin_url.startsWith('http') 
+                    ? lead.linkedin_url 
+                    : `https://${lead.linkedin_url}`;
+                  window.open(urlToOpen, '_blank', 'noopener,noreferrer');
+                }}
               >
                 <Linkedin className="h-4 w-4" />
                 <span>View LinkedIn Profile</span>

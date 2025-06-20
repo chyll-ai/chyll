@@ -3,7 +3,6 @@ import React from 'react';
 import { ExternalLink, Github, Linkedin, Twitter, Facebook } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { normalizeUrl } from '@/utils/urlUtils';
 
 interface SocialLinksDisplayProps {
   linkedin_url?: string;
@@ -22,12 +21,18 @@ const SocialLinksDisplay: React.FC<SocialLinksDisplayProps> = ({
   job_company_website,
   className = ""
 }) => {
+  // Helper function to ensure URL has protocol
+  const ensureProtocol = (url: string | undefined) => {
+    if (!url) return null;
+    return url.startsWith('http') ? url : `https://${url}`;
+  };
+
   const links = [
-    { url: normalizeUrl(linkedin_url), icon: Linkedin, label: 'LinkedIn', color: 'text-blue-600' },
-    { url: normalizeUrl(github_url), icon: Github, label: 'GitHub', color: 'text-gray-800' },
-    { url: normalizeUrl(twitter_url), icon: Twitter, label: 'Twitter', color: 'text-blue-400' },
-    { url: normalizeUrl(facebook_url), icon: Facebook, label: 'Facebook', color: 'text-blue-700' },
-    { url: normalizeUrl(job_company_website), icon: ExternalLink, label: 'Website', color: 'text-green-600' },
+    { url: ensureProtocol(linkedin_url), icon: Linkedin, label: 'LinkedIn', color: 'text-blue-600' },
+    { url: ensureProtocol(github_url), icon: Github, label: 'GitHub', color: 'text-gray-800' },
+    { url: ensureProtocol(twitter_url), icon: Twitter, label: 'Twitter', color: 'text-blue-400' },
+    { url: ensureProtocol(facebook_url), icon: Facebook, label: 'Facebook', color: 'text-blue-700' },
+    { url: ensureProtocol(job_company_website), icon: ExternalLink, label: 'Website', color: 'text-green-600' },
   ].filter(link => link.url);
 
   if (links.length === 0) {
