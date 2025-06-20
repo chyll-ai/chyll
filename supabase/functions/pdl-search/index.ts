@@ -110,6 +110,8 @@ async function parseSearchQueryWithOpenAI(query: string): Promise<any> {
     searchCriteria.job_title = 'developer';
   } else if (queryLower.includes('product manager') || queryLower.includes('pm')) {
     searchCriteria.job_title = 'product manager';
+  } else if (queryLower.includes('co-fondateur') || queryLower.includes('founder') || queryLower.includes('ceo')) {
+    searchCriteria.job_title = 'founder';
   } else {
     searchCriteria.job_title = 'manager';
   }
@@ -273,10 +275,11 @@ serve(async (req: Request) => {
       );
     }
 
-    // Transform PDL results to our lead format
+    // Transform PDL results to our lead format - NO FILTERING, TAKE ALL RESULTS
     const allPdlResults = pdlResults.data.data;
-    console.log('Raw PDL results:', allPdlResults.length);
+    console.log('Raw PDL results (NO FILTERING):', allPdlResults.length);
     
+    // Take the requested count, but don't filter anything
     const transformedLeads = allPdlResults.slice(0, count).map((person: any) => {
       let location = 'Unknown';
       
@@ -328,22 +331,28 @@ serve(async (req: Request) => {
       };
     });
 
-    console.log('Transformed leads:', transformedLeads.length);
+    console.log('Transformed leads (NO FILTERING):', transformedLeads.length);
 
-    // Save to database
+    // Save to database - FORCE SAVE ALL LEADS
     if (SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY && transformedLeads.length > 0) {
       const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
       
       console.log('Saving leads to database...');
+      console.log('Lead data being saved:', JSON.stringify(transformedLeads[0], null, 2));
       
+      // Use upsert to handle potential duplicates gracefully
       const { data: savedLeads, error: saveError } = await supabase
         .from('leads')
-        .insert(transformedLeads)
+        .upsert(transformedLeads, { 
+          onConflict: 'client_id,email',
+          ignoreDuplicates: false 
+        })
         .select();
 
       if (saveError) {
         console.error('Error saving leads to database:', saveError);
-        // Continue without throwing error - return the leads even if save fails
+        // Still return the leads even if save fails
+        console.log('Continuing without database save due to error');
       } else {
         console.log('Successfully saved leads to database:', savedLeads?.length || 0);
       }
