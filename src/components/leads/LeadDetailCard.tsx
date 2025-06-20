@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -16,6 +15,14 @@ interface LeadDetailCardProps {
 }
 
 const LeadDetailCard: React.FC<LeadDetailCardProps> = ({ lead, className = "" }) => {
+  // Debug logging for LinkedIn URL
+  console.log('LeadDetailCard - LinkedIn data:', {
+    leadName: lead.full_name,
+    linkedin_url: lead.linkedin_url,
+    typeof_linkedin_url: typeof lead.linkedin_url,
+    raw_lead_data: lead
+  });
+
   const parseEducation = () => {
     if (!lead.education) return [];
     try {
@@ -39,6 +46,7 @@ const LeadDetailCard: React.FC<LeadDetailCardProps> = ({ lead, className = "" })
   const education = parseEducation();
   const certifications = parseCertifications();
   const linkedinUrl = normalizeUrl(lead.linkedin_url);
+  console.log('Normalized LinkedIn URL:', linkedinUrl);
 
   return (
     <Card className={`w-full ${className}`}>

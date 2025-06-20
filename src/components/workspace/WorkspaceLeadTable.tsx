@@ -198,6 +198,14 @@ const WorkspaceLeadTable: React.FC = () => {
   );
 
   const renderLinkedIn = (lead: Lead) => {
+    // Debug logging
+    console.log('Lead LinkedIn data:', {
+      leadName: lead.full_name,
+      linkedin_url: lead.linkedin_url,
+      typeof_linkedin_url: typeof lead.linkedin_url,
+      normalized: normalizeUrl(lead.linkedin_url)
+    });
+    
     const linkedinUrl = normalizeUrl(lead.linkedin_url);
     
     if (!linkedinUrl) {
