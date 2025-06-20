@@ -148,40 +148,25 @@ export class AssistantService {
 
           const leads = searchResult.leads || [];
           const message = searchResult.message || '';
-          const existingLeadsExcluded = searchResult.existingLeadsExcluded || 0;
           
           console.log('Search found:', leads.length, 'leads');
-          console.log('Existing leads excluded:', existingLeadsExcluded);
 
           if (leads.length > 0) {
-            // Save leads to database with enhanced duplicate detection
-            const savedLeads = await this.savePDLLeadsWithDuplicateCheck(leads);
-            
-            // Cache the successful search results
-            this.cacheSearchResults(content, savedLeads);
+            // Cache the successful search results - NO SAVING TO DATABASE
+            this.cacheSearchResults(content, leads);
             
             if (this.onLeadsUpdate) {
-              this.onLeadsUpdate(savedLeads);
+              this.onLeadsUpdate(leads);
             }
             
-            toast.success(`${savedLeads.length} nouveaux leads trouvés via People Data Labs`);
+            toast.success(`${leads.length} leads trouvés via People Data Labs (RAW DATA - PAS DE SAUVEGARDE)`);
 
-            let responseMessage = `Excellent ! J'ai trouvé ${savedLeads.length} leads professionnels réels pour "${content}" via People Data Labs.`;
-            
-            if (existingLeadsExcluded > 0) {
-              responseMessage += ` J'ai automatiquement exclu ${existingLeadsExcluded} leads existants pour éviter les doublons.`;
-            }
-            
-            responseMessage += ' Ces contacts ont été enrichis avec des données réelles et ajoutés à votre tableau de bord.';
+            let responseMessage = `Excellent ! J'ai trouvé ${leads.length} leads professionnels BRUTS pour "${content}" via People Data Labs.`;
+            responseMessage += ' Ces contacts sont affichés directement depuis l\'API PDL sans aucun filtrage ni sauvegarde.';
 
             return { message: responseMessage };
           } else {
-            let noResultsMessage = `Je n'ai pas trouvé de nouveaux leads pour "${content}" dans la base de données People Data Labs.`;
-            
-            if (existingLeadsExcluded > 0) {
-              noResultsMessage += ` Cependant, j'ai trouvé ${existingLeadsExcluded} résultats qui correspondent à des leads déjà présents dans votre base de données.`;
-            }
-            
+            let noResultsMessage = `Je n'ai pas trouvé de leads pour "${content}" dans la base de données People Data Labs.`;
             noResultsMessage += ' Essayez d\'utiliser des termes plus spécifiques, différents mots-clés, ou une localisation différente pour obtenir de nouveaux résultats.';
             
             return { message: noResultsMessage };
@@ -233,67 +218,6 @@ export class AssistantService {
       console.error('AssistantService: Error in sendMessage:', error);
       toast.error('Échec de l\'envoi du message. Veuillez réessayer.');
       throw error;
-    }
-  }
-
-  private async savePDLLeadsWithDuplicateCheck(leads: Lead[]): Promise<Lead[]> {
-    try {
-      console.log('AssistantService: Saving PDL leads with enhanced duplicate checking');
-      
-      // Pre-check for existing emails in database
-      const leadEmails = leads.map(lead => lead.email?.toLowerCase()).filter(Boolean);
-      const { data: existingLeads } = await supabase
-        .from('leads')
-        .select('email')
-        .eq('client_id', this.userId)
-        .in('email', leadEmails);
-      
-      const existingEmailsSet = new Set(
-        (existingLeads || []).map(lead => lead.email?.toLowerCase()).filter(Boolean)
-      );
-      
-      console.log('Found existing emails in database:', existingEmailsSet.size);
-      
-      const savedLeads: Lead[] = [];
-      
-      for (const lead of leads) {
-        // Skip if email already exists
-        if (lead.email && existingEmailsSet.has(lead.email.toLowerCase())) {
-          console.log('Skipping duplicate email:', lead.email);
-          continue;
-        }
-        
-        try {
-          const { data: savedLead, error } = await supabase
-            .from('leads')
-            .insert(lead)
-            .select('*')
-            .single();
-
-          if (error) {
-            if (error.code === '23505') {
-              console.log('Lead already exists during insert, skipping:', lead.email);
-              continue;
-            } else {
-              console.error('Error saving individual PDL lead:', error);
-              continue;
-            }
-          }
-
-          if (savedLead) {
-            savedLeads.push(savedLead);
-          }
-        } catch (individualError) {
-          console.error('Error processing individual PDL lead:', individualError);
-          continue;
-        }
-      }
-
-      console.log('AssistantService: Successfully saved PDL leads:', savedLeads.length);
-      return savedLeads;
-    } catch (error) {
-      console.error('AssistantService: Error in savePDLLeadsWithDuplicateCheck:', error);
-      return leads;
     }
   }
 

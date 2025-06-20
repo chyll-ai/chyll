@@ -89,42 +89,7 @@ interface PDLSearchResponse {
   error?: string;
 }
 
-interface ExistingLead {
-  email: string;
-  full_name: string;
-  company: string;
-}
-
 let apiCallCount = 0;
-
-async function getExistingLeads(userId: string): Promise<ExistingLead[]> {
-  try {
-    if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
-      console.error('Missing Supabase configuration');
-      return [];
-    }
-
-    const response = await fetch(`${SUPABASE_URL}/rest/v1/leads?select=email,full_name,company&client_id=eq.${userId}`, {
-      headers: {
-        'apikey': Deno.env.get('SUPABASE_ANON_KEY') || '',
-        'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-        'Content-Type': 'application/json'
-      }
-    });
-    
-    if (response.ok) {
-      const data = await response.json();
-      console.log('Found existing leads:', data.length, 'leads');
-      return data.filter((lead: any) => lead.email || lead.full_name);
-    } else {
-      console.error('Failed to fetch existing leads:', response.status, await response.text());
-    }
-  } catch (error) {
-    console.error('Error fetching existing leads:', error);
-  }
-  
-  return [];
-}
 
 async function parseSearchQueryWithOpenAI(query: string): Promise<any> {
   const searchCriteria: any = {};
@@ -174,10 +139,8 @@ async function searchPeopleWithPDL(searchParams: any, requestedCount: number): P
     conditions.push(`job_title LIKE '%manager%'`);
   }
 
-  // Simple SQL query - no filtering, just basic search
   let sql = `SELECT * FROM person WHERE (${conditions.join(' AND ')})`;
   
-  // In testing mode, request exactly what we need. In production mode, add buffer
   const batchSize = TESTING_MODE ? requestedCount : Math.min(requestedCount + Math.ceil(requestedCount * 0.2), 50);
   
   const searchBody = {
@@ -279,10 +242,6 @@ serve(async (req: Request) => {
     console.log(`Processing search query: "${searchQuery}" for ${count} leads`);
     console.log(`Testing Mode: ${TESTING_MODE}`);
 
-    // Get existing leads for reference (but don't filter based on them)
-    const existingLeads = await getExistingLeads(userId);
-    console.log('Found', existingLeads.length, 'existing leads (for reference only - not filtering)');
-
     // Parse the search query
     const searchCriteria = await parseSearchQueryWithOpenAI(searchQuery);
     
@@ -293,7 +252,7 @@ serve(async (req: Request) => {
 
     console.log('Search criteria:', searchCriteria);
 
-    // Perform PDL search - NO FILTERING
+    // Perform PDL search - NO FILTERING AT ALL
     const pdlResults = await searchPeopleWithPDL(searchCriteria, count);
     
     if (!pdlResults.data?.data) {
@@ -315,11 +274,10 @@ serve(async (req: Request) => {
       );
     }
 
-    // NO FILTERING - Just transform all PDL results to our format
+    // Transform ALL PDL results to our enhanced lead format - NO FILTERING OR CHECKS
     const allPdlResults = pdlResults.data.data;
-    console.log('Raw PDL results (no filtering applied):', allPdlResults.length);
+    console.log('Raw PDL results (NO FILTERING):', allPdlResults.length);
     
-    // Transform ALL PDL results to our enhanced lead format (no filtering)
     const leads = allPdlResults.slice(0, count).map((person: any) => {
       let location = 'Unknown';
       
@@ -360,7 +318,7 @@ serve(async (req: Request) => {
           timestamp: new Date().toISOString(),
           query: searchQuery,
           parsed_criteria: searchCriteria,
-          notes: 'Raw PDL data with NO filtering applied'
+          notes: 'Raw PDL data - NO FILTERING OR CHECKS applied'
         },
         linkedin_profile_data: {
           skills: person.skills || [],
@@ -372,7 +330,7 @@ serve(async (req: Request) => {
       };
     });
 
-    console.log('Transformed leads (no filtering):', leads.length);
+    console.log('Transformed leads (NO FILTERING):', leads.length);
 
     let responseMessage = '';
     
@@ -382,7 +340,7 @@ serve(async (req: Request) => {
       const withEmails = leads.filter(lead => lead.email).length;
       const withSocial = leads.filter(lead => lead.linkedin_url || lead.github_url || lead.twitter_url).length;
       
-      responseMessage = `RAW PDL DATA (NO FILTERING): J'ai trouvé ${leads.length} résultats bruts de People Data Labs pour "${searchQuery}". ${withEmails} ont un email, ${withSocial} ont des profils sociaux. Aucun filtrage appliqué - vous voyez tous les résultats PDL.`;
+      responseMessage = `RAW PDL DATA (NO FILTERING): J'ai trouvé ${leads.length} résultats bruts de People Data Labs pour "${searchQuery}". ${withEmails} ont un email, ${withSocial} ont des profils sociaux. Aucun filtrage ni vérification appliqué.`;
       
       if (TESTING_MODE) {
         responseMessage += ` (Mode Test: ${apiCallCount} appels API utilisés)`;
@@ -399,7 +357,6 @@ serve(async (req: Request) => {
         searchCriteria,
         message: responseMessage,
         usedDemoData: false,
-        existingLeadsCount: existingLeads.length,
         apiCallsUsed: apiCallCount,
         testingMode: TESTING_MODE,
         rawPdlResults: allPdlResults.length,
