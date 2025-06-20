@@ -1,4 +1,3 @@
-
 // @ts-ignore: Deno imports
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 // @ts-ignore: Deno imports
@@ -275,11 +274,11 @@ serve(async (req: Request) => {
       );
     }
 
-    // Transform PDL results to our lead format - NO FILTERING, TAKE ALL RESULTS
+    // Transform PDL results to our lead format - TAKE ALL RESULTS
     const allPdlResults = pdlResults.data.data;
-    console.log('Raw PDL results (NO FILTERING):', allPdlResults.length);
+    console.log('Raw PDL results:', allPdlResults.length);
     
-    // Take the requested count, but don't filter anything
+    // Take the requested count
     const transformedLeads = allPdlResults.slice(0, count).map((person: any) => {
       let location = 'Unknown';
       
@@ -331,27 +330,23 @@ serve(async (req: Request) => {
       };
     });
 
-    console.log('Transformed leads (NO FILTERING):', transformedLeads.length);
+    console.log('Transformed leads:', transformedLeads.length);
 
-    // Save to database - FORCE SAVE ALL LEADS
+    // Simple insert to database - NO CONSTRAINT OR DUPLICATE LOGIC
     if (SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY && transformedLeads.length > 0) {
       const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
       
       console.log('Saving leads to database...');
-      console.log('Lead data being saved:', JSON.stringify(transformedLeads[0], null, 2));
+      console.log('Lead sample being saved:', JSON.stringify(transformedLeads[0], null, 2));
       
-      // Use upsert to handle potential duplicates gracefully
+      // Simple insert - no conflict handling, no duplicate logic
       const { data: savedLeads, error: saveError } = await supabase
         .from('leads')
-        .upsert(transformedLeads, { 
-          onConflict: 'client_id,email',
-          ignoreDuplicates: false 
-        })
+        .insert(transformedLeads)
         .select();
 
       if (saveError) {
         console.error('Error saving leads to database:', saveError);
-        // Still return the leads even if save fails
         console.log('Continuing without database save due to error');
       } else {
         console.log('Successfully saved leads to database:', savedLeads?.length || 0);
