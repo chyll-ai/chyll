@@ -1,3 +1,4 @@
+
 // @ts-ignore: Deno imports
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 // @ts-ignore: Deno imports
@@ -125,25 +126,6 @@ async function getExistingLeads(userId: string): Promise<ExistingLead[]> {
   return [];
 }
 
-function isExistingLead(person: any, existingLeads: ExistingLead[]): boolean {
-  const fullName = person.full_name?.toLowerCase();
-  const company = person.job_company_name?.toLowerCase();
-
-  return existingLeads.some(existing => {
-    if (fullName && company && existing.full_name && existing.company) {
-      const existingNameLower = existing.full_name.toLowerCase();
-      const existingCompanyLower = existing.company.toLowerCase();
-      
-      if (existingNameLower === fullName && existingCompanyLower === company) {
-        console.log('Skipping duplicate name+company:', fullName, company);
-        return true;
-      }
-    }
-    
-    return false;
-  });
-}
-
 async function parseSearchQueryWithOpenAI(query: string): Promise<any> {
   const searchCriteria: any = {};
   const queryLower = query.toLowerCase();
@@ -171,7 +153,7 @@ async function parseSearchQueryWithOpenAI(query: string): Promise<any> {
   return searchCriteria;
 }
 
-async function searchPeopleWithPDL(searchParams: any, requestedCount: number, existingLeads: ExistingLead[]): Promise<PDLSearchResponse> {
+async function searchPeopleWithPDL(searchParams: any, requestedCount: number): Promise<PDLSearchResponse> {
   if (!PDL_API_KEY) {
     throw new Error('PDL_API_KEY is not configured');
   }
@@ -192,11 +174,10 @@ async function searchPeopleWithPDL(searchParams: any, requestedCount: number, ex
     conditions.push(`job_title LIKE '%manager%'`);
   }
 
-  // Build the base SQL query without email exclusions for now
+  // Simple SQL query - no filtering, just basic search
   let sql = `SELECT * FROM person WHERE (${conditions.join(' AND ')})`;
   
-  // Smart batch sizing: In testing mode, request exactly what we need
-  // In production mode, add a small buffer (max 20% extra) to account for filtering
+  // In testing mode, request exactly what we need. In production mode, add buffer
   const batchSize = TESTING_MODE ? requestedCount : Math.min(requestedCount + Math.ceil(requestedCount * 0.2), 50);
   
   const searchBody = {
@@ -298,9 +279,9 @@ serve(async (req: Request) => {
     console.log(`Processing search query: "${searchQuery}" for ${count} leads`);
     console.log(`Testing Mode: ${TESTING_MODE}`);
 
-    // Get existing leads for deduplication
+    // Get existing leads for reference (but don't filter based on them)
     const existingLeads = await getExistingLeads(userId);
-    console.log('Found', existingLeads.length, 'existing leads to exclude');
+    console.log('Found', existingLeads.length, 'existing leads (for reference only - not filtering)');
 
     // Parse the search query
     const searchCriteria = await parseSearchQueryWithOpenAI(searchQuery);
@@ -312,8 +293,8 @@ serve(async (req: Request) => {
 
     console.log('Search criteria:', searchCriteria);
 
-    // Perform PDL search
-    const pdlResults = await searchPeopleWithPDL(searchCriteria, count, existingLeads);
+    // Perform PDL search - NO FILTERING
+    const pdlResults = await searchPeopleWithPDL(searchCriteria, count);
     
     if (!pdlResults.data?.data) {
       return new Response(
@@ -334,38 +315,12 @@ serve(async (req: Request) => {
       );
     }
 
-    // Filter and transform PDL results - do deduplication in code instead of SQL
-    const validPdlLeads = pdlResults.data.data.filter((person: any) => {
-      // Must have at minimum a name and a company
-      if (!person.full_name || !person.job_company_name) {
-        console.log('Filtering out PDL result without basic info:', person);
-        return false;
-      }
-      
-      // Check if not duplicate based on name+company and email
-      if (isExistingLead(person, existingLeads)) {
-        return false;
-      }
-      
-      // Check for email duplicates
-      if (person.emails && person.emails.length > 0) {
-        const personEmail = person.emails[0].address?.toLowerCase();
-        if (personEmail && existingLeads.some(existing => existing.email?.toLowerCase() === personEmail)) {
-          console.log('Skipping duplicate email:', personEmail);
-          return false;
-        }
-      }
-      
-      return true;
-    });
+    // NO FILTERING - Just transform all PDL results to our format
+    const allPdlResults = pdlResults.data.data;
+    console.log('Raw PDL results (no filtering applied):', allPdlResults.length);
     
-    console.log('Valid PDL leads after filtering:', validPdlLeads.length);
-    
-    // Take exactly the requested count
-    const finalLeads = validPdlLeads.slice(0, count);
-    
-    // Transform PDL results to our enhanced lead format
-    const leads = finalLeads.map((person: any) => {
+    // Transform ALL PDL results to our enhanced lead format (no filtering)
+    const leads = allPdlResults.slice(0, count).map((person: any) => {
       let location = 'Unknown';
       
       if (typeof person.location_name === 'string' && person.location_name.trim()) {
@@ -405,7 +360,7 @@ serve(async (req: Request) => {
           timestamp: new Date().toISOString(),
           query: searchQuery,
           parsed_criteria: searchCriteria,
-          notes: 'Enhanced data from People Data Labs with company and social profiles'
+          notes: 'Raw PDL data with NO filtering applied'
         },
         linkedin_profile_data: {
           skills: person.skills || [],
@@ -417,19 +372,17 @@ serve(async (req: Request) => {
       };
     });
 
+    console.log('Transformed leads (no filtering):', leads.length);
+
     let responseMessage = '';
     
     if (leads.length === 0) {
-      responseMessage = `Aucun nouveau lead trouvé pour "${searchQuery}". Essayez d'utiliser des termes différents ou élargissez vos critères de recherche.`;
-      if (existingLeads.length > 0) {
-        responseMessage += ` Note: ${existingLeads.length} leads existants ont été automatiquement exclus pour éviter les doublons.`;
-      }
+      responseMessage = `Aucun résultat trouvé pour "${searchQuery}" dans People Data Labs.`;
     } else {
       const withEmails = leads.filter(lead => lead.email).length;
-      const withoutEmails = leads.length - withEmails;
       const withSocial = leads.filter(lead => lead.linkedin_url || lead.github_url || lead.twitter_url).length;
       
-      responseMessage = `Excellent ! J'ai trouvé exactement ${leads.length} profils enrichis via People Data Labs pour "${searchQuery}". ${withEmails} ont un email, ${withSocial} ont des profils sociaux, avec des données complètes sur l'entreprise et l'expérience.`;
+      responseMessage = `RAW PDL DATA (NO FILTERING): J'ai trouvé ${leads.length} résultats bruts de People Data Labs pour "${searchQuery}". ${withEmails} ont un email, ${withSocial} ont des profils sociaux. Aucun filtrage appliqué - vous voyez tous les résultats PDL.`;
       
       if (TESTING_MODE) {
         responseMessage += ` (Mode Test: ${apiCallCount} appels API utilisés)`;
@@ -446,9 +399,11 @@ serve(async (req: Request) => {
         searchCriteria,
         message: responseMessage,
         usedDemoData: false,
-        existingLeadsExcluded: existingLeads.length,
+        existingLeadsCount: existingLeads.length,
         apiCallsUsed: apiCallCount,
-        testingMode: TESTING_MODE
+        testingMode: TESTING_MODE,
+        rawPdlResults: allPdlResults.length,
+        noFilteringApplied: true
       }),
       { 
         headers: { 
