@@ -1,11 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { 
   Table, 
@@ -20,7 +18,6 @@ import {
   Mail, 
   Zap, 
   Archive,
-  Eye,
   Building2,
   MapPin,
   Phone,
@@ -48,7 +45,6 @@ import LeadActionsMenu from './LeadActionsMenu';
 import SocialLinksDisplay from '@/components/leads/SocialLinksDisplay';
 import CompanyInfoDisplay from '@/components/leads/CompanyInfoDisplay';
 import SkillsTagsDisplay from '@/components/leads/SkillsTagsDisplay';
-import LeadDetailCard from '@/components/leads/LeadDetailCard';
 import ColumnVisibilityControl from './ColumnVisibilityControl';
 import { Lead } from '@/types/assistant';
 import SalesDataEditor from '@/components/leads/SalesDataEditor';
@@ -56,8 +52,6 @@ import SalesDataEditor from '@/components/leads/SalesDataEditor';
 const WorkspaceLeadTable: React.FC = () => {
   const navigate = useNavigate();
   const [selectedLeads, setSelectedLeads] = useState<string[]>([]);
-  const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { leads, filteredLeads, loading, assistantActions } = useAssistantActions();
   const { enrichLead, enriching } = usePDLEnrichment();
   const { sendEmail, sending } = useGmailSender();
@@ -91,12 +85,6 @@ const WorkspaceLeadTable: React.FC = () => {
     } else {
       setSelectedLeads([]);
     }
-  };
-
-  const handleViewLead = (lead: Lead) => {
-    console.log('Opening lead detail for:', lead.full_name);
-    setSelectedLead(lead);
-    setIsDialogOpen(true);
   };
 
   const handleEnrichSelected = async () => {
@@ -296,20 +284,10 @@ const WorkspaceLeadTable: React.FC = () => {
       <LeadStatusSelector lead={lead} onStatusUpdate={handleStatusUpdate} />
     )},
     { key: 'actions', label: 'Actions', render: (lead: Lead) => (
-      <div className="flex gap-1">
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-6 w-6 p-0"
-          onClick={() => handleViewLead(lead)}
-        >
-          <Eye className="h-3 w-3" />
-        </Button>
-        <LeadActionsMenu 
-          lead={lead} 
-          onStatusUpdate={handleStatusUpdate}
-        />
-      </div>
+      <LeadActionsMenu 
+        lead={lead} 
+        onStatusUpdate={handleStatusUpdate}
+      />
     )}
   ];
 
@@ -425,13 +403,6 @@ const WorkspaceLeadTable: React.FC = () => {
           </ScrollArea>
         </CardContent>
       </Card>
-
-      {/* Lead Detail Dialog */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
-          {selectedLead && <LeadDetailCard lead={selectedLead} />}
-        </DialogContent>
-      </Dialog>
     </>
   );
 };
