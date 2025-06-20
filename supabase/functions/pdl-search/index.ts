@@ -13,6 +13,7 @@ const PDL_API_KEY = Deno.env.get('PDL_API_KEY');
 const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+const TESTING_MODE = Deno.env.get('TESTING_MODE') === 'true';
 const PDL_BASE_URL = 'https://api.peopledatalabs.com/v5';
 
 const corsHeaders = {
@@ -93,6 +94,8 @@ interface ExistingLead {
   company: string;
 }
 
+let apiCallCount = 0;
+
 async function getExistingLeads(userId: string): Promise<ExistingLead[]> {
   try {
     if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
@@ -168,7 +171,7 @@ async function parseSearchQueryWithOpenAI(query: string): Promise<any> {
   return searchCriteria;
 }
 
-async function searchPeopleWithPDL(searchParams: any, count: number = 10): Promise<PDLSearchResponse> {
+async function searchPeopleWithPDL(searchParams: any, requestedCount: number, existingLeads: ExistingLead[]): Promise<PDLSearchResponse> {
   if (!PDL_API_KEY) {
     throw new Error('PDL_API_KEY is not configured');
   }
@@ -189,15 +192,32 @@ async function searchPeopleWithPDL(searchParams: any, count: number = 10): Promi
     conditions.push(`job_title LIKE '%manager%'`);
   }
 
+  // Add filters to exclude existing leads in the SQL query
+  if (existingLeads.length > 0) {
+    const emailExclusions = existingLeads
+      .filter(lead => lead.email)
+      .map(lead => `'${lead.email.replace(/'/g, "''")}'`)
+      .join(', ');
+    
+    if (emailExclusions) {
+      conditions.push(`emails NOT LIKE ANY(ARRAY[${emailExclusions}])`);
+    }
+  }
+
   const sql = `SELECT * FROM person WHERE (${conditions.join(' AND ')})`;
+  
+  // Smart batch sizing: In testing mode, request exactly what we need
+  // In production mode, add a small buffer (max 20% extra) to account for filtering
+  const batchSize = TESTING_MODE ? requestedCount : Math.min(requestedCount + Math.ceil(requestedCount * 0.2), 50);
   
   const searchBody = {
     sql: sql,
-    size: Math.min(count * 2, 50),
+    size: batchSize,
     pretty: true
   };
 
-  console.log('PDL Search request:', JSON.stringify(searchBody, null, 2));
+  console.log(`PDL Search request (API Call #${++apiCallCount}):`, JSON.stringify(searchBody, null, 2));
+  console.log(`Testing Mode: ${TESTING_MODE}, Requested: ${requestedCount}, Batch Size: ${batchSize}`);
 
   try {
     const response = await fetch(`${PDL_BASE_URL}/person/search`, {
@@ -286,7 +306,8 @@ serve(async (req: Request) => {
       throw new Error('PDL API key is not configured. Please configure your People Data Labs API key to use real data search.');
     }
 
-    console.log(`Processing search query: "${searchQuery}"`);
+    console.log(`Processing search query: "${searchQuery}" for ${count} leads`);
+    console.log(`Testing Mode: ${TESTING_MODE}`);
 
     // Get existing leads for deduplication
     const existingLeads = await getExistingLeads(userId);
@@ -302,8 +323,8 @@ serve(async (req: Request) => {
 
     console.log('Search criteria:', searchCriteria);
 
-    // Perform PDL search
-    const pdlResults = await searchPeopleWithPDL(searchCriteria, count);
+    // Perform smart PDL search with exact count targeting
+    const pdlResults = await searchPeopleWithPDL(searchCriteria, count, existingLeads);
     
     if (!pdlResults.data?.data) {
       return new Response(
@@ -311,7 +332,8 @@ serve(async (req: Request) => {
           success: false,
           error: 'No data returned from PDL API',
           leads: [],
-          message: 'Aucun résultat trouvé pour cette recherche.'
+          message: 'Aucun résultat trouvé pour cette recherche.',
+          apiCallsUsed: apiCallCount
         }),
         { 
           status: 200, 
@@ -323,7 +345,7 @@ serve(async (req: Request) => {
       );
     }
 
-    // Filter and transform PDL results with enhanced data
+    // Filter and transform PDL results
     const validPdlLeads = pdlResults.data.data.filter((person: any) => {
       // Must have at minimum a name and a company
       if (!person.full_name || !person.job_company_name) {
@@ -339,10 +361,13 @@ serve(async (req: Request) => {
       return true;
     });
     
-    console.log('Valid PDL leads:', validPdlLeads.length);
+    console.log('Valid PDL leads after filtering:', validPdlLeads.length);
+    
+    // Take exactly the requested count
+    const finalLeads = validPdlLeads.slice(0, count);
     
     // Transform PDL results to our enhanced lead format
-    const leads = validPdlLeads.slice(0, count).map((person: any) => {
+    const leads = finalLeads.map((person: any) => {
       let location = 'Unknown';
       
       if (typeof person.location_name === 'string' && person.location_name.trim()) {
@@ -405,7 +430,12 @@ serve(async (req: Request) => {
       const withEmails = leads.filter(lead => lead.email).length;
       const withoutEmails = leads.length - withEmails;
       const withSocial = leads.filter(lead => lead.linkedin_url || lead.github_url || lead.twitter_url).length;
-      responseMessage = `Excellent ! J'ai trouvé ${leads.length} profils enrichis via People Data Labs pour "${searchQuery}". ${withEmails} ont un email, ${withSocial} ont des profils sociaux, avec des données complètes sur l'entreprise et l'expérience.`;
+      
+      responseMessage = `Excellent ! J'ai trouvé exactement ${leads.length} profils enrichis via People Data Labs pour "${searchQuery}". ${withEmails} ont un email, ${withSocial} ont des profils sociaux, avec des données complètes sur l'entreprise et l'expérience.`;
+      
+      if (TESTING_MODE) {
+        responseMessage += ` (Mode Test: ${apiCallCount} appels API utilisés)`;
+      }
     }
 
     return new Response(
@@ -413,11 +443,14 @@ serve(async (req: Request) => {
         success: true,
         leads,
         total: leads.length,
+        requested: count,
         query: searchQuery,
         searchCriteria,
         message: responseMessage,
         usedDemoData: false,
-        existingLeadsExcluded: existingLeads.length
+        existingLeadsExcluded: existingLeads.length,
+        apiCallsUsed: apiCallCount,
+        testingMode: TESTING_MODE
       }),
       { 
         headers: { 
@@ -436,6 +469,7 @@ serve(async (req: Request) => {
         success: false,
         error: errorMessage,
         leads: [],
+        apiCallsUsed: apiCallCount,
         message: errorMessage.includes('PDL API key') 
           ? 'Clé API People Data Labs manquante. Veuillez configurer votre clé API pour utiliser la recherche de données réelles.'
           : 'Erreur lors de la recherche PDL. Veuillez réessayer ou vérifier votre configuration.'
