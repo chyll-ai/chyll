@@ -18,11 +18,18 @@ export function normalizeUrl(url: string | undefined): string | null {
   
   // Handle LinkedIn URLs specifically
   if (cleanUrl.includes('linkedin.com')) {
+    // Remove leading slashes or incomplete protocols
+    cleanUrl = cleanUrl.replace(/^\/+/, '');
+    cleanUrl = cleanUrl.replace(/^https?:\/\/\/+/, '');
+    
+    // Add protocol if missing
     if (!cleanUrl.startsWith('http')) {
       cleanUrl = 'https://' + cleanUrl;
     }
-    // Ensure LinkedIn URLs are properly formatted
-    cleanUrl = cleanUrl.replace(/^https?:\/\/(?:www\.)?/, 'https://www.');
+    // Ensure LinkedIn URLs are properly formatted with www
+    cleanUrl = cleanUrl.replace(/^https?:\/\/(?!www\.)/, 'https://www.');
+    
+    // Ensure it contains linkedin.com
     if (!cleanUrl.includes('linkedin.com')) {
       return null;
     }
