@@ -3,7 +3,6 @@ import React from 'react';
 import { Building2, Users, Award, ExternalLink } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { normalizeUrl } from '@/utils/urlUtils';
 
 interface CompanyInfoDisplayProps {
   company: string;
@@ -22,10 +21,29 @@ const CompanyInfoDisplay: React.FC<CompanyInfoDisplayProps> = ({
   job_seniority,
   className = ""
 }) => {
-  const normalizedWebsite = normalizeUrl(job_company_website);
+  // Simple URL normalization function
+  const ensureProtocol = (url: string | undefined): string | null => {
+    if (!url || typeof url !== 'string') {
+      return null;
+    }
+    
+    const cleanUrl = url.trim();
+    if (!cleanUrl) return null;
+    
+    // Add protocol if missing
+    if (!cleanUrl.startsWith('http')) {
+      return `https://${cleanUrl}`;
+    }
+    
+    return cleanUrl;
+  };
+
+  const normalizedWebsite = ensureProtocol(job_company_website);
 
   const getSizeColor = (size?: string) => {
-    switch (size) {
+    if (!size || typeof size !== 'string') return 'bg-gray-100 text-gray-800';
+    
+    switch (size.toLowerCase()) {
       case 'startup': return 'bg-purple-100 text-purple-800';
       case 'small': return 'bg-blue-100 text-blue-800';
       case 'medium': return 'bg-green-100 text-green-800';
@@ -36,7 +54,9 @@ const CompanyInfoDisplay: React.FC<CompanyInfoDisplayProps> = ({
   };
 
   const getSeniorityColor = (seniority?: string) => {
-    switch (seniority) {
+    if (!seniority || typeof seniority !== 'string') return 'bg-gray-100 text-gray-800';
+    
+    switch (seniority.toLowerCase()) {
       case 'junior': return 'bg-emerald-100 text-emerald-800';
       case 'mid': return 'bg-blue-100 text-blue-800';
       case 'senior': return 'bg-orange-100 text-orange-800';
@@ -45,11 +65,17 @@ const CompanyInfoDisplay: React.FC<CompanyInfoDisplayProps> = ({
     }
   };
 
+  // Ensure all values are strings and handle potential objects
+  const safeCompany = typeof company === 'string' ? company : String(company || 'N/A');
+  const safeIndustry = typeof job_company_industry === 'string' ? job_company_industry : '';
+  const safeSize = typeof job_company_size === 'string' ? job_company_size : '';
+  const safeSeniority = typeof job_seniority === 'string' ? job_seniority : '';
+
   return (
     <div className={`space-y-2 ${className}`}>
       <div className="flex items-center gap-2">
         <Building2 className="h-4 w-4 text-muted-foreground" />
-        <span className="font-medium text-sm">{company}</span>
+        <span className="font-medium text-sm">{safeCompany}</span>
         {normalizedWebsite && (
           <Button
             variant="ghost"
@@ -63,23 +89,23 @@ const CompanyInfoDisplay: React.FC<CompanyInfoDisplayProps> = ({
       </div>
       
       <div className="flex flex-wrap gap-1">
-        {job_company_industry && (
+        {safeIndustry && (
           <Badge variant="outline" className="text-xs">
-            {job_company_industry}
+            {safeIndustry}
           </Badge>
         )}
         
-        {job_company_size && (
-          <Badge className={`text-xs ${getSizeColor(job_company_size)}`}>
+        {safeSize && (
+          <Badge className={`text-xs ${getSizeColor(safeSize)}`}>
             <Users className="h-3 w-3 mr-1" />
-            {job_company_size}
+            {safeSize}
           </Badge>
         )}
         
-        {job_seniority && (
-          <Badge className={`text-xs ${getSeniorityColor(job_seniority)}`}>
+        {safeSeniority && (
+          <Badge className={`text-xs ${getSeniorityColor(safeSeniority)}`}>
             <Award className="h-3 w-3 mr-1" />
-            {job_seniority}
+            {safeSeniority}
           </Badge>
         )}
       </div>

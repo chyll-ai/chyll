@@ -120,7 +120,7 @@ const WorkspaceLeadTable: React.FC = () => {
             return item.name || item.school || item.title || Object.values(item).find(v => typeof v === 'string') || 'Unknown';
           }
           return String(item);
-        });
+        }).filter(item => typeof item === 'string'); // Ensure all items are strings
       }
       return [];
     } catch {
@@ -167,7 +167,7 @@ const WorkspaceLeadTable: React.FC = () => {
         {lead.job_title || 'N/A'}
       </div>
       <CompanyInfoDisplay
-        company={lead.company}
+        company={lead.company || 'N/A'}
         job_company_industry={lead.job_company_industry}
         job_company_size={lead.job_company_size}
         job_company_website={lead.job_company_website}
