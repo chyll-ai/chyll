@@ -16,6 +16,7 @@ const Workspace: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleLeadsUpdate = () => {
+    console.log('Workspace: Triggering leads table refresh...');
     setRefreshKey(prev => prev + 1);
   };
 

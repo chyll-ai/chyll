@@ -16,7 +16,7 @@ export class AssistantService {
   private messages: Message[] = [];
   private userId: string;
   private apiClient: APIClient;
-  private onLeadsUpdate?: (leads: Lead[]) => void;
+  private onLeadsUpdate?: () => void;
   private recentSearches: Map<string, { timestamp: number; results: Lead[] }> = new Map();
 
   constructor(userId: string) {
@@ -30,8 +30,9 @@ export class AssistantService {
     this.messages = messages;
   }
 
-  setLeadsUpdateCallback(callback: (leads: Lead[]) => void) {
+  setLeadsUpdateCallback(callback: () => void) {
     this.onLeadsUpdate = callback;
+    console.log('AssistantService: Leads update callback set');
   }
 
   private isSearchQuery(content: string): boolean {
@@ -113,9 +114,13 @@ export class AssistantService {
           console.log('Search found:', leads.length, 'leads');
 
           if (leads.length > 0) {
-            // Trigger leads refresh in the UI
+            // Trigger leads refresh in the UI - this will call loadLeads()
+            console.log('AssistantService: Triggering leads update callback...');
             if (this.onLeadsUpdate) {
-              this.onLeadsUpdate(leads);
+              await this.onLeadsUpdate();
+              console.log('AssistantService: Leads update callback executed');
+            } else {
+              console.warn('AssistantService: No leads update callback set');
             }
             
             toast.success(`${leads.length} leads trouvés et sauvegardés`);

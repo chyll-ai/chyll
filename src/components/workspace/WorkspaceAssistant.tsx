@@ -40,12 +40,17 @@ const WorkspaceAssistant: React.FC<WorkspaceAssistantProps> = ({ onLeadsUpdate }
   useEffect(() => {
     if (user && !assistantService) {
       const service = new AssistantService(user.id);
-      service.setLeadsUpdateCallback(() => {
+      // Set up the leads update callback to properly refresh data
+      service.setLeadsUpdateCallback(async () => {
+        console.log('Leads update callback triggered - refreshing data...');
+        // Trigger a full reload of leads from the database
+        await assistantActions.loadLeads();
+        // Also trigger the parent component's update callback
         onLeadsUpdate?.();
       });
       setAssistantService(service);
     }
-  }, [user, assistantService, onLeadsUpdate]);
+  }, [user, assistantService, onLeadsUpdate, assistantActions]);
 
   // Enhanced search detection
   const isSearchQuery = (content: string): boolean => {
@@ -92,6 +97,7 @@ const WorkspaceAssistant: React.FC<WorkspaceAssistantProps> = ({ onLeadsUpdate }
           try {
             const result = await assistantService.sendMessage(userMessage);
             response = result.message;
+            // The callback will be triggered automatically from AssistantService
           } catch (error) {
             console.error('Search failed:', error);
             response = "Désolé, j'ai rencontré une erreur lors de la recherche de leads. Veuillez vérifier votre configuration API.";
@@ -147,7 +153,6 @@ const WorkspaceAssistant: React.FC<WorkspaceAssistantProps> = ({ onLeadsUpdate }
       };
 
       setMessages(prev => [...prev, assistantMessage]);
-      onLeadsUpdate?.();
       
     } catch (error: any) {
       console.error('Error processing assistant action:', error);
