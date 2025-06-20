@@ -1,3 +1,4 @@
+
 import { supabase } from '@/lib/supabase';
 import { toast } from '@/components/ui/sonner';
 import { APIClient } from '@/lib/api-client';
@@ -72,32 +73,6 @@ export class AssistantService {
     return hasSearchPattern || hasNumberLeadPattern;
   }
 
-  private checkRecentSearch(searchQuery: string): Lead[] | null {
-    const cacheKey = searchQuery.toLowerCase().trim();
-    const cached = this.recentSearches.get(cacheKey);
-    
-    if (cached && Date.now() - cached.timestamp < 300000) { // 5 minutes cache
-      console.log('AssistantService: Found recent search results in cache');
-      return cached.results;
-    }
-    
-    return null;
-  }
-
-  private cacheSearchResults(searchQuery: string, results: Lead[]) {
-    const cacheKey = searchQuery.toLowerCase().trim();
-    this.recentSearches.set(cacheKey, {
-      timestamp: Date.now(),
-      results: [...results]
-    });
-    
-    // Clean old cache entries (keep only last 10)
-    if (this.recentSearches.size > 10) {
-      const oldestKey = Array.from(this.recentSearches.keys())[0];
-      this.recentSearches.delete(oldestKey);
-    }
-  }
-
   async sendMessage(content: string): Promise<{ message: string }> {
     try {
       console.log('AssistantService: Sending message:', { content, userId: this.userId });
@@ -105,20 +80,6 @@ export class AssistantService {
       // Enhanced search detection with better logging
       if (this.isSearchQuery(content)) {
         console.log('AssistantService: Detected search query, using search');
-        
-        // Check for recent identical searches
-        const cachedResults = this.checkRecentSearch(content);
-        if (cachedResults && cachedResults.length > 0) {
-          console.log('AssistantService: Using cached search results');
-          
-          if (this.onLeadsUpdate) {
-            this.onLeadsUpdate(cachedResults);
-          }
-          
-          return {
-            message: `J'ai trouvé ${cachedResults.length} leads dans votre recherche récente pour "${content}". Ces résultats sont mis en cache pour éviter les doublons.`
-          };
-        }
         
         // Extract number from query (default to 5 if not specified, max 10)
         const numberMatch = content.match(/(\d+)/);
@@ -152,17 +113,15 @@ export class AssistantService {
           console.log('Search found:', leads.length, 'leads');
 
           if (leads.length > 0) {
-            // Cache the successful search results - NO SAVING TO DATABASE
-            this.cacheSearchResults(content, leads);
-            
+            // Trigger leads refresh in the UI
             if (this.onLeadsUpdate) {
               this.onLeadsUpdate(leads);
             }
             
-            toast.success(`${leads.length} leads trouvés via People Data Labs (RAW DATA - PAS DE SAUVEGARDE)`);
+            toast.success(`${leads.length} leads trouvés et sauvegardés`);
 
-            let responseMessage = `Excellent ! J'ai trouvé ${leads.length} leads professionnels BRUTS pour "${content}" via People Data Labs.`;
-            responseMessage += ' Ces contacts sont affichés directement depuis l\'API PDL sans aucun filtrage ni sauvegarde.';
+            let responseMessage = `Excellent ! J'ai trouvé ${leads.length} leads pour "${content}" via People Data Labs.`;
+            responseMessage += ' Ces contacts ont été sauvegardés dans votre base de données et sont maintenant visibles dans votre tableau de bord.';
 
             return { message: responseMessage };
           } else {

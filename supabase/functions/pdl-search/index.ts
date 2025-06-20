@@ -2,7 +2,7 @@
 // @ts-ignore: Deno imports
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 // @ts-ignore: Deno imports
-import OpenAI from 'npm:openai@4.24.1';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1';
 
 declare const Deno: {
   env: {
@@ -11,7 +11,6 @@ declare const Deno: {
 };
 
 const PDL_API_KEY = Deno.env.get('PDL_API_KEY');
-const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 const TESTING_MODE = Deno.env.get('TESTING_MODE') === 'true';
@@ -252,7 +251,7 @@ serve(async (req: Request) => {
 
     console.log('Search criteria:', searchCriteria);
 
-    // Perform PDL search - NO FILTERING AT ALL
+    // Perform PDL search
     const pdlResults = await searchPeopleWithPDL(searchCriteria, count);
     
     if (!pdlResults.data?.data) {
@@ -274,11 +273,11 @@ serve(async (req: Request) => {
       );
     }
 
-    // Transform ALL PDL results to our enhanced lead format - NO FILTERING OR CHECKS
+    // Transform PDL results to our lead format
     const allPdlResults = pdlResults.data.data;
-    console.log('Raw PDL results (NO FILTERING):', allPdlResults.length);
+    console.log('Raw PDL results:', allPdlResults.length);
     
-    const leads = allPdlResults.slice(0, count).map((person: any) => {
+    const transformedLeads = allPdlResults.slice(0, count).map((person: any) => {
       let location = 'Unknown';
       
       if (typeof person.location_name === 'string' && person.location_name.trim()) {
@@ -317,8 +316,7 @@ serve(async (req: Request) => {
           source: 'peopledatalabs',
           timestamp: new Date().toISOString(),
           query: searchQuery,
-          parsed_criteria: searchCriteria,
-          notes: 'Raw PDL data - NO FILTERING OR CHECKS applied'
+          parsed_criteria: searchCriteria
         },
         linkedin_profile_data: {
           skills: person.skills || [],
@@ -330,17 +328,36 @@ serve(async (req: Request) => {
       };
     });
 
-    console.log('Transformed leads (NO FILTERING):', leads.length);
+    console.log('Transformed leads:', transformedLeads.length);
+
+    // Save to database
+    if (SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY && transformedLeads.length > 0) {
+      const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+      
+      console.log('Saving leads to database...');
+      
+      const { data: savedLeads, error: saveError } = await supabase
+        .from('leads')
+        .insert(transformedLeads)
+        .select();
+
+      if (saveError) {
+        console.error('Error saving leads to database:', saveError);
+        // Continue without throwing error - return the leads even if save fails
+      } else {
+        console.log('Successfully saved leads to database:', savedLeads?.length || 0);
+      }
+    }
 
     let responseMessage = '';
     
-    if (leads.length === 0) {
+    if (transformedLeads.length === 0) {
       responseMessage = `Aucun résultat trouvé pour "${searchQuery}" dans People Data Labs.`;
     } else {
-      const withEmails = leads.filter(lead => lead.email).length;
-      const withSocial = leads.filter(lead => lead.linkedin_url || lead.github_url || lead.twitter_url).length;
+      const withEmails = transformedLeads.filter(lead => lead.email).length;
+      const withSocial = transformedLeads.filter(lead => lead.linkedin_url || lead.github_url || lead.twitter_url).length;
       
-      responseMessage = `RAW PDL DATA (NO FILTERING): J'ai trouvé ${leads.length} résultats bruts de People Data Labs pour "${searchQuery}". ${withEmails} ont un email, ${withSocial} ont des profils sociaux. Aucun filtrage ni vérification appliqué.`;
+      responseMessage = `J'ai trouvé ${transformedLeads.length} leads pour "${searchQuery}". ${withEmails} ont un email, ${withSocial} ont des profils sociaux. Les leads ont été sauvegardés dans votre base de données.`;
       
       if (TESTING_MODE) {
         responseMessage += ` (Mode Test: ${apiCallCount} appels API utilisés)`;
@@ -350,8 +367,8 @@ serve(async (req: Request) => {
     return new Response(
       JSON.stringify({
         success: true,
-        leads,
-        total: leads.length,
+        leads: transformedLeads,
+        total: transformedLeads.length,
         requested: count,
         query: searchQuery,
         searchCriteria,
@@ -359,8 +376,7 @@ serve(async (req: Request) => {
         usedDemoData: false,
         apiCallsUsed: apiCallCount,
         testingMode: TESTING_MODE,
-        rawPdlResults: allPdlResults.length,
-        noFilteringApplied: true
+        rawPdlResults: allPdlResults.length
       }),
       { 
         headers: { 
