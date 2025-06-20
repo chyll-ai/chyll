@@ -55,6 +55,7 @@ const WorkspaceLeadTable: React.FC = () => {
   const navigate = useNavigate();
   const [selectedLeads, setSelectedLeads] = useState<string[]>([]);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { leads, filteredLeads, loading, assistantActions } = useAssistantActions();
   const { enrichLead, enriching } = usePDLEnrichment();
   const { sendEmail, sending } = useGmailSender();
@@ -88,6 +89,12 @@ const WorkspaceLeadTable: React.FC = () => {
     } else {
       setSelectedLeads([]);
     }
+  };
+
+  const handleViewLead = (lead: Lead) => {
+    console.log('Opening lead detail for:', lead.full_name);
+    setSelectedLead(lead);
+    setIsDialogOpen(true);
   };
 
   const handleEnrichSelected = async () => {
@@ -263,21 +270,14 @@ const WorkspaceLeadTable: React.FC = () => {
     )},
     { key: 'actions', label: 'Actions', render: (lead: Lead) => (
       <div className="flex gap-1">
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-6 w-6 p-0"
-              onClick={() => setSelectedLead(lead)}
-            >
-              <Eye className="h-3 w-3" />
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
-            {selectedLead && <LeadDetailCard lead={selectedLead} />}
-          </DialogContent>
-        </Dialog>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-6 w-6 p-0"
+          onClick={() => handleViewLead(lead)}
+        >
+          <Eye className="h-3 w-3" />
+        </Button>
         <LeadActionsMenu 
           lead={lead} 
           onStatusUpdate={handleStatusUpdate}
@@ -287,116 +287,125 @@ const WorkspaceLeadTable: React.FC = () => {
   ];
 
   return (
-    <Card className="w-full h-full flex flex-col">
-      <CardHeader className="pb-3 flex-shrink-0">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-          <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
-            <Users className="h-4 w-4 text-primary" />
-            <span>Leads ({displayLeads.length})</span>
-          </CardTitle>
-          
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
-            {selectedLeads.length > 0 && (
-              <div className="flex flex-wrap gap-2">
-                <Button 
-                  size="sm" 
-                  variant="outline"
-                  onClick={handleEnrichSelected}
-                  disabled={enriching}
-                  className="text-xs px-2 sm:px-3 h-8"
-                >
-                  <Zap className="h-3 w-3 sm:mr-2" />
-                  <span className="hidden sm:inline">Enrichir ({selectedLeads.length})</span>
-                  <span className="sm:hidden">({selectedLeads.length})</span>
-                </Button>
-                <Button 
-                  size="sm" 
-                  variant="outline"
-                  onClick={handleSendEmailsSelected}
-                  disabled={sending}
-                  className="text-xs px-2 sm:px-3 h-8"
-                >
-                  <Mail className="h-3 w-3 sm:mr-2" />
-                  <span className="hidden sm:inline">Email</span>
-                </Button>
-                <Button 
-                  size="sm" 
-                  variant="outline"
-                  onClick={handleArchiveSelected}
-                  className="text-xs px-2 sm:px-3 h-8"
-                >
-                  <Archive className="h-3 w-3 sm:mr-2" />
-                  <span className="hidden sm:inline">Archive</span>
-                </Button>
-              </div>
-            )}
+    <>
+      <Card className="w-full h-full flex flex-col">
+        <CardHeader className="pb-3 flex-shrink-0">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+              <Users className="h-4 w-4 text-primary" />
+              <span>Leads ({displayLeads.length})</span>
+            </CardTitle>
+            
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
+              {selectedLeads.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  <Button 
+                    size="sm" 
+                    variant="outline"
+                    onClick={handleEnrichSelected}
+                    disabled={enriching}
+                    className="text-xs px-2 sm:px-3 h-8"
+                  >
+                    <Zap className="h-3 w-3 sm:mr-2" />
+                    <span className="hidden sm:inline">Enrichir ({selectedLeads.length})</span>
+                    <span className="sm:hidden">({selectedLeads.length})</span>
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    variant="outline"
+                    onClick={handleSendEmailsSelected}
+                    disabled={sending}
+                    className="text-xs px-2 sm:px-3 h-8"
+                  >
+                    <Mail className="h-3 w-3 sm:mr-2" />
+                    <span className="hidden sm:inline">Email</span>
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    variant="outline"
+                    onClick={handleArchiveSelected}
+                    className="text-xs px-2 sm:px-3 h-8"
+                  >
+                    <Archive className="h-3 w-3 sm:mr-2" />
+                    <span className="hidden sm:inline">Archive</span>
+                  </Button>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      </CardHeader>
-      
-      <CardContent className="p-0 flex-1 min-h-0">
-        <ScrollArea className="h-full w-full">
-          <div className="min-w-[1400px]">
-            <Table>
-              <TableHeader className="sticky top-0 bg-background/95 backdrop-blur-sm border-b">
-                <TableRow>
-                  <TableHead className="w-12 pl-4">
-                    <Checkbox
-                      checked={selectedLeads.length === displayLeads.length && displayLeads.length > 0}
-                      onCheckedChange={handleSelectAll}
-                    />
-                  </TableHead>
-                  {tableColumns.map(column => (
-                    <TableHead key={column.key} className="min-w-[180px] text-xs font-medium">
-                      {column.label}
+        </CardHeader>
+        
+        <CardContent className="p-0 flex-1 min-h-0">
+          <ScrollArea className="h-full w-full">
+            <div className="min-w-[1400px]">
+              <Table>
+                <TableHeader className="sticky top-0 bg-background/95 backdrop-blur-sm border-b">
+                  <TableRow>
+                    <TableHead className="w-12 pl-4">
+                      <Checkbox
+                        checked={selectedLeads.length === displayLeads.length && displayLeads.length > 0}
+                        onCheckedChange={handleSelectAll}
+                      />
                     </TableHead>
-                  ))}
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {loading ? (
-                  <TableRow>
-                    <TableCell colSpan={tableColumns.length + 1} className="text-center py-12">
-                      <div className="flex flex-col items-center gap-2">
-                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-                        <span className="text-sm text-muted-foreground">Chargement des leads...</span>
-                      </div>
-                    </TableCell>
+                    {tableColumns.map(column => (
+                      <TableHead key={column.key} className="min-w-[180px] text-xs font-medium">
+                        {column.label}
+                      </TableHead>
+                    ))}
                   </TableRow>
-                ) : displayLeads.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={tableColumns.length + 1} className="text-center py-12">
-                      <div className="flex flex-col items-center gap-2">
-                        <Users className="h-8 w-8 text-muted-foreground/50" />
-                        <span className="text-sm text-muted-foreground">Aucun lead trouvé</span>
-                        <p className="text-xs text-muted-foreground/70">Commencez par demander à l'assistant de rechercher des prospects</p>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  displayLeads.map((lead) => (
-                    <TableRow key={lead.id} className="hover:bg-muted/30 transition-colors">
-                      <TableCell className="pl-4">
-                        <Checkbox
-                          checked={selectedLeads.includes(lead.id)}
-                          onCheckedChange={(checked) => handleSelectLead(lead.id, checked as boolean)}
-                        />
+                </TableHeader>
+                <TableBody>
+                  {loading ? (
+                    <TableRow>
+                      <TableCell colSpan={tableColumns.length + 1} className="text-center py-12">
+                        <div className="flex flex-col items-center gap-2">
+                          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                          <span className="text-sm text-muted-foreground">Chargement des leads...</span>
+                        </div>
                       </TableCell>
-                      
-                      {tableColumns.map(column => (
-                        <TableCell key={column.key} className="max-w-[200px]">
-                          {column.render(lead)}
-                        </TableCell>
-                      ))}
                     </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </div>
-        </ScrollArea>
-      </CardContent>
-    </Card>
+                  ) : displayLeads.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={tableColumns.length + 1} className="text-center py-12">
+                        <div className="flex flex-col items-center gap-2">
+                          <Users className="h-8 w-8 text-muted-foreground/50" />
+                          <span className="text-sm text-muted-foreground">Aucun lead trouvé</span>
+                          <p className="text-xs text-muted-foreground/70">Commencez par demander à l'assistant de rechercher des prospects</p>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    displayLeads.map((lead) => (
+                      <TableRow key={lead.id} className="hover:bg-muted/30 transition-colors">
+                        <TableCell className="pl-4">
+                          <Checkbox
+                            checked={selectedLeads.includes(lead.id)}
+                            onCheckedChange={(checked) => handleSelectLead(lead.id, checked as boolean)}
+                          />
+                        </TableCell>
+                        
+                        {tableColumns.map(column => (
+                          <TableCell key={column.key} className="max-w-[200px]">
+                            {column.render(lead)}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+          </ScrollArea>
+        </CardContent>
+      </Card>
+
+      {/* Lead Detail Dialog */}
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+          {selectedLead && <LeadDetailCard lead={selectedLead} />}
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
 
