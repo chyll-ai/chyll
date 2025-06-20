@@ -3,11 +3,12 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { User, Mail, Phone, MapPin, Calendar, Briefcase, GraduationCap, Award } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { User, Mail, Phone, MapPin, Calendar, Briefcase, GraduationCap, Award, Linkedin, ExternalLink } from 'lucide-react';
 import { Lead } from '@/types/assistant';
 import SocialLinksDisplay from './SocialLinksDisplay';
 import CompanyInfoDisplay from './CompanyInfoDisplay';
-import SkillsTagsDisplay from './SkillsTagsDisplay';
+import { normalizeUrl } from '@/utils/urlUtils';
 
 interface LeadDetailCardProps {
   lead: Lead;
@@ -37,6 +38,7 @@ const LeadDetailCard: React.FC<LeadDetailCardProps> = ({ lead, className = "" })
 
   const education = parseEducation();
   const certifications = parseCertifications();
+  const linkedinUrl = normalizeUrl(lead.linkedin_url);
 
   return (
     <Card className={`w-full ${className}`}>
@@ -101,6 +103,21 @@ const LeadDetailCard: React.FC<LeadDetailCardProps> = ({ lead, className = "" })
               </div>
             )}
           </div>
+          
+          {/* LinkedIn URL Section */}
+          {linkedinUrl && (
+            <div className="mt-4">
+              <Button
+                variant="outline"
+                className="flex items-center gap-2 text-blue-600 border-blue-200 hover:bg-blue-50"
+                onClick={() => window.open(linkedinUrl, '_blank', 'noopener,noreferrer')}
+              >
+                <Linkedin className="h-4 w-4" />
+                <span>View LinkedIn Profile</span>
+                <ExternalLink className="h-3 w-3" />
+              </Button>
+            </div>
+          )}
         </div>
 
         <Separator />
@@ -141,31 +158,6 @@ const LeadDetailCard: React.FC<LeadDetailCardProps> = ({ lead, className = "" })
             <div className="space-y-2">
               <h4 className="text-sm font-semibold text-foreground">Professional Summary</h4>
               <p className="text-sm text-muted-foreground leading-relaxed">{lead.summary}</p>
-            </div>
-          </>
-        )}
-
-        {/* Skills & Technologies */}
-        {(lead.skills || lead.languages || lead.programming_languages) && (
-          <>
-            <Separator />
-            <div className="space-y-3">
-              <h4 className="text-sm font-semibold text-foreground">Skills & Technologies</h4>
-              <div className="space-y-2">
-                <SkillsTagsDisplay skills={lead.skills} languages={lead.languages} />
-                {lead.programming_languages && (
-                  <div className="text-sm">
-                    <span className="font-medium">Programming: </span>
-                    <span className="text-muted-foreground">{lead.programming_languages}</span>
-                  </div>
-                )}
-                {lead.technology_skills && (
-                  <div className="text-sm">
-                    <span className="font-medium">Technologies: </span>
-                    <span className="text-muted-foreground">{lead.technology_skills}</span>
-                  </div>
-                )}
-              </div>
             </div>
           </>
         )}

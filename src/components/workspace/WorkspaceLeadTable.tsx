@@ -35,7 +35,9 @@ import {
   Code,
   Database,
   Cloud,
-  ChevronRight
+  ChevronRight,
+  Linkedin,
+  ExternalLink
 } from 'lucide-react';
 import { useAssistantActions } from '@/hooks/useAssistantActions';
 import { usePDLEnrichment } from '@/hooks/usePDLEnrichment';
@@ -50,6 +52,7 @@ import LeadDetailCard from '@/components/leads/LeadDetailCard';
 import ColumnVisibilityControl from './ColumnVisibilityControl';
 import { Lead } from '@/types/assistant';
 import SalesDataEditor from '@/components/leads/SalesDataEditor';
+import { normalizeUrl } from '@/utils/urlUtils';
 
 const WorkspaceLeadTable: React.FC = () => {
   const navigate = useNavigate();
@@ -194,21 +197,28 @@ const WorkspaceLeadTable: React.FC = () => {
     </div>
   );
 
-  const renderSkills = (lead: Lead) => (
-    <div className="space-y-1">
-      <SkillsTagsDisplay
-        skills={lead.skills}
-        languages={lead.languages}
-        maxVisible={3}
-      />
-      {lead.programming_languages && (
-        <div className="text-xs text-muted-foreground truncate max-w-[140px]" title={lead.programming_languages}>
-          <Code className="h-3 w-3 inline mr-1" />
-          {lead.programming_languages}
-        </div>
-      )}
-    </div>
-  );
+  const renderLinkedIn = (lead: Lead) => {
+    const linkedinUrl = normalizeUrl(lead.linkedin_url);
+    
+    if (!linkedinUrl) {
+      return <span className="text-xs text-muted-foreground">No LinkedIn</span>;
+    }
+
+    return (
+      <div className="flex items-center gap-1">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-6 px-2 text-blue-600 hover:bg-blue-50"
+          onClick={() => window.open(linkedinUrl, '_blank', 'noopener,noreferrer')}
+        >
+          <Linkedin className="h-3 w-3 mr-1" />
+          <span className="text-xs truncate max-w-[120px]">LinkedIn</span>
+          <ExternalLink className="h-3 w-3 ml-1" />
+        </Button>
+      </div>
+    );
+  };
 
   const renderEducation = (lead: Lead) => (
     <div className="space-y-1">
@@ -262,7 +272,7 @@ const WorkspaceLeadTable: React.FC = () => {
     { key: 'contact_info', label: 'Contact Info', render: renderContactInfo },
     { key: 'company_role', label: 'Company & Role', render: renderCompanyRole },
     { key: 'experience', label: 'Experience', render: renderExperience },
-    { key: 'skills', label: 'Skills & Tech', render: renderSkills },
+    { key: 'linkedin', label: 'LinkedIn', render: renderLinkedIn },
     { key: 'education', label: 'Education', render: renderEducation },
     { key: 'sales_data', label: 'Sales Data', render: renderSalesData },
     { key: 'status', label: 'Status', render: (lead: Lead) => (
