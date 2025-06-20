@@ -3,6 +3,7 @@ import React from 'react';
 import { Building2, Users, Award, ExternalLink } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { normalizeUrl } from '@/utils/urlUtils';
 
 interface CompanyInfoDisplayProps {
   company: string;
@@ -21,6 +22,8 @@ const CompanyInfoDisplay: React.FC<CompanyInfoDisplayProps> = ({
   job_seniority,
   className = ""
 }) => {
+  const normalizedWebsite = normalizeUrl(job_company_website);
+
   const getSizeColor = (size?: string) => {
     switch (size) {
       case 'startup': return 'bg-purple-100 text-purple-800';
@@ -47,12 +50,12 @@ const CompanyInfoDisplay: React.FC<CompanyInfoDisplayProps> = ({
       <div className="flex items-center gap-2">
         <Building2 className="h-4 w-4 text-muted-foreground" />
         <span className="font-medium text-sm">{company}</span>
-        {job_company_website && (
+        {normalizedWebsite && (
           <Button
             variant="ghost"
             size="sm"
             className="h-5 w-5 p-0 text-green-600"
-            onClick={() => window.open(job_company_website, '_blank')}
+            onClick={() => window.open(normalizedWebsite, '_blank', 'noopener,noreferrer')}
           >
             <ExternalLink className="h-3 w-3" />
           </Button>
