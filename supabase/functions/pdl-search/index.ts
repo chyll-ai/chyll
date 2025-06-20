@@ -192,19 +192,8 @@ async function searchPeopleWithPDL(searchParams: any, requestedCount: number, ex
     conditions.push(`job_title LIKE '%manager%'`);
   }
 
-  // Add filters to exclude existing leads in the SQL query
-  if (existingLeads.length > 0) {
-    const emailExclusions = existingLeads
-      .filter(lead => lead.email)
-      .map(lead => `'${lead.email.replace(/'/g, "''")}'`)
-      .join(', ');
-    
-    if (emailExclusions) {
-      conditions.push(`emails NOT LIKE ANY(ARRAY[${emailExclusions}])`);
-    }
-  }
-
-  const sql = `SELECT * FROM person WHERE (${conditions.join(' AND ')})`;
+  // Build the base SQL query without email exclusions for now
+  let sql = `SELECT * FROM person WHERE (${conditions.join(' AND ')})`;
   
   // Smart batch sizing: In testing mode, request exactly what we need
   // In production mode, add a small buffer (max 20% extra) to account for filtering
@@ -323,7 +312,7 @@ serve(async (req: Request) => {
 
     console.log('Search criteria:', searchCriteria);
 
-    // Perform smart PDL search with exact count targeting
+    // Perform PDL search
     const pdlResults = await searchPeopleWithPDL(searchCriteria, count, existingLeads);
     
     if (!pdlResults.data?.data) {
@@ -345,7 +334,7 @@ serve(async (req: Request) => {
       );
     }
 
-    // Filter and transform PDL results
+    // Filter and transform PDL results - do deduplication in code instead of SQL
     const validPdlLeads = pdlResults.data.data.filter((person: any) => {
       // Must have at minimum a name and a company
       if (!person.full_name || !person.job_company_name) {
@@ -353,9 +342,18 @@ serve(async (req: Request) => {
         return false;
       }
       
-      // Check if not duplicate based on name+company
+      // Check if not duplicate based on name+company and email
       if (isExistingLead(person, existingLeads)) {
         return false;
+      }
+      
+      // Check for email duplicates
+      if (person.emails && person.emails.length > 0) {
+        const personEmail = person.emails[0].address?.toLowerCase();
+        if (personEmail && existingLeads.some(existing => existing.email?.toLowerCase() === personEmail)) {
+          console.log('Skipping duplicate email:', personEmail);
+          return false;
+        }
       }
       
       return true;
