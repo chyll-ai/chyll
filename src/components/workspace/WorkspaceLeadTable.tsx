@@ -52,7 +52,6 @@ import LeadDetailCard from '@/components/leads/LeadDetailCard';
 import ColumnVisibilityControl from './ColumnVisibilityControl';
 import { Lead } from '@/types/assistant';
 import SalesDataEditor from '@/components/leads/SalesDataEditor';
-import { normalizeUrl } from '@/utils/urlUtils';
 
 const WorkspaceLeadTable: React.FC = () => {
   const navigate = useNavigate();
@@ -120,11 +119,22 @@ const WorkspaceLeadTable: React.FC = () => {
     setSelectedLeads([]);
   };
 
-  const parseJsonField = (field: string | undefined): any[] => {
+  const parseJsonField = (field: string | undefined): string[] => {
     if (!field) return [];
     try {
       const parsed = JSON.parse(field);
-      return Array.isArray(parsed) ? parsed : [];
+      if (Array.isArray(parsed)) {
+        return parsed.map(item => {
+          if (typeof item === 'string') {
+            return item;
+          } else if (typeof item === 'object' && item !== null) {
+            // Handle objects by extracting meaningful string representation
+            return item.name || item.school || item.title || Object.values(item).find(v => typeof v === 'string') || 'Unknown';
+          }
+          return String(item);
+        });
+      }
+      return [];
     } catch {
       return [];
     }
@@ -197,19 +207,11 @@ const WorkspaceLeadTable: React.FC = () => {
     </div>
   );
 
-  const renderLinkedIn = (lead: Lead) => {
-    // Debug logging
-    console.log('Lead LinkedIn data:', {
-      leadName: lead.full_name,
-      linkedin_url: lead.linkedin_url,
-      typeof_linkedin_url: typeof lead.linkedin_url
-    });
-    
+  const renderLinkedIn = (lead: Lead) => {    
     if (!lead.linkedin_url) {
       return <span className="text-xs text-muted-foreground">No LinkedIn</span>;
     }
 
-    // Use the URL as-is from the database, just ensure it has protocol for opening
     const urlToOpen = lead.linkedin_url.startsWith('http') 
       ? lead.linkedin_url 
       : `https://${lead.linkedin_url}`;
@@ -230,26 +232,31 @@ const WorkspaceLeadTable: React.FC = () => {
     );
   };
 
-  const renderEducation = (lead: Lead) => (
-    <div className="space-y-1">
-      {parseJsonField(lead.education).length > 0 && (
-        <div className="flex items-center gap-1">
-          <GraduationCap className="h-3 w-3 text-green-500" />
-          <div className="text-xs font-medium">
-            {parseJsonField(lead.education).slice(0, 1).map((edu: any) => edu.school || 'Education').join(', ')}
+  const renderEducation = (lead: Lead) => {
+    const educationData = parseJsonField(lead.education);
+    const certificationsData = parseJsonField(lead.certifications);
+    
+    return (
+      <div className="space-y-1">
+        {educationData.length > 0 && (
+          <div className="flex items-center gap-1">
+            <GraduationCap className="h-3 w-3 text-green-500" />
+            <div className="text-xs font-medium truncate max-w-[120px]">
+              {educationData[0]}
+            </div>
           </div>
-        </div>
-      )}
-      {parseJsonField(lead.certifications).length > 0 && (
-        <div className="flex items-center gap-1">
-          <Award className="h-3 w-3 text-yellow-500" />
-          <Badge variant="outline" className="text-xs">
-            {parseJsonField(lead.certifications).length} certs
-          </Badge>
-        </div>
-      )}
-    </div>
-  );
+        )}
+        {certificationsData.length > 0 && (
+          <div className="flex items-center gap-1">
+            <Award className="h-3 w-3 text-yellow-500" />
+            <Badge variant="outline" className="text-xs">
+              {certificationsData.length} certs
+            </Badge>
+          </div>
+        )}
+      </div>
+    );
+  };
 
   const renderSalesData = (lead: Lead) => (
     <div className="space-y-1">
